@@ -1,0 +1,172 @@
+/**
+ * Copyright (C) 2010 Esup Portail http://www.esup-portail.org
+ * Copyright (C) 2010 UNR RUNN http://www.unr-runn.fr
+ * @Author (C) 2010 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
+ * @Contributor (C) 2010 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.esupstock .container {
+	margin-left: 10px;	
+}
+
+.esupstock .browserlist { 
+list-style: none; 
+}
+
+.esupstock #jqueryFileTree { 
+padding-left: 15px;
+}
+
+.esupstock .container #fileTree,
+.esupstock .container #browserMain { 
+height:400px; 
+overflow:auto; 
+border:1px solid gray;
+}
+
+.esupstock #bigdirectory {
+text-decoration: underline;
+font-weight: bold;
+}
+
+.esupstock .breadcrumbs {
+background: #f3f3f3;
+padding: 5px;
+border-bottom: 1px solid #bbb;
+}
+
+.esupstock #toolbar {
+background: #f3f3f3;
+padding: 20px 0px 5px 0px;
+border: 1px solid #bbb;
+margin-bottom: 5px;
+}
+
+.esupstock .toolbar-item {  
+display: block;
+float: left;
+padding: 20px 0px 0px 0px;
+}
+
+.esupstock .toolbar-item a { 
+padding: 24px 5px 0px 10px;
+margin: 0px 10px; 
+}
+
+.esupstock #toolbar-create {  
+background: url(/esup-portlet-stockage/img/new_folder_24px.gif) no-repeat center top; 
+}
+
+.esupstock #toolbar-refresh {  
+background: url(/esup-portlet-stockage/img/refresh_24px.gif) no-repeat center top; 
+}
+
+.esupstock #toolbar-copy {  
+background: url(/esup-portlet-stockage/img/copy_24px.gif) no-repeat center top; 
+}
+
+.esupstock #toolbar-cut {  
+background: url(/esup-portlet-stockage/img/cut_24px.gif) no-repeat center top; 
+}
+
+.esupstock #toolbar-past {  
+background: url(/esup-portlet-stockage/img/paste_24px.gif) no-repeat center top; 
+}
+
+.esupstock #toolbar-rename {  
+background: url(/esup-portlet-stockage/img/rename_24px.gif) no-repeat center top; 
+}
+
+.esupstock #toolbar-delete {  
+background: url(/esup-portlet-stockage/img/delete_24px.gif) no-repeat center top; 
+}
+
+.esupstock #toolbar-zip {  
+padding-top: 30px;
+background: url(/esup-portlet-stockage/img/package-x-generic.png) no-repeat center top; 
+}
+
+.esupstock #info-toolbar span {
+display: block;
+text-align: center;
+margin-bottom: 5px;
+}
+
+.esupstock #info-toolbar .info {
+background: #aaff44;
+border: 1px solid #44aa00;
+}
+
+.esupstock #info-toolbar .warn {
+background: #ffaa44;
+border: 1px solid #aa4400;
+}
+
+.esupstock .esupHide {
+display: none;	
+}
+
+.esupstock .qq-upload-button {
+display: block;
+padding: 24px 5px 0px 10px;
+margin-top: -23px;
+background: url(/esup-portlet-stockage/img/upload_24px.gif) no-repeat top; 
+color: #009;
+text-decoration: underline;
+width: 60px;
+}
+
+.esupstock .qq-upload-list {
+background: #eee;
+position: absolute;
+margin-left: -90px;
+margin-top: 50px;
+list-style: none;
+}
+
+.esupstock .qq-upload-list li {
+list-style: none;
+}
+
+.esupstock .qq-upload-drop-area {
+height: 25px;
+background: #fafafa;
+border: 1px dashed #ddd;
+position: absolute;
+float: right;
+padding: 5px 2px 5px 2px;
+margin-left: 60px;
+margin-top: 5px;
+display: block;
+}
+
+.esupstock .qq-upload-list span {
+margin: 2px;
+}
+
+.esupstock .qq-upload-failed-text {
+display: none;
+}
+
+.esupstock .qq-upload-fail .qq-upload-failed-text {
+display: inline;
+}
+
+.esupstock .qq-upload-button input {
+height: 60px;
+width: 60px;
+margin: 0px;
+padding: 0px;
+}
+

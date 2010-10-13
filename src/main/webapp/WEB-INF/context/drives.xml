@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2010 Esup Portail http://www.esup-portail.org
+    Copyright (C) 2010 UNR RUNN http://www.unr-runn.fr
+    @Author (C) 2010 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
+    @Contributor (C) 2010 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+            http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:util="http://www.springframework.org/schema/util"    
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+   							http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+    
+    
+  <util:constant id="isPortlet" static-field="java.lang.Boolean.FALSE"/>
+
+	<util:map id="drivesCategories">
+		<entry key="Homedir">
+			<bean class="org.esupportail.portlet.stockage.beans.DrivesCategory">
+				<property name="icon" value="/esup-portlet-stockage/img/drives/house.png" />
+				<property name="drives">
+					<list>
+						<value>Bob</value>
+					</list>
+				</property>
+			</bean>
+		</entry>
+		<entry key="Partages">
+		<bean class="org.esupportail.portlet.stockage.beans.DrivesCategory">
+			<property name="icon" value="/esup-portlet-stockage/img/drives/drive_user.png" />
+			<property name="drives">
+				<list>
+					<value>Stock2Cas</value>
+					<value>Stock3Cas</value>
+				</list>
+			</property>
+		</bean>
+		</entry>
+		<entry key="GED">
+		<bean class="org.esupportail.portlet.stockage.beans.DrivesCategory">
+			<property name="icon" value="/esup-portlet-stockage/img/drives/group.png" />
+			<property name="drives">
+				<list>
+					<value>Toto</value>
+				</list>
+			</property>
+		</bean>
+		</entry>
+	</util:map>
+    
+    
+    <bean class="org.esupportail.portlet.stockage.services.vfs.VfsAccessImpl">
+		<property name="driveName" value="Toto"/>
+		<property name="icon" value="/esup-portlet-stockage/img/drives/tux.png" />
+		<property name="uri" value="sftp://stock-2.mon-univ.fr/"/>
+		<property name="memberOfAny">
+			 <list>
+                <value>pags.univ-rouen</value>
+            </list>
+		</property>
+		<property name="userAuthenticatorService" ref="simpleUserAuthenticationService"/>
+		<property name="resourceUtils" ref="resourceUtils"/>
+	</bean>
+	
+	
+	<bean class="org.esupportail.portlet.stockage.services.vfs.VfsAccessImpl">
+		<property name="driveName" value="sftp"/>
+		<property name="icon" value="/esup-portlet-stockage/img/drives/root.png" />
+		<property name="uri" value="sftp://stock-2.mon-univ.fr/"/>
+		<property name="userAuthenticatorService" ref="simpleUserAuthenticationService"/>
+		<property name="resourceUtils" ref="resourceUtils"/>
+	</bean>
+	
+	<bean  class="org.esupportail.portlet.stockage.services.vfs.VfsAccessImpl">
+		<property name="driveName" value="Bob"/>
+		<property name="icon" value="/esup-portlet-stockage/img/drives/root.png" />
+		<property name="uri" value="file:///"/>
+		<property name="contextToken" value="justbob"/>
+		<property name="resourceUtils" ref="resourceUtils"/>
+	</bean>
+	
+	
+	<bean class="org.esupportail.portlet.stockage.services.vfs.VfsAccessImpl" scope="session">
+		<property name="driveName" value="Stock2Cas"/>
+		<property name="icon" value="/esup-portlet-stockage/img/drives/root.png" />
+		<property name="uri" value="sftp://stock-2.mon-univ.fr/home/@uid@/"/>
+		<property name="memberOfAny">
+			 <list>
+                <value>pags.univ-rouen</value>
+            </list>
+		</property>
+		<property name="userAuthenticatorService" ref="casUserAuthenticationService"/>
+		<property name="resourceUtils" ref="resourceUtils"/>
+	</bean>
+	 
+	<bean class="org.esupportail.portlet.stockage.services.vfs.VfsAccessImpl" scope="session">
+		<property name="driveName" value="Stock3Cas"/>
+		<property name="icon" value="/esup-portlet-stockage/img/drives/root.png" />
+		<property name="uri" value="sftp://stock-3.mon-univ.fr/"/>
+		<property name="memberOfAny">
+			 <list>
+                <value>pags.univ-rouen</value>
+            </list>
+		</property>
+		<property name="userAuthenticatorService" ref="casUserAuthenticationServiceStock3"/>
+		<property name="resourceUtils" ref="resourceUtils"/>
+	</bean>
+	 
+	<bean name="simpleUserAuthenticationService" class="org.esupportail.portlet.stockage.services.auth.UserPasswordAuthenticatorService">
+		<property name="username" value="bonamvin"/>
+		<property name="password" value="toto"/>
+	</bean>
+	
+	<bean name="casUserAuthenticationServiceRoot" class="org.esupportail.portlet.stockage.services.auth.cas.UserCasAuthenticatorServiceRoot">
+        <property name="proxyTicketService" ref="casService"/>
+        <property name="userInfoTicketProperty" value="casProxyTicket"/>
+        <property name="portletAttributeUid" value="uid"/>
+    </bean>
+
+	<bean name="casUserAuthenticationService" class="org.esupportail.portlet.stockage.services.auth.cas.UserCasAuthenticatorService">
+	    <property name="proxyTicketService" ref="casService"/>
+        <property name="userCasAuthenticatorServiceRoot" ref="casUserAuthenticationServiceRoot"/>
+        <property name="target" value="sftp://stock-2.mon-univ.fr"/>
+    </bean>
+    
+    <bean name="casUserAuthenticationServiceStock3" class="org.esupportail.portlet.stockage.services.auth.cas.UserCasAuthenticatorService">
+    	<property name="proxyTicketService" ref="casService"/>
+        <property name="userCasAuthenticatorServiceRoot" ref="casUserAuthenticationServiceRoot"/>
+        <property name="target" value="sftp://stock-3.mon-univ.fr"/>
+    </bean>
+    
+    <bean id="casService" class="org.esupportail.portlet.stockage.services.auth.cas.ProxyTicketService">
+        <property name="casValidateUrl" value="https://cas.mon-univ.fr/proxyValidate"/>
+        <property name="serviceUrl" value="https://stock-2.mon-univ.fr/esup-portlet-stockage"/>
+        <property name="urlOfProxyCallbackServlet" value="https://stock-2.mon-univ.fr/esup-portlet-stockage/CasProxyServlet"/>
+    </bean>
+
+    
+</beans>

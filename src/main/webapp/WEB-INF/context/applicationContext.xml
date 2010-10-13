@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2010 Esup Portail http://www.esup-portail.org
+    Copyright (C) 2010 UNR RUNN http://www.unr-runn.fr
+    @Author (C) 2010 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
+    @Contributor (C) 2010 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+            http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
+>
+    
+    <!--
+     | Message source for this context, loaded from localized "messages_xx" files
+     +-->
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>messages</value>
+            </list>
+        </property>                                     
+    </bean>
+
+    <!-- 
+     | Standard JSP view resolver
+     +-->
+    <bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="cache" value="true"/>
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+    
+    <bean id="multipartResolver"
+        class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+ 
+    <bean id="requiredAnnotationBeanPostProcessor" class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor" />
+	
+	
+	<bean id="userAgentInspector" class="org.esupportail.portlet.stockage.services.UserAgentInspector">
+        <property name="userAgentMobile">
+		    <!-- Regexes of mobile device user agents -->
+		    <list>
+		        <value>.*iPhone.*</value>
+		        <value>.*Android.*</value>
+		        <value>.*Safari.*Pre.*</value>
+		        <value>.*Nokia.*AppleWebKit.*</value>
+		    </list>
+        </property>
+    </bean>
+	
+	
+	<bean id="resourceUtils" class="org.esupportail.portlet.stockage.services.ResourceUtils">
+		<property name="iconsMap">
+			<map>
+				<entry key="jpg" value="image"/>
+				<entry key="xcf" value="image"/>
+				<entry key="tif" value="image"/>
+				<entry key="dia" value="image"/>
+				<entry key="gif" value="image"/>
+				<entry key="ppt" value="odp"/>
+				<entry key="pot" value="odp"/>
+				<entry key="htm" value="html"/>
+				<entry key="mov" value="quicktime"/>
+				<entry key="wmv" value="avi"/>
+				<entry key="mp4" value="avi"/>
+				<entry key="mp3" value="audio"/>
+				<entry key="ogg" value="audio"/>
+				<entry key="wma" value="audio"/>
+				<entry key="gz" value="tar"/>
+				<entry key="mid" value="midi"/>
+				<entry key="xml" value="txt"/>
+				<entry key="csv" value="xls"/>
+				<entry key="docx" value="doc"/>
+			</map>
+		</property>
+	</bean>
+	
+	<import resource="drives.xml"/>
+	
+</beans>
