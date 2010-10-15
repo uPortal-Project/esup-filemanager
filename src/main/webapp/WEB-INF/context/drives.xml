@@ -56,13 +56,30 @@
 			<property name="drives">
 				<list>
 					<value>Toto</value>
+					<value>Cmis</value>
 				</list>
 			</property>
 		</bean>
 		</entry>
 	</util:map>
     
-    
+       
+	<bean class="org.esupportail.portlet.stockage.services.opencmis.CmisAccessImpl">
+		<property name="driveName" value="Cmis"/>
+		<property name="icon" value="/esup-portlet-stockage/img/drives/group.png" />
+		<property name="uri" value="http://localhost:9080/cmis-server/atom"/>
+		<property name="respositoryId" value="test"/>
+		<property name="username" value="test"/>
+		<property name="password" value="test"/>
+		<property name="memberOfAny">
+		  <list>
+		    <value>pags.univ-rouen</value>
+		  </list>
+		</property>
+		<property name="resourceUtils" ref="resourceUtils"/>
+	</bean>
+
+
     <bean class="org.esupportail.portlet.stockage.services.vfs.VfsAccessImpl">
 		<property name="driveName" value="Toto"/>
 		<property name="icon" value="/esup-portlet-stockage/img/drives/tux.png" />
