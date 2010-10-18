@@ -148,7 +148,6 @@
 	<bean name="casUserAuthenticationServiceRoot" class="org.esupportail.portlet.stockage.services.auth.cas.UserCasAuthenticatorServiceRoot">
         <property name="proxyTicketService" ref="casService"/>
         <property name="userInfoTicketProperty" value="casProxyTicket"/>
-        <property name="portletAttributeUid" value="uid"/>
     </bean>
 
 	<bean name="casUserAuthenticationService" class="org.esupportail.portlet.stockage.services.auth.cas.UserCasAuthenticatorService">
