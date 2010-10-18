@@ -99,9 +99,6 @@ public class UserCasAuthenticatorService implements UserAuthenticatorService {
 			userParameters = new SharedUserPortletParameters();
 		}
 
-        String username = userParameters.getUsername();
-
-        log.debug("got user '" + username + "'");
         log.debug("getting CAS credentials from session");
 
         CASReceipt receipt = userParameters.getReceipt();
@@ -113,6 +110,8 @@ public class UserCasAuthenticatorService implements UserAuthenticatorService {
         // get a proxy ticket for the feed's url and append it to the url
         String casServiceToken = proxyTicketService.getCasServiceToken(receipt,
                 this.target);
+        String username = receipt.getUserName();
+        log.debug("got user '" + username + "'");
 
         if (casServiceToken == null) {
             casServiceToken = "";

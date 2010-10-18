@@ -64,9 +64,6 @@ public class UserCasAuthenticatorServiceRoot {
     
     private String userInfoTicketProperty;
     
-    private String portletAttributeUid;
-
-    
     public void setProxyTicketService(ProxyTicketService proxyTicketService) {
 		this.proxyTicketService = proxyTicketService;
 	}
@@ -75,14 +72,7 @@ public class UserCasAuthenticatorServiceRoot {
 		this.userInfoTicketProperty = userInfoTicketProperty;
 	}
 
-	public void setPortletAttributeUid(String portletAttributeUid) {
-		this.portletAttributeUid = portletAttributeUid;
-	}
-
 	public void initialize(Map userInfos, SharedUserPortletParameters userParameters) {
-
-		userParameters.setUsername((String)userInfos.get(portletAttributeUid));
-		log.debug("username from portal = " + userParameters.getUsername());
 		
 		if(userParameters.getReceipt() == null) {
         

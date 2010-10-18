@@ -114,7 +114,7 @@ public class ServersAccessService implements DisposableBean {
 				this.restrictedServers.put(driveName, this.servers.get(driveName));
 				this.restrictedServers.get(driveName).initializeService(userInfos, userParameters);
 			}
-			this.open(driveNames);
+			//this.open(driveNames);
 		}
 		isInitialized = true;
 	}
