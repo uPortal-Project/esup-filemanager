@@ -22,9 +22,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs.UserAuthenticator;
-import org.apache.commons.vfs.auth.StaticUserAuthenticator;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.stockage.beans.UserPassword;
 
 public class UserPasswordAuthenticatorService implements UserAuthenticatorService {
 
@@ -41,13 +40,12 @@ public class UserPasswordAuthenticatorService implements UserAuthenticatorServic
 		this.password = password;
 	}
 
-
 	public void initialize(Map userInfos, SharedUserPortletParameters userParameters) {
 		// nothing to do
 	}
 	
-	public UserAuthenticator getUserAuthenticator() {
-		return new StaticUserAuthenticator(null, username, password);
+	public UserPassword getUserPassword() {
+		return new UserPassword(username, password);
 	}
 
 }

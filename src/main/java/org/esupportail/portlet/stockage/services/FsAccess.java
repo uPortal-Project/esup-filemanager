@@ -26,6 +26,7 @@ import java.util.Set;
 import org.esupportail.portlet.stockage.beans.DownloadFile;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.stockage.services.auth.UserAuthenticatorService;
 
 public abstract class FsAccess {
 
@@ -40,6 +41,8 @@ public abstract class FsAccess {
 	protected String uri;
 	
 	protected String icon;
+	
+	protected UserAuthenticatorService userAuthenticatorService;
 
 	public List<String> getMemberOfAny() {
 		return memberOfAny;
@@ -81,6 +84,11 @@ public abstract class FsAccess {
 		this.icon = icon;
 	}
 
+	public void setUserAuthenticatorService(
+			UserAuthenticatorService userAuthenticatorService) {
+		this.userAuthenticatorService = userAuthenticatorService;
+	}
+
 	public void initializeService(Map userInfos,
 			SharedUserPortletParameters userParameters) {
 		if(userInfos != null) {
@@ -90,6 +98,8 @@ public abstract class FsAccess {
 				this.uri = this.uri.replaceAll(userInfoKeyToken, userInfo);
 			}
 		}
+		if(this.userAuthenticatorService != null && userInfos != null)
+			this.userAuthenticatorService.initialize(userInfos, userParameters);
 	}
 
 	public abstract void open() ;

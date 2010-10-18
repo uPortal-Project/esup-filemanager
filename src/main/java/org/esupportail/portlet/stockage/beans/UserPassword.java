@@ -16,14 +16,38 @@
  * limitations under the License.
  */
 
-package org.esupportail.portlet.stockage.exceptions;
+package org.esupportail.portlet.stockage.beans;
 
-public class EsupStockLostSessionException extends EsupStockException {
-	
+import java.io.Serializable;
+
+public class UserPassword implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 	
-	public EsupStockLostSessionException(String message) {
-		super(message);
+	private String username;
+	
+	private String password;
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public UserPassword(String username, String password) {
+		super();
+		this.username = username;
+		this.password = password;
 	}
 	
 }

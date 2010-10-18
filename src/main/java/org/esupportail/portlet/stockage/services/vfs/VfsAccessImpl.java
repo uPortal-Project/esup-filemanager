@@ -35,16 +35,18 @@ import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.FileSystemOptions;
 import org.apache.commons.vfs.Selectors;
+import org.apache.commons.vfs.UserAuthenticator;
 import org.apache.commons.vfs.VFS;
+import org.apache.commons.vfs.auth.StaticUserAuthenticator;
 import org.apache.commons.vfs.impl.DefaultFileSystemConfigBuilder;
 import org.esupportail.portlet.stockage.beans.DownloadFile;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.stockage.beans.UserPassword;
 import org.esupportail.portlet.stockage.exceptions.EsupStockException;
 import org.esupportail.portlet.stockage.exceptions.EsupStockPermissionDeniedException;
 import org.esupportail.portlet.stockage.services.FsAccess;
 import org.esupportail.portlet.stockage.services.ResourceUtils;
-import org.esupportail.portlet.stockage.services.auth.UserAuthenticatorService;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.FileCopyUtils;
 
@@ -59,14 +61,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 
 	protected FileObject root;
 	
-	protected UserAuthenticatorService userAuthenticatorService;
-	
 	protected ResourceUtils resourceUtils;
-	
-	public void setUserAuthenticatorService(
-			UserAuthenticatorService userAuthenticatorService) {
-		this.userAuthenticatorService = userAuthenticatorService;
-	}
 
 	public void setResourceUtils(ResourceUtils resourceUtils) {
 		this.resourceUtils = resourceUtils;
@@ -74,8 +69,6 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 
 	public void initializeService(Map userInfos, SharedUserPortletParameters userParameters) {
 		super.initializeService(userInfos, userParameters);
-		if(this.userAuthenticatorService != null && userInfos != null)
-			this.userAuthenticatorService.initialize(userInfos, userParameters);
 	}
 	
 	public void open() {
@@ -84,7 +77,9 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 				FileSystemOptions fsOptions = new FileSystemOptions();
 				//SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(fsOptions, "no");
 				if(userAuthenticatorService != null) {
-					DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(fsOptions, userAuthenticatorService.getUserAuthenticator());
+					UserPassword userPassword = userAuthenticatorService.getUserPassword();
+					UserAuthenticator userAuthenticator = new StaticUserAuthenticator(null, userPassword.getUsername(), userPassword.getPassword());
+					DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(fsOptions, userAuthenticator);
 				}
 				fsManager = VFS.getManager();
 				root = fsManager.resolveFile(uri, fsOptions);

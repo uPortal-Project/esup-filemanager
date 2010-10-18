@@ -22,50 +22,58 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import javax.activation.MimetypesFileTypeMap;
 
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Document;
+import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
+import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
+import org.apache.chemistry.opencmis.commons.data.ContentStream;
+import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
+import org.apache.chemistry.opencmis.commons.enums.Updatability;
+import org.apache.chemistry.opencmis.commons.enums.VersioningState;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisConnectionException;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.esupportail.portlet.stockage.beans.DownloadFile;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.stockage.beans.UserPassword;
+import org.esupportail.portlet.stockage.exceptions.EsupStockNotImplementedException;
 import org.esupportail.portlet.stockage.services.FsAccess;
 import org.esupportail.portlet.stockage.services.ResourceUtils;
-import org.esupportail.portlet.stockage.services.auth.UserAuthenticatorService;
 import org.springframework.beans.factory.DisposableBean;
 
 public class CmisAccessImpl extends FsAccess implements DisposableBean {
 
 	protected static final Log log = LogFactory.getLog(CmisAccessImpl.class);
 	
-	protected UserAuthenticatorService userAuthenticatorService;
-	
 	protected ResourceUtils resourceUtils;
 	
 	protected Session cmisSession;
 	
 	protected String respositoryId = "test";
-    
-	protected String username = "test";
-    
-	protected String password = "test";
 	
-	public void setUserAuthenticatorService(
-			UserAuthenticatorService userAuthenticatorService) {
-		this.userAuthenticatorService = userAuthenticatorService;
-	}
-
+	private static final Set<Updatability> CREATE_UPDATABILITY = new HashSet<Updatability>();
+    static {
+        CREATE_UPDATABILITY.add(Updatability.ONCREATE);
+        CREATE_UPDATABILITY.add(Updatability.READWRITE);
+    }
+	
 	public void setResourceUtils(ResourceUtils resourceUtils) {
 		this.resourceUtils = resourceUtils;
 	}
@@ -74,18 +82,8 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		this.respositoryId = respositoryId;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
 	public void initializeService(Map userInfos, SharedUserPortletParameters userParameters) {
 		super.initializeService(userInfos, userParameters);
-		if(this.userAuthenticatorService != null && userInfos != null)
-			this.userAuthenticatorService.initialize(userInfos, userParameters);
 	}
 	
 	private JsTreeFile cmisObjectAsJsTreeFile(CmisObject cmisObject) {
@@ -102,6 +100,9 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	}
 
 	private CmisObject getCmisObject(String path) {
+		if(!this.isOpened()) {
+			this.open();
+		}
 		// in fact we don't use 'path' but ID
 		if(path.equals("")) 
 			path= "@root@";
@@ -120,15 +121,23 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		parameters.put(SessionParameter.ATOMPUB_URL, uri);
 		parameters.put(SessionParameter.REPOSITORY_ID, respositoryId);
 
-		parameters.put(SessionParameter.USER, username);
-		parameters.put(SessionParameter.PASSWORD, password);
-
-		cmisSession = SessionFactoryImpl.newInstance().createSession(parameters);
+		UserPassword userPassword = userAuthenticatorService.getUserPassword();
+		parameters.put(SessionParameter.USER, userPassword.getUsername());
+		parameters.put(SessionParameter.PASSWORD, userPassword.getPassword());
+		try {
+			cmisSession = SessionFactoryImpl.newInstance().createSession(parameters);
+		} catch(CmisConnectionException ce) {
+			log.warn("failed to retriev cmisSession : " + uri + " , repository is not accessible or simply not started ?", ce);
+		}
 	}
 	
 	@Override
 	public boolean isOpened() {
 		return cmisSession != null;
+	}
+	
+	public void destroy() throws Exception {
+		this.close();
 	}
 	
 	@Override
@@ -170,10 +179,17 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 
 	@Override
 	public String createFile(String parentPath, String title, String type) {
+		Folder parent = (Folder)getCmisObject(parentPath);
 		if("folder".equals(type)) {
-			//cmisSession.createFolder(arg0, arg1, arg2, arg3, arg4);
+			Map prop = new HashMap();
+			prop.put(PropertyIds.OBJECT_TYPE_ID, BaseTypeId.CMIS_FOLDER.value());
+			prop.put(PropertyIds.NAME, String.valueOf(title));
+			Folder folder = parent.createFolder(prop, null, null, null, cmisSession.getDefaultContext());
 		} else if("file".equals(type)) {
-			//cmisSession.createDocument(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+			Map prop = new HashMap();
+			prop.put(PropertyIds.OBJECT_TYPE_ID, BaseTypeId.CMIS_DOCUMENT.value());
+			prop.put(PropertyIds.NAME, String.valueOf(title));
+			Document document = parent.createDocument(prop, null, null, null, null, null, cmisSession.getDefaultContext());
 		}
 		return title;
 	}
@@ -181,33 +197,42 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	@Override
 	public boolean moveCopyFilesIntoDirectory(String dir,
 			List<String> filesToCopy, boolean copy) {
-		// TODO Auto-generated method stub
-		return false;
+		if(!copy)
+			throw new EsupStockNotImplementedException();
+		Folder targetFolder = (Folder)getCmisObject(dir);
+		for(String fileTocopy : filesToCopy) {
+			FileableCmisObject cmisObjectToCopy = (FileableCmisObject) getCmisObject(fileTocopy);
+			cmisObjectToCopy.addToFolder(targetFolder, true);
+		}
+		return true;
 	}
 
 	@Override
 	public boolean putFile(String dir, String filename, InputStream inputStream) {
-		// TODO Auto-generated method stub
-		return false;
+		Folder targetFolder = (Folder)getCmisObject(dir);
+		Map prop = new HashMap();
+		prop.put(PropertyIds.OBJECT_TYPE_ID, BaseTypeId.CMIS_DOCUMENT.value());
+		prop.put(PropertyIds.NAME, String.valueOf(filename));
+		String mimeType = new MimetypesFileTypeMap().getContentType(filename);
+		ContentStream stream = new ContentStreamImpl(filename, null, mimeType, inputStream);
+		Document document = targetFolder.createDocument(prop, stream, VersioningState.NONE, null, null, null, cmisSession.getDefaultContext());
+		document.setName(filename);
+		return true;
 	}
 
 	@Override
 	public boolean remove(String path) {
-		// TODO Auto-generated method stub
-		return false;
+		CmisObject cmisObject = getCmisObject(path);
+		cmisObject.delete(true);
+		return true;
 	}
 
 	@Override
 	public boolean renameFile(String path, String title) {
-		// TODO Auto-generated method stub
-		return false;
+		CmisObject cmisObject = getCmisObject(path);
+		cmisObject.setName(title);
+		return true;
 	}
 
-	public void destroy() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	
 
 }

@@ -20,13 +20,13 @@ package org.esupportail.portlet.stockage.services.auth;
 
 import java.util.Map;
 
-import org.apache.commons.vfs.UserAuthenticator;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.stockage.beans.UserPassword;
 
 public interface UserAuthenticatorService {
 
 	public abstract void initialize(Map userInfos, SharedUserPortletParameters userParameters);
 	
-	public abstract UserAuthenticator getUserAuthenticator();
+	public abstract UserPassword getUserPassword();
 
 }

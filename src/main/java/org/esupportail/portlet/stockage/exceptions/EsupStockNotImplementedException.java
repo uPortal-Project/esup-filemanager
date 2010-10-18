@@ -18,12 +18,12 @@
 
 package org.esupportail.portlet.stockage.exceptions;
 
-public class EsupStockLostSessionException extends EsupStockException {
-	
+public class EsupStockNotImplementedException extends EsupStockException {
+
 	private static final long serialVersionUID = 1L;
 	
-	public EsupStockLostSessionException(String message) {
-		super(message);
+	public EsupStockNotImplementedException() {
+		super("Not Implemented");
 	}
 	
 }

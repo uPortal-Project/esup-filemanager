@@ -47,9 +47,8 @@ import javax.portlet.PortletSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs.UserAuthenticator;
-import org.apache.commons.vfs.auth.StaticUserAuthenticator;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.stockage.beans.UserPassword;
 import org.esupportail.portlet.stockage.services.auth.UserAuthenticatorService;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -88,7 +87,7 @@ public class UserCasAuthenticatorService implements UserAuthenticatorService {
 		this.userCasAuthenticatorServiceRoot.initialize(userInfos, userParameters);
     }
 
-    public UserAuthenticator getUserAuthenticator() {
+    public UserPassword getUserPassword() {
 
         if (log.isDebugEnabled()) {
             log.debug("getting credentials using " + this.getClass().getName());
@@ -123,7 +122,7 @@ public class UserCasAuthenticatorService implements UserAuthenticatorService {
             log.debug("Service ticket: " + casServiceToken);
         }
 
-        UserAuthenticator auth = new StaticUserAuthenticator(null, username, casServiceToken);
+        UserPassword auth = new UserPassword(username, casServiceToken);
 
         return auth;
 
