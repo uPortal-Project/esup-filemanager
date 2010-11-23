@@ -68,10 +68,18 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	
 	protected String respositoryId = "test";
 	
+	protected String rootPath = "@root@";
+	
 	private static final Set<Updatability> CREATE_UPDATABILITY = new HashSet<Updatability>();
     static {
         CREATE_UPDATABILITY.add(Updatability.ONCREATE);
         CREATE_UPDATABILITY.add(Updatability.READWRITE);
+    }
+    
+    private static final Set<String> DOCUMENT_BASETYPE_IDS = new HashSet<String>();
+    static {
+    	DOCUMENT_BASETYPE_IDS.add(ObjectType.DOCUMENT_BASETYPE_ID);
+    	DOCUMENT_BASETYPE_IDS.add("File");
     }
 	
 	public void setResourceUtils(ResourceUtils resourceUtils) {
@@ -82,6 +90,10 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		this.respositoryId = respositoryId;
 	}
 
+	public void setRootPath(String rootPath) {
+		this.rootPath = rootPath;
+	}
+
 	public void initializeService(Map userInfos, SharedUserPortletParameters userParameters) {
 		super.initializeService(userInfos, userParameters);
 	}
@@ -89,7 +101,7 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	private JsTreeFile cmisObjectAsJsTreeFile(CmisObject cmisObject) {
 		String lid = cmisObject.getId();
 		String title = cmisObject.getName();
-		String type = ObjectType.FOLDER_BASETYPE_ID.equals(cmisObject.getType().getId()) ? "folder" : "file";
+		String type = DOCUMENT_BASETYPE_IDS.contains(cmisObject.getType().getId()) ? "file" : "folder";
 		
 		JsTreeFile file = new JsTreeFile(title, lid, type);
 		if("file".equals(type)) {
@@ -105,7 +117,7 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		}
 		// in fact we don't use 'path' but ID
 		if(path.equals("")) 
-			path= "@root@";
+			path= rootPath;
 		ObjectId objectId = cmisSession.createObjectId(path);
 		CmisObject cmisObject = cmisSession.getObject(objectId);
 		return cmisObject;
@@ -121,9 +133,11 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		parameters.put(SessionParameter.ATOMPUB_URL, uri);
 		parameters.put(SessionParameter.REPOSITORY_ID, respositoryId);
 
-		UserPassword userPassword = userAuthenticatorService.getUserPassword();
-		parameters.put(SessionParameter.USER, userPassword.getUsername());
-		parameters.put(SessionParameter.PASSWORD, userPassword.getPassword());
+		if(userAuthenticatorService != null) {
+			UserPassword userPassword = userAuthenticatorService.getUserPassword();
+			parameters.put(SessionParameter.USER, userPassword.getUsername());
+			parameters.put(SessionParameter.PASSWORD, userPassword.getPassword());
+		}
 		try {
 			cmisSession = SessionFactoryImpl.newInstance().createSession(parameters);
 		} catch(CmisConnectionException ce) {
