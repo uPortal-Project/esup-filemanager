@@ -68,7 +68,10 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	
 	protected String respositoryId = "test";
 	
-	protected String rootPath = "@root@";
+	// rootPath=@root@" for chemistry cmis server
+	protected String rootId = null;
+	
+	protected String rootPath = null;
 	
 	private static final Set<Updatability> CREATE_UPDATABILITY = new HashSet<Updatability>();
     static {
@@ -88,6 +91,10 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 
 	public void setRespositoryId(String respositoryId) {
 		this.respositoryId = respositoryId;
+	}
+
+	public void setRootId(String rootId) {
+		this.rootId = rootId;
 	}
 
 	public void setRootPath(String rootPath) {
@@ -117,10 +124,12 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		}
 		// in fact we don't use 'path' but ID
 		if(path.equals("")) 
-			if(rootPath == null)
-				path= rootPath;
+			if(rootId != null)
+				path = rootId;
+			else if(rootPath!=null)
+				path = cmisSession.getObjectByPath(rootPath).getId();
 			else
-				path= cmisSession.getRootFolder().getId();
+				path = cmisSession.getRootFolder().getId();
 		ObjectId objectId = cmisSession.createObjectId(path);
 		CmisObject cmisObject = cmisSession.getObject(objectId);
 		return cmisObject;
