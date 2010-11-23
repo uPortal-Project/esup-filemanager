@@ -117,7 +117,10 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		}
 		// in fact we don't use 'path' but ID
 		if(path.equals("")) 
-			path= rootPath;
+			if(rootPath == null)
+				path= rootPath;
+			else
+				path= cmisSession.getRootFolder().getId();
 		ObjectId objectId = cmisSession.createObjectId(path);
 		CmisObject cmisObject = cmisSession.getObject(objectId);
 		return cmisObject;
