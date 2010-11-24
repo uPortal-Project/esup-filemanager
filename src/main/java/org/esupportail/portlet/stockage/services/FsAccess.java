@@ -30,7 +30,7 @@ import org.esupportail.portlet.stockage.services.auth.UserAuthenticatorService;
 
 public abstract class FsAccess {
 
-	private static String TOKEN_SPECIAL_CHAR =  "@";
+	protected static String TOKEN_SPECIAL_CHAR =  "@";
 	
 	private List<String> memberOfAny;
 	

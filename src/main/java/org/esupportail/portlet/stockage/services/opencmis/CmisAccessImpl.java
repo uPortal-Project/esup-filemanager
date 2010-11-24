@@ -102,6 +102,15 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	}
 
 	public void initializeService(Map userInfos, SharedUserPortletParameters userParameters) {
+		if(rootPath != null & userInfos != null) {
+			for(String userInfoKey : (Set<String>)userInfos.keySet()) { 
+					String userInfo = (String)userInfos.get(userInfoKey);
+					String userInfoKeyToken = TOKEN_SPECIAL_CHAR.concat(userInfoKey).concat(TOKEN_SPECIAL_CHAR);
+					// in nuxeo @ is replaced by - in path
+					userInfo = userInfo.replaceFirst("@", "-");
+					this.rootPath = this.rootPath.replaceAll(userInfoKeyToken, userInfo);
+			}
+		}	
 		super.initializeService(userInfos, userParameters);
 	}
 	
@@ -149,9 +158,10 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 			UserPassword userPassword = userAuthenticatorService.getUserPassword();
 			parameters.put(SessionParameter.USER, userPassword.getUsername());
 			parameters.put(SessionParameter.PASSWORD, userPassword.getPassword());
+			
 		}
 		try {
-			cmisSession = SessionFactoryImpl.newInstance().createSession(parameters);
+			cmisSession = SessionFactoryImpl.newInstance().createSession(parameters);	
 		} catch(CmisConnectionException ce) {
 			log.warn("failed to retriev cmisSession : " + uri + " , repository is not accessible or simply not started ?", ce);
 		}
