@@ -42,10 +42,15 @@ public class TrustedHttpheadersCmisAuthenticationProvider extends AbstractAuthen
 	
 	@Override
 	public Map<String, List<String>> getHTTPHeaders(String url) {
-		Object httpHeadersAdd = ContextUtils.getSessionAttribute(ESUP_HEADER_SHIB_HTTP_HEADERS);
-		if(httpHeadersAdd != null)
-			return (Map<String, List<String>>)httpHeadersAdd;
-		return null;
+		Map<String, List<String>> httpHeaders = null;
+		Object httpHeadersObject = ContextUtils.getSessionAttribute(ESUP_HEADER_SHIB_HTTP_HEADERS);
+		if(httpHeadersObject != null) {
+			httpHeaders = (Map<String, List<String>>) httpHeadersObject;
+			log.info("httpHeaders :" + httpHeaders.toString());
+		} else {
+			log.warn("httpHeaders will be null : we don't retrieve any userinfos attributes !");
+		}
+		return httpHeaders;
 	}
 
 }

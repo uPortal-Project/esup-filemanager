@@ -68,9 +68,9 @@ public class TrustedCmisAccessImpl extends CmisAccessImpl {
 		// goal is to get shibboleth attributes from portal via userInfos
 		if(userinfosHttpheadersMap!=null & userInfos != null) {
 			userinfosHttpheadersValues = new HashMap<String, String>();
-			for(String userinfosHttpheaderKey : userinfosHttpheadersMap.keySet()) {
-				String userInfoValue = (String)userInfos.get(userinfosHttpheaderKey);
-				userinfosHttpheadersValues.put(userinfosHttpheaderKey, userInfoValue);
+			for(String key : userinfosHttpheadersMap.keySet()) {
+				String userInfoValue = (String)userInfos.get(userinfosHttpheadersMap.get(key));
+				userinfosHttpheadersValues.put(key, userInfoValue);
 			}
 		}
 			
