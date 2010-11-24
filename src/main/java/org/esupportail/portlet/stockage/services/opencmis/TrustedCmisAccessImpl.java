@@ -58,10 +58,10 @@ public class TrustedCmisAccessImpl extends CmisAccessImpl {
 	public void initializeService(Map userInfos, SharedUserPortletParameters userParameters) {
 		
 		// useful to test in servlet mode : in userinfosHttpheadersValues we set directly shib attributes values
-		if(userinfosHttpheadersValues!=null) {
+		if(staticHttpheadersMap!=null) {
 			userinfosHttpheadersValues = new HashMap<String, String>();	
 			for(String key : staticHttpheadersMap.keySet()) {
-				staticHttpheadersMap.put(key, staticHttpheadersMap.get(key));
+				userinfosHttpheadersValues.put(key, staticHttpheadersMap.get(key));
 			}
 		}
 		
