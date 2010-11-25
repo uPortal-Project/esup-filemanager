@@ -127,5 +127,13 @@ public abstract class FsAccess {
 
 	public abstract boolean putFile(String dir, String filename,
 			InputStream inputStream);
+	
+	public boolean supportIntraCopyPast() {
+		return true;
+	}
+	
+	public boolean supportIntraCutPast() {
+		return true;
+	}
 
 }

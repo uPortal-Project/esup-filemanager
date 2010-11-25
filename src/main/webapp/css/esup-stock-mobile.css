@@ -25,6 +25,14 @@ padding-top: 0.5em;
 padding-bottom: 1em;
 }
 
+.esupstock a {
+color: blue;
+}
+
+.esupstock .breadcrumbs {
+color: green;
+}
+
 .esupstock .folder {  
 background: url(/esup-portlet-stockage/img/folder.png) no-repeat; 
 padding-left: 20px;

@@ -254,7 +254,8 @@ public class ServersAccessService implements DisposableBean {
 
 	public boolean moveCopyFilesIntoDirectory(String dir, List<String> filesToCopy, boolean copy) {
 		String driveName = getDrive(dir);
-		if(driveName.equals(getDrive(filesToCopy.get(0)))) {
+		if(driveName.equals(getDrive(filesToCopy.get(0))) && 
+				( (copy && this.getFsAccess(driveName).supportIntraCopyPast()) || (!copy && this.getFsAccess(driveName).supportIntraCutPast())) ) {
 			return this.getFsAccess(driveName).moveCopyFilesIntoDirectory(getLocalDir(dir), getLocalDirs(filesToCopy), copy);
 		} else {
 			boolean allIsOk = true;

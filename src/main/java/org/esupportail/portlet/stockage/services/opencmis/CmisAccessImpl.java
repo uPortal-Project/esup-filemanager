@@ -19,8 +19,11 @@
 package org.esupportail.portlet.stockage.services.opencmis;
 
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -45,8 +48,11 @@ import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.apache.chemistry.opencmis.commons.enums.Updatability;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisBaseException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConnectionException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.esupportail.portlet.stockage.beans.DownloadFile;
@@ -114,10 +120,31 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		super.initializeService(userInfos, userParameters);
 	}
 	
-	private JsTreeFile cmisObjectAsJsTreeFile(CmisObject cmisObject) {
-		String lid = cmisObject.getId();
+	/**
+	 * @param cmisObject
+	 * @param path
+	 * @param parentPath
+	 * @return a JsTreeFile where lid = /cmis_parent_parent_object_idJsTreeFile.ID_TITLE_SPLITcmis_parent_parent_object_name/cmis_parent_object_idJsTreeFile.ID_TITLE_SPLITcmis_parent_object_name/cmis_object_idJsTreeFile.ID_TITLE_SPLITcmis_object_name
+	 */
+	private JsTreeFile cmisObjectAsJsTreeFile(CmisObject cmisObject, String path, String parentPath) {
 		String title = cmisObject.getName();
+		String lid = cmisObject.getId().concat(JsTreeFile.ID_TITLE_SPLIT).concat(title);
+		if(path != null) {
+			lid = path;
+		} else if(parentPath != null){
+			lid = parentPath.concat("/").concat(lid);
+		}
+		// remove / at the beginning if it exists
+		if(lid.startsWith("/"))
+			lid = lid.substring(1);
+
 		String type = DOCUMENT_BASETYPE_IDS.contains(cmisObject.getType().getId()) ? "file" : "folder";
+		
+		// root case :
+		if("".equals(path)) {
+			title = "";
+			type = "drive";
+		}
 		
 		JsTreeFile file = new JsTreeFile(title, lid, type);
 		if("file".equals(type)) {
@@ -131,15 +158,22 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		if(!this.isOpened()) {
 			this.open();
 		}
+		String lid = null;
 		// in fact we don't use 'path' but ID
-		if(path.equals("")) 
+		if(path.equals("")) {
 			if(rootId != null)
-				path = rootId;
+				lid = rootId;
 			else if(rootPath!=null)
-				path = cmisSession.getObjectByPath(rootPath).getId();
+				lid = cmisSession.getObjectByPath(rootPath).getId();
 			else
-				path = cmisSession.getRootFolder().getId();
-		ObjectId objectId = cmisSession.createObjectId(path);
+				lid = cmisSession.getRootFolder().getId();
+		} else {
+			List<String> relParentsIds = Arrays.asList(path.split("/"));
+			String lid_name = relParentsIds.get(relParentsIds.size()-1);
+			List<String> lid_nameList = Arrays.asList(lid_name.split(JsTreeFile.ID_TITLE_SPLIT));
+			lid = lid_nameList.get(0);
+		}
+		ObjectId objectId = cmisSession.createObjectId(lid);
 		CmisObject cmisObject = cmisSession.getObject(objectId);
 		return cmisObject;
 	}
@@ -186,7 +220,7 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	@Override
 	public JsTreeFile get(String path) {
 		CmisObject cmisObject = getCmisObject(path);
-		return cmisObjectAsJsTreeFile(cmisObject);
+		return cmisObjectAsJsTreeFile(cmisObject, path, null);
 	}
 
 	@Override
@@ -196,7 +230,7 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 
 		List<JsTreeFile> childrens = new ArrayList<JsTreeFile>();
 	   for (CmisObject cmisObject : pl) {
-		   childrens.add(cmisObjectAsJsTreeFile(cmisObject));
+		   childrens.add(cmisObjectAsJsTreeFile(cmisObject, null, path));
 	   }
 	   
 	   return childrens;
@@ -216,31 +250,60 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	@Override
 	public String createFile(String parentPath, String title, String type) {
 		Folder parent = (Folder)getCmisObject(parentPath);
+		CmisObject createdObject = null; 
 		if("folder".equals(type)) {
 			Map prop = new HashMap();
 			prop.put(PropertyIds.OBJECT_TYPE_ID, BaseTypeId.CMIS_FOLDER.value());
 			prop.put(PropertyIds.NAME, String.valueOf(title));
-			Folder folder = parent.createFolder(prop, null, null, null, cmisSession.getDefaultContext());
+			createdObject = parent.createFolder(prop, null, null, null, cmisSession.getDefaultContext());
 		} else if("file".equals(type)) {
 			Map prop = new HashMap();
 			prop.put(PropertyIds.OBJECT_TYPE_ID, BaseTypeId.CMIS_DOCUMENT.value());
 			prop.put(PropertyIds.NAME, String.valueOf(title));
-			Document document = parent.createDocument(prop, null, null, null, null, null, cmisSession.getDefaultContext());
+			createdObject = parent.createDocument(prop, null, null, null, null, null, cmisSession.getDefaultContext());
 		}
-		return title;
+		JsTreeFile createdJsTreeFile = this.cmisObjectAsJsTreeFile(createdObject, null, parentPath);
+		return createdJsTreeFile.getPath();
 	}
 	
 	@Override
 	public boolean moveCopyFilesIntoDirectory(String dir,
 			List<String> filesToCopy, boolean copy) {
-		if(!copy)
-			throw new EsupStockNotImplementedException();
-		Folder targetFolder = (Folder)getCmisObject(dir);
-		for(String fileTocopy : filesToCopy) {
-			FileableCmisObject cmisObjectToCopy = (FileableCmisObject) getCmisObject(fileTocopy);
-			cmisObjectToCopy.addToFolder(targetFolder, true);
+		try {
+			Folder targetFolder = (Folder)getCmisObject(dir);
+			if(copy) {
+				return false;
+				/*for(String fileTocopy : filesToCopy) {
+					FileableCmisObject cmisObjectToCopy = (FileableCmisObject) getCmisObject(fileTocopy);
+					cmisObjectToCopy.addToFolder(targetFolder, true);
+				}*/
+			} else {
+				for(String fileTocopy : filesToCopy) {
+
+					// get parent folder id of  fileTocopy
+					List<String> relParentsIds = Arrays.asList(fileTocopy.split("/"));
+					String sourceFolderId;
+					if(relParentsIds.size()>1) {
+						String lid_name = relParentsIds.get(relParentsIds.size()-2);
+						List<String> lid_nameList = Arrays.asList(lid_name.split(JsTreeFile.ID_TITLE_SPLIT));
+						sourceFolderId = lid_nameList.get(0);
+					} else {
+						// that's the root
+						sourceFolderId = getCmisObject("").getId();
+					}
+
+					ObjectId sourceFolderObjectId = cmisSession.createObjectId(sourceFolderId);
+					ObjectId targetFolderObjectId = cmisSession.createObjectId(targetFolder.getId());
+
+					FileableCmisObject cmisObjectToCutPast = (FileableCmisObject) getCmisObject(fileTocopy);
+					cmisObjectToCutPast.move(sourceFolderObjectId, targetFolderObjectId);
+				}
+			}
+			return true;
+		} catch(CmisBaseException e) {
+			log.warn("error when copy/cust/past files : maybe that's because this operation is not allowed for the user ?", e);
 		}
-		return true;
+		return false;
 	}
 
 	@Override
@@ -263,6 +326,9 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		return true;
 	}
 
+	/* 
+	 * Doesn't work ??
+	 */
 	@Override
 	public boolean renameFile(String path, String title) {
 		CmisObject cmisObject = getCmisObject(path);
@@ -270,5 +336,9 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		return true;
 	}
 
-
+	@Override
+	public boolean supportIntraCopyPast() {
+		return false;
+	}
+	
 }

@@ -18,9 +18,8 @@
 
 --%>
 
-<%@ page contentType="text/html"%>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
 
 <head>

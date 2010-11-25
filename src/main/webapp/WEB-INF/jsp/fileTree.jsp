@@ -66,7 +66,7 @@
 					<form:checkbox path="dirs" cssClass="browsercheck" value="${file.path}" />
 					<img src="${file.icon}" alt="icon" />
 					<a class="file"
-						href="/esup-portlet-stockage/servlet-ajax/downloadFile?dir=${file.path}"
+						href="<spring:url value='/servlet-ajax/downloadFile?dir=${file.path}'/>"
 						rel="${file.path}">${file.title}</a>
 				</c:otherwise>
 			</c:choose>

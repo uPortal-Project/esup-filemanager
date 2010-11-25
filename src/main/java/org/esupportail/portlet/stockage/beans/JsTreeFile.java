@@ -19,6 +19,9 @@
 package org.esupportail.portlet.stockage.beans;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,9 +29,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 
 	private static final long serialVersionUID = 1L;
+	
+	protected static final Log log = LogFactory.getLog(JsTreeFile.class);
 	
 	static DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
 	
@@ -39,6 +47,10 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 	public static String FOLDER_ICON_PATH = "/esup-portlet-stockage/img/folder.png";
 	
 	public static String ROOT_ICON_PATH = "/esup-portlet-stockage/img/drives/drive_network.png";
+	
+	public static String PATH_SPLIT = "/";
+	
+	public static String ID_TITLE_SPLIT = "@@";
 	
 	
 	// Take care : $, # not work
@@ -89,6 +101,11 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 
 	public void setLid(String lid) {
 		this.lid = lid;
+		try {
+			lid = URLEncoder.encode(lid, "utf8");
+		} catch (UnsupportedEncodingException e) {
+			log.warn("Pb encoding lid in utf8 !", e);
+		}
 	}
 
 	public void setCategory(String categoryName, String icon) {
@@ -239,7 +256,9 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 				pathBase = pathBase.concat(DRIVE_PATH_SEPARATOR);
 				for(String parentPath: relParentsPathes.subList(2, relParentsPathes.size())) {
 					pathBase = pathBase.concat(parentPath);
-					List<String> folderTitleIcon =  Arrays.asList(parentPath, FOLDER_ICON_PATH);
+					List<String> folderTitleIds = Arrays.asList(parentPath.split(ID_TITLE_SPLIT));
+					String title = folderTitleIds.get(folderTitleIds.size()-1);
+					List<String> folderTitleIcon =  Arrays.asList(title, FOLDER_ICON_PATH);
 					parentsPathes.put(pathBase, folderTitleIcon);
 					pathBase = pathBase.concat("/");
 				}

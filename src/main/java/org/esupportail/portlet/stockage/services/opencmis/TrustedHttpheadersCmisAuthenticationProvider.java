@@ -46,7 +46,7 @@ public class TrustedHttpheadersCmisAuthenticationProvider extends AbstractAuthen
 		Object httpHeadersObject = ContextUtils.getSessionAttribute(ESUP_HEADER_SHIB_HTTP_HEADERS);
 		if(httpHeadersObject != null) {
 			httpHeaders = (Map<String, List<String>>) httpHeadersObject;
-			log.info("httpHeaders :" + httpHeaders.toString());
+			log.debug("httpHeaders :" + httpHeaders.toString());
 		} else {
 			log.warn("httpHeaders will be null : we don't retrieve any userinfos attributes !");
 		}
