@@ -33,4 +33,11 @@
     
     <context:component-scan base-package="org.esupportail.portlet.stockage"/>
     
+    <!-- used only for wai portlet mode, for others we use multipartResolver (in applicationContext.xml) -->
+    <bean id="portletMultipartResolver"
+    	class="org.springframework.web.portlet.multipart.CommonsPortletMultipartResolver">
+    	<!-- one of the properties available; the maximum file size in bytes -->
+    	<property name="maxUploadSize" value="100000"/>
+	</bean>
+
 </beans>

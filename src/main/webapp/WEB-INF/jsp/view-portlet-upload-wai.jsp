@@ -20,12 +20,10 @@
 
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-
 <%@ taglib prefix='portlet' uri="http://java.sun.com/portlet"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+
 
 <portlet:defineObjects />
 
@@ -33,19 +31,39 @@
   <portlet:namespace />
 </c:set>
 
-<div class="portlet-title">
-  <h2>
-    <spring:message code="error.title" />
-  </h2>
-</div>
 
-<div class="portlet-section">
+<link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock-wai.css" type="text/css" media="screen, projection">
 
-  <div class="portlet-section-body">
-    <p>
-      <spring:message code="error.description" />
-    </p>
+
+<portlet:actionURL var="formUploadWai">
+  <portlet:param name="action" value="formUploadWai"/>
+  <portlet:param name="dir" value="${currentDir}"/>
+</portlet:actionURL>
+
+
+<div class="esupstock">
+
+  <div class="portlet-section">
+
+    <div class="portlet-section-body">
+
+      <form:form action="${formUploadWai}" enctype="multipart/form-data" method="post">
+
+		<input type="file" name="qqfile" size="40">
+
+        <input type="submit" value="<spring:message code="toolbar.upload"/>" name="upload"/>
+
+      </form:form>
+
+
+    </div>
+
   </div>
 
 </div>
+
+<a href="<portlet:renderURL> <portlet:param name="action" value="browse"/></portlet:renderURL>">
+  <spring:message code="version.standard"/>
+</a>
+
 

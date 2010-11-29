@@ -27,20 +27,22 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <div class="breadcrumbs">
-<c:forEach var="parent" items="${resource.parentsPathes}" varStatus="item">
-	<c:choose>
-		<c:when test="${item.last}">
-			<img src="${resource.icon}" alt="icon" />
-			<span id="bigdirectory" rel="${resource.path}">${resource.title}</span>
-		</c:when>
-		<c:otherwise>
-			<a class="fileTreeRefCrumbs" href="#" rel="${parent.key}">
-				<img src="${parent.value[1]}" alt="icon" />
-				${parent.value[0]}
-			</a>
-		</c:otherwise>
-	</c:choose>	
-</c:forEach>
+  <c:forEach var="parent" items="${resource.parentsPathes}" varStatus="item">
+    <c:choose>
+      <c:when test="${item.last}">
+        <img src="${resource.icon}" alt="icon" />
+        <span id="bigdirectory" rel="${resource.path}">
+          ${resource.title}
+        </span>
+      </c:when>
+      <c:otherwise>
+        <a class="fileTreeRefCrumbs" href="#" rel="${parent.key}">
+          <img src="${parent.value[1]}" alt="icon" />
+          ${parent.value[0]}
+        </a>
+      </c:otherwise>
+    </c:choose>
+  </c:forEach>
 </div>
 
 <c:if test="${not empty files[0] && files[0].type != 'category' && files[0].type != 'drive'}">
@@ -49,94 +51,107 @@
 
 <ul id="jqueryFileTree">
 
-	<form:form method="post" id="filesForm">
-		<c:forEach var="file" items="${files}">
-			<li class="browserlist"> 
-			<c:choose>
-				<c:when test="${file.type == 'folder'}">
-					<form:checkbox path="dirs" cssClass="browsercheck" value="${file.path}" />
-					<img src="${file.icon}" alt="icon" />
-					<a class="fileTreeRef" href="#" rel="${file.path}">${file.title}</a></li>
-				</c:when>
-				<c:when test="${file.type == 'drive' || file.type == 'category'}">
-					<img src="${file.icon}" alt="icon" />
-					<a class="fileTreeRef" href="#" rel="${file.path}">${file.title}</a></li>
-				</c:when>
-				<c:otherwise>
-					<form:checkbox path="dirs" cssClass="browsercheck" value="${file.path}" />
-					<img src="${file.icon}" alt="icon" />
-					<a class="file"
-						href="<spring:url value='/servlet-ajax/downloadFile?dir=${file.path}'/>"
-						rel="${file.path}">${file.title}</a>
-				</c:otherwise>
-			</c:choose>
-			<span class="esupHide renameSpan">
-				<input class="renameInput" rel="${file.path}" type="text" value="${file.title}" onKeyPress="return disableEnterKey(event)"/>
-				<a class="renameSubmit" rel="${file.path}" href="#">Rename</a>
-			</span>
-			</li>
-		</c:forEach>
-		<li class="browserlist esupHide" id="newDir">
-			<input class="folder" id="newDirInput" type="text" onKeyPress="return disableEnterKey(event)"/>
-			<a id="newDirSubmit" href="#">OK</a>
-		</li>
-	</form:form>
+  <form:form method="post" id="filesForm">
+    <c:forEach var="file" items="${files}">
+      <li class="browserlist">
+      <c:choose>
+        <c:when test="${file.type == 'folder'}">
+          <form:checkbox path="dirs" cssClass="browsercheck" value="${file.path}" />
+          <img src="${file.icon}" alt="icon" />
+          <a class="fileTreeRef" href="" rel="${file.path}" onclick="return false;">
+            ${file.title}
+          </a>
+        </li>
+      </c:when>
+      <c:when test="${file.type == 'drive' || file.type == 'category'}">
+        <img src="${file.icon}" alt="icon" />
+        <a class="fileTreeRef" href="" rel="${file.path}" onclick="return false;">
+          ${file.title}
+        </a>
+      </li>
+    </c:when>
+    <c:otherwise>
+      <form:checkbox path="dirs" cssClass="browsercheck" value="${file.path}" />
+      <img src="${file.icon}" alt="icon" />
+      <a class="file" href="<spring:url value='/servlet-ajax/downloadFile?dir=${file.path}'/>" rel="${file.path}">
+        ${file.title}
+      </a>
+    </c:otherwise>
+  </c:choose>
+  <span class="esupHide renameSpan">
+    <input 
+        class="renameInput"
+        rel="${file.path}"
+        type="text"
+        value="${file.title}"
+        onKeyPress="return disableEnterKey(event)"/>
+    <a class="renameSubmit" rel="${file.path}" href="#">
+      Rename
+    </a>
+  </span>
+</li>
+</c:forEach>
+<li class="browserlist esupHide" id="newDir">
+<input class="folder" id="newDirInput" type="text" onKeyPress="return disableEnterKey(event)"/>
+<a id="newDirSubmit" href="#">
+  OK
+</a>
+</li>
+</form:form>
 
 </ul>
 
 <script type="text/javascript">
-
-function disableEnterKey(e)
-{
-     var key;     
-     if(window.event)
-          key = window.event.keyCode; //IE
-     else
-          key = e.which; //firefox     
-     return (key != 13);
-}
-
+  function disableEnterKey(e)
+  {
+    var key;
+    if(window.event)
+    key = window.event.keyCode; //IE
+    else
+    key = e.which; //firefox
+    return (key != 13);
+  }
 
 
-(function ($) {
-	$('.fileTreeRef').bind('click', function() {
-		id = $(this).attr('rel');
-		getFile($("#bigdirectory").attr('rel'), id);
-	});
-	
-	$('.fileTreeRefCrumbs').bind('click', function() {
-		id = $(this).attr('rel');
-		getFile(null, id);
-	});
 
-	$('#newDirSubmit').bind('click', function() {
-		newDir($("#bigdirectory").attr('rel'), $("#newDirInput").val());
-	});
+  (function ($) {
+    $('.fileTreeRef').bind('click', function() {
+      id = $(this).attr('rel');
+      getFile($("#bigdirectory").attr('rel'), id);
+      });
 
-	$('#newDirInput').keyup(function(e) {
-	      if(e.keyCode == 13) {
-	    	  newDir($("#bigdirectory").attr('rel'), $("#newDirInput").val());
-	      }
-	 });
+      $('.fileTreeRefCrumbs').bind('click', function() {
+        id = $(this).attr('rel');
+        getFile(null, id);
+        });
 
-	$('.renameSubmit').bind('click', function() {
-		rename($("#bigdirectory").attr('rel'), $(this).attr('rel'), $(this).prev().val());
-	});
+        $('#newDirSubmit').bind('click', function() {
+          newDir($("#bigdirectory").attr('rel'), $("#newDirInput").val());
+          });
 
-	$('.renameInput').keyup(function(e) {
-	      if(e.keyCode == 13) {
-			rename($("#bigdirectory").attr('rel'), $(this).attr('rel'), $(this).val());
-	      }
-	});
+          $('#newDirInput').keyup(function(e) {
+            if(e.keyCode == 13) {
+              newDir($("#bigdirectory").attr('rel'), $("#newDirInput").val());
+            }
+            });
 
-	$('#toggler-checkbox').change(function() {
-	    var mode = this.checked;
-	    $("form#filesForm :checkbox").each(function(){
-	        this.checked = mode;
-	    }); 
-	    return false;
-	});
-	
-})(jQuery);	
+            $('.renameSubmit').bind('click', function() {
+              rename($("#bigdirectory").attr('rel'), $(this).attr('rel'), $(this).prev().val());
+              });
 
-</script>
+              $('.renameInput').keyup(function(e) {
+                if(e.keyCode == 13) {
+                  rename($("#bigdirectory").attr('rel'), $(this).attr('rel'), $(this).val());
+                }
+                });
+
+                $('#toggler-checkbox').change(function() {
+                  var mode = this.checked;
+                  $("form#filesForm :checkbox").each(function(){
+                    this.checked = mode;
+                    });
+                    return false;
+                    });
+
+                    })(jQuery);
+                  </script>

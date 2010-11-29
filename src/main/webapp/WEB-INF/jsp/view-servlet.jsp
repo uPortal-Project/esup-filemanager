@@ -22,48 +22,50 @@
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
 
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>esup-servlet-stockage</title>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>
+      esup-servlet-stockage
+    </title>
 
-<script type="text/javascript">
-var fileuploadTemplate = '<spring:message code="fileupload.template"/>';
-</script>
+    <script type="text/javascript">
+      var fileuploadTemplate = '<spring:message code="fileupload.template"/>';
+    </script>
 
-<!-- JQUERY -->
-<script type="text/javascript"
-	src="/esup-portlet-stockage/js/jquery-1.4.2.min.js"></script>
-<script type="text/javascript"
-	src="/esup-portlet-stockage/js/jquery.jstree.js"></script>
-<script type="text/javascript"
-	src="/esup-portlet-stockage/js/jquery.cookie.js"></script>
-<script type="text/javascript"
-	src="/esup-portlet-stockage/js/jquery.hotkeys.js"></script>
+    <!-- JQUERY -->
+    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery-1.4.2.min.js">
+    </script>
+    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.jstree.js">
+    </script>
+    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.cookie.js">
+    </script>
+    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.hotkeys.js">
+    </script>
 
-<script type="text/javascript"
-	src="/esup-portlet-stockage/js/fileuploader.js"></script>
+    <script type="text/javascript" src="/esup-portlet-stockage/js/fileuploader.js">
+    </script>
 
-<script type="text/javascript"
-	src="/esup-portlet-stockage/js/esup-stock.js"></script>
+    <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock.js">
+    </script>
 
-<!-- Framework CSS -->
-<link rel="stylesheet"
-	href="/esup-portlet-stockage/css/blueprint/screen.css" type="text/css"
-	media="screen, projection">
-<link rel="stylesheet"
-	href="/esup-portlet-stockage/css/blueprint/print.css" type="text/css"
-	media="print">
+    <!-- Framework CSS -->
+    <link 
+        rel="stylesheet"
+        href="/esup-portlet-stockage/css/blueprint/screen.css"
+        type="text/css"
+        media="screen, projection">
 
-<link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock.css"
-	type="text/css" media="screen, projection">
-	
-	
-</head>
+    <link rel="stylesheet" href="/esup-portlet-stockage/css/blueprint/print.css" type="text/css" media="print">
 
-<body>
+    <link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock.css" type="text/css" media="screen, projection">
 
-<jsp:include page="body.jsp" />
 
-</body>
+  </head>
+
+  <body>
+
+    <jsp:include page="body.jsp" />
+
+  </body>
 
 </html>

@@ -34,7 +34,7 @@
             <name>contextConfigLocation</name>
             <value>WEB-INF/context/portlet/portletContext.xml</value>
         </init-param>
-        <expiration-cache>0</expiration-cache>
+        <expiration-cache>-1</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type> 
             <portlet-mode>VIEW</portlet-mode>
@@ -57,8 +57,16 @@
         <name>casProxyTicket</name>
     </user-attribute>
     <user-attribute>
+        <description>luid</description>
+        <name>luid</name>
+    </user-attribute>
+    <user-attribute>
         <description>uid</description>
         <name>uid</name>
+    </user-attribute>
+    <user-attribute>
+        <description>affiliation</description>
+        <name>affiliation</name>
     </user-attribute>
 
 </portlet-app>

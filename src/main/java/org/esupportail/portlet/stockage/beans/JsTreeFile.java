@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
@@ -101,11 +102,11 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 
 	public void setLid(String lid) {
 		this.lid = lid;
-		try {
+	/*	try {
 			lid = URLEncoder.encode(lid, "utf8");
 		} catch (UnsupportedEncodingException e) {
 			log.warn("Pb encoding lid in utf8 !", e);
-		}
+		} */
 	}
 
 	public void setCategory(String categoryName, String icon) {
@@ -237,8 +238,8 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 	}
 
 	// Map<path, List<title, icon>>
-	public Map<String, List<String>> getParentsPathes() {
-		Map<String, List<String>> parentsPathes = new TreeMap<String, List<String>>();
+	public SortedMap<String, List<String>> getParentsPathes() {
+		SortedMap<String, List<String>> parentsPathes = new TreeMap<String, List<String>>();
 		String pathBase = ROOT_DRIVE;
 		List<String> rootTitleIcon =  Arrays.asList(ROOT_DRIVE_NAME, ROOT_ICON_PATH);
 		parentsPathes.put(pathBase, rootTitleIcon);

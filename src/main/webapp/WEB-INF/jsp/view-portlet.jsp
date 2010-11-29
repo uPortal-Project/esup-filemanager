@@ -21,44 +21,47 @@
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix='portlet' uri="http://java.sun.com/portlet"%>
-<%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <portlet:defineObjects />
 
 <c:set var="n">
-	<portlet:namespace />
+  <portlet:namespace />
 </c:set>
 
 <script type="text/javascript">
-var fileuploadTemplate = '<spring:message code="fileupload.template"/>';
+  var fileuploadTemplate = '<spring:message code="fileupload.template"/>';
 </script>
 
 <!-- JQUERY -->
-<script type="text/javascript"
-	src="/esup-portlet-stockage/js/jquery-1.4.2.min.js"></script>
-<script type="text/javascript"
-	src="/esup-portlet-stockage/js/jquery.jstree.js"></script>
-<script type="text/javascript"
-	src="/esup-portlet-stockage/js/jquery.cookie.js"></script>
-<script type="text/javascript"
-	src="/esup-portlet-stockage/js/jquery.hotkeys.js"></script>
+<script type="text/javascript" src="/esup-portlet-stockage/js/jquery-1.4.2.min.js">
+</script>
+<script type="text/javascript" src="/esup-portlet-stockage/js/jquery.jstree.js">
+</script>
+<script type="text/javascript" src="/esup-portlet-stockage/js/jquery.cookie.js">
+</script>
+<script type="text/javascript" src="/esup-portlet-stockage/js/jquery.hotkeys.js">
+</script>
 
-<script type="text/javascript"
-	src="/esup-portlet-stockage/js/fileuploader.js"></script>
-	
-<script type="text/javascript"
-	src="/esup-portlet-stockage/js/esup-stock.js"></script>
+<script type="text/javascript" src="/esup-portlet-stockage/js/fileuploader.js">
+</script>
+
+<script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock.js">
+</script>
 
 <!-- Framework CSS -->
-<link rel="stylesheet"
-	href="/esup-portlet-stockage/css/blueprint/screen.css" type="text/css"
-	media="screen, projection">
-<link rel="stylesheet"
-	href="/esup-portlet-stockage/css/blueprint/print.css" type="text/css"
-	media="print">
+<link 
+    rel="stylesheet"
+    href="/esup-portlet-stockage/css/blueprint/screen-runn.css"
+    type="text/css"
+    media="screen, projection">
 
-<link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock.css"
-	type="text/css" media="screen, projection">
+<link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock.css" type="text/css" media="screen, projection">
 
-
+<div id="accessible-version">
+	<a href="<portlet:renderURL> <portlet:param name="action" value="browseWai"/></portlet:renderURL>">
+  		<spring:message code="version.accessible"/>
+	</a>
+</div>
+             
 <jsp:include page="body.jsp" />

@@ -18,7 +18,6 @@
 
 package org.esupportail.portlet.stockage.portlet;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +29,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.apache.log4j.Logger;
-import org.esupportail.portlet.stockage.beans.DownloadFile;
+import org.esupportail.portlet.stockage.beans.FormCommand;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.stockage.services.ServersAccessService;
@@ -39,7 +38,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.portlet.ModelAndView;
@@ -77,15 +75,10 @@ public class PortletController {
 		log.info("set SharedUserPortletParameters in applciation session");
 				
     	ModelMap model = new ModelMap();     
-	    
+		
 	    if(userAgentInspector.isMobile(request)) {
 	    	serverAccess.initializeServices(driveNames,  userInfos, userParameters);
-			JsTreeFile jsFileRoot = new JsTreeFile(JsTreeFile.ROOT_DRIVE_NAME, null, "drive");
-			jsFileRoot.setIcon(JsTreeFile.ROOT_ICON_PATH);
-			model.put("resource", jsFileRoot);
-			List<JsTreeFile> files = this.serverAccess.getJsTreeFileRoots();		
-			model.put("files", files);
-			return new ModelAndView("view-portlet-mobile", model);
+			return this.browseMobile(request, response, null);
 	    } else {
 	    	return new ModelAndView("view-portlet", model);
 	    }
@@ -93,7 +86,31 @@ public class PortletController {
     
 	@RequestMapping(value = {"VIEW"}, params = {"action=browseMobile"})
     public ModelAndView browseMobile(RenderRequest request, RenderResponse response,
-    								@RequestParam("dir") String dir) {
+    								@RequestParam String dir) {
+		ModelMap model = browse(dir);
+        return new ModelAndView("view-portlet-mobile", model);
+    }
+	
+	@RequestMapping(value = {"VIEW"}, params = {"action=browseWai"})
+    public ModelAndView browseWai(RenderRequest request, RenderResponse response,
+    								@RequestParam(required=false) String dir,
+    								@RequestParam(required=false) String msg) {
+				
+		if(!serverAccess.isInitialized()) {
+	    	PortletSession session = request.getPortletSession();
+			SharedUserPortletParameters userParameters = (SharedUserPortletParameters)session.getAttribute(SharedUserPortletParameters.SHARED_PARAMETER_SESSION_ID, PortletSession.APPLICATION_SCOPE);
+			serverAccess.initializeServices(userParameters.getDriveNames(),  userParameters.getUserInfos(), userParameters);
+		}
+		
+		ModelMap model = browse(dir);
+		FormCommand command = new FormCommand();
+	    model.put("command", command);
+	    if(msg != null)
+	    	model.put("msg", msg);
+        return new ModelAndView("view-portlet-wai", model);
+    }
+
+	private ModelMap browse(String dir) {
 		ModelMap model = new ModelMap();
 		if(dir == null || dir.isEmpty() || dir.equals(JsTreeFile.ROOT_DRIVE)) {
 			JsTreeFile jsFileRoot = new JsTreeFile(JsTreeFile.ROOT_DRIVE_NAME, null, "drive");
@@ -101,26 +118,19 @@ public class PortletController {
 			model = new ModelMap("resource", jsFileRoot);
 			List<JsTreeFile> files = this.serverAccess.getJsTreeFileRoots();		
 			model.put("files", files);
+			model.put("currentDir", jsFileRoot.getPath());
 		} else {
 			JsTreeFile resource = this.serverAccess.get(dir);
 			model = new ModelMap("resource", resource);
 			List<JsTreeFile> files = this.serverAccess.getChildren(dir);
 			Collections.sort(files);
 		    model.put("files", files);
+		    model.put("currentDir", resource.getPath());
 		}
-        return new ModelAndView("view-portlet-mobile", model);
-    }
-	
-    @RequestMapping(value = {"VIEW"}, params = {"action=downloadFile"})
-    public ModelAndView downloadFile(RenderRequest request, RenderResponse response,
-    		@RequestParam String dir) throws IOException {
-    	DownloadFile file = serverAccess.getFile(dir);
-		response.setContentType(file.getContentType());
-		FileCopyUtils.copy(file.getInputStream(), response.getPortletOutputStream());
-		return null;
+		return model;
 	}
-
-    
+	
+	
     @RequestMapping("ABOUT")
 	public ModelAndView renderAboutView(RenderRequest request, RenderResponse response) throws Exception {
 		ModelMap model = new ModelMap();

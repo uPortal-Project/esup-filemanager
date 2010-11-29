@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2010 Esup Portail http://www.esup-portail.org
@@ -26,7 +26,7 @@
    							http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
     
     
-  <util:constant id="isPortlet" static-field="java.lang.Boolean.FALSE"/>
+    <util:constant id="isPortlet" static-field="java.lang.Boolean.FALSE"/>
 
 	<util:map id="drivesCategories">
 		<entry key="Homedir">
@@ -34,7 +34,7 @@
 				<property name="icon" value="/esup-portlet-stockage/img/drives/house.png" />
 				<property name="drives">
 					<list>
-						<value>Bob</value>
+						<value>Toto</value>
 					</list>
 				</property>
 			</bean>
@@ -55,7 +55,7 @@
 			<property name="icon" value="/esup-portlet-stockage/img/drives/group.png" />
 			<property name="drives">
 				<list>
-					<value>Toto</value>
+					<value>bob</value>
 					<value>Cmis</value>
 				</list>
 			</property>
@@ -63,33 +63,52 @@
 		</entry>
 	</util:map>
     
-        <bean class="org.esupportail.portlet.stockage.services.opencmis.CmisAccessImpl">
+    <bean class="org.esupportail.portlet.stockage.services.opencmis.TrustedCmisAccessImpl" scope="session">
 		<property name="driveName" value="Cmis"/>
 		<property name="icon" value="/esup-portlet-stockage/img/drives/group.png" />
-		<property name="uri" value="http://localhost:9080/cmis-server/atom"/>
-		<property name="respositoryId" value="test"/>
-		<property name="userAuthenticatorService" ref="cmisSimpleUserAuthenticationService"/>
+		<property name="uri" value="http://localhost:6081/nuxeo/atom/cmis"/>
+		<property name="respositoryId" value="default"/>
+		<!-- UserWorkspaces cmis browsing seams to not work -->
+		<!-- property name="rootPath" value="/default-domain/UserWorkspaces/@uid@"/-->
+		<!-- property name="rootPath" value="/default-domain/userworkspaces/bernard-mon-univ-fr"/-->
+		<!-- workspaces works for example -->
+		<property name="rootPath" value="/default-domain/workspaces"/>
+		<!-- property name="userAuthenticatorService" ref="cmisSimpleUserAuthenticationService"/-->
+		<!--  userinfosHttpheadersMap : portlet mode beacause serinfos must be available -->
+		<property name="userinfosHttpheadersMap">
+			<map>
+				<entry key="eppn" value="uid"/>
+				<entry key="affiliation" value="affiliation"/>
+			</map>
+		</property>		
+		<!-- staticHttpheadersMap : servlet mode (and portlet mode but for portlet use instead userinfosHttpheadersMap) -->
+		<property name="staticHttpheadersMap">
+			<map>
+				<entry key="eppn" value="bernard@mon-univ.fr"/>
+				<entry key="affiliation" value="member@mon-univ.fr"/>
+			</map>
+		</property>
 		<property name="memberOfAny">
 			 <list>
-                <value>pags.univ-rouen</value>
+                <value>pags.mon-univ</value>
             </list>
 		</property>
 		<property name="resourceUtils" ref="resourceUtils"/>
 	</bean>
 	
 	<bean name="cmisSimpleUserAuthenticationService" class="org.esupportail.portlet.stockage.services.auth.UserPasswordAuthenticatorService">
-		<property name="username" value="test"/>
-		<property name="password" value="test"/>
+		<property name="username" value="Administrator"/>
+		<property name="password" value="Administrator"/>
 	</bean>
 
-
+    
     <bean class="org.esupportail.portlet.stockage.services.vfs.VfsAccessImpl">
 		<property name="driveName" value="Toto"/>
 		<property name="icon" value="/esup-portlet-stockage/img/drives/tux.png" />
 		<property name="uri" value="sftp://stock-2.mon-univ.fr/"/>
 		<property name="memberOfAny">
 			 <list>
-                <value>pags.univ-rouen</value>
+                <value>pags.mon-univ</value>
             </list>
 		</property>
 		<property name="userAuthenticatorService" ref="simpleUserAuthenticationService"/>
@@ -106,7 +125,7 @@
 	</bean>
 	
 	<bean  class="org.esupportail.portlet.stockage.services.vfs.VfsAccessImpl">
-		<property name="driveName" value="Bob"/>
+		<property name="driveName" value="bob"/>
 		<property name="icon" value="/esup-portlet-stockage/img/drives/root.png" />
 		<property name="uri" value="file:///"/>
 		<property name="contextToken" value="justbob"/>
@@ -117,10 +136,10 @@
 	<bean class="org.esupportail.portlet.stockage.services.vfs.VfsAccessImpl" scope="session">
 		<property name="driveName" value="Stock2Cas"/>
 		<property name="icon" value="/esup-portlet-stockage/img/drives/root.png" />
-		<property name="uri" value="sftp://stock-2.mon-univ.fr/home/@uid@/"/>
+		<property name="uri" value="sftp://stock-2.mon-univ.fr/home/@luid@/"/>
 		<property name="memberOfAny">
 			 <list>
-                <value>pags.univ-rouen</value>
+                <value>pags.mon-univ</value>
             </list>
 		</property>
 		<property name="userAuthenticatorService" ref="casUserAuthenticationService"/>
@@ -133,7 +152,7 @@
 		<property name="uri" value="sftp://stock-3.mon-univ.fr/"/>
 		<property name="memberOfAny">
 			 <list>
-                <value>pags.univ-rouen</value>
+                <value>pags.mon-univ</value>
             </list>
 		</property>
 		<property name="userAuthenticatorService" ref="casUserAuthenticationServiceStock3"/>
@@ -163,7 +182,7 @@
     </bean>
     
     <bean id="casService" class="org.esupportail.portlet.stockage.services.auth.cas.ProxyTicketService">
-        <property name="casValidateUrl" value="https://cas.mon-univ.fr/proxyValidate"/>
+        <property name="casValidateUrl" value="https://cas.mon-univ.fr/cas/proxyValidate"/>
         <property name="serviceUrl" value="https://stock-2.mon-univ.fr/esup-portlet-stockage"/>
         <property name="urlOfProxyCallbackServlet" value="https://stock-2.mon-univ.fr/esup-portlet-stockage/CasProxyServlet"/>
     </bean>

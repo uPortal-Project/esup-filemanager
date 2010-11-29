@@ -19,50 +19,84 @@
 --%>
 
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
-<%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-
+      
 <div class="esupstock">
 
-<div class="container">
+  <div class="container">
 
-<div class="portlet-section">
+    <div class="portlet-section">
 
-<div class="portlet-section-body">&nbsp;
+      <div class="portlet-section-body">
 
-<div id="toolbar" class="span-24 last">
- <div class="span-12 colborder">
-<span class="toolbar-item"> <a href="#" id="toolbar-copy"><spring:message code="toolbar.copy"/></a></span> 
-<span class="toolbar-item"> <a href="#" id="toolbar-cut"><spring:message code="toolbar.cut"/></a></span> 
-<span class="toolbar-item"> <a href="#" id="toolbar-past"><spring:message code="toolbar.past"/></a></span> 
-<span class="toolbar-item"> <a href="#" id="toolbar-rename"><spring:message code="toolbar.rename"/></a></span> 
-<span class="toolbar-item"> <a href="#" id="toolbar-delete"><spring:message code="toolbar.delete"/></a></span>
-</div> 
- <div class="span-3 colborder">
-<span class="toolbar-item"> <a href="#" id="toolbar-zip"><spring:message code="toolbar.zip"/></a></span>
-</div>
-<div>
-<span class="toolbar-item"> <a href="#"	id="toolbar-create"><spring:message code="toolbar.create"/></a></span> 
-<span class="toolbar-item" id="file-uploader"></span>    
-</div> 
-</div>
+        &nbsp;
+        <div id="toolbar" class="span-24 last">
+          <div class="span-12 colborder">
+            <span class="toolbar-item">
+              <a href="" id="toolbar-copy" onclick="return false;">
+                <spring:message code="toolbar.copy"/>
+              </a>
+            </span>
+            <span class="toolbar-item">
+              <a href="" id="toolbar-cut" onclick="return false;">
+                <spring:message code="toolbar.cut"/>
+              </a>
+            </span>
+            <span class="toolbar-item">
+              <a href="" id="toolbar-past" onclick="return false;">
+                <spring:message code="toolbar.past"/>
+              </a>
+            </span>
+            <span class="toolbar-item">
+              <a href="" id="toolbar-rename" onclick="return false;">
+                <spring:message code="toolbar.rename"/>
+              </a>
+            </span>
+            <span class="toolbar-item">
+              <a href="" id="toolbar-delete" onclick="return false;">
+                <spring:message code="toolbar.delete"/>
+              </a>
+            </span>
+          </div>
+          <div class="span-3 colborder">
+            <span class="toolbar-item">
+              <a href="#" id="toolbar-zip">
+                <spring:message code="toolbar.zip"/>
+              </a>
+            </span>
+          </div>
+          <div>
+            <span class="toolbar-item">
+              <a href="#"	id="toolbar-create">
+                <spring:message code="toolbar.create"/>
+              </a>
+            </span>
+            <span class="toolbar-item" id="file-uploader">
+            </span>
+          </div>
+        </div>
 
-<div class="span-24 last" id="info-toolbar"></div>
+        <div class="span-24 last" id="info-toolbar">
+        </div>
 
-<div class="span-7 colborder">
-<div id="fileTree"><spring:message code="error.javascriptengine"/></div>
-</div>
+        <div class="span-7 colborder">
+          <div id="fileTree">
+            <spring:message code="error.javascriptengine"/>
+          </div>
+        </div>
 
-<div class="span-8 colborder">
-<div id="browserMain"></div>
-</div>
+        <div class="span-8 colborder">
+          <div id="browserMain">
+          </div>
+        </div>
 
-</div>
+      </div>
 
-</div>
+    </div>
 
-</div>
+  </div>
 
 </div>
 

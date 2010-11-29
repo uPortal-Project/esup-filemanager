@@ -21,6 +21,7 @@ package org.esupportail.portlet.stockage.servlet;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -85,6 +86,8 @@ public class ServletAjaxController implements InitializingBean {
 	
 	public void afterPropertiesSet() throws Exception {
 
+		request.setCharacterEncoding("UTF-8");
+		
 		locale = RequestContextUtils.getLocale(request);
 		
 		HttpSession session = request.getSession();
@@ -229,26 +232,25 @@ public class ServletAjaxController implements InitializingBean {
 	
 
 	@RequestMapping("/downloadFile")
-    public ModelAndView downloadFile(String dir, 
+    public void downloadFile(String dir, 
     								 HttpServletRequest request, HttpServletResponse response) throws IOException {
 		DownloadFile file = this.serverAccess.getFile(dir);
 		response.setContentType(file.getContentType());
 	    response.setContentLength(file.getSize());
 		response.setHeader("Content-Disposition","attachment; filename=\"" + file.getBaseName() +"\"");
 		FileCopyUtils.copy(file.getInputStream(), response.getOutputStream());
-		return null;
 	}
 	
 	@RequestMapping("/downloadZip")
-    public ModelAndView downloadZip(FormCommand command, 
+    public void downloadZip(FormCommand command, 
     								HttpServletRequest request, HttpServletResponse response) throws IOException {
 		List<String> dirs = command.getDirs();
 		DownloadFile file = this.serverAccess.getZip(dirs);
 		response.setContentType(file.getContentType());
 		response.setContentLength(file.getSize());
+		//response.setCharacterEncoding("utf-8");
 		response.setHeader("Content-Disposition","attachment; filename=\"" + file.getBaseName() +"\"");
 		FileCopyUtils.copy(file.getInputStream(), response.getOutputStream());
-		return null;
 	}
 	
 

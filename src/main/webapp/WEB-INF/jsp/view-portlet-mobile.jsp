@@ -25,60 +25,76 @@
 
 <html>
 
-<head>
-<title>ENT Mobile</title>
-<link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock-mobile.css"
-	type="text/css" media="screen, projection">
+  <head>
+    <title>
+      ENT Mobile
+    </title>
+    <link 
+        rel="stylesheet"
+        href="/esup-portlet-stockage/css/esup-stock-mobile.css"
+        type="text/css"
+        media="screen, projection">
 
-</head>
 
 
-<body up style="fl-theme-iphone">
+  </head>
 
 
-<div class="esupstock">
+  <body up style="fl-theme-iphone">
 
-<div class="breadcrumbs">
-<c:forEach var="parent" items="${resource.parentsPathes}" varStatus="item">
-	<c:choose>
-		<c:when test="${item.last}">
-			<img src="${resource.icon}" alt="icon" />
-			<span>${resource.title}</span>
-		</c:when>
-		<c:otherwise>
-			<a href="<portlet:renderURL>
-				<portlet:param name="action" value="browseMobile"/>
-				<portlet:param name="dir" value="${parent.key}"/></portlet:renderURL>">
-				<img src="${parent.value[1]}" alt="icon" />
-				${parent.value[0]}
-				</a>
-		</c:otherwise>
-	</c:choose>	
-</c:forEach>
-</div>
 
-<ul id="jqueryFileTree" style="">
+    <div class="esupstock">
 
-	<c:forEach var="file" items="${files}">
-		<li class="browserlist fl-container">
-		<c:choose>
-			<c:when test="${'file' == file.type}">
-				<img src="${file.icon}" alt="icon" />
-				<a class="file"
-					href="/esup-portlet-stockage/servlet-ajax/downloadFile?dir=${file.path}">${file.title}</a>
-			</c:when>
-			<c:otherwise>
-				<img src="${file.icon}" alt="icon" />
-				<a class="fileTreeRef"
-					href="<portlet:renderURL><portlet:param name="action" value="browseMobile"/><portlet:param name="dir" value="${file.path}"/></portlet:renderURL>">${file.title}</a>
-			</c:otherwise>
-		</c:choose>
-		</li>
-	</c:forEach>
+      <div class="breadcrumbs">
+        <c:forEach var="parent" items="${resource.parentsPathes}" varStatus="item">
+          <c:choose>
+            <c:when test="${item.last}">
+              <img src="${resource.icon}" alt="icon" />
+              <span>
+                ${resource.title}
+              </span>
+            </c:when>
+            <c:otherwise>
+              <a 
+                  href="<portlet:renderURL> <portlet:param name="action" value="browseMobile"/> <portlet:param name="dir" value="${parent.key}"/></portlet:renderURL>">
 
-</ul>
 
-</div>
+                <img src="${parent.value[1]}" alt="icon" />
+                ${parent.value[0]}
+              </a>
+            </c:otherwise>
+          </c:choose>
+        </c:forEach>
+      </div>
+
+      <ul id="jqueryFileTree" style="">
+
+        <c:forEach var="file" items="${files}">
+          <li class="browserlist fl-container">
+          <c:choose>
+            <c:when test="${'file' == file.type}">
+              <img src="${file.icon}" alt="icon" />
+              <a class="file" href="/esup-portlet-stockage/servlet-ajax/downloadFile?dir=${file.path}">
+                ${file.title}
+              </a>
+            </c:when>
+            <c:otherwise>
+              <img src="${file.icon}" alt="icon" />
+              <a 
+                  class="fileTreeRef"
+                  href="<portlet:renderURL><portlet:param name="action" value="browseMobile"/><portlet:param name="dir" value="${file.path}"/></portlet:renderURL>">
+
+
+                ${file.title}
+              </a>
+            </c:otherwise>
+          </c:choose>
+        </li>
+      </c:forEach>
+
+    </ul>
+
+  </div>
 
 </body>
 

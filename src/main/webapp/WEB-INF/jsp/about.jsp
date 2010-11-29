@@ -30,19 +30,26 @@
 <portlet:defineObjects />
 
 <c:set var="n">
-	<portlet:namespace />
+  <portlet:namespace />
 </c:set>
 
 <div class="portlet-title">
-<h2><spring:message code="about.title" /></h2>
+  <h2>
+    <spring:message code="about.title" />
+  </h2>
 </div>
 
 <div class="portlet-section">
 
-<div class="portlet-section-body">
-<p>EsupPortail Consortium <a href="http://www.esup-portail.org">
-http://www.esup-portail.org </a> .</p>
-</div>
+  <div class="portlet-section-body">
+    <p>
+      EsupPortail Consortium
+      <a href="http://www.esup-portail.org">
+        http://www.esup-portail.org
+      </a>
+      .
+    </p>
+  </div>
 
 </div>
 
