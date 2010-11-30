@@ -21,7 +21,6 @@ package org.esupportail.portlet.stockage.servlet;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -131,6 +130,12 @@ public class ServletAjaxController implements InitializingBean {
 			List<JsTreeFile> files = this.serverAccess.getJsTreeFileRoots();		
 			model.put("files", files);
 		} else {
+			if(this.serverAccess.formAuthenticationRequired(dir)) {
+				model = new ModelMap("currentDir", dir);
+				model.put("username", this.serverAccess.getUserPassword(dir).getUsername());
+				model.put("password", this.serverAccess.getUserPassword(dir).getPassword());
+				return new ModelAndView("authenticationForm", model);
+			}
 			JsTreeFile resource = this.serverAccess.get(dir);
 			model = new ModelMap("resource", resource);
 			List<JsTreeFile> files = this.serverAccess.getChildren(dir);
@@ -230,6 +235,22 @@ public class ServletAjaxController implements InitializingBean {
 		return jsonMsg;
 	}
 	
+	@RequestMapping("/authenticate")
+    public @ResponseBody Map authenticate(String dir, String username, String password) {
+		Map jsonMsg = new HashMap(); 
+		if(this.serverAccess.authenticate(dir, username, password)) {
+			jsonMsg.put("status", new Long(1));
+			String msg = context.getMessage("auth.ok", null, locale); 
+			jsonMsg.put("msg", msg);
+		}
+		else {
+			jsonMsg.put("status", new Long(0));
+			String msg = context.getMessage("auth.bad", null, locale); 
+			jsonMsg.put("msg", msg);
+		}
+		return jsonMsg;
+	}
+	
 
 	@RequestMapping("/downloadFile")
     public void downloadFile(String dir, 
@@ -300,7 +321,6 @@ public class ServletAjaxController implements InitializingBean {
 		ModelMap model = new ModelMap("text", text);
 		return new ModelAndView("text", model);
 	}
-	
 	
 	
 	@ExceptionHandler(EsupStockPermissionDeniedException.class)

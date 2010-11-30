@@ -319,5 +319,24 @@ function rename(parentDir, dir, title) {
 	});
 }
 
+function authenticate(dir, username, password) {
+	$.ajax({
+		async : false,
+		type: 'POST',
+		url: '/esup-portlet-stockage/servlet-ajax/authenticate',
+		data : { 
+			"dir" : dir,
+			"username" : username,
+			"password" : password
+		}, 
+		success : function (data) { 
+			$("#info-toolbar").html(data.msg);
+			if(data.status) 
+				getFile(null, dir);
+		}
+	});
+}
+
+
 
 

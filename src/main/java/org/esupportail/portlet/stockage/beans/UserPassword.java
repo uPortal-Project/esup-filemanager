@@ -49,5 +49,9 @@ public class UserPassword implements Serializable {
 		this.username = username;
 		this.password = password;
 	}
+
+	public UserPassword() {
+		super();
+	}
 	
 }

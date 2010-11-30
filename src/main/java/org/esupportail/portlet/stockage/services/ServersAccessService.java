@@ -42,6 +42,7 @@ import org.esupportail.portlet.stockage.beans.DownloadFile;
 import org.esupportail.portlet.stockage.beans.DrivesCategory;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.stockage.beans.UserPassword;
 import org.esupportail.portlet.stockage.exceptions.EsupStockException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -359,6 +360,25 @@ public class ServersAccessService implements DisposableBean {
 				this.addChildrensTozip(out, child.getPath(), folder);
 			}
 		}			
+	}
+
+
+	public boolean formAuthenticationRequired(String dir) {
+		if(getDrive(dir) == null)
+			return false;
+		return this.getFsAccess(getDrive(dir)).formAuthenticationRequired();
+	}
+
+
+	public UserPassword getUserPassword(String dir) {
+		if(getDrive(dir) == null)
+			return null;
+		return this.getFsAccess(getDrive(dir)).getUserPassword();
+	}
+
+
+	public boolean authenticate(String dir, String username, String password) {
+		return this.getFsAccess(getDrive(dir)).authenticate(username, password);
 	}
 
 

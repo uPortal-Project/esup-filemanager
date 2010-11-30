@@ -26,6 +26,8 @@ import java.util.Set;
 import org.esupportail.portlet.stockage.beans.DownloadFile;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.stockage.beans.UserPassword;
+import org.esupportail.portlet.stockage.services.auth.FormUserPasswordAuthenticatorService;
 import org.esupportail.portlet.stockage.services.auth.UserAuthenticatorService;
 
 public abstract class FsAccess {
@@ -110,8 +112,7 @@ public abstract class FsAccess {
 
 	public abstract JsTreeFile get(String path) ;
 
-	public abstract List<JsTreeFile> getChildren(String path)
-			;
+	public abstract List<JsTreeFile> getChildren(String path);
 
 	public abstract boolean remove(String path);
 
@@ -133,6 +134,31 @@ public abstract class FsAccess {
 	}
 	
 	public boolean supportIntraCutPast() {
+		return true;
+	}
+
+	public boolean formAuthenticationRequired() {
+		if(this.userAuthenticatorService instanceof FormUserPasswordAuthenticatorService) {
+			if(this.userAuthenticatorService.getUserPassword().getPassword() == null || this.userAuthenticatorService.getUserPassword().getPassword().isEmpty())
+				return true;
+		}
+		return false;
+	}
+
+	public UserPassword getUserPassword() {
+		return this.userAuthenticatorService.getUserPassword();
+	}
+
+	public boolean authenticate(String username, String password) {
+		this.userAuthenticatorService.getUserPassword().setUsername(username);
+		this.userAuthenticatorService.getUserPassword().setPassword(password);
+		try { 
+			this.get("");
+		} catch(Exception e) {
+			// TODO : catch Exception corresponding to an authentication failure ... 
+			this.userAuthenticatorService.getUserPassword().setPassword(null);
+			return false;
+		}
 		return true;
 	}
 

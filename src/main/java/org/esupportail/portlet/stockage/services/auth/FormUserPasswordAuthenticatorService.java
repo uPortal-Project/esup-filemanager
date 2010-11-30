@@ -23,27 +23,25 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
-import org.esupportail.portlet.stockage.beans.UserPassword;
 
-public class UserPasswordAuthenticatorService implements UserAuthenticatorService {
+public class FormUserPasswordAuthenticatorService extends UserPasswordAuthenticatorService {
 
-	protected static final Log log = LogFactory.getLog(UserPasswordAuthenticatorService.class);
+	protected static final Log log = LogFactory.getLog(FormUserPasswordAuthenticatorService.class);
 
-	protected UserPassword userPassword = new UserPassword();
-
-	public void setUsername(String username) {
-		userPassword.setUsername(username);
-	}
-	public void setPassword(String password) {
-		userPassword.setPassword(password);
+	protected String userInfo4Username;
+	
+	/**
+	 * To set a default username retrieving from user uPortal attributes
+	 * @param userInfo4Username
+	 */
+	public void setUserInfo4Username(String userInfo4Username) {
+		this.userInfo4Username = userInfo4Username;
 	}
 
 	public void initialize(Map userInfos, SharedUserPortletParameters userParameters) {
-		// nothing to do
+		if(userInfo4Username != null && userInfos != null && userInfos.containsKey(userInfo4Username)) {
+			this.setUsername((String)userInfos.get(userInfo4Username));
+		}
 	}
 	
-	public UserPassword getUserPassword() {
-		return userPassword;
-	}
-
 }

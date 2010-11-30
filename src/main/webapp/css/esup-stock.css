@@ -174,3 +174,14 @@ margin: 0px;
 padding: 0px;
 }
 
+#authenticationForm {
+border: #ddd 1px solid;
+margin: 10px;
+padding: 10px;
+}
+
+#authenticationForm label,
+#authenticationForm input {
+display: block;
+}
+
