@@ -33,17 +33,18 @@
        Drives are defined bellow : values of 'drives' property must map to a FSAccess bean.
   -->
   <util:map id="drivesCategories">
-    <entry key="Homedir">
+    <entry key="Shared">
       <bean class="org.esupportail.portlet.stockage.beans.DrivesCategory">
 	<property name="icon" value="/esup-portlet-stockage/img/drives/house.png" />
 	<property name="drives">
 	  <list>
 	    <value>Toto</value>
+	    <value>bob</value>
 	  </list>
 	</property>
       </bean>
     </entry>
-    <entry key="Partages">
+    <entry key="Homedir">
       <bean class="org.esupportail.portlet.stockage.beans.DrivesCategory">
 	<property name="icon" value="/esup-portlet-stockage/img/drives/drive_user.png" />
 	<property name="drives">
@@ -54,12 +55,11 @@
 	</property>
       </bean>
     </entry>
-    <entry key="GED">
+    <entry key="ECM">
       <bean class="org.esupportail.portlet.stockage.beans.DrivesCategory">
 	<property name="icon" value="/esup-portlet-stockage/img/drives/group.png" />
 	<property name="drives">
 	  <list>
-	    <value>bob</value>
 	    <value>Cmis</value>
 	  </list>
 	</property>
