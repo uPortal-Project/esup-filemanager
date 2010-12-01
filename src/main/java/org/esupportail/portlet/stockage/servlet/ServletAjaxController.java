@@ -91,6 +91,7 @@ public class ServletAjaxController implements InitializingBean {
 		
 		HttpSession session = request.getSession();
 		userParameters = (SharedUserPortletParameters)session.getAttribute(SharedUserPortletParameters.SHARED_PARAMETER_SESSION_ID);
+
 		
 		if(!this.isPortlet && userParameters == null) {
 			log.debug("Servlet Access (no portlet mode : isPortlet property = false): init SharedUserPortletParameters");
@@ -98,6 +99,8 @@ public class ServletAjaxController implements InitializingBean {
 			List<String> driveNames = serverAccess.getRestrictedDrivesGroupsContext(null, null);
 			userParameters.setDriveNames(driveNames);
 			session.setAttribute(SharedUserPortletParameters.SHARED_PARAMETER_SESSION_ID, userParameters);
+		} else if(userParameters == null) {
+			log.warn("pb : userParameters is not retrieved from portlet in the servlet-ajax !");
 		}
 		
 		if(!serverAccess.isInitialized() && userParameters != null) {

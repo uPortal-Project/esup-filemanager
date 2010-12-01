@@ -33,6 +33,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.apache.log4j.Logger;
+import org.esupportail.commons.utils.ContextUtils;
 import org.esupportail.portlet.stockage.beans.FormCommand;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
@@ -74,14 +75,20 @@ public class PortletController {
 		Map userInfos = (Map) request.getAttribute(PortletRequest.USER_INFO);	
 		userParameters.setUserInfos(userInfos);
 		
-    	PortletSession session = request.getPortletSession();
-		session.setAttribute(SharedUserPortletParameters.SHARED_PARAMETER_SESSION_ID, userParameters, PortletSession.APPLICATION_SCOPE);
-		log.info("set SharedUserPortletParameters in applciation session");
-				
+   		log.info("set SharedUserPortletParameters in application session");
+   		// for portlet mode :
+   		ContextUtils.setSessionAttribute(SharedUserPortletParameters.SHARED_PARAMETER_SESSION_ID, userParameters);
+   		// for servlet mode :
+   		PortletSession session = request.getPortletSession();
+   		session.setAttribute(SharedUserPortletParameters.SHARED_PARAMETER_SESSION_ID, userParameters, PortletSession.APPLICATION_SCOPE);
+
+   		
     	ModelMap model = new ModelMap();     
 		
+    	// note that we call serverAccess.initializeServices just for mobile and wai mode
+    	serverAccess.initializeServices(driveNames,  userInfos, userParameters);
+    	
 	    if(userAgentInspector.isMobile(request)) {
-	    	serverAccess.initializeServices(driveNames,  userInfos, userParameters);
 			return this.browseMobile(request, response, null);
 	    } else {
 	    	return new ModelAndView("view-portlet", model);

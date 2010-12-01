@@ -47,6 +47,7 @@ import javax.portlet.PortletSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.esupportail.commons.utils.ContextUtils;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.stockage.beans.UserPassword;
 import org.esupportail.portlet.stockage.services.auth.UserAuthenticatorService;
@@ -92,10 +93,18 @@ public class UserCasAuthenticatorService implements UserAuthenticatorService {
         if (log.isDebugEnabled()) {
             log.debug("getting credentials using " + this.getClass().getName());
         }
-		RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-		SharedUserPortletParameters userParameters = (SharedUserPortletParameters)requestAttributes.getAttribute(SharedUserPortletParameters.SHARED_PARAMETER_SESSION_ID, PortletSession.APPLICATION_SCOPE);
-		if(userParameters == null) {
-			log.info("userParameters is null, if esup-portlet-srockage runs like a prtlet : PB !");
+        
+        // trying to retrieve userParameters with ContextUtils (portlet mode)
+        SharedUserPortletParameters userParameters = (SharedUserPortletParameters) ContextUtils.getSessionAttribute(SharedUserPortletParameters.SHARED_PARAMETER_SESSION_ID);
+		// if no success we're trying with RequestContextHolder (servlet mode)
+        if(userParameters == null) {
+        	RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        	userParameters = (SharedUserPortletParameters)requestAttributes.getAttribute(SharedUserPortletParameters.SHARED_PARAMETER_SESSION_ID, PortletSession.APPLICATION_SCOPE);
+        }
+
+        
+        if(userParameters == null) {
+			log.warn("userParameters is null, if esup-portlet-stockage runs like a portlet, there is a problem (if so, check isPortlet constant in drives.xml)");
 			userParameters = new SharedUserPortletParameters();
 		}
 
