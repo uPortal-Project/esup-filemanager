@@ -81,7 +81,7 @@
             <input type="submit" id="submit" value="<spring:message code="auth.submit"/>"/>
 
             <a 
-                href="<portlet:renderURL><portlet:param name="action" value="browseWai"/><portlet:param name="dir" value="${parentDir}"/></portlet:renderURL>">
+                href="<portlet:renderURL><portlet:param name="action" value="browseMobile"/><portlet:param name="dir" value="${parentDir}"/></portlet:renderURL>">
 
               <spring:message code="auth.cancel"/>
             </a>
