@@ -39,7 +39,7 @@
 	<input type="password" id="password" value="${password}"/>
 
     <a id="authenticate" href="" onclick="return false;">
-      Submit
+      <spring:message code="auth.submit"/>
     </a>
  
   </form:form>

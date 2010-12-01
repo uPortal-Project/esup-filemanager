@@ -118,40 +118,42 @@
     $('.fileTreeRef').bind('click', function() {
       id = $(this).attr('rel');
       getFile($("#bigdirectory").attr('rel'), id);
-      });
+    });
 
-      $('.fileTreeRefCrumbs').bind('click', function() {
-        id = $(this).attr('rel');
-        getFile(null, id);
-        });
+    $('.fileTreeRefCrumbs').bind('click', function() {
+      id = $(this).attr('rel');
+      getFile(null, id);
+    });
 
-        $('#newDirSubmit').bind('click', function() {
+    $('#newDirSubmit').bind('click', function() {
+       newDir($("#bigdirectory").attr('rel'), $("#newDirInput").val());
+    });
+
+    $('#newDirInput').keyup(function(e) {
+       if(e.keyCode == 13) {
           newDir($("#bigdirectory").attr('rel'), $("#newDirInput").val());
-          });
+       }
+    });
 
-          $('#newDirInput').keyup(function(e) {
-            if(e.keyCode == 13) {
-              newDir($("#bigdirectory").attr('rel'), $("#newDirInput").val());
-            }
-            });
+    $('.renameSubmit').bind('click', function() {
+        rename($("#bigdirectory").attr('rel'), $(this).attr('rel'), $(this).prev().val());
+    });
 
-            $('.renameSubmit').bind('click', function() {
-              rename($("#bigdirectory").attr('rel'), $(this).attr('rel'), $(this).prev().val());
-              });
+    $('.renameInput').keyup(function(e) {
+        if(e.keyCode == 13) {
+            rename($("#bigdirectory").attr('rel'), $(this).attr('rel'), $(this).val());
+        }
+    });
 
-              $('.renameInput').keyup(function(e) {
-                if(e.keyCode == 13) {
-                  rename($("#bigdirectory").attr('rel'), $(this).attr('rel'), $(this).val());
-                }
-                });
+    $('#toggler-checkbox').change(function() {
+       var mode = this.checked;
+       $("form#filesForm :checkbox").each(function(){
+          this.checked = mode;
+       });
+       return false;
+    });
 
-                $('#toggler-checkbox').change(function() {
-                  var mode = this.checked;
-                  $("form#filesForm :checkbox").each(function(){
-                    this.checked = mode;
-                    });
-                    return false;
-                    });
+  })(jQuery);
 
-                    })(jQuery);
-                  </script>
+</script>
+

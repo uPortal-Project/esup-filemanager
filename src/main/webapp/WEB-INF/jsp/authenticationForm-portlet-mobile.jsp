@@ -78,12 +78,12 @@
             </label>
             <input type="password" name="password" value="${password}"/>
 
-            <input type="submit" id="submit" value="submit"/>
+            <input type="submit" id="submit" value="<spring:message code="auth.submit"/>"/>
 
             <a 
                 href="<portlet:renderURL><portlet:param name="action" value="browseWai"/><portlet:param name="dir" value="${parentDir}"/></portlet:renderURL>">
 
-              cancel
+              <spring:message code="auth.cancel"/>
             </a>
 
           </form:form>
