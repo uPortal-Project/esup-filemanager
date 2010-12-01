@@ -33,7 +33,7 @@
         rel="stylesheet"
         href="/esup-portlet-stockage/css/esup-stock-mobile.css"
         type="text/css"
-        media="screen, projection">
+        media="screen, projection"/>
 
 
 
@@ -57,6 +57,7 @@
             <c:otherwise>
               <a 
                   href="<portlet:renderURL> <portlet:param name="action" value="browseMobile"/> <portlet:param name="dir" value="${parent.key}"/></portlet:renderURL>">
+
 
 
                 <img src="${parent.value[1]}" alt="icon" />
@@ -83,6 +84,7 @@
               <a 
                   class="fileTreeRef"
                   href="<portlet:renderURL><portlet:param name="action" value="browseMobile"/><portlet:param name="dir" value="${file.path}"/></portlet:renderURL>">
+
 
 
                 ${file.title}

@@ -174,14 +174,14 @@ margin: 0px;
 padding: 0px;
 }
 
-#authenticationForm {
+.esupstock #authenticationForm {
 border: #ddd 1px solid;
 margin: 10px;
 padding: 10px;
 }
 
-#authenticationForm label,
-#authenticationForm input {
+.esupstock #authenticationForm label,
+.esupstock #authenticationForm input {
 display: block;
 }
 

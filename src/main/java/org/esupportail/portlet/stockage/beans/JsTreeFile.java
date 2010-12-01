@@ -239,20 +239,27 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 
 	// Map<path, List<title, icon>>
 	public SortedMap<String, List<String>> getParentsPathes() {
+		String categoryIcon = this.category != null ? this.category.getIcon() : null;
+		String driveIcon = this.drive != null ? this.drive.getIcon() : null;
+		return getParentsPathes(this.getPath(), categoryIcon, driveIcon);
+	}
+	
+	// Map<path, List<title, icon>>
+	public static SortedMap<String, List<String>> getParentsPathes(String path, String categoryIcon, String driveIcon) {
 		SortedMap<String, List<String>> parentsPathes = new TreeMap<String, List<String>>();
 		String pathBase = ROOT_DRIVE;
 		List<String> rootTitleIcon =  Arrays.asList(ROOT_DRIVE_NAME, ROOT_ICON_PATH);
 		parentsPathes.put(pathBase, rootTitleIcon);
 		String regexp = "(/|".concat(DRIVE_PATH_SEPARATOR).concat(")");
-		String driveRootPath = this.getPath().substring(pathBase.length());
+		String driveRootPath = path.substring(pathBase.length());
 		if(!driveRootPath.isEmpty()) {
 			List<String> relParentsPathes = Arrays.asList(driveRootPath.split(regexp));
 			pathBase = pathBase.concat(relParentsPathes.get(0));
-			List<String> categoryTitleIcon =  Arrays.asList(relParentsPathes.get(0), this.category.getIcon());
+			List<String> categoryTitleIcon =  Arrays.asList(relParentsPathes.get(0), categoryIcon);
 			parentsPathes.put(pathBase, categoryTitleIcon);
 			if(relParentsPathes.size() > 1) {
 				pathBase = pathBase.concat(DRIVE_PATH_SEPARATOR).concat(relParentsPathes.get(1));
-				List<String> driveTitleIcon =  Arrays.asList(relParentsPathes.get(1), this.drive.getIcon());
+				List<String> driveTitleIcon =  Arrays.asList(relParentsPathes.get(1), driveIcon);
 				parentsPathes.put(pathBase, driveTitleIcon);
 				pathBase = pathBase.concat(DRIVE_PATH_SEPARATOR);
 				for(String parentPath: relParentsPathes.subList(2, relParentsPathes.size())) {

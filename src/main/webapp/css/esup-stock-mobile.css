@@ -62,3 +62,18 @@ padding-left: 0px;
 	border-bottom: 1px solid #bbb;
 }
 
+.esupstock #authenticationForm {
+border: #ddd 1px solid;
+margin: 10px;
+padding: 10px;
+}
+
+.esupstock #authenticationForm label,
+.esupstock #authenticationForm input {
+display: block;
+}
+
+.esupstock #authenticationForm #submit {
+display: inline;
+}
+

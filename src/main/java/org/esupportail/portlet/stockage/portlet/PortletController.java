@@ -18,10 +18,14 @@
 
 package org.esupportail.portlet.stockage.portlet;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
@@ -87,7 +91,20 @@ public class PortletController {
 	@RequestMapping(value = {"VIEW"}, params = {"action=browseMobile"})
     public ModelAndView browseMobile(RenderRequest request, RenderResponse response,
     								@RequestParam String dir) {
-		ModelMap model = browse(dir);
+		ModelMap model;
+		if( !(dir == null || dir.isEmpty() || dir.equals(JsTreeFile.ROOT_DRIVE)) ) {
+			if(this.serverAccess.formAuthenticationRequired(dir)) {
+				SortedMap<String, List<String>> parentPathes = JsTreeFile.getParentsPathes(dir, null, null);
+				// we want to get the (last-1) key of sortedmap "parentPathes"
+				String parentDir = parentPathes.subMap(parentPathes.firstKey(), parentPathes.lastKey()).lastKey();
+				model = new ModelMap("currentDir", dir);
+				model.put("parentDir", parentDir);
+				model.put("username", this.serverAccess.getUserPassword(dir).getUsername());
+				model.put("password", this.serverAccess.getUserPassword(dir).getPassword());
+				return new ModelAndView("authenticationForm-portlet-mobile", model);
+			}
+		}
+		model = browse(dir);
         return new ModelAndView("view-portlet-mobile", model);
     }
 	
@@ -102,7 +119,23 @@ public class PortletController {
 			serverAccess.initializeServices(userParameters.getDriveNames(),  userParameters.getUserInfos(), userParameters);
 		}
 		
-		ModelMap model = browse(dir);
+		ModelMap model;
+		if( !(dir == null || dir.isEmpty() || dir.equals(JsTreeFile.ROOT_DRIVE)) ) {
+			if(this.serverAccess.formAuthenticationRequired(dir)) {
+				SortedMap<String, List<String>> parentPathes = JsTreeFile.getParentsPathes(dir, null, null);
+				// we want to get the (last-1) key of sortedmap "parentPathes"
+				String parentDir = parentPathes.subMap(parentPathes.firstKey(), parentPathes.lastKey()).lastKey();
+				model = new ModelMap("currentDir", dir);
+				model.put("parentDir", parentDir);
+				model.put("username", this.serverAccess.getUserPassword(dir).getUsername());
+				model.put("password", this.serverAccess.getUserPassword(dir).getPassword());
+				if(msg != null) 
+					model.put("msg",msg);
+				return new ModelAndView("authenticationForm-portlet-wai", model);
+			}
+		}
+		
+		model = browse(dir);
 		FormCommand command = new FormCommand();
 	    model.put("command", command);
 	    if(msg != null)
@@ -130,6 +163,19 @@ public class PortletController {
 		return model;
 	}
 	
+	@RequestMapping(value = {"VIEW"}, params = {"action=formAuthenticationMobile"})
+    public void formAuthenticationWai(ActionRequest request, ActionResponse response,
+    								@RequestParam String dir, @RequestParam String username, @RequestParam String password) throws IOException {
+	
+		String msg = "auth.bad";
+		if(this.serverAccess.authenticate(dir, username, password)) 
+			msg = "auth.ok";
+		
+		response.setRenderParameter("msg", msg);
+		response.setRenderParameter("dir", dir);
+		response.setRenderParameter("action", "browseMobile");
+	}
+    
 	
     @RequestMapping("ABOUT")
 	public ModelAndView renderAboutView(RenderRequest request, RenderResponse response) throws Exception {

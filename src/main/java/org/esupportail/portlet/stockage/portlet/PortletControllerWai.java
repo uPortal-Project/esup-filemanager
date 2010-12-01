@@ -197,5 +197,18 @@ public class PortletControllerWai {
 		response.setRenderParameter("dir", dir);
 		response.setRenderParameter("action", "browseWai");
 	}
+	
+	@RequestMapping(value = {"VIEW"}, params = {"action=formAuthenticationWai"})
+    public void formAuthenticationWai(ActionRequest request, ActionResponse response,
+    								@RequestParam String dir, @RequestParam String username, @RequestParam String password) throws IOException {
+	
+		String msg = "auth.bad";
+		if(this.serverAccess.authenticate(dir, username, password)) 
+			msg = "auth.ok";
+		
+		response.setRenderParameter("msg", msg);
+		response.setRenderParameter("dir", dir);
+		response.setRenderParameter("action", "browseWai");
+	}
     
 }
