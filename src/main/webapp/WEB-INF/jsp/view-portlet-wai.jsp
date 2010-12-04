@@ -59,16 +59,19 @@
 
         <div class="breadcrumbs">
           <c:forEach var="parent" items="${resource.parentsPathes}" varStatus="item">
+            <c:set var="iconAlt">
+            	<c:if test="${item.first}">/</c:if>
+            </c:set>
             <c:choose>
               <c:when test="${item.last}">
-                <img src="${resource.icon}" alt="" />
+                <img src="${resource.icon}" alt="${iconAlt}" />
                 <span>
                   ${resource.title}
                 </span>
               </c:when>
               <c:otherwise>
                 <a href="<portlet:renderURL> <portlet:param name="action" value="browseWai"/> <portlet:param name="dir" value="${parent.key}"/></portlet:renderURL>">
-			     <img src="${parent.value[1]}" alt="" />
+			     <img src="${parent.value[1]}" alt="${iconAlt}" />
                   ${parent.value[0]}
                 </a>
               </c:otherwise>

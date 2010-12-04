@@ -39,6 +39,7 @@ import org.esupportail.portlet.stockage.beans.FormCommand;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.stockage.beans.UploadBean;
+import org.esupportail.portlet.stockage.exceptions.EsupStockException;
 import org.esupportail.portlet.stockage.exceptions.EsupStockLostSessionException;
 import org.esupportail.portlet.stockage.exceptions.EsupStockPermissionDeniedException;
 import org.esupportail.portlet.stockage.services.ServersAccessService;
@@ -100,7 +101,10 @@ public class ServletAjaxController implements InitializingBean {
 			userParameters.setDriveNames(driveNames);
 			session.setAttribute(SharedUserPortletParameters.SHARED_PARAMETER_SESSION_ID, userParameters);
 		} else if(userParameters == null) {
-			log.warn("pb : userParameters is not retrieved from portlet in the servlet-ajax !");
+			throw new EsupStockException("When isPortlet = true you can't use esup-portlet-stockage with mode servlet " +
+					"without use it first in portlet mode (for security reasons).\n" +
+					"But if you're in portlet mode and you get this Exception, " +
+					"that sounds like a bug because userParameters is not retrieved from portlet in the servlet-ajax !");
 		}
 		
 		if(!serverAccess.isInitialized() && userParameters != null) {
