@@ -245,7 +245,7 @@ public class ServletAjaxController implements InitializingBean {
 	@RequestMapping("/authenticate")
     public @ResponseBody Map authenticate(String dir, String username, String password) {
 		Map jsonMsg = new HashMap(); 
-		if(this.serverAccess.authenticate(dir, username, password)) {
+		if(this.serverAccess.authenticate(dir, username, password, null)) {
 			jsonMsg.put("status", new Long(1));
 			String msg = context.getMessage("auth.ok", null, locale); 
 			jsonMsg.put("msg", msg);
@@ -259,9 +259,13 @@ public class ServletAjaxController implements InitializingBean {
 	}
 	
 
+	/**
+	 * it is used also in portlet mode mobile and wai
+	 */
 	@RequestMapping("/downloadFile")
     public void downloadFile(String dir, 
     								 HttpServletRequest request, HttpServletResponse response) throws IOException {
+		this.serverAccess.updateUserParameters(dir, userParameters);
 		DownloadFile file = this.serverAccess.getFile(dir);
 		response.setContentType(file.getContentType());
 	    response.setContentLength(file.getSize());
@@ -269,10 +273,14 @@ public class ServletAjaxController implements InitializingBean {
 		FileCopyUtils.copy(file.getInputStream(), response.getOutputStream());
 	}
 	
+	/**
+	 * it is used also in portlet mode mobile and wai
+	 */
 	@RequestMapping("/downloadZip")
     public void downloadZip(FormCommand command, 
     								HttpServletRequest request, HttpServletResponse response) throws IOException {
 		List<String> dirs = command.getDirs();
+		this.serverAccess.updateUserParameters(dirs.get(0), userParameters);
 		DownloadFile file = this.serverAccess.getZip(dirs);
 		response.setContentType(file.getContentType());
 		response.setContentLength(file.getSize());

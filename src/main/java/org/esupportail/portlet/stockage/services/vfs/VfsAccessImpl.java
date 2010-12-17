@@ -224,9 +224,9 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 	public boolean moveCopyFilesIntoDirectory(String dir,
 			List<String> filesToCopy, boolean copy) {
 		try {
-			FileObject folder = root.resolveFile(dir);
+			FileObject folder = cd(dir);
 			for (String fileToCopyPath : filesToCopy) {
-				FileObject fileToCopy = root.resolveFile(fileToCopyPath);
+				FileObject fileToCopy = cd(fileToCopyPath);
 				FileObject newFile = folder.resolveFile(fileToCopy.getName()
 						.getBaseName());
 				if (copy) {
@@ -246,7 +246,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 
 	public DownloadFile getFile(String dir) {
 		try {
-			FileObject file = root.resolveFile(dir);
+			FileObject file = cd(dir);
 			FileContent fc = file.getContent();
 			String contentType = fc.getContentInfo().getContentType();
 			int size = new Long(fc.getSize()).intValue();
@@ -263,7 +263,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 	public boolean putFile(String dir, String filename, InputStream inputStream) {
 
 		try {
-			FileObject folder = root.resolveFile(dir);
+			FileObject folder = cd(dir);
 			FileObject newFile = folder.resolveFile(filename);
 			newFile.createFile();
 

@@ -34,6 +34,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.annotation.Resource;
+import javax.portlet.ActionRequest;
+import javax.portlet.PortletSession;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -150,9 +152,23 @@ public class ServersAccessService implements DisposableBean {
 		}
 	}
 	
+	public void updateUserParameters(String dir,
+			SharedUserPortletParameters userParameters) {
+		String driveName = getDrive(dir);
+		FsAccess fsAccess = getFsAccess(driveName);
+		if(userParameters != null && !fsAccess.isOpened() && fsAccess.formAuthenticationRequired()) {
+			UserPassword userPassword = userParameters.getUserPassword4AuthenticatedFormDrives().get(driveName);
+			if(userPassword != null)
+				fsAccess.authenticate(userPassword.getUsername(), userPassword.getPassword());
+			else
+				log.warn("Here we should have username & password ? What's wrong ? :(");
+		}
+	}
+
 	protected FsAccess getFsAccess(String driveName) {
-		if(this.restrictedServers.containsKey(driveName))
+		if(this.restrictedServers.containsKey(driveName)) {
 			return this.restrictedServers.get(driveName);
+		}
 		else {
 			log.error("pb : restrictedServers does not contain this required drive ?? : " + driveName);
 			return null;
@@ -274,6 +290,7 @@ public class ServersAccessService implements DisposableBean {
 		return this.getFsAccess(getDrive(dir)).getFile(getLocalDir(dir));
 	}
 
+
 	public boolean  putFile(String dir, String filename, InputStream inputStream) {
 		return this.getFsAccess(getDrive(dir)).putFile(getLocalDir(dir), filename, inputStream);
 	}
@@ -299,7 +316,7 @@ public class ServersAccessService implements DisposableBean {
 		return driveAndDir[0];
 	}
 	
-	private String getDrive(String dir) {
+	public String getDrive(String dir) {
 		dir = dir.substring(JsTreeFile.ROOT_DRIVE.length());
 		String[] driveAndDir = dir.split(JsTreeFile.DRIVE_PATH_SEPARATOR, 3);
 		if(driveAndDir.length > 1)
@@ -377,8 +394,20 @@ public class ServersAccessService implements DisposableBean {
 	}
 
 
-	public boolean authenticate(String dir, String username, String password) {
-		return this.getFsAccess(getDrive(dir)).authenticate(username, password);
+	public boolean authenticate(String dir, String username, String password, ActionRequest request) {
+		
+		boolean authenticateSuccess = this.getFsAccess(getDrive(dir)).authenticate(username, password);
+		 
+		if(authenticateSuccess && request != null) {
+			// we keep username+password in session so that we can reauthenticate on drive in servlet mode 
+			// (and so that download file would be ok with the servlet ...)
+			PortletSession session = request.getPortletSession();
+			SharedUserPortletParameters userParameters = (SharedUserPortletParameters) session.getAttribute(SharedUserPortletParameters.SHARED_PARAMETER_SESSION_ID, PortletSession.APPLICATION_SCOPE);
+			String driveName = this.getDrive(dir);
+			userParameters.getUserPassword4AuthenticatedFormDrives().put(driveName, new UserPassword(username, password));
+		} 
+		
+		return authenticateSuccess;
 	}
 
 

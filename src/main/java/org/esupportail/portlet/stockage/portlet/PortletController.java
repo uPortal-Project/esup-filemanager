@@ -37,6 +37,7 @@ import org.esupportail.commons.utils.ContextUtils;
 import org.esupportail.portlet.stockage.beans.FormCommand;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.stockage.beans.UserPassword;
 import org.esupportail.portlet.stockage.services.ServersAccessService;
 import org.esupportail.portlet.stockage.services.UserAgentInspector;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -171,12 +172,13 @@ public class PortletController {
 	}
 	
 	@RequestMapping(value = {"VIEW"}, params = {"action=formAuthenticationMobile"})
-    public void formAuthenticationWai(ActionRequest request, ActionResponse response,
+    public void formAuthenticationMobile(ActionRequest request, ActionResponse response,
     								@RequestParam String dir, @RequestParam String username, @RequestParam String password) throws IOException {
 	
 		String msg = "auth.bad";
-		if(this.serverAccess.authenticate(dir, username, password)) 
+		if(this.serverAccess.authenticate(dir, username, password, request)) {
 			msg = "auth.ok";
+		}
 		
 		response.setRenderParameter("msg", msg);
 		response.setRenderParameter("dir", dir);

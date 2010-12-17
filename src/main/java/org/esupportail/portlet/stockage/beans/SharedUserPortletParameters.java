@@ -19,6 +19,7 @@
 package org.esupportail.portlet.stockage.beans;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +38,8 @@ public class SharedUserPortletParameters implements Serializable {
     protected CASReceipt receipt;
     
     protected String username;
+    
+    protected Map<String, UserPassword> userPassword4AuthenticatedFormDrives = new HashMap<String, UserPassword>();
 
 	public List<String> getDriveNames() {
 		return driveNames;
@@ -68,6 +71,15 @@ public class SharedUserPortletParameters implements Serializable {
 
 	public void setUserInfos(Map userInfos) {
 		this.userInfos = userInfos;
+	}
+
+	public Map<String, UserPassword> getUserPassword4AuthenticatedFormDrives() {
+		return userPassword4AuthenticatedFormDrives;
+	}
+
+	public void setUserPassword4AuthenticatedFormDrives(
+			Map<String, UserPassword> userPassword4AuthenticatedFormDrives) {
+		this.userPassword4AuthenticatedFormDrives = userPassword4AuthenticatedFormDrives;
 	}
 
 }

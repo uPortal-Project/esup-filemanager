@@ -26,6 +26,7 @@ import java.util.List;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -34,6 +35,8 @@ import org.esupportail.portlet.stockage.beans.BasketSession;
 import org.esupportail.portlet.stockage.beans.FileUpload;
 import org.esupportail.portlet.stockage.beans.FormCommand;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
+import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.stockage.beans.UserPassword;
 import org.esupportail.portlet.stockage.services.ServersAccessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -203,9 +206,17 @@ public class PortletControllerWai {
     								@RequestParam String dir, @RequestParam String username, @RequestParam String password) throws IOException {
 	
 		String msg = "auth.bad";
-		if(this.serverAccess.authenticate(dir, username, password)) 
+		if(this.serverAccess.authenticate(dir, username, password, request)) {
 			msg = "auth.ok";
 		
+			// we keep username+password in session so that we can reauthenticate on drive in servlet mode 
+			// (and so that download file would be ok for example with the servlet ...)
+			PortletSession session = request.getPortletSession();
+			SharedUserPortletParameters userParameters = (SharedUserPortletParameters) session.getAttribute(SharedUserPortletParameters.SHARED_PARAMETER_SESSION_ID, PortletSession.APPLICATION_SCOPE);
+			String driveName = this.serverAccess.getDrive(dir);
+			userParameters.getUserPassword4AuthenticatedFormDrives().put(driveName, new UserPassword(username, password));
+		}
+			
 		response.setRenderParameter("msg", msg);
 		response.setRenderParameter("dir", dir);
 		response.setRenderParameter("action", "browseWai");
