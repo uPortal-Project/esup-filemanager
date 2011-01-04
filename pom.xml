@@ -6,7 +6,7 @@
   <artifactId>esup-portlet-stockage</artifactId>
   <packaging>war</packaging>
   <name>esup-blank-springmvc-portlet</name>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0.0-RC2</version>
 
   <repositories>
     <repository>
@@ -48,8 +48,8 @@
 
     <dependency>
       <groupId>org.esupportail</groupId>
-      <artifactId>esup-commons-springmvc-portlet</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <artifactId>esup-commons2-springmvc-portlet</artifactId>
+      <version>0.1.1</version>
     </dependency>
 
 
