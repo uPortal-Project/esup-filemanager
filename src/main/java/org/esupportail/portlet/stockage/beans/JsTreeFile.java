@@ -149,11 +149,11 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 	public Map<String, String> getAttr() {
 		Map<String, String> attr = new HashMap<String, String>();
 		String id = ROOT_DRIVE;
-		if(category != null && !category.getTitle().isEmpty())
+		if(category != null && category.getTitle().length() != 0)
 			id = id.concat(category.getTitle());
-		if(drive != null && !drive.getTitle().isEmpty())
+		if(drive != null && drive.getTitle().length() != 0)
 			id = id.concat(DRIVE_PATH_SEPARATOR).concat(drive.getTitle());
-		if(lid != null && !lid.isEmpty())
+		if(lid != null && lid.length() != 0)
 			id = id.concat(DRIVE_PATH_SEPARATOR).concat(lid);
 		attr.put("id", id);
 		attr.put("rel", type);
@@ -252,7 +252,7 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		parentsPathes.put(pathBase, rootTitleIcon);
 		String regexp = "(/|".concat(DRIVE_PATH_SEPARATOR).concat(")");
 		String driveRootPath = path.substring(pathBase.length());
-		if(!driveRootPath.isEmpty()) {
+		if(driveRootPath.length() != 0) {
 			List<String> relParentsPathes = Arrays.asList(driveRootPath.split(regexp));
 			pathBase = pathBase.concat(relParentsPathes.get(0));
 			List<String> categoryTitleIcon =  Arrays.asList(relParentsPathes.get(0), categoryIcon);

@@ -130,7 +130,7 @@ public class ServletAjaxController implements InitializingBean {
 			throw new EsupStockLostSessionException(infoMsg);
 		}
 		ModelMap model;
-		if(dir == null || dir.isEmpty() || dir.equals(JsTreeFile.ROOT_DRIVE)) {
+		if(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE)) {
 			JsTreeFile jsFileRoot = new JsTreeFile(JsTreeFile.ROOT_DRIVE_NAME, null, "drive");
 			jsFileRoot.setIcon(JsTreeFile.ROOT_ICON_PATH);
 			model = new ModelMap("resource", jsFileRoot);
@@ -156,7 +156,7 @@ public class ServletAjaxController implements InitializingBean {
 	
 	@RequestMapping("/fileChildren")
     public @ResponseBody List<JsTreeFile> fileChildren(String dir, HttpServletRequest request) {
-		if(dir == null || dir.isEmpty() || dir.equals(JsTreeFile.ROOT_DRIVE) ) {
+		if(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE) ) {
 			List<JsTreeFile> files = this.serverAccess.getJsTreeFileRoots();		
 			return files;
 		} else {

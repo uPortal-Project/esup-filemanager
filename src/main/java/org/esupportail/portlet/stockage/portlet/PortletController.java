@@ -100,7 +100,7 @@ public class PortletController {
     public ModelAndView browseMobile(RenderRequest request, RenderResponse response,
     								@RequestParam String dir) {
 		ModelMap model;
-		if( !(dir == null || dir.isEmpty() || dir.equals(JsTreeFile.ROOT_DRIVE)) ) {
+		if( !(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE)) ) {
 			if(this.serverAccess.formAuthenticationRequired(dir)) {
 				SortedMap<String, List<String>> parentPathes = JsTreeFile.getParentsPathes(dir, null, null);
 				// we want to get the (last-1) key of sortedmap "parentPathes"
@@ -128,7 +128,7 @@ public class PortletController {
 		}
 		
 		ModelMap model;
-		if( !(dir == null || dir.isEmpty() || dir.equals(JsTreeFile.ROOT_DRIVE)) ) {
+		if( !(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE)) ) {
 			if(this.serverAccess.formAuthenticationRequired(dir)) {
 				SortedMap<String, List<String>> parentPathes = JsTreeFile.getParentsPathes(dir, null, null);
 				// we want to get the (last-1) key of sortedmap "parentPathes"
@@ -153,7 +153,7 @@ public class PortletController {
 
 	private ModelMap browse(String dir) {
 		ModelMap model = new ModelMap();
-		if(dir == null || dir.isEmpty() || dir.equals(JsTreeFile.ROOT_DRIVE)) {
+		if(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE)) {
 			JsTreeFile jsFileRoot = new JsTreeFile(JsTreeFile.ROOT_DRIVE_NAME, null, "drive");
 			jsFileRoot.setIcon(JsTreeFile.ROOT_ICON_PATH);
 			model = new ModelMap("resource", jsFileRoot);

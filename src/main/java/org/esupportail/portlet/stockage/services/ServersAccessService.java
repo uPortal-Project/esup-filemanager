@@ -188,7 +188,7 @@ public class ServersAccessService implements DisposableBean {
 	public JsTreeFile get(String dir) {
 		String category = getDriveCategory(dir);
 		String driveName = getDrive(dir);
-		if(driveName == null || driveName.isEmpty()) {
+		if(driveName == null || driveName.length() == 0) {
 			// get category
 			DrivesCategory dCat = this.drivesCategories.get(category);
 			JsTreeFile jsTreeFile = new JsTreeFile(category, "", "category");
@@ -202,7 +202,7 @@ public class ServersAccessService implements DisposableBean {
 			DrivesCategory dCat = this.drivesCategories.get(category);
 			jsTreeFile.setCategory(category, dCat.getIcon());		
 			jsTreeFile.setDrive(driveName, this.getFsAccess(driveName).getIcon());
-			if(jsTreeFile.getTitle().isEmpty()) {
+			if(jsTreeFile.getTitle().length() == 0) {
 				// this the folder root == the drive
 				jsTreeFile.setTitle(driveName);
 				jsTreeFile.setIcon(this.getFsAccess(driveName).getIcon());
@@ -215,7 +215,7 @@ public class ServersAccessService implements DisposableBean {
 		String category = getDriveCategory(dir);
 		String driveName = getDrive(dir);
 		DrivesCategory dCat = this.drivesCategories.get(category);
-		if(driveName == null || driveName.isEmpty()) {
+		if(driveName == null || driveName.length() == 0) {
 			// getChildren on a category -> list drives
 			List<JsTreeFile> files = new ArrayList<JsTreeFile>();
 			for(FsAccess drive: getCategoryFsAccess(dCat)) {

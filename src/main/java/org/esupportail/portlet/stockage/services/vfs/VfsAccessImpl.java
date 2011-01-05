@@ -108,7 +108,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		try {
 			// assure that it'as already opened
 			this.open();
-			if (path == null || path.isEmpty())
+			if (path == null || path.length() == 0)
 				return root;
 			return root.resolveFile(path);
 		} catch(FileSystemException fse) {

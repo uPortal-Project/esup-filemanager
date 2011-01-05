@@ -168,7 +168,7 @@ public class PortletControllerWai {
 		List<JsTreeFile> files = this.serverAccess.getChildren(dir);
 		for(JsTreeFile file: files) {
 			String newTitle = request.getParameter(file.getPath());
-			if(newTitle != null && !newTitle.isEmpty() && !file.getTitle().equals(newTitle)) {
+			if(newTitle != null && newTitle.length() != 0 && !file.getTitle().equals(newTitle)) {
 				this.serverAccess.renameFile(file.getPath(), newTitle);
 			}
 		}
