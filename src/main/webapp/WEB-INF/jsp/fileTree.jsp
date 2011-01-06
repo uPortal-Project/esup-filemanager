@@ -86,7 +86,7 @@
         value="${file.title}"
         onKeyPress="return disableEnterKey(event)"/>
     <a class="renameSubmit" rel="${file.path}" href="#">
-      Rename
+      <spring:message code="toolbar.rename"/>
     </a>
   </span>
 </li>
