@@ -98,8 +98,15 @@
 		  	});
 
 		     $('#toolbar-rename').bind('click', function() {
-		    	 $(".renameSpan").removeClass('esupHide');
-		  	});
+			 dirs = getCheckedDirs();
+			 if(dirs.length == 0) { 
+		    	     $(".renameSpan").removeClass('esupHide');
+			 } else {
+			     $(".browsercheck:checked").each(function() {
+			 	 $(this).parent().next(".renameSpan").removeClass('esupHide');
+				});
+			 }
+		     });
 
 			$('#toolbar-delete').bind('click', function() {
 				cursor_wait();
