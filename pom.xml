@@ -33,6 +33,7 @@
       <type>jar</type>
       <scope>provided</scope>
     </dependency>
+
     <dependency>
       <groupId>javax.portlet</groupId>
       <artifactId>portlet-api</artifactId>
@@ -40,6 +41,7 @@
       <type>jar</type>
       <scope>provided</scope>
     </dependency>
+
     <dependency>
       <groupId>org.apache.pluto</groupId>
       <artifactId>pluto-taglib</artifactId>
@@ -53,6 +55,7 @@
 	</exclusion>
       </exclusions>
     </dependency>
+
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
@@ -68,26 +71,25 @@
       <artifactId>jackson-mapper-asl</artifactId>
       <version>1.5.3</version>
     </dependency>
-    <dependency>
-      <groupId>commons-vfs</groupId>
-      <artifactId>commons-vfs</artifactId>
-      <version>1.0</version>
-    </dependency>
+
     <dependency>
       <groupId>commons-httpclient</groupId>
       <artifactId>commons-httpclient</artifactId>
-      <version>3.1</version>
+      <version>2.0.2</version>
     </dependency>
+
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
       <version>1.2.2</version>
     </dependency>
+
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>1.4</version>
     </dependency>
+
     <dependency>
       <groupId>com.jcraft</groupId>
       <artifactId>jsch</artifactId>
@@ -144,6 +146,57 @@
     <!-- ===== Test Dependencies ====================================== -->
 
   </dependencies>
+
+
+
+  <profiles>
+
+    <profile>
+      <id>vfs-default</id>
+      <activation>
+	<activeByDefault>true</activeByDefault>
+      </activation>
+      <dependencies>
+	<dependency>
+	  <groupId>commons-vfs</groupId>
+	  <artifactId>commons-vfs</artifactId>
+	  <version>1.0</version>
+	</dependency>
+      </dependencies>
+    </profile>
+
+    <profile>
+      <id>vfs-sandbox</id>
+      <dependencies>
+	<dependency>
+	  <groupId>org.apache.commons</groupId>
+	  <artifactId>commons-vfs-sandbox</artifactId>
+	  <version>svn-tag-vfs-1.0</version>
+	</dependency>
+
+	<dependency>
+	  <groupId>slide</groupId>
+	  <artifactId>jakarta-slide-webdavlib</artifactId>
+	  <version>20050629.161100</version>
+	</dependency>
+	<dependency>
+	  <groupId>jcifs</groupId>
+	  <artifactId>jcifs</artifactId>
+	  <version>0.8.3</version>
+	</dependency>
+	<dependency>
+	  <groupId>javax.mail</groupId>
+	  <artifactId>mail</artifactId>
+	  <version>1.4</version>
+	</dependency>
+
+      </dependencies>
+    </profile>
+
+  </profiles>
+
+
+
   
   <build>
     <finalName>${pom.artifactId}</finalName>
