@@ -6,7 +6,7 @@
   <artifactId>esup-portlet-stockage</artifactId>
   <packaging>war</packaging>
   <name>esup-blank-springmvc-portlet</name>
-  <version>1.0.0-RC2</version>
+  <version>1.0.0</version>
 
   <repositories>
     <repository>
