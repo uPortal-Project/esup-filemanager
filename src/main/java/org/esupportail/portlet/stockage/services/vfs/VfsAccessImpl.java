@@ -39,6 +39,7 @@ import org.apache.commons.vfs.UserAuthenticator;
 import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.auth.StaticUserAuthenticator;
 import org.apache.commons.vfs.impl.DefaultFileSystemConfigBuilder;
+import org.apache.commons.vfs.provider.sftp.SftpFileSystemConfigBuilder;
 import org.esupportail.portlet.stockage.beans.DownloadFile;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
@@ -62,9 +63,15 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 	protected FileObject root;
 	
 	protected ResourceUtils resourceUtils;
+	
+	protected boolean sftpSetUserDirIsRoot = false;
 
 	public void setResourceUtils(ResourceUtils resourceUtils) {
 		this.resourceUtils = resourceUtils;
+	}
+	
+	public void setSftpSetUserDirIsRoot(boolean sftpSetUserDirIsRoot) {
+		this.sftpSetUserDirIsRoot = sftpSetUserDirIsRoot;
 	}
 
 	public void initializeService(Map userInfos, SharedUserPortletParameters userParameters) {
@@ -76,6 +83,9 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 			if(!isOpened()) {
 				FileSystemOptions fsOptions = new FileSystemOptions();
 				//SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(fsOptions, "no");
+				if(sftpSetUserDirIsRoot) {
+					SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fsOptions, true);
+				}
 				if(userAuthenticatorService != null) {
 					UserPassword userPassword = userAuthenticatorService.getUserPassword();
 					UserAuthenticator userAuthenticator = new StaticUserAuthenticator(null, userPassword.getUsername(), userPassword.getPassword());

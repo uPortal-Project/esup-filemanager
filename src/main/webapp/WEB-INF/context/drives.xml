@@ -137,11 +137,14 @@
     <property name="userInfo4Username" value="uid"/>
   </bean>
   
-  <!-- Stock2Cas uses proxy cas authentication -->
+  <!-- Stock2Cas uses proxy cas authentication 
+       sftpSetUserDirIsRoot is set to use user directory as root
+  -->
   <bean class="org.esupportail.portlet.stockage.services.vfs.VfsAccessImpl" scope="session">
     <property name="driveName" value="Stock2Cas"/>
     <property name="icon" value="/esup-portlet-stockage/img/drives/root.png" />
     <property name="uri" value="sftp://stock-2.mon-univ.fr/"/>
+    <property name="sftpSetUserDirIsRoot" value="true"/>
     <property name="memberOfAny">
       <list>
 	<value>pags.mon-univ</value>
