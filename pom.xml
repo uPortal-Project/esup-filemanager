@@ -11,7 +11,7 @@
   <repositories>
     <repository>
       <id>esup</id>
-      <url>https://mvn.esup-portail.org/content/repositories/releases</url>
+      <url>https://mvn.esup-portail.org/content/repositories/public</url>
     </repository>
   </repositories>
 
