@@ -71,6 +71,9 @@
        This implementation of drive used Apache Commons VFS.
        So you can see uri format here : 
        http://commons.apache.org/vfs/filesystems.html
+       Take care, by default 'mvn package' doesn't provide cifs or webdav support.
+       If you want to use cifs or webdav, you should use the maven profil named vfs-sandbox : 
+       'mvn package -P vfs-sandbox' / 'mvn jetty:run -P vfs-sandbox'
       
        You can choose as authentication 
        * no authentication
