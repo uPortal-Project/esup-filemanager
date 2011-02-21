@@ -61,14 +61,12 @@
           <a class="fileTreeRef" href="" rel="${file.path}" onclick="return false;">
             ${file.title}
           </a>
-        </li>
       </c:when>
       <c:when test="${file.type == 'drive' || file.type == 'category'}">
         <img src="${file.icon}" alt="icon" />
         <a class="fileTreeRef" href="" rel="${file.path}" onclick="return false;">
           ${file.title}
         </a>
-      </li>
     </c:when>
     <c:otherwise>
       <form:checkbox path="dirs" cssClass="browsercheck" value="${file.path}" />
@@ -76,8 +74,9 @@
       <a class="file" href="<spring:url value='/servlet-ajax/downloadFile?dir=${file.path}'/>" rel="${file.path}">
         ${file.title}
       </a>
-    </c:otherwise>
-  </c:choose>
+     </c:otherwise>
+    </c:choose>
+   </li>
   <span class="esupHide renameSpan">
     <input 
         class="renameInput"
