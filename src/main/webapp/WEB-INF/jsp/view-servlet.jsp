@@ -30,6 +30,7 @@
 
     <script type="text/javascript">
       var fileuploadTemplate = '<spring:message code="fileupload.template"/>';
+      var fileTemplate = '<spring:message code="fileupload.fileTemplate"/>';
     </script>
 
     <!-- JQUERY -->

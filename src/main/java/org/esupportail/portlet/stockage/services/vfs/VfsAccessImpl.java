@@ -66,12 +66,18 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 	
 	protected boolean sftpSetUserDirIsRoot = false;
 
+        protected boolean strictHostKeyChecking = true;
+
 	public void setResourceUtils(ResourceUtils resourceUtils) {
 		this.resourceUtils = resourceUtils;
 	}
 	
 	public void setSftpSetUserDirIsRoot(boolean sftpSetUserDirIsRoot) {
 		this.sftpSetUserDirIsRoot = sftpSetUserDirIsRoot;
+	}
+
+       	public void setStrictHostKeyChecking(boolean strictHostKeyChecking) {
+		this.strictHostKeyChecking = strictHostKeyChecking;
 	}
 
 	public void initializeService(Map userInfos, SharedUserPortletParameters userParameters) {
@@ -82,13 +88,19 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		try {
 			if(!isOpened()) {
 				FileSystemOptions fsOptions = new FileSystemOptions();
-				//SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(fsOptions, "no");
+	
 				if(sftpSetUserDirIsRoot) {
 					SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fsOptions, true);
 				}
+
+				if(!strictHostKeyChecking) {
+					SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(fsOptions, "no");
+				}
+
+
 				if(userAuthenticatorService != null) {
 					UserPassword userPassword = userAuthenticatorService.getUserPassword();
-					UserAuthenticator userAuthenticator = new StaticUserAuthenticator(null, userPassword.getUsername(), userPassword.getPassword());
+					UserAuthenticator userAuthenticator = new StaticUserAuthenticator(userPassword.getDomain(), userPassword.getUsername(), userPassword.getPassword());
 					DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(fsOptions, userAuthenticator);
 				}
 				fsManager = VFS.getManager();

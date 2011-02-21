@@ -19,7 +19,9 @@
 "use strict";
 
 (function ($) {
-	
+	var uploadListFadeoutTime = 3000;
+	var infoTolbarFadeoutTime = 8000;
+		
 	$(document).ready(function() { 
 		
 		function cursor_wait() {
@@ -35,6 +37,7 @@
 		var uploader =  new qq.FileUploader({
 			multiple: true,
 			template: fileuploadTemplate,
+			fileTemplate: fileTemplate,  			
 			element: document.getElementById('file-uploader'),
 			action: '/esup-portlet-stockage/servlet-ajax/uploadFile',     
 			onSubmit: function(id, fileName){
@@ -42,18 +45,30 @@
 						dir: $("#bigdirectory").attr("rel")
 		 			});
 					cursor_wait();
+					$('.qq-upload-list').show();
 			},
 			onComplete: function(id, fileName, result){
 				cursor_clear();
 				$("#info-toolbar").html(result.msg);
+				$('#info-toolbar').show();
 				if(result.success) {
 					id = $("#bigdirectory").attr('rel');
 					obj = document.getElementById(id);
 					$("#fileTree").jstree("refresh", obj); 
 					$("#fileTree").jstree("select_node", obj, true); 
 				}
+				if(uploader.getInProgress() == 0) {
+					$('.qq-upload-list').fadeOut(uploadListFadeoutTime);
+					$('#info-toolbar').fadeOut(infoTolbarFadeoutTime);
+				}							
+			},
+			onCancel: function(id, fileName){
+				if(uploader.getInProgress() == 0) {
+					$('.qq-upload-list').fadeOut(uploadListFadeoutTime);
+				}			
+				$('#info-toolbar').fadeOut(infoTolbarFadeoutTime);
 			}
-		 });  
+		 });
 
 		     $('#toolbar-copy').bind('click', function() {
 		    	    cursor_wait();
@@ -62,6 +77,8 @@
 		    		 $.post(prepareCopyFilesUrl, $("#filesForm").serialize(), function(data){
 		    		   cursor_clear();
 		  	    	   $("#info-toolbar").html(data.msg);
+					   $('#info-toolbar').show();
+					   $('#info-toolbar').fadeOut(infoTolbarFadeoutTime);
 		    		 });
 		     });
 
@@ -72,6 +89,8 @@
 		 		 $.post(prepareCutFilesUrl, $("#filesForm").serialize(), function(data){
 		 			   cursor_clear();
 			    	   $("#info-toolbar").html(data.msg);
+					   $('#info-toolbar').show();
+					   $('#info-toolbar').fadeOut(infoTolbarFadeoutTime);
 			    	});
 		 	 });
 
@@ -83,8 +102,12 @@
 		 			 cursor_clear();
 		 			 if(data.status) {
 			    	   $("#info-toolbar").html(data.msg);
+					   $('#info-toolbar').show();
+					   $('#info-toolbar').fadeOut(infoTolbarFadeoutTime);
 		 			 } else {
 		 				$("#info-toolbar").html(data.msg);
+						$('#info-toolbar').show();
+					    $('#info-toolbar').fadeOut(infoTolbarFadeoutTime);
 		 			 }
 			    	   obj = document.getElementById(id);
 			    	   $("#fileTree").jstree("refresh", obj); 
@@ -115,8 +138,12 @@
 			    	    cursor_clear();
 			    		if(data.status) {
 			    			$("#info-toolbar").html(data.msg);
+							$('#info-toolbar').show();
+							$('#info-toolbar').fadeOut(infoTolbarFadeoutTime);
 			 			} else {
 			 				$("#info-toolbar").html(data.msg);
+							$('#info-toolbar').show();
+							$('#info-toolbar').fadeOut(infoTolbarFadeoutTime);
 			 			}
 			    	   id = $("#bigdirectory").attr('rel');
 			    	   obj = document.getElementById(id);
@@ -338,6 +365,9 @@ function authenticate(dir, username, password) {
 		}, 
 		success : function (data) { 
 			$("#info-toolbar").html(data.msg);
+			$('#info-toolbar').show();
+ 		    $('#info-toolbar').fadeOut(infoTolbarFadeoutTime);
+
 			if(data.status) 
 				getFile(null, dir);
 		}

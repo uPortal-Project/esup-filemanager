@@ -29,7 +29,8 @@ list-style: none;
 }
 
 .esupstock #jqueryFileTree { 
-padding-left: 15px;
+padding: 2px;
+margin: 0px;
 }
 
 .esupstock .container #fileTree,
@@ -190,3 +191,48 @@ display: block;
 margin: 0px 5px 0px 0px;
 padding: 0px 0px 0px 15px;
 }
+
+
+/* MY */
+
+
+.esupstock .qq-upload-button {
+display: block;
+padding: 24px 5px 0px 10px;
+text-decoration: none;
+color:#5a95cf!important;
+font-weight:bold;
+}
+
+.esupstock .qq-upload-drop-area {
+background: #f3f3f3;
+border:1px dotted #bbb;
+position: absolute;
+padding: 0;
+margin: 0
+display: block;
+top:30%;
+left:20%;
+padding:150px;
+z-index:2000;
+}
+
+
+.esupstock .qq-upload-list{
+ display:none;
+ background: #f3f3f3;
+ border:1px dotted #bbb;
+ position: absolute;
+ margin:0;
+ top:40%;
+ left:30%;
+ list-style: none;
+ padding:25px;
+ z-index:2000; 
+}
+
+.esupstock .span-12 {
+margin: 0px;
+}
+
+

@@ -81,13 +81,13 @@
         <div class="span-24 last" id="info-toolbar">
         </div>
 
-        <div class="span-7 colborder">
+        <div class="span-12">
           <div id="fileTree">
             <spring:message code="error.javascriptengine"/>
           </div>
         </div>
 
-        <div class="span-8 colborder">
+        <div class="span-12">
           <div id="browserMain">
           </div>
         </div>
