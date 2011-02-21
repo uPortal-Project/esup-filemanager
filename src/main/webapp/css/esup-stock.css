@@ -127,17 +127,23 @@ display: block;
 padding: 24px 5px 0px 10px;
 margin-top: -23px;
 background: url(/esup-portlet-stockage/img/upload_24px.gif) no-repeat top; 
-color: #009;
-text-decoration: underline;
+color: #5a95cf!important;
+text-decoration: none;
 width: 60px;
+font-weight:bold;
 }
 
 .esupstock .qq-upload-list {
-background: #eee;
-position: absolute;
-margin-left: -90px;
-margin-top: 50px;
-list-style: none;
+ display:none;
+ background: #f3f3f3;
+ border:1px dotted #bbb;
+ position: absolute;
+ margin:0;
+ top:40%;
+ left:30%;
+ list-style: none;
+ padding:25px;
+ z-index:2000; 
 }
 
 .esupstock .qq-upload-list li {
@@ -146,13 +152,15 @@ list-style: none;
 
 .esupstock .qq-upload-drop-area {
 height: 25px;
-background: #fafafa;
-border: 1px dashed #ddd;
+background: #f3f3f3;
+border: 1px dotted #bbb;
 position: absolute;
 float: right;
-padding: 5px 2px 5px 2px;
-margin-left: 60px;
-margin-top: 5px;
+margin: 0;
+top:30%;
+left:20%;
+padding:150px;
+z-index:2000;
 display: block;
 }
 
@@ -186,53 +194,15 @@ padding: 10px;
 display: block;
 }
 
+.esupstock .span-12 {
+margin: 0px;
+}
+
 /* Hack for uPortal 2.x */
 #portal-page-body .esupstock .container #fileTree ul, li {
 margin: 0px 5px 0px 0px;
 padding: 0px 0px 0px 15px;
 }
 
-
-/* MY */
-
-
-.esupstock .qq-upload-button {
-display: block;
-padding: 24px 5px 0px 10px;
-text-decoration: none;
-color:#5a95cf!important;
-font-weight:bold;
-}
-
-.esupstock .qq-upload-drop-area {
-background: #f3f3f3;
-border:1px dotted #bbb;
-position: absolute;
-padding: 0;
-margin: 0
-display: block;
-top:30%;
-left:20%;
-padding:150px;
-z-index:2000;
-}
-
-
-.esupstock .qq-upload-list{
- display:none;
- background: #f3f3f3;
- border:1px dotted #bbb;
- position: absolute;
- margin:0;
- top:40%;
- left:30%;
- list-style: none;
- padding:25px;
- z-index:2000; 
-}
-
-.esupstock .span-12 {
-margin: 0px;
-}
 
 
