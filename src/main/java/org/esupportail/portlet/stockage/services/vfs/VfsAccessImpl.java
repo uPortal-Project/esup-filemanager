@@ -66,7 +66,9 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 	
 	protected boolean sftpSetUserDirIsRoot = false;
 
-        protected boolean strictHostKeyChecking = true;
+    protected boolean strictHostKeyChecking = true;
+    
+    protected boolean showHiddenFiles = false;
 
 	public void setResourceUtils(ResourceUtils resourceUtils) {
 		this.resourceUtils = resourceUtils;
@@ -76,8 +78,12 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		this.sftpSetUserDirIsRoot = sftpSetUserDirIsRoot;
 	}
 
-       	public void setStrictHostKeyChecking(boolean strictHostKeyChecking) {
+    public void setStrictHostKeyChecking(boolean strictHostKeyChecking) {
 		this.strictHostKeyChecking = strictHostKeyChecking;
+	}
+
+	public void setShowHiddenFiles(boolean showHiddenFiles) {
+		this.showHiddenFiles = showHiddenFiles;
 	}
 
 	public void initializeService(Map userInfos, SharedUserPortletParameters userParameters) {
@@ -96,7 +102,6 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 				if(!strictHostKeyChecking) {
 					SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(fsOptions, "no");
 				}
-
 
 				if(userAuthenticatorService != null) {
 					UserPassword userPassword = userAuthenticatorService.getUserPassword();
@@ -152,7 +157,8 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 			List<JsTreeFile> files = new ArrayList<JsTreeFile>();
 			FileObject resource = cd(path);
 			for(FileObject child: resource.getChildren())
-				files.add(resourceAsJsTreeFile(child));
+				if(this.showHiddenFiles || !child.isHidden())
+					files.add(resourceAsJsTreeFile(child));
 			return files;
 		} catch(FileSystemException fse) {
 			Throwable cause = ExceptionUtils.getCause(fse);
