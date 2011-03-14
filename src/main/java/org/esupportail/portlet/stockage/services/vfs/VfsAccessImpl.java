@@ -191,6 +191,9 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 			String icon = resourceUtils.getIcon(title);
 			file.setIcon(icon);
 		}
+		file.setHidden(resource.isHidden());
+		file.setReadable(resource.isReadable());
+		file.setWriteable(resource.isWriteable());
 		return file;
 	}
 

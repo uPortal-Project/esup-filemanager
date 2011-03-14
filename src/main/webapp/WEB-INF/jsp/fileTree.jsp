@@ -53,7 +53,7 @@
 
   <form:form method="post" id="filesForm">
     <c:forEach var="file" items="${files}">
-      <li class="browserlist">
+      <li class="browserlist ${file.readable ? 'esup-stock-read' : ''} ${file.writeable ? 'esup-stock-write' : ''} ${file.hidden ? 'esup-stock-hidden' : ''}">
       <c:choose>
         <c:when test="${file.type == 'folder'}">
           <form:checkbox path="dirs" cssClass="browsercheck" value="${file.path}" />
