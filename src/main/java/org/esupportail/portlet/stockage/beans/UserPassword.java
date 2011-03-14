@@ -58,7 +58,6 @@ public class UserPassword implements Serializable {
 		super();
 		this.username = username;
 		this.password = password;
-		this.domain = domain;
 	}
 
 	public UserPassword() {

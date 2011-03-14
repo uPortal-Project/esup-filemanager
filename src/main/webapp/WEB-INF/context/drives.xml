@@ -78,6 +78,7 @@
        You can choose as authentication 
        * no authentication
        * simple authentication : we give username/password in this config file for all
+       * trusted authentication : we give an userInfo4Username parameter that retrieve username from portal 
        * form authentication : we will ask username/password to the user when accessing this drive
        * cas authentication : we're using proxy cas 
        
@@ -101,6 +102,7 @@
     <property name="username" value="bonamvin"/>
     <property name="password" value="toto"/>
   </bean>
+
   
 
   <!-- bob doesn't use authentication 
@@ -138,6 +140,13 @@
   <bean name="formUserAuthenticationService" class="org.esupportail.portlet.stockage.services.auth.FormUserPasswordAuthenticatorService"
 	scope="session">
     <property name="userInfo4Username" value="uid"/>
+  </bean>
+  
+  <!-- here a trusted authentication (password is the same for all) - note that we don't use it in drives examples -->
+  <bean name="trustedUserAuthenticationService" class="org.esupportail.portlet.stockage.services.auth.UserPasswordAuthenticatorService"
+	scope="session">
+    <property name="userInfo4Username" value="uid"/>
+    <property name="password" value="commonTrustedPassword4All"/>
   </bean>
   
   <!-- Stock2Cas uses proxy cas authentication 

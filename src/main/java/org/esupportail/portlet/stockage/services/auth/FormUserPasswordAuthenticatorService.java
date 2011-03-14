@@ -18,31 +18,11 @@
 
 package org.esupportail.portlet.stockage.services.auth;
 
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
-import org.esupportail.portlet.stockage.beans.UserPassword;
 
 public class FormUserPasswordAuthenticatorService extends UserPasswordAuthenticatorService {
 
 	protected static final Log log = LogFactory.getLog(FormUserPasswordAuthenticatorService.class);
-
-	protected String userInfo4Username;
-	
-	/**
-	 * To set a default username retrieving from user uPortal attributes
-	 * @param userInfo4Username
-	 */
-	public void setUserInfo4Username(String userInfo4Username) {
-		this.userInfo4Username = userInfo4Username;
-	}
-
-	public void initialize(Map userInfos, SharedUserPortletParameters userParameters) {
-		if(userInfo4Username != null && userInfos != null && userInfos.containsKey(userInfo4Username)) {
-			this.setUsername((String)userInfos.get(userInfo4Username));
-		}
-	}
 	
 }

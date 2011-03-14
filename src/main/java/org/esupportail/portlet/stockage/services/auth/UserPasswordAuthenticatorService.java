@@ -31,15 +31,32 @@ public class UserPasswordAuthenticatorService implements UserAuthenticatorServic
 
 	protected UserPassword userPassword = new UserPassword();
 
+	protected String userInfo4Username;
+	
 	public void setUsername(String username) {
 		userPassword.setUsername(username);
 	}
+	
 	public void setPassword(String password) {
 		userPassword.setPassword(password);
 	}
+	
+	public void setDomain(String domain) {
+		userPassword.setDomain(domain);
+	}
+
+	/**
+	 * To set a default username retrieving from user uPortal attributes
+	 * @param userInfo4Username
+	 */
+	public void setUserInfo4Username(String userInfo4Username) {
+		this.userInfo4Username = userInfo4Username;
+	}
 
 	public void initialize(Map userInfos, SharedUserPortletParameters userParameters) {
-		// nothing to do
+		if(userInfo4Username != null && userInfos != null && userInfos.containsKey(userInfo4Username)) {
+			this.setUsername((String)userInfos.get(userInfo4Username));
+		}
 	}
 	
 	public UserPassword getUserPassword() {

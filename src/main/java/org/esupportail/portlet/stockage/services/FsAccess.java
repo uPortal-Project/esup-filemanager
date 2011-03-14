@@ -29,6 +29,7 @@ import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.stockage.beans.UserPassword;
 import org.esupportail.portlet.stockage.services.auth.FormUserPasswordAuthenticatorService;
 import org.esupportail.portlet.stockage.services.auth.UserAuthenticatorService;
+import org.esupportail.portlet.stockage.services.uri.UriManipulateService;
 
 public abstract class FsAccess {
 
@@ -45,6 +46,8 @@ public abstract class FsAccess {
 	protected String icon;
 	
 	protected UserAuthenticatorService userAuthenticatorService;
+
+	protected UriManipulateService uriManipulateService;
 
 	public List<String> getMemberOfAny() {
 		return memberOfAny;
@@ -91,6 +94,11 @@ public abstract class FsAccess {
 		this.userAuthenticatorService = userAuthenticatorService;
 	}
 
+	public void setUriManipulateService(
+			UriManipulateService uriManipulateService) {
+		this.uriManipulateService = uriManipulateService;
+	}
+	
 	public void initializeService(Map userInfos,
 			SharedUserPortletParameters userParameters) {
 		if(userInfos != null) {
@@ -102,6 +110,8 @@ public abstract class FsAccess {
 		}
 		if(this.userAuthenticatorService != null && userInfos != null)
 			this.userAuthenticatorService.initialize(userInfos, userParameters);
+		if(this.uriManipulateService != null) 
+			this.uri = this.uriManipulateService.manipulate(uri);			
 	}
 
 	public abstract void open() ;
