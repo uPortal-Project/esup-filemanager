@@ -22,6 +22,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
 >
+
+    <!-- we juste define PropertyPlaceholderConfigurer so that you can use java env var in your drives.xml if you need -->
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
     
     <!--
      | Message source for this context, loaded from localized "messages_xx" files
