@@ -17,10 +17,10 @@
  */
 
 "use strict";
+var uploadListFadeoutTime = 3000;
+var infoTolbarFadeoutTime = 8000;
 
 (function ($) {
-	var uploadListFadeoutTime = 3000;
-	var infoTolbarFadeoutTime = 8000;
 		
 	$(document).ready(function() { 
 		
