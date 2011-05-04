@@ -52,8 +52,8 @@
 				$("#info-toolbar").html(result.msg);
 				$('#info-toolbar').show();
 				if(result.success) {
-					id = $("#bigdirectory").attr('rel');
-					obj = document.getElementById(id);
+					var id = $("#bigdirectory").attr('rel');
+					var obj = document.getElementById(id);
 					$("#fileTree").jstree("refresh", obj); 
 					$("#fileTree").jstree("select_node", obj, true); 
 				}
@@ -72,8 +72,8 @@
 
 		     $('#toolbar-copy').bind('click', function() {
 		    	    cursor_wait();
-		    		dirs = getCheckedDirs();
-		    		prepareCopyFilesUrl = '/esup-portlet-stockage/servlet-ajax/prepareCopyFiles';
+		    		var dirs = getCheckedDirs();
+		    		var prepareCopyFilesUrl = '/esup-portlet-stockage/servlet-ajax/prepareCopyFiles';
 		    		 $.post(prepareCopyFilesUrl, $("#filesForm").serialize(), function(data){
 		    		   cursor_clear();
 		  	    	   $("#info-toolbar").html(data.msg);
@@ -84,8 +84,8 @@
 
 		     $('#toolbar-cut').bind('click', function() {
 		    	cursor_wait();
-		 		dirs = getCheckedDirs();
-		 		prepareCutFilesUrl = '/esup-portlet-stockage/servlet-ajax/prepareCutFiles';
+		 		var dirs = getCheckedDirs();
+		 		var prepareCutFilesUrl = '/esup-portlet-stockage/servlet-ajax/prepareCutFiles';
 		 		 $.post(prepareCutFilesUrl, $("#filesForm").serialize(), function(data){
 		 			   cursor_clear();
 			    	   $("#info-toolbar").html(data.msg);
@@ -96,8 +96,8 @@
 
 		     $('#toolbar-past').bind('click', function() {
 		    	 cursor_wait();
-		    	 id = $("#bigdirectory").attr('rel');
-		    	 pastFilesUrl = '/esup-portlet-stockage/servlet-ajax/pastFiles';
+		    	 var id = $("#bigdirectory").attr('rel');
+		    	 var pastFilesUrl = '/esup-portlet-stockage/servlet-ajax/pastFiles';
 		 		 $.post(pastFilesUrl, "dir="+id, function(data){
 		 			 cursor_clear();
 		 			 if(data.status) {
@@ -109,7 +109,7 @@
 						$('#info-toolbar').show();
 					    $('#info-toolbar').fadeOut(infoTolbarFadeoutTime);
 		 			 }
-			    	   obj = document.getElementById(id);
+			    	   var obj = document.getElementById(id);
 			    	   $("#fileTree").jstree("refresh", obj); 
 			    	   $("#fileTree").jstree("select_node", obj, true); 
 			      });
@@ -121,7 +121,7 @@
 		  	});
 
 		     $('#toolbar-rename').bind('click', function() {
-			 dirs = getCheckedDirs();
+			 var dirs = getCheckedDirs();
 			 if(dirs.length == 0) { 
 		    	     $(".renameSpan").removeClass('esupHide');
 			 } else {
@@ -133,7 +133,7 @@
 
 			$('#toolbar-delete').bind('click', function() {
 				cursor_wait();
-         		removeFilesUrl = '/esup-portlet-stockage/servlet-ajax/removeFiles';
+				var removeFilesUrl = '/esup-portlet-stockage/servlet-ajax/removeFiles';
 			    $.post(removeFilesUrl, $("#filesForm").serialize(), function(data){
 			    	    cursor_clear();
 			    		if(data.status) {
@@ -145,8 +145,8 @@
 							$('#info-toolbar').show();
 							$('#info-toolbar').fadeOut(infoTolbarFadeoutTime);
 			 			}
-			    	   id = $("#bigdirectory").attr('rel');
-			    	   obj = document.getElementById(id);
+			    	   var id = $("#bigdirectory").attr('rel');
+			    	   var obj = document.getElementById(id);
 			    	   $("#fileTree").jstree("refresh", obj); 
 			    	   $("#fileTree").jstree("select_node", obj, true); 
 			    	   
@@ -154,16 +154,16 @@
 			});
 			
 			$('#toolbar-zip').bind('click', function() {
-	    		dirs = getCheckedDirs();
+	    		var dirs = getCheckedDirs();
 	    		if(dirs.length > 0) {
-	    			downloadZipUrl = '/esup-portlet-stockage/servlet-ajax/downloadZip';
+	    			var downloadZipUrl = '/esup-portlet-stockage/servlet-ajax/downloadZip';
 	    			$("#filesForm").attr("action", downloadZipUrl);
 	    			$("#filesForm").submit();
 	    		}
 			});
 
 			function getCheckedDirs()  {
-				dirs = new Array;
+				var dirs = new Array;
 				$(".browsercheck:checked").each(function() {
 			 	  dirs.push($(this).val());
 				});
@@ -293,14 +293,14 @@
 
 function getFile(parentDir, fileId) {
 	if(parentDir != null) {
-		parentObj = document.getElementById(parentDir);
+		var parentObj = document.getElementById(parentDir);
 		$("#fileTree").jstree("open_node", parentObj, function() {
-			obj = document.getElementById(fileId);
+			var obj = document.getElementById(fileId);
 			$("#fileTree").jstree("select_node", obj, true); 
 		}, true);
 	} else {
 		if(fileId != 'FS:') {
-			obj = document.getElementById(fileId);
+			var obj = document.getElementById(fileId);
 			$("#fileTree").jstree("select_node", obj, true); 
 		} else {
 			$.ajax({
