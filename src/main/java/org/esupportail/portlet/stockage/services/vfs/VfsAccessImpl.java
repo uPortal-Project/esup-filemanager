@@ -92,7 +92,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		super.initializeService(userInfos, userParameters);
 	}
 	
-	public void open() {
+	public void open(SharedUserPortletParameters userParameters) {
 		try {
 			if(!isOpened()) {
 				FileSystemOptions fsOptions = new FileSystemOptions();
@@ -106,7 +106,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 				}
 
 				if(userAuthenticatorService != null) {
-					UserPassword userPassword = userAuthenticatorService.getUserPassword();
+					UserPassword userPassword = userAuthenticatorService.getUserPassword(userParameters);
 					UserAuthenticator userAuthenticator = new StaticUserAuthenticator(userPassword.getDomain(), userPassword.getUsername(), userPassword.getPassword());
 					DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(fsOptions, userAuthenticator);
 				}
@@ -133,10 +133,10 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		return (root != null);
 	}
 
-	private FileObject cd(String path) {
+	private FileObject cd(String path, SharedUserPortletParameters userParameters) {
 		try {
 			// assure that it'as already opened
-			this.open();
+			this.open(userParameters);
 			if (path == null || path.length() == 0)
 				return root;
 			return root.resolveFile(path);
@@ -145,19 +145,19 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		}
 	}
 	
-	public JsTreeFile get(String path) {
+	public JsTreeFile get(String path, SharedUserPortletParameters userParameters) {
 		try {
-			FileObject resource = cd(path);
+			FileObject resource = cd(path, userParameters);
 			return resourceAsJsTreeFile(resource);
 		} catch(FileSystemException fse) {
 			throw new EsupStockException(fse);
 		}
 	}
 	
-	public List<JsTreeFile> getChildren(String path) {
+	public List<JsTreeFile> getChildren(String path, SharedUserPortletParameters userParameters) {
 		try {
 			List<JsTreeFile> files = new ArrayList<JsTreeFile>();
-			FileObject resource = cd(path);
+			FileObject resource = cd(path, userParameters);
 			for(FileObject child: resource.getChildren())
 				if(this.showHiddenFiles || !child.isHidden())
 					files.add(resourceAsJsTreeFile(child));
@@ -199,11 +199,11 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		return file;
 	}
 
-	public boolean remove(String path) {
+	public boolean remove(String path, SharedUserPortletParameters userParameters) {
 		boolean success = false;
 		FileObject file;
 		try {
-			file = cd(path);
+			file = cd(path, userParameters);
 			success = file.delete();
 		} catch (FileSystemException e) {
 			log.info("can't delete file because of FileSystemException : "
@@ -213,9 +213,9 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		return success;
 	}
 
-	public String createFile(String parentPath, String title, String type) {
+	public String createFile(String parentPath, String title, String type, SharedUserPortletParameters userParameters) {
 		try {
-			FileObject parent = cd(parentPath);
+			FileObject parent = cd(parentPath, userParameters);
 			FileObject child = parent.resolveFile(title);
 			if (!child.exists()) {
 				if ("folder".equals(type)) {
@@ -236,9 +236,9 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		return null;
 	}
 
-	public boolean renameFile(String path, String title) {
+	public boolean renameFile(String path, String title, SharedUserPortletParameters userParameters) {
 		try {
-			FileObject file = cd(path);
+			FileObject file = cd(path, userParameters);
 			FileObject newFile = file.getParent().resolveFile(title);
 			if (!newFile.exists()) {
 				file.moveTo(newFile);
@@ -255,11 +255,11 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 
 
 	public boolean moveCopyFilesIntoDirectory(String dir,
-			List<String> filesToCopy, boolean copy) {
+			List<String> filesToCopy, boolean copy, SharedUserPortletParameters userParameters) {
 		try {
-			FileObject folder = cd(dir);
+			FileObject folder = cd(dir, userParameters);
 			for (String fileToCopyPath : filesToCopy) {
-				FileObject fileToCopy = cd(fileToCopyPath);
+				FileObject fileToCopy = cd(fileToCopyPath, userParameters);
 				FileObject newFile = folder.resolveFile(fileToCopy.getName()
 						.getBaseName());
 				if (copy) {
@@ -277,9 +277,9 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		return false;
 	}
 
-	public DownloadFile getFile(String dir) {
+	public DownloadFile getFile(String dir, SharedUserPortletParameters userParameters) {
 		try {
-			FileObject file = cd(dir);
+			FileObject file = cd(dir, userParameters);
 			FileContent fc = file.getContent();
 			String contentType = fc.getContentInfo().getContentType();
 			int size = new Long(fc.getSize()).intValue();
@@ -293,10 +293,10 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		return null;
 	}
 
-	public boolean putFile(String dir, String filename, InputStream inputStream) {
+	public boolean putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters) {
 
 		try {
-			FileObject folder = cd(dir);
+			FileObject folder = cd(dir, userParameters);
 			FileObject newFile = folder.resolveFile(filename);
 			newFile.createFile();
 

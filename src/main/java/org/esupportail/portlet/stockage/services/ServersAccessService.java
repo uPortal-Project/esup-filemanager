@@ -37,6 +37,7 @@ import java.util.zip.ZipOutputStream;
 
 import javax.annotation.Resource;
 import javax.portlet.ActionRequest;
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 
 import org.apache.commons.io.IOUtils;
@@ -61,9 +62,9 @@ public class ServersAccessService implements DisposableBean {
 
 	protected Map<String, FsAccess> servers = new HashMap<String, FsAccess>();
 	
-	protected Map<String, FsAccess> restrictedServers = new HashMap<String, FsAccess>();
+	protected Map<String, Map<String, FsAccess>> restrictedServers = new HashMap<String,  Map<String, FsAccess>>();
 	
-	protected boolean isInitialized = false;
+	protected Map<String, Boolean> isInitializedMap = new HashMap<String, Boolean>();
 	
 	@Autowired
 	public void setServers(List<FsAccess> servers) {
@@ -76,7 +77,7 @@ public class ServersAccessService implements DisposableBean {
 	protected Map<String, DrivesCategory> drivesCategories;
 	
 	
-	public List<String> getRestrictedDrivesGroupsContext(javax.portlet.RenderRequest request,
+	public List<String> getRestrictedDrivesGroupsContext(PortletRequest request,
 			String contextToken) {
 				
 		List<String> driveNames = new ArrayList<String>(this.servers.keySet());
@@ -114,29 +115,33 @@ public class ServersAccessService implements DisposableBean {
 	
 
 	public void initializeServices(List<String> driveNames, Map userInfos, SharedUserPortletParameters userParameters) {
+		
+		this.restrictedServers.put(userParameters.getSharedSessionId(), new HashMap<String, FsAccess>());
+		Map<String, FsAccess> rServers = this.restrictedServers.get(userParameters.getSharedSessionId());
+		
 		if(driveNames != null) {
 			for(String driveName : driveNames) {
-				this.restrictedServers.put(driveName, this.servers.get(driveName));
-				this.restrictedServers.get(driveName).initializeService(userInfos, userParameters);
+				rServers.put(driveName, this.servers.get(driveName));
+				rServers.get(driveName).initializeService(userInfos, userParameters);
 			}
 			//this.open(driveNames);
 		}
-		isInitialized = true;
+		isInitializedMap.put(userParameters.getSharedSessionId(), true);
 	}
 	
-	private void open(List<String> driveNames) {
+	private void open(List<String> driveNames, SharedUserPortletParameters userParameters) {
 		if(driveNames != null) {
 			for(String driveName : driveNames) {
 				try {
-					this.restrictedServers.get(driveName).open();
+					this.restrictedServers.get(userParameters.getSharedSessionId()).get(driveName).open(userParameters);
 				} catch (EsupStockException e) {
 					log.error("problem opening" +  driveName + " drive", e);
 				}
 			}
 		} else {
-			for(FsAccess server : this.restrictedServers.values()) {
+			for(FsAccess server : this.restrictedServers.get(userParameters.getSharedSessionId()).values()) {
 				try {
-					server.open();
+					server.open(userParameters);
 				} catch (EsupStockException e) {
 					log.error("problem opening" +  server.getDriveName() + " drive", e);
 				}
@@ -144,32 +149,36 @@ public class ServersAccessService implements DisposableBean {
 		}
 	}	
 	
-	public boolean isInitialized() {
-		return isInitialized;
+	public boolean isInitialized(SharedUserPortletParameters userParameters) {
+		if(isInitializedMap.containsKey(userParameters.getSharedSessionId()))
+			return isInitializedMap.get(userParameters.getSharedSessionId());
+		return false;
 	}
 
 	public void destroy() throws Exception {
-		for(FsAccess server: this.restrictedServers.values()) {
-			server.close();
+		for(Map<String, FsAccess> rServers : this.restrictedServers.values()) {
+			for(FsAccess server: rServers.values()) {
+				server.close();
+			}
 		}
 	}
 	
 	public void updateUserParameters(String dir,
 			SharedUserPortletParameters userParameters) {
 		String driveName = getDrive(dir);
-		FsAccess fsAccess = getFsAccess(driveName);
-		if(userParameters != null && !fsAccess.isOpened() && fsAccess.formAuthenticationRequired()) {
+		FsAccess fsAccess = getFsAccess(driveName, userParameters);
+		if(userParameters != null && !fsAccess.isOpened() && fsAccess.formAuthenticationRequired(userParameters)) {
 			UserPassword userPassword = userParameters.getUserPassword4AuthenticatedFormDrives().get(driveName);
 			if(userPassword != null)
-				fsAccess.authenticate(userPassword.getUsername(), userPassword.getPassword());
+				fsAccess.authenticate(userPassword.getUsername(), userPassword.getPassword(), userParameters);
 			else
 				log.warn("Here we should have username & password ? What's wrong ? :(");
 		}
 	}
 
-	protected FsAccess getFsAccess(String driveName) {
-		if(this.restrictedServers.containsKey(driveName)) {
-			return this.restrictedServers.get(driveName);
+	protected FsAccess getFsAccess(String driveName, SharedUserPortletParameters userParameters) {
+		if(this.restrictedServers.get(userParameters.getSharedSessionId()).containsKey(driveName)) {
+			return this.restrictedServers.get(userParameters.getSharedSessionId()).get(driveName);
 		}
 		else {
 			log.error("pb : restrictedServers does not contain this required drive ?? : " + driveName);
@@ -178,16 +187,16 @@ public class ServersAccessService implements DisposableBean {
 	}
 	
 	
-	protected List<FsAccess> getCategoryFsAccess(DrivesCategory dCategory) {
+	protected List<FsAccess> getCategoryFsAccess(DrivesCategory dCategory, SharedUserPortletParameters userParameters) {
 		List<FsAccess> drives = new ArrayList<FsAccess>();
 		for(String driveName: dCategory.getDrives()) 
-			if(this.restrictedServers.containsKey(driveName))
-				drives.add(this.restrictedServers.get(driveName));
+			if(this.restrictedServers.get(userParameters.getSharedSessionId()).containsKey(driveName))
+				drives.add(this.restrictedServers.get(userParameters.getSharedSessionId()).get(driveName));
 		return drives;
 	}
 	
 
-	public JsTreeFile get(String dir) {
+	public JsTreeFile get(String dir, SharedUserPortletParameters userParameters) {
 		String category = getDriveCategory(dir);
 		String driveName = getDrive(dir);
 		if(driveName == null || driveName.length() == 0) {
@@ -200,27 +209,27 @@ public class ServersAccessService implements DisposableBean {
 		} else {
 			// get drive or folder or file
 			String path = getLocalDir(dir);		
-			JsTreeFile jsTreeFile = this.getFsAccess(driveName).get(path);
+			JsTreeFile jsTreeFile = this.getFsAccess(driveName, userParameters).get(path, userParameters);
 			DrivesCategory dCat = this.drivesCategories.get(category);
 			jsTreeFile.setCategory(category, dCat.getIcon());		
-			jsTreeFile.setDrive(driveName, this.getFsAccess(driveName).getIcon());
+			jsTreeFile.setDrive(driveName, this.getFsAccess(driveName, userParameters).getIcon());
 			if(jsTreeFile.getTitle().length() == 0) {
 				// this the folder root == the drive
 				jsTreeFile.setTitle(driveName);
-				jsTreeFile.setIcon(this.getFsAccess(driveName).getIcon());
+				jsTreeFile.setIcon(this.getFsAccess(driveName, userParameters).getIcon());
 			}
 			return jsTreeFile;
 		}
 	}
 	
-	public List<JsTreeFile> getChildren(String dir) {
+	public List<JsTreeFile> getChildren(String dir, SharedUserPortletParameters userParameters) {
 		String category = getDriveCategory(dir);
 		String driveName = getDrive(dir);
 		DrivesCategory dCat = this.drivesCategories.get(category);
 		if(driveName == null || driveName.length() == 0) {
 			// getChildren on a category -> list drives
 			List<JsTreeFile> files = new ArrayList<JsTreeFile>();
-			for(FsAccess drive: getCategoryFsAccess(dCat)) {
+			for(FsAccess drive: getCategoryFsAccess(dCat, userParameters)) {
 				JsTreeFile jsTreeFile = new JsTreeFile(drive.getDriveName(), "", "drive");
 				jsTreeFile.setIcon(drive.getIcon());
 				jsTreeFile.setCategory(category, dCat.getIcon());
@@ -231,81 +240,81 @@ public class ServersAccessService implements DisposableBean {
 		} else {
 			// getChildren on a folder (or drive) -> get children on a fsAccess
 			String path = getLocalDir(dir);		
-			List<JsTreeFile> files = this.getFsAccess(driveName).getChildren(path);
+			List<JsTreeFile> files = this.getFsAccess(driveName, userParameters).getChildren(path, userParameters);
 			for(JsTreeFile file: files) {
 				file.setCategory(category, dCat.getIcon());
-				file.setDrive(driveName, this.getFsAccess(driveName).getIcon());
+				file.setDrive(driveName, this.getFsAccess(driveName, userParameters).getIcon());
 			}
 			return files;
 		}
 	}
 
-	public boolean remove(String dir) {
-		return this.getFsAccess(getDrive(dir)).remove(getLocalDir(dir));
+	public boolean remove(String dir, SharedUserPortletParameters userParameters) {
+		return this.getFsAccess(getDrive(dir), userParameters).remove(getLocalDir(dir), userParameters);
 	}
 
-	public String createFile(String parentDir, String title, String type) {
-		return this.getFsAccess(getDrive(parentDir)).createFile(getLocalDir(parentDir), title, type);
+	public String createFile(String parentDir, String title, String type, SharedUserPortletParameters userParameters) {
+		return this.getFsAccess(getDrive(parentDir), userParameters).createFile(getLocalDir(parentDir), title, type, userParameters);
 	}
 
-	public boolean renameFile(String dir, String title) {
-		return this.getFsAccess(getDrive(dir)).renameFile(getLocalDir(dir), title);
+	public boolean renameFile(String dir, String title, SharedUserPortletParameters userParameters) {
+		return this.getFsAccess(getDrive(dir), userParameters).renameFile(getLocalDir(dir), title, userParameters);
 	}
 
-	private boolean interMoveCopyFile(String newDir, String refDir, boolean copy) {
-		JsTreeFile ref = this.get(refDir);
+	private boolean interMoveCopyFile(String newDir, String refDir, boolean copy, SharedUserPortletParameters userParameters) {
+		JsTreeFile ref = this.get(refDir, userParameters);
 		boolean allIsOk = true;
 		if("file".equals(ref.getType())) {
-			DownloadFile file = this.getFile(refDir);
-			allIsOk = this.putFile(newDir, file.getBaseName(), file.getInputStream());
+			DownloadFile file = this.getFile(refDir, userParameters);
+			allIsOk = this.putFile(newDir, file.getBaseName(), file.getInputStream(), userParameters);
 		} else {
-			String localDirParent = this.createFile(newDir, ref.getTitle(), ref.getType());
+			String localDirParent = this.createFile(newDir, ref.getTitle(), ref.getType(), userParameters);
 			String dirParent = JsTreeFile.ROOT_DRIVE.concat(getDriveCategory(newDir)).concat(JsTreeFile.DRIVE_PATH_SEPARATOR).concat(getDrive(newDir)).concat(JsTreeFile.DRIVE_PATH_SEPARATOR).concat(localDirParent);
-			for(JsTreeFile child: this.getChildren(refDir)) {
-				allIsOk = allIsOk && this.interMoveCopyFile(dirParent, child.getPath(), copy);
+			for(JsTreeFile child: this.getChildren(refDir, userParameters)) {
+				allIsOk = allIsOk && this.interMoveCopyFile(dirParent, child.getPath(), copy, userParameters);
 			}
 		}
 		if(allIsOk && !copy) {
-			allIsOk = this.remove(refDir);
+			allIsOk = this.remove(refDir, userParameters);
 		}
 		return allIsOk;
 	}
 
-	public boolean moveCopyFilesIntoDirectory(String dir, List<String> filesToCopy, boolean copy) {
+	public boolean moveCopyFilesIntoDirectory(String dir, List<String> filesToCopy, boolean copy, SharedUserPortletParameters userParameters) {
 		String driveName = getDrive(dir);
 		if(driveName.equals(getDrive(filesToCopy.get(0))) && 
-				( (copy && this.getFsAccess(driveName).supportIntraCopyPast()) || (!copy && this.getFsAccess(driveName).supportIntraCutPast())) ) {
-			return this.getFsAccess(driveName).moveCopyFilesIntoDirectory(getLocalDir(dir), getLocalDirs(filesToCopy), copy);
+				( (copy && this.getFsAccess(driveName, userParameters).supportIntraCopyPast()) || (!copy && this.getFsAccess(driveName, userParameters).supportIntraCutPast())) ) {
+			return this.getFsAccess(driveName, userParameters).moveCopyFilesIntoDirectory(getLocalDir(dir), getLocalDirs(filesToCopy), copy, userParameters);
 		} else {
 			boolean allIsOk = true;
 			for(String fileToCopy: filesToCopy) {
-				boolean isOk = this.interMoveCopyFile(dir, fileToCopy, copy);
+				boolean isOk = this.interMoveCopyFile(dir, fileToCopy, copy, userParameters);
 				if(isOk && !copy)
-					this.remove(fileToCopy);
+					this.remove(fileToCopy, userParameters);
 				allIsOk = allIsOk && isOk;
 			}
 			return allIsOk;
 		}
 	}
 
-	public DownloadFile getFile(String dir) {
-		return this.getFsAccess(getDrive(dir)).getFile(getLocalDir(dir));
+	public DownloadFile getFile(String dir, SharedUserPortletParameters userParameters) {
+		return this.getFsAccess(getDrive(dir), userParameters).getFile(getLocalDir(dir), userParameters);
 	}
 
 
-	public boolean  putFile(String dir, String filename, InputStream inputStream) {
-		return this.getFsAccess(getDrive(dir)).putFile(getLocalDir(dir), filename, inputStream);
+	public boolean  putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters) {
+		return this.getFsAccess(getDrive(dir), userParameters).putFile(getLocalDir(dir), filename, inputStream, userParameters);
 	}
 
-	public List<JsTreeFile> getJsTreeFileRoots() {
+	public List<JsTreeFile> getJsTreeFileRoots(SharedUserPortletParameters userParameters) {
 		List<JsTreeFile> jsTreeFiles = new ArrayList<JsTreeFile>();
 		for(String drivesCategoryName: this.drivesCategories.keySet()) {
 			DrivesCategory category = this.drivesCategories.get(drivesCategoryName);
-			if(!getCategoryFsAccess(category).isEmpty()) {
+			if(!getCategoryFsAccess(category, userParameters).isEmpty()) {
 				JsTreeFile jFile = new JsTreeFile(drivesCategoryName, "", "category");
 				jFile.setIcon(this.drivesCategories.get(drivesCategoryName).getIcon());
 				jFile.setCategory(drivesCategoryName, this.drivesCategories.get(drivesCategoryName).getIcon());
-				jFile.setChildren(this.getChildren(jFile.getPath()));
+				jFile.setChildren(this.getChildren(jFile.getPath(), userParameters));
 				jsTreeFiles.add(jFile);
 			}
 		}
@@ -343,12 +352,12 @@ public class ServersAccessService implements DisposableBean {
 		return localDirs;
 	}
 
-	public DownloadFile getZip(List<String> dirs) throws IOException {
+	public DownloadFile getZip(List<String> dirs, SharedUserPortletParameters userParameters) throws IOException {
 		File tmpFile = File.createTempFile("esup-stock-zip.", ".tmp");
 		FileOutputStream output = new FileOutputStream(tmpFile);
 		ZipOutputStream out = new ZipOutputStream(output);
 		for(String dir: dirs) {
-			this.addChildrensTozip(out, dir, "");	
+			this.addChildrensTozip(out, dir, "", userParameters);	
 		}
 		out.close();
 		output.close();
@@ -362,10 +371,10 @@ public class ServersAccessService implements DisposableBean {
 		return new DownloadFile(contentType, size, baseName, inputStream);
 	}
 	
-	private void addChildrensTozip(ZipOutputStream out, String dir, String folder) throws IOException {
-		JsTreeFile tFile = get(dir);
+	private void addChildrensTozip(ZipOutputStream out, String dir, String folder, SharedUserPortletParameters userParameters) throws IOException {
+		JsTreeFile tFile = get(dir, userParameters);
 		if("file".equals(tFile.getType())) {
-			DownloadFile dFile = getFile(dir);
+			DownloadFile dFile = getFile(dir, userParameters);
 			String fileName =  folder.concat(dFile.getBaseName());
 			out.putNextEntry(new ZipEntry(fileName));
 			out.write(IOUtils.toByteArray(dFile.getInputStream()));
@@ -374,37 +383,35 @@ public class ServersAccessService implements DisposableBean {
 			folder = folder.concat(tFile.getTitle()).concat("/");
 			out.putNextEntry(new ZipEntry(folder));
 			out.closeEntry();
-			List<JsTreeFile> childrens = this.getChildren(dir);
+			List<JsTreeFile> childrens = this.getChildren(dir, userParameters);
 			for(JsTreeFile child: childrens) {
-				this.addChildrensTozip(out, child.getPath(), folder);
+				this.addChildrensTozip(out, child.getPath(), folder, userParameters);
 			}
 		}			
 	}
 
 
-	public boolean formAuthenticationRequired(String dir) {
+	public boolean formAuthenticationRequired(String dir, SharedUserPortletParameters userParameters) {
 		if(getDrive(dir) == null)
 			return false;
-		return this.getFsAccess(getDrive(dir)).formAuthenticationRequired();
+		return this.getFsAccess(getDrive(dir), userParameters).formAuthenticationRequired(userParameters);
 	}
 
 
-	public UserPassword getUserPassword(String dir) {
+	public UserPassword getUserPassword(String dir, SharedUserPortletParameters userParameters) {
 		if(getDrive(dir) == null)
 			return null;
-		return this.getFsAccess(getDrive(dir)).getUserPassword();
+		return this.getFsAccess(getDrive(dir), userParameters).getUserPassword(userParameters);
 	}
 
 
-	public boolean authenticate(String dir, String username, String password, ActionRequest request) {
+	public boolean authenticate(String dir, String username, String password, SharedUserPortletParameters userParameters) {
 		
-		boolean authenticateSuccess = this.getFsAccess(getDrive(dir)).authenticate(username, password);
+		boolean authenticateSuccess = this.getFsAccess(getDrive(dir), userParameters).authenticate(username, password, userParameters);
 		 
-		if(authenticateSuccess && request != null) {
+		if(authenticateSuccess) {
 			// we keep username+password in session so that we can reauthenticate on drive in servlet mode 
 			// (and so that download file would be ok with the servlet ...)
-			PortletSession session = request.getPortletSession();
-			SharedUserPortletParameters userParameters = (SharedUserPortletParameters) session.getAttribute(SharedUserPortletParameters.SHARED_PARAMETER_SESSION_ID, PortletSession.APPLICATION_SCOPE);
 			String driveName = this.getDrive(dir);
 			userParameters.getUserPassword4AuthenticatedFormDrives().put(driveName, new UserPassword(username, password));
 		} 

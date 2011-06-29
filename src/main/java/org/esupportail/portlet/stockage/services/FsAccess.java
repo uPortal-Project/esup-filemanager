@@ -116,30 +116,30 @@ public abstract class FsAccess {
 			this.uri = this.uriManipulateService.manipulate(uri);			
 	}
 
-	public abstract void open() ;
+	public abstract void open(SharedUserPortletParameters userParameters) ;
 
 	public abstract void close();
 
 	public abstract boolean isOpened();
 
-	public abstract JsTreeFile get(String path) ;
+	public abstract JsTreeFile get(String path, SharedUserPortletParameters userParameters) ;
 
-	public abstract List<JsTreeFile> getChildren(String path);
+	public abstract List<JsTreeFile> getChildren(String path, SharedUserPortletParameters userParameters);
 
-	public abstract boolean remove(String path);
+	public abstract boolean remove(String path, SharedUserPortletParameters userParameters);
 
 	public abstract String createFile(String parentPath, String title,
-			String type);
+			String type, SharedUserPortletParameters userParameters);
 
-	public abstract boolean renameFile(String path, String title);
+	public abstract boolean renameFile(String path, String title, SharedUserPortletParameters userParameters);
 
 	public abstract boolean moveCopyFilesIntoDirectory(String dir,
-			List<String> filesToCopy, boolean copy);
+			List<String> filesToCopy, boolean copy, SharedUserPortletParameters userParameters);
 
-	public abstract DownloadFile getFile(String dir);
+	public abstract DownloadFile getFile(String dir, SharedUserPortletParameters userParameters);
 
 	public abstract boolean putFile(String dir, String filename,
-			InputStream inputStream);
+			InputStream inputStream, SharedUserPortletParameters userParameters);
 	
 	public boolean supportIntraCopyPast() {
 		return true;
@@ -149,26 +149,26 @@ public abstract class FsAccess {
 		return true;
 	}
 
-	public boolean formAuthenticationRequired() {
+	public boolean formAuthenticationRequired(SharedUserPortletParameters userParameters) {
 		if(this.userAuthenticatorService instanceof FormUserPasswordAuthenticatorService) {
-			if(this.userAuthenticatorService.getUserPassword().getPassword() == null || this.userAuthenticatorService.getUserPassword().getPassword().length() == 0)
+			if(this.userAuthenticatorService.getUserPassword(userParameters).getPassword() == null || this.userAuthenticatorService.getUserPassword(userParameters).getPassword().length() == 0)
 				return true;
 		}
 		return false;
 	}
 
-	public UserPassword getUserPassword() {
-		return this.userAuthenticatorService.getUserPassword();
+	public UserPassword getUserPassword(SharedUserPortletParameters userParameters) {
+		return this.userAuthenticatorService.getUserPassword(userParameters);
 	}
 
-	public boolean authenticate(String username, String password) {
-		this.userAuthenticatorService.getUserPassword().setUsername(username);
-		this.userAuthenticatorService.getUserPassword().setPassword(password);
+	public boolean authenticate(String username, String password, SharedUserPortletParameters userParameters) {
+		this.userAuthenticatorService.getUserPassword(userParameters).setUsername(username);
+		this.userAuthenticatorService.getUserPassword(userParameters).setPassword(password);
 		try { 
-			this.get("");
+			this.get("", userParameters);
 		} catch(Exception e) {
 			// TODO : catch Exception corresponding to an authentication failure ... 
-			this.userAuthenticatorService.getUserPassword().setPassword(null);
+			this.userAuthenticatorService.getUserPassword(userParameters).setPassword(null);
 			return false;
 		}
 		return true;

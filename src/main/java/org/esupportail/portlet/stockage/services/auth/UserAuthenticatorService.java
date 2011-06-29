@@ -29,6 +29,6 @@ public interface UserAuthenticatorService {
 
 	public abstract void initialize(Map userInfos, SharedUserPortletParameters userParameters);
 	
-	public abstract UserPassword getUserPassword();
+	public abstract UserPassword getUserPassword(SharedUserPortletParameters userParameters);
 
 }

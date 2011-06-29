@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -40,17 +41,20 @@ import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.stockage.beans.UserPassword;
 import org.esupportail.portlet.stockage.services.ServersAccessService;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.portlet.ModelAndView;
+import org.springframework.web.portlet.context.PortletRequestAttributes;
 
 @Controller
 @Scope("request")
-public class PortletControllerWai {
+public class PortletControllerWai  implements InitializingBean {
 
 	protected Logger log = Logger.getLogger(PortletControllerWai.class);
 	
@@ -59,8 +63,20 @@ public class PortletControllerWai {
 	
 	@Autowired
 	protected BasketSession basketSession;
-
+	
+	protected SharedUserPortletParameters userParameters;
 		
+	
+	public void afterPropertiesSet() throws Exception {		
+		PortletRequestAttributes requestAttributes = (PortletRequestAttributes)RequestContextHolder.currentRequestAttributes();
+		PortletRequest request = requestAttributes.getRequest();
+		PortletSession session = request.getPortletSession();
+		RenderResponse response = (RenderResponse)request.getAttribute("javax.portlet.response");		
+		
+		String sharedSessionId = response.getNamespace();
+		userParameters = (SharedUserPortletParameters) session.getAttribute(sharedSessionId, PortletSession.APPLICATION_SCOPE);
+	}
+	
 	@RequestMapping(value = { "VIEW" }, params = { "action=formProcessWai" })
 	public void formProcessWai(FormCommand command, @RequestParam String dir,
 			@RequestParam(required = false) String prepareCopy,
@@ -99,12 +115,12 @@ public class PortletControllerWai {
 			} else if (past != null) {
 				this.serverAccess.moveCopyFilesIntoDirectory(dir, basketSession
 						.getDirsToCopy(), "copy"
-						.equals(basketSession.getGoal()));
+						.equals(basketSession.getGoal()), userParameters);
 				msg = "ajax.past.ok";
 			} else if (delete != null) {
 				msg = "ajax.remove.ok"; 
 				for(String dirToDelete: command.getDirs()) {
-					if(!this.serverAccess.remove(dirToDelete)) {
+					if(!this.serverAccess.remove(dirToDelete, userParameters)) {
 						msg = "ajax.remove.failed"; 
 					}
 				}
@@ -132,7 +148,7 @@ public class PortletControllerWai {
 			ActionRequest request, ActionResponse response) throws IOException {
 		
 		String msg = null;
-		this.serverAccess.createFile(dir, folderName, "folder");
+		this.serverAccess.createFile(dir, folderName, "folder", userParameters);
 		
 		if(msg != null)
 			response.setRenderParameter("msg", msg);
@@ -146,7 +162,7 @@ public class PortletControllerWai {
     								@RequestParam List<String> dirs) {
 		
 		ModelMap model = new ModelMap();
-		List<JsTreeFile> files = this.serverAccess.getChildren(dir);
+		List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
 		List<JsTreeFile> filesToRename = new ArrayList<JsTreeFile>();
 		if(!dirs.isEmpty()) {
 			for(JsTreeFile file: files) {
@@ -167,11 +183,11 @@ public class PortletControllerWai {
 		
 		String msg = null;
 		
-		List<JsTreeFile> files = this.serverAccess.getChildren(dir);
+		List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
 		for(JsTreeFile file: files) {
 			String newTitle = request.getParameter(file.getPath());
 			if(newTitle != null && newTitle.length() != 0 && !file.getTitle().equals(newTitle)) {
-				this.serverAccess.renameFile(file.getPath(), newTitle);
+				this.serverAccess.renameFile(file.getPath(), newTitle, userParameters);
 			}
 		}
 		
@@ -197,7 +213,7 @@ public class PortletControllerWai {
 	
 		String filename = command.getQqfile().getOriginalFilename();
 		InputStream inputStream = command.getQqfile().getInputStream();
-		this.serverAccess.putFile(dir, filename, inputStream);
+		this.serverAccess.putFile(dir, filename, inputStream, userParameters);
 		
 		response.setRenderParameter("dir", dir);
 		response.setRenderParameter("action", "browseWai");
@@ -208,13 +224,11 @@ public class PortletControllerWai {
     								@RequestParam String dir, @RequestParam String username, @RequestParam String password) throws IOException {
 	
 		String msg = "auth.bad";
-		if(this.serverAccess.authenticate(dir, username, password, request)) {
+		if(this.serverAccess.authenticate(dir, username, password, userParameters)) {
 			msg = "auth.ok";
 		
 			// we keep username+password in session so that we can reauthenticate on drive in servlet mode 
 			// (and so that download file would be ok for example with the servlet ...)
-			PortletSession session = request.getPortletSession();
-			SharedUserPortletParameters userParameters = (SharedUserPortletParameters) session.getAttribute(SharedUserPortletParameters.SHARED_PARAMETER_SESSION_ID, PortletSession.APPLICATION_SCOPE);
 			String driveName = this.serverAccess.getDrive(dir);
 			userParameters.getUserPassword4AuthenticatedFormDrives().put(driveName, new UserPassword(username, password));
 		}

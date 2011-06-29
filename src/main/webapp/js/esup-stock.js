@@ -44,7 +44,8 @@ var infoTolbarFadeoutTime = 8000;
 			action: '/esup-portlet-stockage/servlet-ajax/uploadFile',     
 			onSubmit: function(id, fileName){
 					uploader.setParams({
-						dir: $("#bigdirectory").attr("rel")
+						dir: $("#bigdirectory").attr("rel"),
+						sharedSessionId: sharedSessionId
 		 			});
 					cursor_wait();
 					$('.qq-upload-list').show();
@@ -100,7 +101,7 @@ var infoTolbarFadeoutTime = 8000;
 		    	 cursor_wait();
 		    	 var id = $("#bigdirectory").attr('rel');
 		    	 var pastFilesUrl = '/esup-portlet-stockage/servlet-ajax/pastFiles';
-		 		 $.post(pastFilesUrl, "dir="+id, function(data){
+		 		 $.post(pastFilesUrl, "dir="+id+"&sharedSessionId="+sharedSessionId, function(data){
 		 			 cursor_clear();
 		 			 if(data.status) {
 			    	   $("#info-toolbar").html(data.msg);
@@ -195,7 +196,8 @@ var infoTolbarFadeoutTime = 8000;
 							"data" : function (n) { 
 								// the result is fed to the AJAX request `data` option
 								return { 
-									"dir" : n.attr ? n.attr("id") : ""	
+									"dir" : n.attr ? n.attr("id") : "",
+									"sharedSessionId" : sharedSessionId
 								}; 
 							}
 						}
@@ -256,7 +258,8 @@ var infoTolbarFadeoutTime = 8000;
 						type: 'POST',
 						url: '/esup-portlet-stockage/servlet-ajax/htmlFileTree',
 						data : { 
-							"dir" : data.rslt.obj.attr("id")
+							"dir" : data.rslt.obj.attr("id"),
+							"sharedSessionId" : sharedSessionId
 						}, 
 						success : function (r) {
 							cursor_clear();
@@ -281,7 +284,8 @@ var infoTolbarFadeoutTime = 8000;
 					type: 'POST',
 					url: '/esup-portlet-stockage/servlet-ajax/downloadFile',
 					data : { 
-						"dir" : dir
+						"dir" : dir,
+						"sharedSessionId" : sharedSessionId
 					}
 				});
 				
@@ -310,7 +314,8 @@ function getFile(parentDir, fileId) {
 				type: 'POST',
 				url: '/esup-portlet-stockage/servlet-ajax/htmlFileTree',
 				data : { 
-					"dir" : fileId
+					"dir" : fileId,
+					"sharedSessionId" : sharedSessionId
 				}, 
 				success : function (r) {
 					$("#browserMain").html(r);
@@ -329,7 +334,8 @@ function newDir(parentDir, newDir) {
 		data : { 
 			"parentDir" : parentDir,
 			"title" : newDir,
-			"type" : "folder"
+			"type" : "folder",
+			"sharedSessionId" : sharedSessionId
 		}, 
 		success : function (r) {
 			$("#browserMain").html(r);
@@ -346,7 +352,8 @@ function rename(parentDir, dir, title) {
 		data : { 
 			"parentDir" : parentDir,
 			"dir" : dir,
-			"title" : title
+			"title" : title,
+			"sharedSessionId" : sharedSessionId
 		}, 
 		success : function (r) {
 			$("#browserMain").html(r);
@@ -363,7 +370,8 @@ function authenticate(dir, username, password) {
 		data : { 
 			"dir" : dir,
 			"username" : username,
-			"password" : password
+			"password" : password,
+			"sharedSessionId" : sharedSessionId
 		}, 
 		success : function (data) { 
 			$("#info-toolbar").html(data.msg);

@@ -31,8 +31,9 @@ public class SharedUserPortletParameters implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-    public static final String SHARED_PARAMETER_SESSION_ID = "esup-portlet-stochage.shared_session";
-	
+	// use it as id
+	protected String sharedSessionId;
+		
     protected List<String> driveNames;
     
     protected Map userInfos;
@@ -42,6 +43,10 @@ public class SharedUserPortletParameters implements Serializable {
     protected String username;
     
     protected Map<String, UserPassword> userPassword4AuthenticatedFormDrives = new HashMap<String, UserPassword>();
+
+	public SharedUserPortletParameters(String sharedSessionId) {
+		this.sharedSessionId = sharedSessionId;
+	}
 
 	public List<String> getDriveNames() {
 		return driveNames;
@@ -84,4 +89,9 @@ public class SharedUserPortletParameters implements Serializable {
 		this.userPassword4AuthenticatedFormDrives = userPassword4AuthenticatedFormDrives;
 	}
 
+	public String getSharedSessionId() {
+		return sharedSessionId;
+	}
+
+	
 }

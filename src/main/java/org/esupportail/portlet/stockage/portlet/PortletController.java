@@ -30,29 +30,32 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.apache.log4j.Logger;
-import org.esupportail.commons.utils.ContextUtils;
 import org.esupportail.portlet.stockage.beans.FormCommand;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
-import org.esupportail.portlet.stockage.beans.UserPassword;
 import org.esupportail.portlet.stockage.services.ServersAccessService;
 import org.esupportail.portlet.stockage.services.UserAgentInspector;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.portlet.ModelAndView;
+import org.springframework.web.portlet.context.PortletRequestAttributes;
+import org.springframework.web.portlet.util.PortletUtils;
 
 @Controller
 @Scope("request")
-public class PortletController {
+public class PortletController implements InitializingBean {
 
 	protected Logger log = Logger.getLogger(PortletController.class);
 	
@@ -64,36 +67,54 @@ public class PortletController {
 	@Autowired
 	protected UserAgentInspector userAgentInspector;
 	
+	protected SharedUserPortletParameters userParameters;
+	
+	protected String sharedSessionId;
+	
+	
+	public void afterPropertiesSet() throws Exception {		
+		
+		PortletRequestAttributes requestAttributes = (PortletRequestAttributes)RequestContextHolder.currentRequestAttributes();
+		PortletRequest request = requestAttributes.getRequest();	
+		RenderResponse response = (RenderResponse)request.getAttribute("javax.portlet.response");		
+		
+		sharedSessionId = response.getNamespace();
+		userParameters = (SharedUserPortletParameters)PortletUtils.getSessionAttribute(request, sharedSessionId, PortletSession.APPLICATION_SCOPE);
+		
+		if(userParameters == null) {
+	    	userParameters = new SharedUserPortletParameters(sharedSessionId);
+			
+	        
+	    	final PortletPreferences prefs = request.getPreferences();
+	    	String contextToken = prefs.getValue(PREF_ESUPSTOCK_CONTEXTTOKEN, null);
+	    	
+			List<String> driveNames = serverAccess.getRestrictedDrivesGroupsContext(request, contextToken);
+			userParameters.setDriveNames(driveNames);
+			
+			Map userInfos = (Map) request.getAttribute(PortletRequest.USER_INFO);	
+			userParameters.setUserInfos(userInfos);
+						
+	   		log.info("set SharedUserPortletParameters in application session");
+	   		
+	   		PortletUtils.setSessionAttribute(request, sharedSessionId, userParameters, PortletSession.APPLICATION_SCOPE);
+		}
+	}
+		
     @RequestMapping("VIEW")
     protected ModelAndView renderView(RenderRequest request, RenderResponse response) throws Exception {
-        
-    	final PortletPreferences prefs = request.getPreferences();
-    	String contextToken = prefs.getValue(PREF_ESUPSTOCK_CONTEXTTOKEN, null);
-    	
-    	SharedUserPortletParameters userParameters = new SharedUserPortletParameters();
-		
-		List<String> driveNames = serverAccess.getRestrictedDrivesGroupsContext(request, contextToken);
-		userParameters.setDriveNames(driveNames);
-		
-		Map userInfos = (Map) request.getAttribute(PortletRequest.USER_INFO);	
-		userParameters.setUserInfos(userInfos);
-		
-   		log.info("set SharedUserPortletParameters in application session");
-   		// for portlet mode :
-   		ContextUtils.setSessionAttribute(SharedUserPortletParameters.SHARED_PARAMETER_SESSION_ID, userParameters);
-   		// for servlet mode :
-   		PortletSession session = request.getPortletSession();
-   		session.setAttribute(SharedUserPortletParameters.SHARED_PARAMETER_SESSION_ID, userParameters, PortletSession.APPLICATION_SCOPE);
 
-   		
     	ModelMap model = new ModelMap();     
 		
+    	List<String> driveNames = userParameters.getDriveNames();
+    	Map userInfos = userParameters.getUserInfos();
+    	
     	// note that we call serverAccess.initializeServices just for mobile and wai mode
     	serverAccess.initializeServices(driveNames,  userInfos, userParameters);
     	
 	    if(userAgentInspector.isMobile(request)) {
 			return this.browseMobile(request, response, null);
 	    } else {
+	    	model.put("sharedSessionId", sharedSessionId);
 	    	return new ModelAndView("view-portlet", model);
 	    }
     }
@@ -103,18 +124,20 @@ public class PortletController {
     								@RequestParam String dir) {
 		ModelMap model;
 		if( !(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE)) ) {
-			if(this.serverAccess.formAuthenticationRequired(dir)) {
+			if(this.serverAccess.formAuthenticationRequired(dir, userParameters)) {
 				SortedMap<String, List<String>> parentPathes = JsTreeFile.getParentsPathes(dir, null, null);
 				// we want to get the (last-1) key of sortedmap "parentPathes"
 				String parentDir = parentPathes.subMap(parentPathes.firstKey(), parentPathes.lastKey()).lastKey();
 				model = new ModelMap("currentDir", dir);
 				model.put("parentDir", parentDir);
-				model.put("username", this.serverAccess.getUserPassword(dir).getUsername());
-				model.put("password", this.serverAccess.getUserPassword(dir).getPassword());
+				model.put("username", this.serverAccess.getUserPassword(dir, userParameters).getUsername());
+				model.put("password", this.serverAccess.getUserPassword(dir, userParameters).getPassword());
+				model.put("sharedSessionId", sharedSessionId);
 				return new ModelAndView("authenticationForm-portlet-mobile", model);
 			}
 		}
 		model = browse(dir);
+		model.put("sharedSessionId", sharedSessionId);
         return new ModelAndView("view-portlet-mobile", model);
     }
 	
@@ -123,24 +146,23 @@ public class PortletController {
     								@RequestParam(required=false) String dir,
     								@RequestParam(required=false) String msg) {
 				
-		if(!serverAccess.isInitialized()) {
-	    	PortletSession session = request.getPortletSession();
-			SharedUserPortletParameters userParameters = (SharedUserPortletParameters)session.getAttribute(SharedUserPortletParameters.SHARED_PARAMETER_SESSION_ID, PortletSession.APPLICATION_SCOPE);
+		if(!serverAccess.isInitialized(userParameters)) {
 			serverAccess.initializeServices(userParameters.getDriveNames(),  userParameters.getUserInfos(), userParameters);
 		}
 		
 		ModelMap model;
 		if( !(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE)) ) {
-			if(this.serverAccess.formAuthenticationRequired(dir)) {
+			if(this.serverAccess.formAuthenticationRequired(dir, userParameters)) {
 				SortedMap<String, List<String>> parentPathes = JsTreeFile.getParentsPathes(dir, null, null);
 				// we want to get the (last-1) key of sortedmap "parentPathes"
 				String parentDir = parentPathes.subMap(parentPathes.firstKey(), parentPathes.lastKey()).lastKey();
 				model = new ModelMap("currentDir", dir);
 				model.put("parentDir", parentDir);
-				model.put("username", this.serverAccess.getUserPassword(dir).getUsername());
-				model.put("password", this.serverAccess.getUserPassword(dir).getPassword());
+				model.put("username", this.serverAccess.getUserPassword(dir, userParameters).getUsername());
+				model.put("password", this.serverAccess.getUserPassword(dir, userParameters).getPassword());
 				if(msg != null) 
 					model.put("msg",msg);
+				model.put("sharedSessionId", sharedSessionId);
 				return new ModelAndView("authenticationForm-portlet-wai", model);
 			}
 		}
@@ -150,6 +172,7 @@ public class PortletController {
 	    model.put("command", command);
 	    if(msg != null)
 	    	model.put("msg", msg);
+	    model.put("sharedSessionId", sharedSessionId);
         return new ModelAndView("view-portlet-wai", model);
     }
 
@@ -159,13 +182,13 @@ public class PortletController {
 			JsTreeFile jsFileRoot = new JsTreeFile(JsTreeFile.ROOT_DRIVE_NAME, null, "drive");
 			jsFileRoot.setIcon(JsTreeFile.ROOT_ICON_PATH);
 			model = new ModelMap("resource", jsFileRoot);
-			List<JsTreeFile> files = this.serverAccess.getJsTreeFileRoots();		
+			List<JsTreeFile> files = this.serverAccess.getJsTreeFileRoots(userParameters);		
 			model.put("files", files);
 			model.put("currentDir", jsFileRoot.getPath());
 		} else {
-			JsTreeFile resource = this.serverAccess.get(dir);
+			JsTreeFile resource = this.serverAccess.get(dir, userParameters);
 			model = new ModelMap("resource", resource);
-			List<JsTreeFile> files = this.serverAccess.getChildren(dir);
+			List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
 			Collections.sort(files);
 		    model.put("files", files);
 		    model.put("currentDir", resource.getPath());
@@ -178,12 +201,13 @@ public class PortletController {
     								@RequestParam String dir, @RequestParam String username, @RequestParam String password) throws IOException {
 	
 		String msg = "auth.bad";
-		if(this.serverAccess.authenticate(dir, username, password, request)) {
+		if(this.serverAccess.authenticate(dir, username, password, userParameters)) {
 			msg = "auth.ok";
 		}
 		
 		response.setRenderParameter("msg", msg);
 		response.setRenderParameter("dir", dir);
+		response.setRenderParameter("sharedSessionId", sharedSessionId);
 		response.setRenderParameter("action", "browseMobile");
 	}
     

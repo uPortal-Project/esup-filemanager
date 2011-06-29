@@ -61,7 +61,7 @@ public class UserPasswordAuthenticatorService implements UserAuthenticatorServic
 		}
 	}
 	
-	public UserPassword getUserPassword() {
+	public UserPassword getUserPassword(SharedUserPortletParameters userParameters) {
 		return userPassword;
 	}
 

@@ -54,6 +54,9 @@
 <ul id="jqueryFileTree">
 
   <form:form method="post" id="filesForm">
+  
+  	<input type="hidden" name="sharedSessionId" value="${sharedSessionId}"/>
+  
     <c:forEach var="file" items="${files}">
       <li class="browserlist ${file.readable ? 'esup-stock-read' : ''} ${file.writeable ? 'esup-stock-write' : ''} ${file.hidden ? 'esup-stock-hidden' : ''}">
       <c:choose>
@@ -73,7 +76,7 @@
     <c:otherwise>
       <form:checkbox path="dirs" cssClass="browsercheck" value="${file.path}" />
       <img src="${file.icon}" alt="icon" />
-      <a class="file" href="<spring:url value='/servlet-ajax/downloadFile?dir=${file.path}'/>" rel="${file.path}">
+      <a class="file" href="<spring:url value='/servlet-ajax/downloadFile?dir=${file.path}&sharedSessionId=${sharedSessionId}'/>" rel="${file.path}">
         ${file.title}
       </a>
      </c:otherwise>

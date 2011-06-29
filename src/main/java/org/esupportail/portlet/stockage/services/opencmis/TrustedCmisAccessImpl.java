@@ -81,7 +81,7 @@ public class TrustedCmisAccessImpl extends CmisAccessImpl {
 
 	
 	@Override
-	public void open() {
+	public void open(SharedUserPortletParameters userParameters) {
 		Map<String, String> parameters = new HashMap<String, String>();
 
 		parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB
@@ -91,7 +91,7 @@ public class TrustedCmisAccessImpl extends CmisAccessImpl {
 		parameters.put(SessionParameter.REPOSITORY_ID, respositoryId);
 
 		if(userAuthenticatorService != null) {
-			UserPassword userPassword = userAuthenticatorService.getUserPassword();
+			UserPassword userPassword = userAuthenticatorService.getUserPassword(userParameters);
 			parameters.put(SessionParameter.USER, userPassword.getUsername());
 			parameters.put(SessionParameter.PASSWORD, userPassword.getPassword());
 			

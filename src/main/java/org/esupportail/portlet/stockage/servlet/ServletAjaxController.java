@@ -93,23 +93,28 @@ public class ServletAjaxController implements InitializingBean {
 		locale = RequestContextUtils.getLocale(request);
 		
 		HttpSession session = request.getSession();
-		userParameters = (SharedUserPortletParameters)session.getAttribute(SharedUserPortletParameters.SHARED_PARAMETER_SESSION_ID);
+		
+		String sharedSessionId = request.getParameter("sharedSessionId");
+		if(sharedSessionId != null)
+			userParameters = (SharedUserPortletParameters)session.getAttribute(sharedSessionId);
 
 		
 		if(!this.isPortlet && userParameters == null) {
 			log.debug("Servlet Access (no portlet mode : isPortlet property = false): init SharedUserPortletParameters");
-			userParameters = new SharedUserPortletParameters();
+			userParameters = new SharedUserPortletParameters(sharedSessionId);
 			List<String> driveNames = serverAccess.getRestrictedDrivesGroupsContext(null, null);
 			userParameters.setDriveNames(driveNames);
-			session.setAttribute(SharedUserPortletParameters.SHARED_PARAMETER_SESSION_ID, userParameters);
+			session.setAttribute(sharedSessionId, userParameters);
 		} else if(userParameters == null) {
-			throw new EsupStockException("When isPortlet = true you can't use esup-portlet-stockage with mode servlet " +
-					"without use it first in portlet mode (for security reasons).\n" +
-					"But if you're in portlet mode and you get this Exception, " +
-					"that sounds like a bug because userParameters is not retrieved from portlet in the servlet-ajax !");
+			String message = "When isPortlet = true you can't use esup-portlet-stockage with mode servlet " +
+			"without use it first in portlet mode (for security reasons).\n" +
+			"But if you're in portlet mode and you get this Exception, " +
+			"that sounds like a bug because userParameters is not retrieved from portlet in the servlet-ajax !";
+			log.error(message);
+			throw new EsupStockException(message);
 		}
 		
-		if(!serverAccess.isInitialized() && userParameters != null) {
+		if(userParameters != null && !serverAccess.isInitialized(userParameters)) {
 			serverAccess.initializeServices(this.userParameters.getDriveNames(), 
 											this.userParameters.getUserInfos(), 
 											this.userParameters);
@@ -136,21 +141,22 @@ public class ServletAjaxController implements InitializingBean {
 			JsTreeFile jsFileRoot = new JsTreeFile(JsTreeFile.ROOT_DRIVE_NAME, null, "drive");
 			jsFileRoot.setIcon(JsTreeFile.ROOT_ICON_PATH);
 			model = new ModelMap("resource", jsFileRoot);
-			List<JsTreeFile> files = this.serverAccess.getJsTreeFileRoots();		
+			List<JsTreeFile> files = this.serverAccess.getJsTreeFileRoots(userParameters);		
 			model.put("files", files);
 		} else {
-			if(this.serverAccess.formAuthenticationRequired(dir)) {
+			if(this.serverAccess.formAuthenticationRequired(dir, userParameters)) {
 				model = new ModelMap("currentDir", dir);
-				model.put("username", this.serverAccess.getUserPassword(dir).getUsername());
-				model.put("password", this.serverAccess.getUserPassword(dir).getPassword());
+				model.put("username", this.serverAccess.getUserPassword(dir, userParameters).getUsername());
+				model.put("password", this.serverAccess.getUserPassword(dir, userParameters).getPassword());
 				return new ModelAndView("authenticationForm", model);
 			}
-			JsTreeFile resource = this.serverAccess.get(dir);
+			JsTreeFile resource = this.serverAccess.get(dir, userParameters);
 			model = new ModelMap("resource", resource);
-			List<JsTreeFile> files = this.serverAccess.getChildren(dir);
+			List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
 			Collections.sort(files);
 		    model.put("files", files);
 		}
+		model.put("sharedSessionId", userParameters.getSharedSessionId());
 		FormCommand command = new FormCommand();
 	    model.put("command", command);
 	    return new ModelAndView("fileTree", model);
@@ -159,10 +165,10 @@ public class ServletAjaxController implements InitializingBean {
 	@RequestMapping("/fileChildren")
     public @ResponseBody List<JsTreeFile> fileChildren(String dir, HttpServletRequest request) {
 		if(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE) ) {
-			List<JsTreeFile> files = this.serverAccess.getJsTreeFileRoots();		
+			List<JsTreeFile> files = this.serverAccess.getJsTreeFileRoots(userParameters);		
 			return files;
 		} else {
-			List<JsTreeFile> files = this.serverAccess.getChildren(dir);
+			List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
 			List<JsTreeFile> folders = new ArrayList<JsTreeFile>(); 
 			for(JsTreeFile file: files) {
 				if(!"file".equals(file.getType()))
@@ -179,7 +185,7 @@ public class ServletAjaxController implements InitializingBean {
 		String msg = context.getMessage("ajax.remove.ok", null, locale); 
 		Map jsonMsg = new HashMap(); 
 		for(String dir: command.getDirs()) {
-			if(!this.serverAccess.remove(dir)) {
+			if(!this.serverAccess.remove(dir, userParameters)) {
 				msg = context.getMessage("ajax.remove.failed", null, locale); 
 				allOk = 0;
 			}
@@ -191,7 +197,7 @@ public class ServletAjaxController implements InitializingBean {
 	
 	@RequestMapping("/createFile")
     public ModelAndView createFile(String parentDir, String title, String type, HttpServletRequest request, HttpServletResponse response) {
-		String fileDir = this.serverAccess.createFile(parentDir, title, type);
+		String fileDir = this.serverAccess.createFile(parentDir, title, type, userParameters);
 		if(fileDir != null) {
 			return this.fileTree(parentDir, request, response);
 		} 
@@ -200,7 +206,7 @@ public class ServletAjaxController implements InitializingBean {
 	
 	@RequestMapping("/renameFile")
     public ModelAndView renameFile(String parentDir, String dir, String title, HttpServletRequest request, HttpServletResponse response) {
-		if(this.serverAccess.renameFile(dir, title)) {
+		if(this.serverAccess.renameFile(dir, title, userParameters)) {
 			return this.fileTree(parentDir, request, response);	
 		}
     	return null;
@@ -231,7 +237,7 @@ public class ServletAjaxController implements InitializingBean {
 	@RequestMapping("/pastFiles")
     public @ResponseBody Map pastFiles(String dir) {
 		Map jsonMsg = new HashMap(); 
-		if(this.serverAccess.moveCopyFilesIntoDirectory(dir, basketSession.getDirsToCopy(), "copy".equals(basketSession.getGoal()))) {
+		if(this.serverAccess.moveCopyFilesIntoDirectory(dir, basketSession.getDirsToCopy(), "copy".equals(basketSession.getGoal()), userParameters)) {
 			jsonMsg.put("status", new Long(1));
 			String msg = context.getMessage("ajax.past.ok", null, locale); 
 			jsonMsg.put("msg", msg);
@@ -268,7 +274,7 @@ public class ServletAjaxController implements InitializingBean {
     public void downloadFile(String dir, 
     								 HttpServletRequest request, HttpServletResponse response) throws IOException {
 		this.serverAccess.updateUserParameters(dir, userParameters);
-		DownloadFile file = this.serverAccess.getFile(dir);
+		DownloadFile file = this.serverAccess.getFile(dir, userParameters);
 		response.setContentType(file.getContentType());
 	    response.setContentLength(file.getSize());
 		response.setHeader("Content-Disposition","attachment; filename=\"" + file.getBaseName() +"\"");
@@ -283,7 +289,7 @@ public class ServletAjaxController implements InitializingBean {
     								HttpServletRequest request, HttpServletResponse response) throws IOException {
 		List<String> dirs = command.getDirs();
 		this.serverAccess.updateUserParameters(dirs.get(0), userParameters);
-		DownloadFile file = this.serverAccess.getZip(dirs);
+		DownloadFile file = this.serverAccess.getZip(dirs, userParameters);
 		response.setContentType(file.getContentType());
 		response.setContentLength(file.getSize());
 		//response.setCharacterEncoding("utf-8");
@@ -319,7 +325,7 @@ public class ServletAjaxController implements InitializingBean {
 		boolean success = true;
 		String text = "";
 		try {
-			if(this.serverAccess.putFile(dir, filename, inputStream)) {
+			if(this.serverAccess.putFile(dir, filename, inputStream, userParameters)) {
 				String msg = context.getMessage("ajax.upload.ok", null, locale); 
 				text = "{'success':'true', 'msg':'".concat(msg).concat("'}");
 				log.info("upload file in " + dir + " ok");
