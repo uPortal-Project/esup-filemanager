@@ -4,6 +4,7 @@ Copyright (C) 2011 UNR RUNN http://www.unr-runn.fr
 @Contributor (C) 2011 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
 @Contributor (C) 2011 Julien Marchal <Julien.Marchal@univ-nancy2.fr>
 @Contributor (C) 2011 Julien Gribonvald <Julien.Gribonvald@recia.fr>
+@Contributor (C) 2011 David Clarke <david.clarke@anu.edu.au>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

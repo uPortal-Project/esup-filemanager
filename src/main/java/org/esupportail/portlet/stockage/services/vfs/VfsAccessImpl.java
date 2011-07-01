@@ -5,6 +5,7 @@
  * @Contributor (C) 2011 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
  * @Contributor (C) 2011 Julien Marchal <Julien.Marchal@univ-nancy2.fr>
  * @Contributor (C) 2011 Julien Gribonvald <Julien.Gribonvald@recia.fr>
+ * @Contributor (C) 2011 David Clarke <david.clarke@anu.edu.au>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +54,7 @@ import org.esupportail.portlet.stockage.services.ResourceUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.FileCopyUtils;
 
+import com.ibm.icu.util.Calendar;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpException;
 
@@ -92,6 +94,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		super.initializeService(userInfos, userParameters);
 	}
 	
+	@Override
 	public void open(SharedUserPortletParameters userParameters) {
 		try {
 			if(!isOpened()) {
@@ -118,6 +121,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		}
 	}
 
+	@Override
 	public void close() {
 		FileSystem fs = null;
 	    fs = this.root.getFileSystem(); 
@@ -129,6 +133,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		this.close();
 	}
 	
+	@Override
 	public boolean isOpened() {
 		return (root != null);
 	}
@@ -145,6 +150,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		}
 	}
 	
+	@Override
 	public JsTreeFile get(String path, SharedUserPortletParameters userParameters) {
 		try {
 			FileObject resource = cd(path, userParameters);
@@ -154,6 +160,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		}
 	}
 	
+	@Override
 	public List<JsTreeFile> getChildren(String path, SharedUserPortletParameters userParameters) {
 		try {
 			List<JsTreeFile> files = new ArrayList<JsTreeFile>();
@@ -192,6 +199,10 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		if("file".equals(type)) {
 			String icon = resourceUtils.getIcon(title);
 			file.setIcon(icon);
+			file.setSize(resource.getContent().getSize());
+			Calendar date = Calendar.getInstance();
+			date.setTimeInMillis(resource.getContent().getLastModifiedTime());
+			file.setLastModifiedTime(date.toString());
 		}
 		file.setHidden(resource.isHidden());
 		file.setReadable(resource.isReadable());
@@ -199,6 +210,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		return file;
 	}
 
+	@Override
 	public boolean remove(String path, SharedUserPortletParameters userParameters) {
 		boolean success = false;
 		FileObject file;
@@ -213,6 +225,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		return success;
 	}
 
+	@Override
 	public String createFile(String parentPath, String title, String type, SharedUserPortletParameters userParameters) {
 		try {
 			FileObject parent = cd(parentPath, userParameters);
@@ -236,6 +249,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		return null;
 	}
 
+	@Override
 	public boolean renameFile(String path, String title, SharedUserPortletParameters userParameters) {
 		try {
 			FileObject file = cd(path, userParameters);
@@ -253,7 +267,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		return false;
 	}
 
-
+	@Override
 	public boolean moveCopyFilesIntoDirectory(String dir,
 			List<String> filesToCopy, boolean copy, SharedUserPortletParameters userParameters) {
 		try {
@@ -277,6 +291,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		return false;
 	}
 
+	@Override
 	public DownloadFile getFile(String dir, SharedUserPortletParameters userParameters) {
 		try {
 			FileObject file = cd(dir, userParameters);
@@ -293,6 +308,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		return null;
 	}
 
+	@Override
 	public boolean putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters) {
 
 		try {
