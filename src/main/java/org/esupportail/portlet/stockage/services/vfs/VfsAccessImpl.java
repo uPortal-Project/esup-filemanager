@@ -24,7 +24,9 @@ package org.esupportail.portlet.stockage.services.vfs;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +39,7 @@ import org.apache.commons.vfs.FileSystem;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.FileSystemOptions;
+import org.apache.commons.vfs.FileType;
 import org.apache.commons.vfs.Selectors;
 import org.apache.commons.vfs.UserAuthenticator;
 import org.apache.commons.vfs.VFS;
@@ -99,7 +102,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		try {
 			if(!isOpened()) {
 				FileSystemOptions fsOptions = new FileSystemOptions();
-	
+					
 				if(sftpSetUserDirIsRoot) {
 					SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fsOptions, true);
 				}
@@ -113,6 +116,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 					UserAuthenticator userAuthenticator = new StaticUserAuthenticator(userPassword.getDomain(), userPassword.getUsername(), userPassword.getPassword());
 					DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(fsOptions, userAuthenticator);
 				}
+
 				fsManager = VFS.getManager();
 				root = fsManager.resolveFile(uri, fsOptions);
 			}
@@ -142,18 +146,27 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		try {
 			// assure that it'as already opened
 			this.open(userParameters);
-			if (path == null || path.length() == 0)
-				return root;
-			return root.resolveFile(path);
+			
+			FileObject returnValue = null;
+			
+			if (path == null || path.length() == 0) {
+				returnValue = root; 
+			} else {
+				returnValue = root.resolveFile(path);
+			}
+			
+			//Added for GIP Recia : make sure that the file is up to date
+			returnValue.refresh();
+			return returnValue;
 		} catch(FileSystemException fse) {
 			throw new EsupStockException(fse);
-		}
+		} 
 	}
 	
 	@Override
 	public JsTreeFile get(String path, SharedUserPortletParameters userParameters) {
 		try {
-			FileObject resource = cd(path, userParameters);
+			FileObject resource = cd(path, userParameters);			
 			return resourceAsJsTreeFile(resource);
 		} catch(FileSystemException fse) {
 			throw new EsupStockException(fse);
@@ -180,6 +193,8 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		}
 	}
 
+	
+	
 	private JsTreeFile resourceAsJsTreeFile(FileObject resource) throws FileSystemException {
 		String lid = resource.getName().getPath();
 		String rootPath = this.root.getName().getPath();
@@ -199,11 +214,41 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		if("file".equals(type)) {
 			String icon = resourceUtils.getIcon(title);
 			file.setIcon(icon);
-			file.setSize(resource.getContent().getSize());
-			Calendar date = Calendar.getInstance();
-			date.setTimeInMillis(resource.getContent().getLastModifiedTime());
-			file.setLastModifiedTime(date.toString());
+			file.setSize(resource.getContent().getSize());				
+			file.setOverSizeLimit( file.getSize() > resourceUtils.getSizeLimit(title) );			
 		}
+		
+		long totalSize = 0;
+		long fileCount = 0;
+		long folderCount = 0;
+		if ("folder".equals(type) || "drive".equals(type)) {
+			FileObject[] children = resource.getChildren();
+			List<FileObject> toProcess = new ArrayList<FileObject>();
+			toProcess.addAll(Arrays.asList(children));
+			
+			while(!toProcess.isEmpty()) {
+				FileObject processing = toProcess.get(0);
+				toProcess.remove(0);
+			
+				if (processing.getType() == FileType.FOLDER) {
+					++folderCount;
+					toProcess.addAll(Arrays.asList(processing.getChildren()));
+				} else if (processing.getType() == FileType.FILE) {
+					++fileCount;
+					totalSize += processing.getContent().getSize();
+				}
+			}
+			
+			file.setTotalSize(totalSize);
+			file.setFileCount(fileCount);
+			file.setFolderCount(folderCount);
+		}
+		
+		final Calendar date = Calendar.getInstance();
+		date.setTimeInMillis(resource.getContent().getLastModifiedTime());
+		//In order to have a readable date 
+		file.setLastModifiedTime(new SimpleDateFormat("dd/MM/yyyy").format(date.getTime()));
+		
 		file.setHidden(resource.isHidden());
 		file.setReadable(resource.isReadable());
 		file.setWriteable(resource.isWriteable());

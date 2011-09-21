@@ -40,6 +40,8 @@
 	
 	<label for="password"><spring:message code="auth.password"/></label>
 	<input type="password" id="password" value="${password}"/>
+  
+  <input name="sharedSessionId" type="hidden" value="${sharedSessionId}" />
 
     <a id="authenticate" href="" onclick="return false;">
       <spring:message code="auth.submit"/>

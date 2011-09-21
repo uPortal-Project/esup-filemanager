@@ -93,6 +93,39 @@
 				<entry key="docx" value="doc"/>
 			</map>
 		</property>
+		
+		<!-- Added for RECIA.  In order to know what type of file is in the details area -->
+		<property name="typeMap">
+			<map>
+				<entry key="jpg" value="image"/>
+				<entry key="xcf" value="image"/>
+				<entry key="tif" value="image"/>
+				<entry key="dia" value="image"/>
+				<entry key="gif" value="image"/>
+				<entry key="bmp" value="image"/>
+				<entry key="png" value="image"/>
+				<entry key="mp3" value="audio"/>
+				<entry key="ogg" value="audio"/>
+				<entry key="wma" value="audio"/>
+			</map>
+		</property>
+		
+		<!-- Added for RECIA. In order to limit the size of the filetype.  Any file greater than the size will not allow streaming / slideshow
+		/ view in original size functionality -->
+		<property name="sizeLimitMap">
+			<map>
+				<entry key="jpg" value="2"/>
+				<entry key="xcf" value="2"/>
+				<entry key="tif" value="2"/>
+				<entry key="dia" value="2"/>
+				<entry key="gif" value="2"/>
+				<entry key="bmp" value="2"/>
+				<entry key="png" value="2"/>
+				<entry key="mp3" value="2"/>
+				<entry key="ogg" value="2"/>
+				<entry key="wma" value="2"/>
+			</map>
+		</property>
 	</bean>
 	
 	<import resource="drives.xml"/>

@@ -21,10 +21,8 @@
 
 package org.esupportail.portlet.stockage.beans;
 
+import java.io.InputStream;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import javax.activation.MimetypesFileTypeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -84,6 +84,113 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 	
 	private long size;
 	
+	//Added for GIP Recia : The cumulative size of a directory 
+	private long totalSize;
+	
+	//Added for GIP Recia : How many folders are in a directory (recursive)
+	private long folderCount;
+	
+	//Added for GIP Recia : How many files are in a directory (recursive)
+	private long fileCount;
+	
+	//Added for GIP Recia : Whether or not this file is over the size limit defined in applicationContext.xml.  Used to limit access to streaming / slideshow functionality 
+	//for large files
+	private boolean overSizeLimit;
+	
+	//Added for GIP Recia : Used to look up the mime type for the files in the details view
+	static MimetypesFileTypeMap mimeMap;
+		
+	public boolean isOverSizeLimit() {
+		return overSizeLimit;
+	}
+
+	public void setOverSizeLimit(boolean overSizeLimit) {
+		this.overSizeLimit = overSizeLimit;
+	}
+
+	public long getTotalSize() {
+		return totalSize;
+	}
+
+	public void setTotalSize(long totalSize) {
+		this.totalSize = totalSize;
+	}
+	
+	//Added for GIP Recia : Constants for formatting file/folder sizes
+	private static final long BYTES_PER_KB = 1024;
+	private static final long BYTES_PER_MB = 1024 * BYTES_PER_KB;
+	private static final long BYTES_PER_GB = 1024 * BYTES_PER_MB;
+	private static final String SIZE_FORMAT = "%.2f";
+	
+	/**
+	 * Added for GIP Recia
+	 * Returns a map with keys for the size and the unit.  The will be then used to look up a localized representation.
+	 * @param size
+	 * @return
+	 */
+	private Map<String, String> formatFileSize(long size) {
+		
+		Map<String, String> retVal = new HashMap<String, String>();
+		
+		float kb = ((float) size) / BYTES_PER_KB;
+		
+		if (kb < 1) {
+			retVal.put("size", Long.toString(size));
+			retVal.put("unit", "b");
+			return retVal;
+		}		
+				
+		float mb = ((float) size) / BYTES_PER_MB;
+		
+		if (mb < 1) {
+			retVal.put("size", String.format(SIZE_FORMAT, kb));
+			retVal.put("unit", "kb");
+			return retVal;
+		}
+		 
+		float gb = ((float) size) / BYTES_PER_GB;
+		
+		if (gb < 1) {
+			retVal.put("size", String.format(SIZE_FORMAT,mb));
+			retVal.put("unit", "mb");
+			return retVal;
+		}
+		
+		retVal.put("size", String.format(SIZE_FORMAT,gb));
+		retVal.put("unit", "gb");
+		return retVal;
+	}
+	
+	/**
+	 * @see formatFileSize
+	 */
+	public Map<String, String> getFormattedTotalSize() {
+		return formatFileSize(totalSize);
+	}
+	
+	/**
+	 * @see formatFileSize
+	 */
+	public Map<String, String> getFormattedSize() {
+		return formatFileSize(size);
+	}
+
+	public long getFolderCount() {
+		return folderCount;
+	}
+
+	public void setFolderCount(long folderCount) {
+		this.folderCount = folderCount;
+	}
+
+	public long getFileCount() {
+		return fileCount;
+	}
+
+	public void setFileCount(long fileCount) {
+		this.fileCount = fileCount;
+	}
+
 	private String icon;
 	
 	/**
@@ -97,6 +204,21 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		this.lid = id;
 		this.type = type;
 		this.state = "closed";
+		this.overSizeLimit = false;
+		
+		//Added for GIP Recia : Initialize mime type map
+		//Do we need to initialize the static mimeMap?  Don't enter the potentially slow sync block unless we have to
+		if (mimeMap == null) {
+			//Make sure there are no other JsTreeFiles in the constructor at the same time
+			synchronized (this) {
+				//In the rare cases that there was a 2nd JsTreeFile constructor waiting to enter this block, put another if
+				if (mimeMap == null) {
+					InputStream is = this.getClass().getResourceAsStream("/mime.types");
+					//if we have the mime.types file defined, use it, otherwise, fallback on the system defaults
+					mimeMap = (is == null) ? new MimetypesFileTypeMap() : new MimetypesFileTypeMap(is);
+				}
+			}
+		}
 	} 
 	
 	public String getLid() {
@@ -137,6 +259,10 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		return data;
 	}
 
+	/**
+	 * Used by the JSTree to set the icon for the nodes
+	 * @return
+	 */
 	public String getIcon() {
 		if(icon == null) {
 			if("folder".equals(type))
@@ -149,7 +275,33 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		this.icon = icon;
 	}
 
+	/*
+	 * Used by JSTree to populate the nodes as well as some of the getters
+	 * to retrieve data.
+	 * 
+	 * For GIP Recia fixed a bug where the id's invalid characters interefered with the JSTree's refresh functionality
+	 * Now there are 2 distinct maps, attr which will become the html attributes and metadata which will be accessible
+	 * on the JStree nodes via JQuery's data() function.  
+	 */
 	public Map<String, String> getAttr() {
+		Map<String, String> attr = new HashMap<String, String>();
+		String id = "file_" + this.getPath().hashCode();
+		attr.put("id", id);
+		
+		//Use rel which to store the type of node for the js tree
+		attr.put("rel", type);
+		return attr;
+	}
+	
+	/**
+	 * The JSON plugin in JSTree will use this to populate jQuery.data.  This allows us to store extra
+	 * data without worrying about html constraints or limits.
+	 * 
+	 * see getAttr for more information 
+	 * 
+	 * @return
+	 */
+	public Map<String, String> getMetadata() {
 		Map<String, String> attr = new HashMap<String, String>();
 		String id = ROOT_DRIVE;
 		if(category != null && category.getTitle().length() != 0)
@@ -158,8 +310,10 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 			id = id.concat(DRIVE_PATH_SEPARATOR).concat(drive.getTitle());
 		if(lid != null && lid.length() != 0)
 			id = id.concat(DRIVE_PATH_SEPARATOR).concat(lid);
-		attr.put("id", id);
-		attr.put("rel", type);
+		
+		attr.put("path", id);
+		
+		attr.put("type", type);
 		return attr;
 	}
 
@@ -223,12 +377,34 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		return this.title;
 	}
 	
+	private static int TRUNCATED_MAX_LENGTH = 25;
+	private static String TRUNCATED_EXTENTION = "...";
+	
+	/**
+	 * Added for GIP Recia : In thumbnail mode, we use a trunctated title
+	 * @return A truncated title to use in thumbnail mode
+	 */
+	public String getTruncatedTitle() {
+		if (title != null && title.length() > TRUNCATED_MAX_LENGTH) {
+			return title.substring(0, TRUNCATED_MAX_LENGTH - TRUNCATED_EXTENTION.length()) + TRUNCATED_EXTENTION;
+		} else {
+			return this.title;
+		}
+	}
+	
 	public String getPath() {
-		return this.getAttr().get("id");
+		//Changed for GIP Recia, use meta data as that contains the raw data
+		return this.getMetadata().get("path");
 	}
 	
 	public String getType() {
-		return this.getAttr().get("rel");
+		//Changed for GIP Recia, use meta data as that contains the raw data
+		return this.getMetadata().get("type");
+	}
+	
+	//Added for GIP Recia : Return mime type for display in the details view
+	public String getMimeType() {		
+		return mimeMap.getContentType(getTitle().toLowerCase());
 	}
 	
 	public List<JsTreeFile> getChildren() {
@@ -279,11 +455,12 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 	}
 
 	public int compareTo(JsTreeFile o) {
-		if(this.getAttr().get("rel").equals("folder") &&
-				o.getAttr().get("rel").equals("file"))
+		//Changed for GIP Recia.  Use the getters instead of getAttr directly
+		if(this.getType().equals("folder") &&
+				o.getType().equals("file"))
 			return -1;
-		if(this.getAttr().get("rel").equals("file") &&
-				o.getAttr().get("rel").equals("folder"))
+		if(this.getType().equals("file") &&
+				o.getType().equals("folder"))
 			return 1;
 		return this.getTitle().compareToIgnoreCase(o.getTitle());
 	}

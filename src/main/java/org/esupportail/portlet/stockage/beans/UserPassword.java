@@ -32,7 +32,6 @@ public class UserPassword implements Serializable {
 	private String password;
 
 	private String domain;
-
 	public String getUsername() {
 		return username;
 	}
@@ -48,15 +47,13 @@ public class UserPassword implements Serializable {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+
 	public String getDomain() {
 		return domain;
 	}
-	
 	public void setDomain(String domain) {
 		this.domain = domain;
 	}
-	
 	public UserPassword(String username, String password) {
 		super();
 		this.username = username;

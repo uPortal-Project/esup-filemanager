@@ -23,6 +23,7 @@ package org.esupportail.portlet.stockage.servlet;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,9 +43,9 @@ import org.esupportail.portlet.stockage.beans.FormCommand;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.stockage.beans.UploadBean;
-import org.esupportail.portlet.stockage.exceptions.EsupStockException;
 import org.esupportail.portlet.stockage.exceptions.EsupStockLostSessionException;
 import org.esupportail.portlet.stockage.exceptions.EsupStockPermissionDeniedException;
+import org.esupportail.portlet.stockage.services.ResourceUtils.Type;
 import org.esupportail.portlet.stockage.services.ServersAccessService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +84,14 @@ public class ServletAjaxController implements InitializingBean {
 	@Qualifier("isPortlet")
 	protected Boolean isPortlet;
 	
+	@Autowired
+	@Qualifier("environment")
+	protected String environment;
+	
+	//GP Recia Added in order to detect file type (image / sound / etc)
+	@Autowired
+	protected org.esupportail.portlet.stockage.services.ResourceUtils resourceUtils;
+	
 	protected SharedUserPortletParameters userParameters;
 
 	protected Locale locale;
@@ -100,6 +109,17 @@ public class ServletAjaxController implements InitializingBean {
 			userParameters = (SharedUserPortletParameters)session.getAttribute(sharedSessionId);
 
 		
+		//GIP Recia.  Even in portlet mode, userParameters still appears to be null, so we initialize in either case (portlet / non portlet)
+		if(userParameters == null) {
+			log.debug("Servlet Access (no portlet mode : isPortlet property = false): init SharedUserPortletParameters");
+			userParameters = new SharedUserPortletParameters(sharedSessionId);
+			List<String> driveNames = serverAccess.getRestrictedDrivesGroupsContext(null, null);
+			userParameters.setDriveNames(driveNames);
+			session.setAttribute(sharedSessionId, userParameters);
+		} 
+		
+		/*
+		
 		if(!this.isPortlet && userParameters == null) {
 			log.debug("Servlet Access (no portlet mode : isPortlet property = false): init SharedUserPortletParameters");
 			userParameters = new SharedUserPortletParameters(sharedSessionId);
@@ -115,6 +135,8 @@ public class ServletAjaxController implements InitializingBean {
 			throw new EsupStockException(message);
 		}
 		
+		*/
+		
 		if(userParameters != null && !serverAccess.isInitialized(userParameters)) {
 			serverAccess.initializeServices(this.userParameters.getDriveNames(), 
 											this.userParameters.getUserInfos(), 
@@ -127,9 +149,17 @@ public class ServletAjaxController implements InitializingBean {
     public ModelAndView renderView() {
 		ModelMap model = new ModelMap();
 		model.put("command", new UploadBean());
+		model.put("sharedSessionId", userParameters.getSharedSessionId());
         return new ModelAndView("view-servlet", model);
     }
 	
+	/**
+	 * Data for the browser area.
+	 * @param dir
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping("/htmlFileTree")
 	public ModelAndView fileTree(String dir, HttpServletRequest request, HttpServletResponse response) {
 		if(userParameters == null) {
@@ -137,32 +167,84 @@ public class ServletAjaxController implements InitializingBean {
 			log.info(infoMsg);
 			throw new EsupStockLostSessionException(infoMsg);
 		}
-		ModelMap model;
+		ModelMap model = new ModelMap();
 		if(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE)) {
 			JsTreeFile jsFileRoot = new JsTreeFile(JsTreeFile.ROOT_DRIVE_NAME, null, "drive");
 			jsFileRoot.setIcon(JsTreeFile.ROOT_ICON_PATH);
-			model = new ModelMap("resource", jsFileRoot);
+			model.put("resource", jsFileRoot);
 			List<JsTreeFile> files = this.serverAccess.getJsTreeFileRoots(userParameters);		
 			model.put("files", files);
 		} else {
 			if(this.serverAccess.formAuthenticationRequired(dir, userParameters)) {
 				model = new ModelMap("currentDir", dir);
+				model.put("sharedSessionId", userParameters.getSharedSessionId());
 				model.put("username", this.serverAccess.getUserPassword(dir, userParameters).getUsername());
 				model.put("password", this.serverAccess.getUserPassword(dir, userParameters).getPassword());
 				return new ModelAndView("authenticationForm", model);
 			}
-			JsTreeFile resource = this.serverAccess.get(dir, userParameters);
-			model = new ModelMap("resource", resource);
-			List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
-			Collections.sort(files);
-		    model.put("files", files);
+						
+			try {
+				JsTreeFile resource = this.serverAccess.get(dir, userParameters);
+				model.put("resource", resource);
+				List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
+				Collections.sort(files);
+				model.put("files", files); 
+			} catch (Exception ex) {
+				//Added for GIP Recia : Error handling
+				log.warn("Error retrieving file", ex);
+				//Usually a duplicate name problem.  Tell the ajax handler that
+				//there is a problem and send the translated error message
+				response.setStatus(403);
+				model.put("errorText", context.getMessage("ajax.browserArea.failed", null, locale));
+				return new ModelAndView("ajax_error_recia", model);
+			}
 		}
 		model.put("sharedSessionId", userParameters.getSharedSessionId());
 		FormCommand command = new FormCommand();
 	    model.put("command", command);
-	    return new ModelAndView("fileTree", model);
+	    
+	    /* GIP RECIA : Construct the view in terms of environment */ 
+	    final String view = isModeRecia() ? (getThumbnailMode() ? "fileTree_recia_thumbnails" : "fileTree_recia") : "fileTree";
+	    
+	    return new ModelAndView(view, model);
 	 }
 	
+	/**
+	 * @return
+	 */
+	private boolean isModeRecia() {
+		return this.environment != null && !this.environment.trim().equals("");
+	}
+	
+	private static final String THUMBNAIL_MODE_KEY = "thumbnail_mode";
+	
+	private boolean getThumbnailMode() {
+		Object thumbnailMode = request.getSession().getAttribute(THUMBNAIL_MODE_KEY);
+		if (thumbnailMode == null || !(thumbnailMode instanceof Boolean)) {
+			return false;
+		}
+		return (Boolean) thumbnailMode;
+	}
+	
+	private void putThumbnailMode(boolean thumbnailMode) {
+		request.getSession().setAttribute(THUMBNAIL_MODE_KEY, thumbnailMode);
+	}
+	
+	@RequestMapping("/toggleThumbnailMode")
+    public @ResponseBody Map<String, String> toggleThumbnailMode(boolean thumbnailMode) {
+		putThumbnailMode(thumbnailMode);
+		
+		Map<String, String> jsonMsg = new HashMap<String, String>();
+		jsonMsg.put("thumbnail_mode", new Boolean(thumbnailMode).toString());
+		return jsonMsg;
+    }
+	
+	/**
+	 * Data for the left tree area
+	 * @param dir
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping("/fileChildren")
     public @ResponseBody List<JsTreeFile> fileChildren(String dir, HttpServletRequest request) {
 		if(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE) ) {
@@ -202,7 +284,14 @@ public class ServletAjaxController implements InitializingBean {
 		if(fileDir != null) {
 			return this.fileTree(parentDir, request, response);
 		} 
-    	return null;
+		 
+		//Added for GIP Recia : Error handling 
+		//Usually a duplicate name problem.  Tell the ajax handler that
+		//there is a problem and send the translated error message
+		response.setStatus(403);
+		ModelMap modelMap = new ModelMap();
+		modelMap.put("errorText", context.getMessage("ajax.fileOrFolderCreate.failed", null, locale));
+		return new ModelAndView("ajax_error_recia", modelMap);
     }
 	
 	@RequestMapping("/renameFile")
@@ -210,7 +299,12 @@ public class ServletAjaxController implements InitializingBean {
 		if(this.serverAccess.renameFile(dir, title, userParameters)) {
 			return this.fileTree(parentDir, request, response);	
 		}
-    	return null;
+		
+		//Usually means file does not exist
+		response.setStatus(403);
+		ModelMap modelMap = new ModelMap();
+		modelMap.put("errorText", context.getMessage("ajax.rename.failed", null, locale));
+		return new ModelAndView("ajax_error_recia", modelMap);
     }
     
 	@RequestMapping("/prepareCopyFiles")
@@ -240,12 +334,12 @@ public class ServletAjaxController implements InitializingBean {
 		Map jsonMsg = new HashMap(); 
 		if(this.serverAccess.moveCopyFilesIntoDirectory(dir, basketSession.getDirsToCopy(), "copy".equals(basketSession.getGoal()), userParameters)) {
 			jsonMsg.put("status", new Long(1));
-			String msg = context.getMessage("ajax.past.ok", null, locale); 
+			String msg = context.getMessage("ajax.paste.ok", null, locale); 
 			jsonMsg.put("msg", msg);
 		}
 		else {
 			jsonMsg.put("status", new Long(0));
-			String msg = context.getMessage("ajax.past.failed", null, locale); 
+			String msg = context.getMessage("ajax.paste.failed", null, locale); 
 			jsonMsg.put("msg", msg);
 		}
 		return jsonMsg;
@@ -254,7 +348,7 @@ public class ServletAjaxController implements InitializingBean {
 	@RequestMapping("/authenticate")
     public @ResponseBody Map authenticate(String dir, String username, String password) {
 		Map jsonMsg = new HashMap(); 
-		if(this.serverAccess.authenticate(dir, username, password, null)) {
+		if(this.serverAccess.authenticate(dir, username, password, userParameters)) {
 			jsonMsg.put("status", new Long(1));
 			String msg = context.getMessage("auth.ok", null, locale); 
 			jsonMsg.put("msg", msg);
@@ -267,13 +361,48 @@ public class ServletAjaxController implements InitializingBean {
 		return jsonMsg;
 	}
 	
-
+	/**
+	 * Added for GIP Recia : Return an image.  
+	 * @param path
+	 * @param request
+	 * @param response
+	 * @throws IOException
+	 */
+	@RequestMapping("/fetchImage")
+	public void fetchImage(String path, 
+			HttpServletRequest request, HttpServletResponse response) throws IOException {
+		this.serverAccess.updateUserParameters(path, userParameters);
+		DownloadFile file = this.serverAccess.getFile(path, userParameters);
+		response.setContentType(file.getContentType());
+		response.setContentLength(file.getSize());
+		FileCopyUtils.copy(file.getInputStream(), response.getOutputStream());
+	}
+	
+	/**
+	 * Added for GIP Recia : Return a sound
+	 * @param path
+	 * @param request
+	 * @param response
+	 * @throws IOException
+	 */
+	@RequestMapping("/fetchSound")
+	public void fetchSound(String path, 
+			HttpServletRequest request, HttpServletResponse response) throws IOException {
+		this.serverAccess.updateUserParameters(path, userParameters);
+		DownloadFile file = this.serverAccess.getFile(path, userParameters);
+		final String contentType = "audio/mpeg3";
+		response.setContentType(contentType);
+		response.setContentLength(file.getSize());
+		FileCopyUtils.copy(file.getInputStream(), response.getOutputStream());
+	}
+	
 	/**
 	 * it is used also in portlet mode mobile and wai
 	 */
 	@RequestMapping("/downloadFile")
     public void downloadFile(String dir, 
     								 HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
 		this.serverAccess.updateUserParameters(dir, userParameters);
 		DownloadFile file = this.serverAccess.getFile(dir, userParameters);
 		response.setContentType(file.getContentType());
@@ -303,7 +432,6 @@ public class ServletAjaxController implements InitializingBean {
 	// this method is called anyway
 	@RequestMapping("/uploadFile")
 	public  ModelAndView uploadFile(String dir, FileUpload file, BindingResult result, HttpServletRequest request) throws IOException {		
-	
 		String filename;
 		InputStream inputStream;	
 		
@@ -320,8 +448,8 @@ public class ServletAjaxController implements InitializingBean {
 	}
 
 	
-	// take care : we don't send json like applciation/json but like text/html !
-	// goal is that the json is writed in a frame
+	// take care : we don't send json like application/json but like text/html !
+	// goal is that the json is written in a frame
 	public  ModelAndView upload(String dir, String filename, InputStream inputStream) {
 		boolean success = true;
 		String text = "";
@@ -346,6 +474,91 @@ public class ServletAjaxController implements InitializingBean {
 		return new ModelAndView("text", model);
 	}
 	
+	
+	/**
+	 * Added for GIP Recia : Return the correct details view based on the requested file(s)
+	 * 
+	 */
+	@RequestMapping("/detailsArea")
+	public ModelAndView detailsArea(FormCommand command,
+			HttpServletRequest request, HttpServletResponse response) {
+		ModelMap model = new ModelMap();
+
+		String sharedSessionId = request.getParameter("sharedSessionId");
+		model.put("sharedSessionId", sharedSessionId);
+
+		if (command == null || command.getDirs() == null) {
+			return new ModelAndView("details_empty", model);
+		}
+
+		try {
+
+			// See if we go to the multiple files/folder view or not
+			if (command.getDirs().size() == 1) {
+				String path = command.getDirs().get(0);
+				this.serverAccess.updateUserParameters(path, userParameters);
+
+				JsTreeFile resource = this.serverAccess.get(path,
+						userParameters);
+				// Based on the resource type, direct to appropriate details
+				// view
+				if (resource.getType().equals("folder")
+						|| resource.getType().equals("drive")) {
+					model.put("size", resource.getSize());
+					model.put("file", resource);
+					return new ModelAndView("details_folder_recia", model);
+				} else if (resource.getType().equals("file")) {
+					model.put("file", resource);
+					model.put("size", resource.getSize());
+					model.put("path", path);
+					model.put("urlEncPath", URLEncoder.encode(path, "UTF-8"));
+
+					org.esupportail.portlet.stockage.services.ResourceUtils.Type fileType = resourceUtils
+							.getType(resource.getTitle());
+
+					if (fileType == Type.AUDIO && !resource.isOverSizeLimit()) {
+						model.put("isPortlet", this.isPortlet);
+						return new ModelAndView("details_sound_recia", model);
+					} else if (fileType == Type.IMAGE
+							&& !resource.isOverSizeLimit()) {
+						return new ModelAndView("details_image_recia", model);
+					} else {
+						// generic file page
+						return new ModelAndView("details_file_recia", model);
+					}
+				}
+			} else if (command.getDirs().size() > 1) {
+				// Add data for multiple files details view
+				model.put("numselected", command.getDirs().size());
+
+				// Find the resources which are files and add them to the
+				// image_paths array
+				List<String> image_paths = new ArrayList<String>();
+
+				for (String filePath : command.getDirs()) {
+					JsTreeFile resource = this.serverAccess.get(filePath,
+							userParameters);
+					org.esupportail.portlet.stockage.services.ResourceUtils.Type fileType = resourceUtils
+							.getType(resource.getTitle());
+					if (fileType == Type.IMAGE && !resource.isOverSizeLimit()) {
+						image_paths.add(URLEncoder.encode(filePath, "UTF-8"));
+					}
+				}
+				model.put("image_paths", image_paths);
+				return new ModelAndView("details_files_recia", model);
+			}
+
+		} catch (Exception ex) {
+			response.setStatus(403);
+			model.put("errorText",
+					context.getMessage("ajax.detailsArea.failed", null, locale));
+			return new ModelAndView("ajax_error_recia", model);
+		}
+
+		// Unknown resource type
+		return new ModelAndView("details_empty", model);
+
+	}
 	
 	@ExceptionHandler(EsupStockPermissionDeniedException.class)
 	public ModelAndView handlePermissionDeniedException(EsupStockPermissionDeniedException ex, 

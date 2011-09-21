@@ -376,12 +376,24 @@ public class ServersAccessService implements DisposableBean {
 		JsTreeFile tFile = get(dir, userParameters);
 		if("file".equals(tFile.getType())) {
 			DownloadFile dFile = getFile(dir, userParameters);
+			
+			//GIP Recia : In some cases (ie, file has NTFS security permissions set), the dFile may be Null.  
+			//So we must check for null in order to prevent a general catastrophe
+			if (dFile == null) {
+				log.warn("Download file is null!  " + dir);
+				return;
+			}
 			String fileName =  folder.concat(dFile.getBaseName());
+			
+			//With java 7, encoding should be added to support special characters in the file names
+			//http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4244499
 			out.putNextEntry(new ZipEntry(fileName));
 			out.write(IOUtils.toByteArray(dFile.getInputStream()));
 			out.closeEntry();
 		} else {
 			folder = folder.concat(tFile.getTitle()).concat("/");
+			//Added for GIP Recia : This creates an empty file with the same name as the directory but it allows
+			//for zipping empty directories 
 			out.putNextEntry(new ZipEntry(folder));
 			out.closeEntry();
 			List<JsTreeFile> childrens = this.getChildren(dir, userParameters);
