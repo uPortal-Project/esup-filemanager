@@ -49,7 +49,7 @@
             </span>
             <span class="toolbar-item">
               <a href="" id="toolbar-past" onclick="return false;">
-                <spring:message code="toolbar.past"/>
+                <spring:message code="toolbar.paste"/>
               </a>
             </span>
             <span class="toolbar-item">
