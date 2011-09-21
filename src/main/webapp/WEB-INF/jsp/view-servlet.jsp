@@ -44,16 +44,12 @@
     <link rel="stylesheet" href="/esup-portlet-stockage/css/blueprint/print.css" type="text/css" media="print">
 
     <link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock.css" type="text/css" media="screen, projection">
-    
-    <!-- GIP RECIA : Required css for the application and the jquery plugins -->
-    <% if("@ENVIRONMENT@" == "recia") { %>
+
         <link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock-recia.css" type="text/css" media="screen, projection">
         <link rel="stylesheet" href="/esup-portlet-stockage/css/jquery-ui-1.8.15.custom.css" type="text/css"  media="screen, projection">
         <link rel="stylesheet" href="/esup-portlet-stockage/css/jquery.contextMenu.css" type="text/css"  media="screen, projection">
         <link rel="stylesheet" href="/esup-portlet-stockage/css/jquery.diaporama.css" type="text/css"  media="screen, projection">
         <link type="text/css" href="/esup-portlet-stockage/css/jplayer.blue.monday.css" rel="stylesheet" />        
-    
-    <% } %>
 
     <script type="text/javascript">
       var fileuploadTemplate = '<spring:message code="fileupload.template"/>';
@@ -74,10 +70,7 @@
 
     <script type="text/javascript" src="/esup-portlet-stockage/js/fileuploader.js">
     </script>
-    
-    <!-- GIP RECIA : JQuery plugins and application javascript includes -->
-    <% if("@ENVIRONMENT@" == "recia") { %>
-    
+
      <script type="text/javascript" src="/esup-portlet-stockage/js/jquery-ui-1.8.15.custom.min.js">
       </script>
      
@@ -99,22 +92,12 @@
         </script>        
         <script type="text/javascript" src="/esup-portlet-stockage/js/fileTree_recia.js">
         </script>
-    <% } else {  %>
-        <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock.js">
-        </script>
-    <% } %>
-    
 
 
   </head>
 
   <body>
-    <!-- GIP RECIA : Add token to choice environment -->
-    <% if("@ENVIRONMENT@" == "recia") { %>
        <jsp:include page="body_recia.jsp" />
-    <% } else {  %>
-       <jsp:include page="body.jsp" /> 
-    <% } %>
   </body>
 
 </html>

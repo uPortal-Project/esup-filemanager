@@ -224,6 +224,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		if ("folder".equals(type) || "drive".equals(type)) {
 			FileObject[] children = resource.getChildren();
 			List<FileObject> toProcess = new ArrayList<FileObject>();
+			/*
 			toProcess.addAll(Arrays.asList(children));
 			
 			while(!toProcess.isEmpty()) {
@@ -238,6 +239,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 					totalSize += processing.getContent().getSize();
 				}
 			}
+			*/
 			
 			file.setTotalSize(totalSize);
 			file.setFileCount(fileCount);

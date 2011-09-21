@@ -287,43 +287,7 @@
 	  </includes>
 	</configuration>
       </plugin>
-      <!-- GIG RECIA : add maven-replacer plugin -->
-      <plugin>  
-              <groupId>com.google.code.maven-replacer-plugin</groupId>  
-              <artifactId>maven-replacer-plugin</artifactId>  
-              <version>1.3.3</version>  
-              <executions>  
-                <execution>  
-                   <!-- the replace should happen before the app is packaged -->  
-                   <phase>compile</phase>  
-                   <goals>  
-                      <goal>replace</goal>  
-                   </goals>  
-                </execution>  
-              </executions>
-              <configuration>                  
-                  <includes>  
-                      <!-- replace the token in this file  -->
-                      <include>src/main/webapp/WEB-INF/jsp/view-portlet.jsp</include>  
-                      <include>src/main/webapp/WEB-INF/jsp/view-servlet.jsp</include>
-                  </includes>
-                   <outputDir>target/esup-portlet-stockage/WEB-INF/jsp/</outputDir>                
-                  <regex>false</regex>  
-                  <!-- the name of the token to replace -->  
-                  <token>@ENVIRONMENT@</token>  
-                  <!-- don't use tag value and replace it with the empty string -->
-                   <!-- replace it with the maven project version -->  
-                  <value>${environment}</value>  
-              </configuration>  
-            </plugin>
     </plugins>
   </build>
-  
-  <!-- GIG RECIA : add environment property -->
-  <properties>
-     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<environment></environment>
-	</properties>
 
 </project>

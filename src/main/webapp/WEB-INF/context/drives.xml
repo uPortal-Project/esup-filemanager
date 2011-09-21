@@ -120,8 +120,7 @@
   <bean  class="org.esupportail.portlet.stockage.services.vfs.VfsAccessImpl">
     <property name="driveName" value="bob"/>
     <property name="icon" value="/esup-portlet-stockage/img/drives/root.png" />
-     <!-- GIP RECIA : test on a local drive 'C:\Drivers' instead of 'file:///' -->
-    <property name="uri" value="file:///c:/test1"/>
+    <property name="uri" value="file:///"/>
     <property name="showHiddenFiles" value="true"/>
     <property name="contextToken" value="justbob"/>
     <property name="resourceUtils" ref="resourceUtils"/>
