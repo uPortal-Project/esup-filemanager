@@ -89,7 +89,6 @@ public class PortletControllerAction  implements InitializingBean {
 			@RequestParam(required = false) String createFolder,
 			ActionRequest request, ActionResponse response) throws IOException {
 		
-		String decodedDir = decodeDir(dir);
 		String msg = null;
 
 		if (zip != null) {
@@ -117,7 +116,7 @@ public class PortletControllerAction  implements InitializingBean {
 				basketSession.setGoal("cut");
 				msg = "ajax.cut.ok";
 			} else if (past != null) {
-				this.serverAccess.moveCopyFilesIntoDirectory(decodedDir, basketSession
+				this.serverAccess.moveCopyFilesIntoDirectory(dir, basketSession
 						.getDirsToCopy(), "copy"
 						.equals(basketSession.getGoal()), userParameters);
 				msg = "ajax.past.ok";
@@ -152,10 +151,8 @@ public class PortletControllerAction  implements InitializingBean {
 			@RequestParam String folderName,
 			ActionRequest request, ActionResponse response) throws IOException {
 		
-		String decodedDir = decodeDir(dir);
-		
 		String msg = null;
-		this.serverAccess.createFile(decodedDir, folderName, "folder", userParameters);
+		this.serverAccess.createFile(dir, folderName, "folder", userParameters);
 		
 		if(msg != null)
 			response.setRenderParameter("msg", msg);
@@ -169,10 +166,8 @@ public class PortletControllerAction  implements InitializingBean {
     								@RequestParam String dir,
     								@RequestParam List<String> dirs) {
 		
-		String decodedDir = decodeDir(dir);
-		
 		ModelMap model = new ModelMap();
-		List<JsTreeFile> files = this.serverAccess.getChildren(decodedDir, userParameters);
+		List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
 		List<JsTreeFile> filesToRename = new ArrayList<JsTreeFile>();
 		if(!dirs.isEmpty()) {
 			for(JsTreeFile file: files) {
@@ -191,10 +186,9 @@ public class PortletControllerAction  implements InitializingBean {
 	public void formRenameWai(@RequestParam String dir, @RequestParam String sharedSessionId,
 			ActionRequest request, ActionResponse response) throws IOException {
 		
-		String decodedDir = decodeDir(dir);
 		String msg = null;
 		
-		List<JsTreeFile> files = this.serverAccess.getChildren(decodedDir, userParameters);
+		List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
 		for(JsTreeFile file: files) {
 			String newTitle = request.getParameter(file.getPath());
 			if(newTitle != null && newTitle.length() != 0 && !file.getTitle().equals(newTitle)) {
@@ -222,12 +216,10 @@ public class PortletControllerAction  implements InitializingBean {
 	@RequestMapping(value = {"VIEW"}, params = {"action=formUploadWai"})
     public void formUploadWai(ActionRequest request, ActionResponse response,
     								@RequestParam String dir, @RequestParam String sharedSessionId, FileUpload command) throws IOException {
-	
-		String decodedDir = decodeDir(dir);
 		
 		String filename = command.getQqfile().getOriginalFilename();
 		InputStream inputStream = command.getQqfile().getInputStream();
-		this.serverAccess.putFile(decodedDir, filename, inputStream, userParameters);
+		this.serverAccess.putFile(dir, filename, inputStream, userParameters);
 		
 		response.setRenderParameter("dir", dir);
 		response.setRenderParameter("sharedSessionId", sharedSessionId);
@@ -237,16 +229,14 @@ public class PortletControllerAction  implements InitializingBean {
 	@RequestMapping(value = {"VIEW"}, params = {"action=formAuthenticationWai"})
     public void formAuthenticationWai(ActionRequest request, ActionResponse response,
     								@RequestParam String dir, @RequestParam String sharedSessionId, @RequestParam String username, @RequestParam String password) throws IOException {
-	
-		String decodedDir = decodeDir(dir);
 		
 		String msg = "auth.bad";
-		if(this.serverAccess.authenticate(decodedDir, username, password, userParameters)) {
+		if(this.serverAccess.authenticate(dir, username, password, userParameters)) {
 			msg = "auth.ok";
 		
 			// we keep username+password in session so that we can reauthenticate on drive in servlet mode 
 			// (and so that download file would be ok for example with the servlet ...)
-			String driveName = this.serverAccess.getDrive(decodedDir);
+			String driveName = this.serverAccess.getDrive(dir);
 			userParameters.getUserPassword4AuthenticatedFormDrives().put(driveName, new UserPassword(username, password));
 		}
 			
@@ -259,16 +249,14 @@ public class PortletControllerAction  implements InitializingBean {
 	@RequestMapping(value = {"VIEW"}, params = {"action=formAuthenticationMobile"})
     public void formAuthenticationMobile(ActionRequest request, ActionResponse response,
     								@RequestParam String dir, @RequestParam String sharedSessionId, @RequestParam String username, @RequestParam String password) throws IOException {
-	
-		String decodedDir = decodeDir(dir);
 		
 		String msg = "auth.bad";
-		if(this.serverAccess.authenticate(decodedDir, username, password, userParameters)) {
+		if(this.serverAccess.authenticate(dir, username, password, userParameters)) {
 			msg = "auth.ok";
 			
 			// we keep username+password in session so that we can reauthenticate on drive in servlet mode 
 			// (and so that download file would be ok for example with the servlet ...)
-			String driveName = this.serverAccess.getDrive(decodedDir);
+			String driveName = this.serverAccess.getDrive(dir);
 			userParameters.getUserPassword4AuthenticatedFormDrives().put(driveName, new UserPassword(username, password));
 		}
 		
@@ -277,9 +265,5 @@ public class PortletControllerAction  implements InitializingBean {
 		response.setRenderParameter("sharedSessionId", sharedSessionId);
 		response.setRenderParameter("action", "browseMobile");
 	}
-    
-	private String decodeDir(String dir) {
-		return URLEncodingUtils.decodeDir(dir);
-	}
-	
+
 }
