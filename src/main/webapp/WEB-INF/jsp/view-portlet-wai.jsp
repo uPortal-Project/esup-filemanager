@@ -62,7 +62,7 @@
         <%-- this block is used only when javascript is disabled --%>
 
         <div class="breadcrumbs">
-          <c:forEach var="parent" items="${resource.parentsIds}" varStatus="item">
+          <c:forEach var="parent" items="${resource.parentsPathes}" varStatus="item">
             <c:set var="iconAlt">
             	<c:if test="${item.first}">/</c:if>
             </c:set>
@@ -88,11 +88,11 @@
 
           <c:forEach var="file" items="${files}">
             <li class="browserlist fl-container">
-            <form:checkbox path="dirs" cssClass="browsercheck" value="${file.id}" />
+            <form:checkbox path="dirs" cssClass="browsercheck" value="${file.path}" />
             <c:choose>
               <c:when test="${'file' == file.type}">
                 <img src="${file.icon}" alt="" />
-                <a class="file" href="/esup-portlet-stockage/servlet-ajax/downloadFile?dir=${file.id}&sharedSessionId=${sharedSessionId}">
+                <a class="file" href="/esup-portlet-stockage/servlet-ajax/downloadFile?dir=${file.path}&sharedSessionId=${sharedSessionId}">
                   ${file.title}
                 </a>
               </c:when>
@@ -100,7 +100,7 @@
                 <img src="${file.icon}" alt="" />
                 <a 
                     class="fileTreeRef"
-                    href="<portlet:renderURL><portlet:param name="action" value="browseWai"/><portlet:param name="dir" value="${file.id}"/></portlet:renderURL>">
+                    href="<portlet:renderURL><portlet:param name="action" value="browseWai"/><portlet:param name="dir" value="${file.path}"/></portlet:renderURL>">
                   ${file.title}
                 </a>
               </c:otherwise>
@@ -128,7 +128,7 @@
     <li class="toolbar-item">
     <input 
         type="submit"
-        value="<spring:message code="toolbar.past"/>"
+        value="<spring:message code="toolbar.paste"/>"
         id="toolbar-past-wai"
         name="past"/>
     <li class="toolbar-item">

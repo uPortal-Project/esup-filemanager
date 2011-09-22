@@ -75,7 +75,7 @@
           <c:choose>
             <c:when test="${'file' == file.type}">
               <img src="${file.icon}" alt="icon" />
-              <a class="file" href="/esup-portlet-stockage/servlet-ajax/downloadFile?dir=${file.id}&sharedSessionId=${sharedSessionId}">
+              <a class="file" href="/esup-portlet-stockage/servlet-ajax/downloadFile?dir=${file.path}&sharedSessionId=${sharedSessionId}">
                 ${file.title}
               </a>
             </c:when>
@@ -83,7 +83,7 @@
               <img src="${file.icon}" alt="icon" />
               <a 
                   class="fileTreeRef"
-                  href="<portlet:renderURL><portlet:param name="action" value="browseMobile"/><portlet:param name="dir" value="${file.id}"/></portlet:renderURL>">
+                  href="<portlet:renderURL><portlet:param name="action" value="browseMobile"/><portlet:param name="dir" value="${file.path}"/></portlet:renderURL>">
 
 
 

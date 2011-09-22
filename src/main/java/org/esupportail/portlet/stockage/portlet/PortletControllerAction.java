@@ -119,7 +119,7 @@ public class PortletControllerAction  implements InitializingBean {
 				this.serverAccess.moveCopyFilesIntoDirectory(dir, basketSession
 						.getDirsToCopy(), "copy"
 						.equals(basketSession.getGoal()), userParameters);
-				msg = "ajax.past.ok";
+				msg = "ajax.paste.ok";
 			} else if (delete != null) {
 				msg = "ajax.remove.ok"; 
 				for(String dirToDelete: command.getDirs()) {
