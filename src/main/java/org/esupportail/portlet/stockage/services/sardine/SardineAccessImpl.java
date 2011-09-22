@@ -136,13 +136,20 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 
 		String title = resource.getName();
 		String type = "file";
-
-		if (resource.isDirectory())
+		
+		if (resource.isDirectory()) {
 			type = "folder";
+			if("".equals(resource.getName()))  {
+				// workaround for issue 96
+				// http://code.google.com/p/sardine/issues/detail?id=96
+				String[] names = lid.split("/");
+				title = names[names.length - 1];
+			}
+		}
 
-		if (resource.isCurrentDirectory())
+		if("".equals(lid))
 			type = "drive";
-
+		
 		JsTreeFile file = new JsTreeFile(title, lid, type);
 
 		if ("file".equals(type)) {

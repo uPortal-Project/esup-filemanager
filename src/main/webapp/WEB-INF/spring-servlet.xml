@@ -41,5 +41,10 @@
     <!-- Configures the @Controller programming model 
     -> enable json-> pojo with jackson-mapper-asl-->
 	<mvc:annotation-driven />
+	
+	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="defaultErrorView" value="error-servlet"/>
+		<property name="defaultStatusCode" value="500"/>
+	</bean>
     
 </beans>

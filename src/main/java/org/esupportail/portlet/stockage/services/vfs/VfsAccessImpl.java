@@ -57,30 +57,29 @@ import org.esupportail.portlet.stockage.services.ResourceUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.FileCopyUtils;
 
-import com.ibm.icu.util.Calendar;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpException;
 
 public class VfsAccessImpl extends FsAccess implements DisposableBean {
 
 	protected static final Log log = LogFactory.getLog(VfsAccessImpl.class);
-	
+
 	protected FileSystemManager fsManager;
 
 	protected FileObject root;
-	
+
 	protected ResourceUtils resourceUtils;
-	
+
 	protected boolean sftpSetUserDirIsRoot = false;
 
     protected boolean strictHostKeyChecking = true;
-    
+
     protected boolean showHiddenFiles = false;
 
 	public void setResourceUtils(ResourceUtils resourceUtils) {
 		this.resourceUtils = resourceUtils;
 	}
-	
+
 	public void setSftpSetUserDirIsRoot(boolean sftpSetUserDirIsRoot) {
 		this.sftpSetUserDirIsRoot = sftpSetUserDirIsRoot;
 	}
@@ -96,13 +95,12 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 	public void initializeService(Map userInfos, SharedUserPortletParameters userParameters) {
 		super.initializeService(userInfos, userParameters);
 	}
-	
+
 	@Override
 	public void open(SharedUserPortletParameters userParameters) {
 		try {
 			if(!isOpened()) {
 				FileSystemOptions fsOptions = new FileSystemOptions();
-					
 				if(sftpSetUserDirIsRoot) {
 					SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fsOptions, true);
 				}
@@ -128,15 +126,15 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 	@Override
 	public void close() {
 		FileSystem fs = null;
-	    fs = this.root.getFileSystem(); 
+	    fs = this.root.getFileSystem();
 	    this.fsManager.closeFileSystem(fs);
 		this.root = null;
 	}
-	
+
 	public void destroy() throws Exception {
 		this.close();
 	}
-	
+
 	@Override
 	public boolean isOpened() {
 		return (root != null);
@@ -162,7 +160,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 			throw new EsupStockException(fse);
 		} 
 	}
-	
+
 	@Override
 	public JsTreeFile get(String path, SharedUserPortletParameters userParameters) {
 		try {
@@ -172,7 +170,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 			throw new EsupStockException(fse);
 		}
 	}
-	
+
 	@Override
 	public List<JsTreeFile> getChildren(String path, SharedUserPortletParameters userParameters) {
 		try {
@@ -203,7 +201,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 			lid = lid.substring(rootPath.length());
 		if(lid.startsWith("/"))
 			lid = lid.substring(1);
-		
+
 		String title = "";
 		String type = "drive";
 		if(!"".equals(lid)) {
@@ -366,14 +364,14 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 			OutputStream outstr = newFile.getContent().getOutputStream();
 
 			FileCopyUtils.copy(inputStream, outstr);
-			
+
 			return true;
-			
+
 		} catch (FileSystemException e) {
 			log.info("can't upload file : " + e.getMessage(), e);
 		} catch (IOException e) {
 			log.warn("can't upload file : " + e.getMessage(), e);
-		} 
+		}
 		return false;
 	}
 

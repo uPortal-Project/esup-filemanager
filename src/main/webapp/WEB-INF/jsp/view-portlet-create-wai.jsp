@@ -41,6 +41,7 @@
 <portlet:actionURL var="formCreateWai">
   <portlet:param name="action" value="formCreateWai"/>
   <portlet:param name="dir" value="${currentDir}"/>
+  <portlet:param name="sharedSessionId" value="${n}"/>
 </portlet:actionURL>
 
 

@@ -26,12 +26,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix='portlet' uri="http://java.sun.com/portlet" %>
 
-<html>
+<portlet:defineObjects />
 
-  <head>
-    <title>
-      ENT Mobile
-    </title>
+<c:set var="n">
+  <portlet:namespace />
+</c:set>
+
     <link 
         rel="stylesheet"
         href="/esup-portlet-stockage/css/esup-stock-mobile.css"
@@ -40,16 +40,13 @@
 
 
 
-  </head>
-
-
-  <body up style="fl-theme-iphone">
+  <div style="fl-theme-iphone">
 
 
     <div class="esupstock">
 
       <div class="breadcrumbs">
-        <c:forEach var="parent" items="${resource.parentsPathes}" varStatus="item">
+        <c:forEach var="parent" items="${resource.parentsIds}" varStatus="item">
           <c:choose>
             <c:when test="${item.last}">
               <img src="${resource.icon}" alt="icon" />
@@ -78,7 +75,7 @@
           <c:choose>
             <c:when test="${'file' == file.type}">
               <img src="${file.icon}" alt="icon" />
-              <a class="file" href="/esup-portlet-stockage/servlet-ajax/downloadFile?dir=${file.path}&sharedSessionId=${sharedSessionId}">
+              <a class="file" href="/esup-portlet-stockage/servlet-ajax/downloadFile?dir=${file.id}&sharedSessionId=${sharedSessionId}">
                 ${file.title}
               </a>
             </c:when>
@@ -86,7 +83,7 @@
               <img src="${file.icon}" alt="icon" />
               <a 
                   class="fileTreeRef"
-                  href="<portlet:renderURL><portlet:param name="action" value="browseMobile"/><portlet:param name="dir" value="${file.path}"/></portlet:renderURL>">
+                  href="<portlet:renderURL><portlet:param name="action" value="browseMobile"/><portlet:param name="dir" value="${file.id}"/></portlet:renderURL>">
 
 
 
@@ -101,6 +98,4 @@
 
   </div>
 
-</body>
-
-</html>
+</div>

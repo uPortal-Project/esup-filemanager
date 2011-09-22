@@ -306,7 +306,7 @@ function getFile(parentDir, fileId) {
 			$("#fileTree").jstree("select_node", obj, true); 
 		}, true);
 	} else {
-		if(fileId != 'FS:') {
+		if(fileId != 'FS%3A') {
 			var obj = document.getElementById(fileId);
 			$("#fileTree").jstree("select_node", obj, true); 
 		} else {

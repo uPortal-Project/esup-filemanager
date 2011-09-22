@@ -47,6 +47,7 @@ import org.esupportail.portlet.stockage.exceptions.EsupStockLostSessionException
 import org.esupportail.portlet.stockage.exceptions.EsupStockPermissionDeniedException;
 import org.esupportail.portlet.stockage.services.ResourceUtils.Type;
 import org.esupportail.portlet.stockage.services.ServersAccessService;
+import org.esupportail.portlet.stockage.utils.URLEncodingUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -162,6 +163,7 @@ public class ServletAjaxController implements InitializingBean {
 	 */
 	@RequestMapping("/htmlFileTree")
 	public ModelAndView fileTree(String dir, HttpServletRequest request, HttpServletResponse response) {
+		dir = decodeDir(dir);
 		if(userParameters == null) {
 			String infoMsg = "isPortlet = true but portlet/portal session is lost, user should refresh/reload the window ...";
 			log.info(infoMsg);
@@ -208,7 +210,7 @@ public class ServletAjaxController implements InitializingBean {
 	    
 	    return new ModelAndView(view, model);
 	 }
-	
+
 	/**
 	 * @return
 	 */
@@ -247,6 +249,7 @@ public class ServletAjaxController implements InitializingBean {
 	 */
 	@RequestMapping("/fileChildren")
     public @ResponseBody List<JsTreeFile> fileChildren(String dir, HttpServletRequest request) {
+		dir = decodeDir(dir);
 		if(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE) ) {
 			List<JsTreeFile> files = this.serverAccess.getJsTreeFileRoots(userParameters);		
 			return files;
@@ -280,6 +283,7 @@ public class ServletAjaxController implements InitializingBean {
 	
 	@RequestMapping("/createFile")
     public ModelAndView createFile(String parentDir, String title, String type, HttpServletRequest request, HttpServletResponse response) {
+		parentDir = decodeDir(parentDir);
 		String fileDir = this.serverAccess.createFile(parentDir, title, type, userParameters);
 		if(fileDir != null) {
 			return this.fileTree(parentDir, request, response);
@@ -296,6 +300,8 @@ public class ServletAjaxController implements InitializingBean {
 	
 	@RequestMapping("/renameFile")
     public ModelAndView renameFile(String parentDir, String dir, String title, HttpServletRequest request, HttpServletResponse response) {
+		parentDir = decodeDir(parentDir);
+		dir = decodeDir(dir);
 		if(this.serverAccess.renameFile(dir, title, userParameters)) {
 			return this.fileTree(parentDir, request, response);	
 		}
@@ -331,6 +337,7 @@ public class ServletAjaxController implements InitializingBean {
 	
 	@RequestMapping("/pastFiles")
     public @ResponseBody Map pastFiles(String dir) {
+		dir = decodeDir(dir);
 		Map jsonMsg = new HashMap(); 
 		if(this.serverAccess.moveCopyFilesIntoDirectory(dir, basketSession.getDirsToCopy(), "copy".equals(basketSession.getGoal()), userParameters)) {
 			jsonMsg.put("status", new Long(1));
@@ -347,6 +354,7 @@ public class ServletAjaxController implements InitializingBean {
 	
 	@RequestMapping("/authenticate")
     public @ResponseBody Map authenticate(String dir, String username, String password) {
+		dir = decodeDir(dir);
 		Map jsonMsg = new HashMap(); 
 		if(this.serverAccess.authenticate(dir, username, password, userParameters)) {
 			jsonMsg.put("status", new Long(1));
@@ -402,7 +410,6 @@ public class ServletAjaxController implements InitializingBean {
 	@RequestMapping("/downloadFile")
     public void downloadFile(String dir, 
     								 HttpServletRequest request, HttpServletResponse response) throws IOException {
-		
 		this.serverAccess.updateUserParameters(dir, userParameters);
 		DownloadFile file = this.serverAccess.getFile(dir, userParameters);
 		response.setContentType(file.getContentType());
@@ -432,6 +439,8 @@ public class ServletAjaxController implements InitializingBean {
 	// this method is called anyway
 	@RequestMapping("/uploadFile")
 	public  ModelAndView uploadFile(String dir, FileUpload file, BindingResult result, HttpServletRequest request) throws IOException {		
+		dir = decodeDir(dir);
+		
 		String filename;
 		InputStream inputStream;	
 		
@@ -451,6 +460,7 @@ public class ServletAjaxController implements InitializingBean {
 	// take care : we don't send json like application/json but like text/html !
 	// goal is that the json is written in a frame
 	public  ModelAndView upload(String dir, String filename, InputStream inputStream) {
+		dir = decodeDir(dir);
 		boolean success = true;
 		String text = "";
 		try {
@@ -567,12 +577,26 @@ public class ServletAjaxController implements InitializingBean {
 		response.sendError(403, msg);
 		return null;
 	}
-
+	
 	@ExceptionHandler(EsupStockLostSessionException.class)
 	public ModelAndView handleLostSessionException(EsupStockLostSessionException ex, 
 										HttpServletRequest request, HttpServletResponse response) throws IOException {
 		response.sendError(500, "reload");
 		return null;
 	}
+	
+
+	@ExceptionHandler(EsupStockException.class)
+	public ModelAndView handleException(EsupStockException ex, 
+										HttpServletRequest request, HttpServletResponse response) throws IOException {
+		response.sendError(500, ex.getMessage());
+		return null;
+	}
+	
+
+	private String decodeDir(String dir) {
+		return URLEncodingUtils.decodeDir(dir);
+	}
+	
 
 }

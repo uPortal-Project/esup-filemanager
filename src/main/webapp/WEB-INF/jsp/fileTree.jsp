@@ -30,11 +30,11 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <div class="breadcrumbs">
-  <c:forEach var="parent" items="${resource.parentsPathes}" varStatus="item">
+  <c:forEach var="parent" items="${resource.parentsIds}" varStatus="item">
     <c:choose>
       <c:when test="${item.last}">
         <img src="${resource.icon}" alt="icon" />
-        <span id="bigdirectory" rel="${resource.path}">
+        <span id="bigdirectory" rel="${resource.id}">
           ${resource.title}
         </span>
       </c:when>
@@ -62,22 +62,22 @@
       <li class="browserlist ${file.readable ? 'esup-stock-read' : ''} ${file.writeable ? 'esup-stock-write' : ''} ${file.hidden ? 'esup-stock-hidden' : ''}">
       <c:choose>
         <c:when test="${file.type == 'folder'}">
-          <form:checkbox path="dirs" cssClass="browsercheck" value="${file.path}" />
+          <form:checkbox path="dirs" cssClass="browsercheck" value="${file.id}" />
           <img src="${file.icon}" alt="icon" />
-          <a class="fileTreeRef" href="" rel="${file.path}" onclick="return false;">
+          <a class="fileTreeRef" href="" rel="${file.id}" onclick="return false;">
             ${file.title}
           </a>
       </c:when>
       <c:when test="${file.type == 'drive' || file.type == 'category'}">
         <img src="${file.icon}" alt="icon" />
-        <a class="fileTreeRef" href="" rel="${file.path}" onclick="return false;">
+        <a class="fileTreeRef" href="" rel="${file.id}" onclick="return false;">
           ${file.title}
         </a>
     </c:when>
     <c:otherwise>
-      <form:checkbox path="dirs" cssClass="browsercheck" value="${file.path}" />
+      <form:checkbox path="dirs" cssClass="browsercheck" value="${file.id}" />
       <img src="${file.icon}" alt="icon" />
-      <a class="file" href="<spring:url value='/servlet-ajax/downloadFile?dir=${file.path}&sharedSessionId=${sharedSessionId}'/>" rel="${file.path}">
+      <a class="file" href="<spring:url value='/servlet-ajax/downloadFile?dir=${file.id}&sharedSessionId=${sharedSessionId}'/>" rel="${file.id}">
         ${file.title}
       </a>
      </c:otherwise>
@@ -86,11 +86,11 @@
   <span class="esupHide renameSpan">
     <input 
         class="renameInput"
-        rel="${file.path}"
+        rel="${file.id}"
         type="text"
         value="${file.title}"
         onKeyPress="return disableEnterKey(event)"/>
-    <a class="renameSubmit" rel="${file.path}" href="#">
+    <a class="renameSubmit" rel="${file.id}" href="#">
       <spring:message code="toolbar.rename"/>
     </a>
   </span>

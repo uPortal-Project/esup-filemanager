@@ -37,20 +37,26 @@ import org.esupportail.portlet.stockage.services.uri.UriManipulateService;
 public abstract class FsAccess {
 
 	protected static String TOKEN_SPECIAL_CHAR =  "@";
-	
+
+    protected String datePattern = "dd/MM/yyyy hh:mm:ss";
+
 	private List<String> memberOfAny;
-	
+
 	private String contextToken;
-	
+
 	protected String driveName;
-	
+
 	protected String uri;
-	
+
 	protected String icon;
-	
+
 	protected UserAuthenticatorService userAuthenticatorService;
 
 	protected UriManipulateService uriManipulateService;
+
+	public void setDatePattern(String datePattern) {
+		this.datePattern = datePattern;
+	}
 
 	public List<String> getMemberOfAny() {
 		return memberOfAny;
@@ -101,11 +107,11 @@ public abstract class FsAccess {
 			UriManipulateService uriManipulateService) {
 		this.uriManipulateService = uriManipulateService;
 	}
-	
+
 	public void initializeService(Map userInfos,
 			SharedUserPortletParameters userParameters) {
 		if(userInfos != null) {
-			for(String userInfoKey : (Set<String>)userInfos.keySet()) { 
+			for(String userInfoKey : (Set<String>)userInfos.keySet()) {
 				String userInfo = (String)userInfos.get(userInfoKey);
 				String userInfoKeyToken = TOKEN_SPECIAL_CHAR.concat(userInfoKey).concat(TOKEN_SPECIAL_CHAR);
 				this.uri = this.uri.replaceAll(userInfoKeyToken, userInfo);
@@ -113,8 +119,8 @@ public abstract class FsAccess {
 		}
 		if(this.userAuthenticatorService != null && userInfos != null)
 			this.userAuthenticatorService.initialize(userInfos, userParameters);
-		if(this.uriManipulateService != null) 
-			this.uri = this.uriManipulateService.manipulate(uri);			
+		if(this.uriManipulateService != null)
+			this.uri = this.uriManipulateService.manipulate(uri);
 	}
 
 	public abstract void open(SharedUserPortletParameters userParameters) ;
@@ -141,11 +147,11 @@ public abstract class FsAccess {
 
 	public abstract boolean putFile(String dir, String filename,
 			InputStream inputStream, SharedUserPortletParameters userParameters);
-	
+
 	public boolean supportIntraCopyPast() {
 		return true;
 	}
-	
+
 	public boolean supportIntraCutPast() {
 		return true;
 	}
@@ -165,10 +171,10 @@ public abstract class FsAccess {
 	public boolean authenticate(String username, String password, SharedUserPortletParameters userParameters) {
 		this.userAuthenticatorService.getUserPassword(userParameters).setUsername(username);
 		this.userAuthenticatorService.getUserPassword(userParameters).setPassword(password);
-		try { 
+		try {
 			this.get("", userParameters);
 		} catch(Exception e) {
-			// TODO : catch Exception corresponding to an authentication failure ... 
+			// TODO : catch Exception corresponding to an authentication failure ...
 			this.userAuthenticatorService.getUserPassword(userParameters).setPassword(null);
 			return false;
 		}

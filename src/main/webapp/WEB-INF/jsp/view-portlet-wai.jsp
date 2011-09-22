@@ -41,6 +41,7 @@
 <portlet:actionURL var="formProcessWai">
   <portlet:param name="action" value="formProcessWai"/>
   <portlet:param name="dir" value="${currentDir}"/>
+  <portlet:param name="sharedSessionId" value="${n}"/>
 </portlet:actionURL>
 
 
@@ -61,7 +62,7 @@
         <%-- this block is used only when javascript is disabled --%>
 
         <div class="breadcrumbs">
-          <c:forEach var="parent" items="${resource.parentsPathes}" varStatus="item">
+          <c:forEach var="parent" items="${resource.parentsIds}" varStatus="item">
             <c:set var="iconAlt">
             	<c:if test="${item.first}">/</c:if>
             </c:set>
@@ -87,11 +88,11 @@
 
           <c:forEach var="file" items="${files}">
             <li class="browserlist fl-container">
-            <form:checkbox path="dirs" cssClass="browsercheck" value="${file.path}" />
+            <form:checkbox path="dirs" cssClass="browsercheck" value="${file.id}" />
             <c:choose>
               <c:when test="${'file' == file.type}">
                 <img src="${file.icon}" alt="" />
-                <a class="file" href="/esup-portlet-stockage/servlet-ajax/downloadFile?dir=${file.path}&sharedSessionId=${sharedSessionId}">
+                <a class="file" href="/esup-portlet-stockage/servlet-ajax/downloadFile?dir=${file.id}&sharedSessionId=${sharedSessionId}">
                   ${file.title}
                 </a>
               </c:when>
@@ -99,7 +100,7 @@
                 <img src="${file.icon}" alt="" />
                 <a 
                     class="fileTreeRef"
-                    href="<portlet:renderURL><portlet:param name="action" value="browseWai"/><portlet:param name="dir" value="${file.path}"/></portlet:renderURL>">
+                    href="<portlet:renderURL><portlet:param name="action" value="browseWai"/><portlet:param name="dir" value="${file.id}"/></portlet:renderURL>">
                   ${file.title}
                 </a>
               </c:otherwise>
@@ -149,13 +150,13 @@
 </li>
 <li class="toolbar-item">
 <a  id="toolbar-create-wai" 
-	href="<portlet:renderURL><portlet:param name="action" value="createFolderWai"/><portlet:param name="dir" value="${currentDir}"/></portlet:renderURL>">
+	href="<portlet:renderURL><portlet:param name="action" value="createFolderWai"/><portlet:param name="dir" value="${currentDir}"/><portlet:param name="sharedSessionId" value="${n}"/></portlet:renderURL>">
 	<spring:message code="toolbar.create"/>
 </a>
 </li>
 <li class="toolbar-item">
 <a  id="toolbar-upload-wai" 
-	href="<portlet:renderURL><portlet:param name="action" value="fileUploadWai"/><portlet:param name="dir" value="${currentDir}"/></portlet:renderURL>">
+	href="<portlet:renderURL><portlet:param name="action" value="fileUploadWai"/><portlet:param name="dir" value="${currentDir}"/><portlet:param name="sharedSessionId" value="${n}"/></portlet:renderURL>">
 	<spring:message code="toolbar.upload"/>
 </a>
 </li>

@@ -21,17 +21,13 @@
 
 package org.esupportail.portlet.stockage.portlet;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -42,6 +38,7 @@ import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.stockage.services.ServersAccessService;
 import org.esupportail.portlet.stockage.services.UserAgentInspector;
+import org.esupportail.portlet.stockage.utils.URLEncodingUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -124,20 +121,21 @@ public class PortletController implements InitializingBean {
     public ModelAndView browseMobile(RenderRequest request, RenderResponse response,
     								@RequestParam String dir) {
 		ModelMap model;
-		if( !(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE)) ) {
-			if(this.serverAccess.formAuthenticationRequired(dir, userParameters)) {
-				SortedMap<String, List<String>> parentPathes = JsTreeFile.getParentsPathes(dir, null, null);
+		String decodedDir = decodeDir(dir);
+		if( !(decodedDir == null || decodedDir.length() == 0 || decodedDir.equals(JsTreeFile.ROOT_DRIVE)) ) {
+			if(this.serverAccess.formAuthenticationRequired(decodedDir, userParameters)) {
+				SortedMap<String, List<String>> parentPathes = JsTreeFile.getParentsIds(decodedDir, null, null);
 				// we want to get the (last-1) key of sortedmap "parentPathes"
 				String parentDir = parentPathes.subMap(parentPathes.firstKey(), parentPathes.lastKey()).lastKey();
 				model = new ModelMap("currentDir", dir);
 				model.put("parentDir", parentDir);
-				model.put("username", this.serverAccess.getUserPassword(dir, userParameters).getUsername());
-				model.put("password", this.serverAccess.getUserPassword(dir, userParameters).getPassword());
+				model.put("username", this.serverAccess.getUserPassword(decodedDir, userParameters).getUsername());
+				model.put("password", this.serverAccess.getUserPassword(decodedDir, userParameters).getPassword());
 				model.put("sharedSessionId", sharedSessionId);
 				return new ModelAndView("authenticationForm-portlet-mobile", model);
 			}
 		}
-		model = browse(dir);
+		model = browse(decodedDir);
 		model.put("sharedSessionId", sharedSessionId);
         return new ModelAndView("view-portlet-mobile", model);
     }
@@ -146,21 +144,21 @@ public class PortletController implements InitializingBean {
     public ModelAndView browseWai(RenderRequest request, RenderResponse response,
     								@RequestParam(required=false) String dir,
     								@RequestParam(required=false) String msg) {
-				
+		String decodedDir = decodeDir(dir);
 		if(!serverAccess.isInitialized(userParameters)) {
 			serverAccess.initializeServices(userParameters.getDriveNames(),  userParameters.getUserInfos(), userParameters);
 		}
 		
 		ModelMap model;
-		if( !(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE)) ) {
-			if(this.serverAccess.formAuthenticationRequired(dir, userParameters)) {
-				SortedMap<String, List<String>> parentPathes = JsTreeFile.getParentsPathes(dir, null, null);
+		if( !(decodedDir == null || decodedDir.length() == 0 || decodedDir.equals(JsTreeFile.ROOT_DRIVE)) ) {
+			if(this.serverAccess.formAuthenticationRequired(decodedDir, userParameters)) {
+				SortedMap<String, List<String>> parentPathes = JsTreeFile.getParentsIds(decodedDir, null, null);
 				// we want to get the (last-1) key of sortedmap "parentPathes"
 				String parentDir = parentPathes.subMap(parentPathes.firstKey(), parentPathes.lastKey()).lastKey();
 				model = new ModelMap("currentDir", dir);
 				model.put("parentDir", parentDir);
-				model.put("username", this.serverAccess.getUserPassword(dir, userParameters).getUsername());
-				model.put("password", this.serverAccess.getUserPassword(dir, userParameters).getPassword());
+				model.put("username", this.serverAccess.getUserPassword(decodedDir, userParameters).getUsername());
+				model.put("password", this.serverAccess.getUserPassword(decodedDir, userParameters).getPassword());
 				if(msg != null) 
 					model.put("msg",msg);
 				model.put("sharedSessionId", sharedSessionId);
@@ -168,7 +166,7 @@ public class PortletController implements InitializingBean {
 			}
 		}
 		
-		model = browse(dir);
+		model = browse(decodedDir);
 		FormCommand command = new FormCommand();
 	    model.put("command", command);
 	    if(msg != null)
@@ -177,41 +175,25 @@ public class PortletController implements InitializingBean {
         return new ModelAndView("view-portlet-wai", model);
     }
 
-	private ModelMap browse(String dir) {
+	private ModelMap browse(String decodedDir) {
 		ModelMap model = new ModelMap();
-		if(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE)) {
+		if(decodedDir == null || decodedDir.length() == 0 || decodedDir.equals(JsTreeFile.ROOT_DRIVE)) {
 			JsTreeFile jsFileRoot = new JsTreeFile(JsTreeFile.ROOT_DRIVE_NAME, null, "drive");
 			jsFileRoot.setIcon(JsTreeFile.ROOT_ICON_PATH);
 			model = new ModelMap("resource", jsFileRoot);
 			List<JsTreeFile> files = this.serverAccess.getJsTreeFileRoots(userParameters);		
 			model.put("files", files);
-			model.put("currentDir", jsFileRoot.getPath());
+			model.put("currentDir", jsFileRoot.getId());
 		} else {
-			JsTreeFile resource = this.serverAccess.get(dir, userParameters);
+			JsTreeFile resource = this.serverAccess.get(decodedDir, userParameters);
 			model = new ModelMap("resource", resource);
-			List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
+			List<JsTreeFile> files = this.serverAccess.getChildren(decodedDir, userParameters);
 			Collections.sort(files);
 		    model.put("files", files);
-		    model.put("currentDir", resource.getPath());
+		    model.put("currentDir", resource.getId());
 		}
 		return model;
 	}
-	
-	@RequestMapping(value = {"VIEW"}, params = {"action=formAuthenticationMobile"})
-    public void formAuthenticationMobile(ActionRequest request, ActionResponse response,
-    								@RequestParam String dir, @RequestParam String username, @RequestParam String password) throws IOException {
-	
-		String msg = "auth.bad";
-		if(this.serverAccess.authenticate(dir, username, password, userParameters)) {
-			msg = "auth.ok";
-		}
-		
-		response.setRenderParameter("msg", msg);
-		response.setRenderParameter("dir", dir);
-		response.setRenderParameter("sharedSessionId", sharedSessionId);
-		response.setRenderParameter("action", "browseMobile");
-	}
-    
 	
     @RequestMapping("ABOUT")
 	public ModelAndView renderAboutView(RenderRequest request, RenderResponse response) throws Exception {
@@ -225,4 +207,8 @@ public class PortletController implements InitializingBean {
 		return new ModelAndView("help", model);
 	}
     
+	private String decodeDir(String dir) {
+		return URLEncodingUtils.decodeDir(dir);
+	}
+	
 }

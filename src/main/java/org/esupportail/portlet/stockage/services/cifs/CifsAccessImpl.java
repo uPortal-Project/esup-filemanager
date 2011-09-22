@@ -28,8 +28,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -53,10 +53,6 @@ import org.esupportail.portlet.stockage.services.ResourceUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.FileCopyUtils;
 
-/**
- * @author GIP RECIA - jgribonvald
- * 26 avr. 2011
- */
 public class CifsAccessImpl extends FsAccess implements DisposableBean {
 
 	protected static final Log log = LogFactory.getLog(CifsAccessImpl.class);
@@ -96,7 +92,6 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 				userAuthenticator = new NtlmPasswordAuthentication(userPassword.getDomain(), userPassword.getUsername(), userPassword.getPassword()) ;
 					SmbFile smbFile = new SmbFile(this.getUri(), userAuthenticator);
 					if (smbFile.exists()) {
-						//this.wasAuthentified = true;
 						root = smbFile;
 					}
 			}
@@ -125,8 +120,6 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 		// TODO Auto-generated method stub
 		log.info("Close : Nothing to do with jcifs!");
 		this.root = null;
-		//this.wasAuthentified=false;
-		//this.userAuthenticator=null;
 	}
 
 	/**
@@ -182,7 +175,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 			SmbFile resource = new SmbFile(this.getUri() + path, userAuthenticator);
 			if (resource.canRead()) {
 				for(SmbFile child: resource.listFiles()) {
-					log.info("children :" + child);
+					//log.trace("children :" + child);
 					try {
 						if(this.showHiddenFiles || !child.isHidden()) {
 							files.add(resourceAsJsTreeFile(child));
@@ -228,9 +221,9 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 			String icon = resourceUtils.getIcon(title);
 			file.setIcon(icon);
 			file.setSize(resource.getContentLength());
-			Calendar date = Calendar.getInstance();
-			date.setTimeInMillis(resource.getLastModified());
-			file.setLastModifiedTime(date.toString());
+			file.setLastModifiedTime(new SimpleDateFormat(this.datePattern).format(resource.getLastModified()));
+		} else if ("folder".equals(type)) {
+			file.setLastModifiedTime(new SimpleDateFormat(this.datePattern).format(resource.getLastModified()));
 		}
 		file.setHidden(resource.isHidden());
 		file.setWriteable(resource.canWrite());

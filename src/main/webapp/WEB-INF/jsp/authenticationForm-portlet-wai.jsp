@@ -40,6 +40,7 @@
 <portlet:actionURL var="authenticationFormWai">
   <portlet:param name="action" value="formAuthenticationWai"/>
   <portlet:param name="dir" value="${currentDir}"/>
+  <portlet:param name="sharedSessionId" value="${n}"/>
 </portlet:actionURL>
 
 

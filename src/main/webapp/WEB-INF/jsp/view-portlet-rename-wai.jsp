@@ -41,6 +41,7 @@
 <portlet:actionURL var="formRenameWai">
   <portlet:param name="action" value="formRenameWai"/>
   <portlet:param name="dir" value="${currentDir}"/>
+  <portlet:param name="sharedSessionId" value="${n}"/>
   <portlet:param name="filesToRename" value="${files}"/>
 </portlet:actionURL>
 
@@ -60,7 +61,7 @@
        		 <label>
           		${file.title}
       		  </label>
-       		 <input type="text" name="${file.path}" value="${file.title}"/>
+       		 <input type="text" name="${file.id}" value="${file.title}"/>
        		</li>
 		</c:forEach>
 		

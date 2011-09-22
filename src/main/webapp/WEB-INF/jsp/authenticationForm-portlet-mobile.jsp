@@ -27,12 +27,13 @@
 <%@ taglib prefix='portlet' uri="http://java.sun.com/portlet" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<html>
 
-  <head>
-    <title>
-      ENT Mobile
-    </title>
+  <portlet:defineObjects />
+
+  <c:set var="n">
+    <portlet:namespace />
+  </c:set>
+    
     <link 
         rel="stylesheet"
         href="/esup-portlet-stockage/css/esup-stock-mobile.css"
@@ -40,16 +41,10 @@
         media="screen, projection"/>
 
 
-
-  </head>
-
-
-  <body up style="fl-theme-iphone">
-
-
     <portlet:actionURL var="authenticationFormMobile">
       <portlet:param name="action" value="formAuthenticationMobile"/>
       <portlet:param name="dir" value="${currentDir}"/>
+      <portlet:param name="sharedSessionId" value="${n}"/>
     </portlet:actionURL>
 
 
@@ -96,10 +91,6 @@
       </div>
 
     </div>
-
-  </body>
-
-</html>
 
 
 
