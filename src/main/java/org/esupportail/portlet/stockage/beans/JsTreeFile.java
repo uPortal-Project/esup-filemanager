@@ -300,21 +300,14 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 	 */
 	public Map<String, String> getMetadata() {
 		Map<String, String> attr = new HashMap<String, String>();
-		String id = ROOT_DRIVE;
-=======
 		String path = ROOT_DRIVE;
->>>>>>> .fusion-droit.r243
 		if(category != null && category.getTitle().length() != 0)
 			path = path.concat(category.getTitle());
 		if(drive != null && drive.getTitle().length() != 0)
 			path = path.concat(DRIVE_PATH_SEPARATOR).concat(drive.getTitle());
 		if(lid != null && lid.length() != 0)
 			path = path.concat(DRIVE_PATH_SEPARATOR).concat(lid);
-		attr.put("path", path);
-		String id = URLEncodingUtils.encode(path);
-		
-		attr.put("path", id);
-		
+		attr.put("path", path);	
 		attr.put("type", type);
 		return attr;
 	}
@@ -418,9 +411,15 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		this.setState("open");
 	}
 
-	
+	// Map<path, List<title, icon>>                                                                                                                      
+    public SortedMap<String, List<String>> getParentsPathes() {
+	String categoryIcon = this.category != null ? this.category.getIcon() : null;
+        String driveIcon = this.drive != null ? this.drive.getIcon() : null;
+	return getParentsPathes(this.getPath(), categoryIcon, driveIcon);
+}
+
 	// Map<path, List<title, icon>>
-	protected static SortedMap<String, List<String>> getParentsPathes(String path, String categoryIcon, String driveIcon) {
+	public static SortedMap<String, List<String>> getParentsPathes(String path, String categoryIcon, String driveIcon) {
 		SortedMap<String, List<String>> parentsPathes = new TreeMap<String, List<String>>();
 		String pathBase = ROOT_DRIVE;
 		List<String> rootTitleIcon =  Arrays.asList(ROOT_DRIVE_NAME, ROOT_ICON_PATH);
@@ -453,24 +452,7 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		return parentsPathes;
 	}
 
-	// Map<path, List<title, icon>>
-	public static SortedMap<String, List<String>> getParentsIds(String path, String categoryIcon, String driveIcon) {
-		SortedMap<String, List<String>> parentPathes = getParentsPathes(path, categoryIcon, driveIcon);
-		SortedMap<String, List<String>> encodedParentPathes = new  TreeMap<String, List<String>>();
-		for(String pathKey : parentPathes.keySet()) {
-			String encodedPath = URLEncodingUtils.encode(pathKey);
-			encodedParentPathes.put(encodedPath, parentPathes.get(pathKey));
-		}
-		return encodedParentPathes;
-	}
-	
-	// Map<path, List<title, icon>>
-	// Map<path, List<title, icon>>
-	public SortedMap<String, List<String>> getParentsIds() {
-		String categoryIcon = this.category != null ? this.category.getIcon() : null;
-		String driveIcon = this.drive != null ? this.drive.getIcon() : null;
-		return getParentsIds(this.getPath(), categoryIcon, driveIcon);
-	}
+
 		
 	public int compareTo(JsTreeFile o) {
 		//Changed for GIP Recia.  Use the getters instead of getAttr directly
