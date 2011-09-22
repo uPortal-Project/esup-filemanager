@@ -46,7 +46,7 @@
     <div class="esupstock">
 
       <div class="breadcrumbs">
-        <c:forEach var="parent" items="${resource.parentsIds}" varStatus="item">
+        <c:forEach var="parent" items="${resource.parentsPathes}" varStatus="item">
           <c:choose>
             <c:when test="${item.last}">
               <img src="${resource.icon}" alt="icon" />

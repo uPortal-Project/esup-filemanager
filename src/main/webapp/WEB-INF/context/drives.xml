@@ -30,9 +30,6 @@
   
   <!-- isPortlet must be True if you deploy esup-portlet-stockage in Portal like uPortal/EsupPortail -->
   <util:constant id="isPortlet" static-field="java.lang.Boolean.FALSE"/>
-  
-  <!-- GIP:RECIA environment allows to inform the target to controller -->
-  <util:constant id="environment" static-field="org.esupportail.portlet.stockage.beans.Environment.RECIA" />
 
   <!-- drivesCategories lets you organize the tree of your drives .
        On the root you can have categories and on each categories you can have drives.
@@ -46,7 +43,6 @@
 	  <list>
 	    <value>Toto</value>
 	    <value>bob</value>
-	    <value>bob2</value>
 	  </list>
 	</property>
       </bean>
@@ -56,7 +52,6 @@
 	<property name="icon" value="/esup-portlet-stockage/img/drives/drive_user.png" />
 	<property name="drives">
 	  <list>
-	  	<value>EricSFTP</value>
 	    <value>Stock2</value>
 	    <value>Stock2Cas</value>
 	    <value>DAV Ex</value>
@@ -114,6 +109,7 @@
     <property name="username" value="bonamvin"/>
     <property name="password" value="toto"/>
   </bean>
+
   
 
   <!-- bob doesn't use authentication 
@@ -129,18 +125,9 @@
     <property name="contextToken" value="justbob"/>
     <property name="resourceUtils" ref="resourceUtils"/>
   </bean>
-  <!-- todo à supprimer : test entre drive --> 
-  <bean  class="org.esupportail.portlet.stockage.services.vfs.VfsAccessImpl">
-    <property name="driveName" value="bob2"/>
-    <property name="icon" value="/esup-portlet-stockage/img/drives/root.png" />
-     <!-- GIP RECIA : test on a local drive 'C:\Drivers' instead of 'file:///' -->
-    <property name="uri" value="file:///c:/test2"/>
-    <property name="contextToken" value="justbob2"/>
-    <property name="resourceUtils" ref="resourceUtils"/>
-  </bean>
   
   
-  <!-- Stock2 uses a form authentication 
+ <!-- Stock2 uses a form authentication 
       uri contains a token @uid@ : it will be replaced with the value of uid attribute that will be gived by portal
       (so we should modify portlet.xml to ask portal to give this "uid" attribute user)
   -->
@@ -148,22 +135,6 @@
     <property name="driveName" value="Stock2"/>
     <property name="icon" value="/esup-portlet-stockage/img/drives/root.png" />
     <property name="uri" value="sftp://stock-2.mon-univ.fr/home/@uid@/"/>
-    <property name="memberOfAny">
-      <list>
-	<value>pags.mon-univ</value>
-      </list>
-    </property>
-    <property name="userAuthenticatorService" ref="formUserAuthenticationService"/>
-    <property name="resourceUtils" ref="resourceUtils"/>
-  </bean>
-  
- <!-- SFTP for testing auth page
-  -->
-  <bean class="org.esupportail.portlet.stockage.services.vfs.VfsAccessImpl" scope="session">
-    <property name="driveName" value="EricSFTP"/>
-    <property name="icon" value="/esup-portlet-stockage/img/drives/root.png" />
-    <property name="uri" value="sftp://129.184.160.100"/>
-    <property name="strictHostKeyChecking" value="false"/>
     <property name="memberOfAny">
       <list>
 	<value>pags.mon-univ</value>

@@ -48,7 +48,6 @@ import org.esupportail.portlet.stockage.exceptions.EsupStockLostSessionException
 import org.esupportail.portlet.stockage.exceptions.EsupStockPermissionDeniedException;
 import org.esupportail.portlet.stockage.services.ResourceUtils.Type;
 import org.esupportail.portlet.stockage.services.ServersAccessService;
-import org.esupportail.portlet.stockage.utils.URLEncodingUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -86,10 +85,6 @@ public class ServletAjaxController implements InitializingBean {
 	@Qualifier("isPortlet")
 	protected Boolean isPortlet;
 	
-	@Autowired
-	@Qualifier("environment")
-	protected String environment;
-	
 	//GP Recia Added in order to detect file type (image / sound / etc)
 	@Autowired
 	protected org.esupportail.portlet.stockage.services.ResourceUtils resourceUtils;
@@ -109,18 +104,6 @@ public class ServletAjaxController implements InitializingBean {
 		String sharedSessionId = request.getParameter("sharedSessionId");
 		if(sharedSessionId != null)
 			userParameters = (SharedUserPortletParameters)session.getAttribute(sharedSessionId);
-
-		
-		//GIP Recia.  Even in portlet mode, userParameters still appears to be null, so we initialize in either case (portlet / non portlet)
-		if(userParameters == null) {
-			log.debug("Servlet Access (no portlet mode : isPortlet property = false): init SharedUserPortletParameters");
-			userParameters = new SharedUserPortletParameters(sharedSessionId);
-			List<String> driveNames = serverAccess.getRestrictedDrivesGroupsContext(null, null);
-			userParameters.setDriveNames(driveNames);
-			session.setAttribute(sharedSessionId, userParameters);
-		} 
-		
-		/*
 		
 		if(!this.isPortlet && userParameters == null) {
 			log.debug("Servlet Access (no portlet mode : isPortlet property = false): init SharedUserPortletParameters");
@@ -136,8 +119,6 @@ public class ServletAjaxController implements InitializingBean {
 			log.error(message);
 			throw new EsupStockException(message);
 		}
-		
-		*/
 		
 		if(userParameters != null && !serverAccess.isInitialized(userParameters)) {
 			serverAccess.initializeServices(this.userParameters.getDriveNames(), 
@@ -164,7 +145,6 @@ public class ServletAjaxController implements InitializingBean {
 	 */
 	@RequestMapping("/htmlFileTree")
 	public ModelAndView fileTree(String dir, HttpServletRequest request, HttpServletResponse response) {
-		dir = decodeDir(dir);
 		if(userParameters == null) {
 			String infoMsg = "isPortlet = true but portlet/portal session is lost, user should refresh/reload the window ...";
 			log.info(infoMsg);
@@ -207,18 +187,11 @@ public class ServletAjaxController implements InitializingBean {
 	    model.put("command", command);
 	    
 	    /* GIP RECIA : Construct the view in terms of environment */ 
-	    final String view = isModeRecia() ? (getThumbnailMode() ? "fileTree_recia_thumbnails" : "fileTree_recia") : "fileTree";
+	    final String view = getThumbnailMode() ? "fileTree_recia_thumbnails" : "fileTree_recia";
 	    
 	    return new ModelAndView(view, model);
 	 }
 
-	/**
-	 * @return
-	 */
-	private boolean isModeRecia() {
-		return this.environment != null && !this.environment.trim().equals("");
-	}
-	
 	private static final String THUMBNAIL_MODE_KEY = "thumbnail_mode";
 	
 	private boolean getThumbnailMode() {
@@ -250,7 +223,6 @@ public class ServletAjaxController implements InitializingBean {
 	 */
 	@RequestMapping("/fileChildren")
     public @ResponseBody List<JsTreeFile> fileChildren(String dir, HttpServletRequest request) {
-		dir = decodeDir(dir);
 		if(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE) ) {
 			List<JsTreeFile> files = this.serverAccess.getJsTreeFileRoots(userParameters);		
 			return files;
@@ -284,7 +256,6 @@ public class ServletAjaxController implements InitializingBean {
 	
 	@RequestMapping("/createFile")
     public ModelAndView createFile(String parentDir, String title, String type, HttpServletRequest request, HttpServletResponse response) {
-		parentDir = decodeDir(parentDir);
 		String fileDir = this.serverAccess.createFile(parentDir, title, type, userParameters);
 		if(fileDir != null) {
 			return this.fileTree(parentDir, request, response);
@@ -301,8 +272,6 @@ public class ServletAjaxController implements InitializingBean {
 	
 	@RequestMapping("/renameFile")
     public ModelAndView renameFile(String parentDir, String dir, String title, HttpServletRequest request, HttpServletResponse response) {
-		parentDir = decodeDir(parentDir);
-		dir = decodeDir(dir);
 		if(this.serverAccess.renameFile(dir, title, userParameters)) {
 			return this.fileTree(parentDir, request, response);	
 		}
@@ -338,7 +307,6 @@ public class ServletAjaxController implements InitializingBean {
 	
 	@RequestMapping("/pastFiles")
     public @ResponseBody Map pastFiles(String dir) {
-		dir = decodeDir(dir);
 		Map jsonMsg = new HashMap(); 
 		if(this.serverAccess.moveCopyFilesIntoDirectory(dir, basketSession.getDirsToCopy(), "copy".equals(basketSession.getGoal()), userParameters)) {
 			jsonMsg.put("status", new Long(1));
@@ -355,7 +323,6 @@ public class ServletAjaxController implements InitializingBean {
 	
 	@RequestMapping("/authenticate")
     public @ResponseBody Map authenticate(String dir, String username, String password) {
-		dir = decodeDir(dir);
 		Map jsonMsg = new HashMap(); 
 		if(this.serverAccess.authenticate(dir, username, password, userParameters)) {
 			jsonMsg.put("status", new Long(1));
@@ -440,7 +407,6 @@ public class ServletAjaxController implements InitializingBean {
 	// this method is called anyway
 	@RequestMapping("/uploadFile")
 	public  ModelAndView uploadFile(String dir, FileUpload file, BindingResult result, HttpServletRequest request) throws IOException {		
-		dir = decodeDir(dir);
 		
 		String filename;
 		InputStream inputStream;	
@@ -461,7 +427,6 @@ public class ServletAjaxController implements InitializingBean {
 	// take care : we don't send json like application/json but like text/html !
 	// goal is that the json is written in a frame
 	public  ModelAndView upload(String dir, String filename, InputStream inputStream) {
-		dir = decodeDir(dir);
 		boolean success = true;
 		String text = "";
 		try {
@@ -593,11 +558,5 @@ public class ServletAjaxController implements InitializingBean {
 		response.sendError(500, ex.getMessage());
 		return null;
 	}
-	
-
-	private String decodeDir(String dir) {
-		return URLEncodingUtils.decodeDir(dir);
-	}
-	
 
 }
