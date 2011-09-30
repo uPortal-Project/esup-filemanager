@@ -56,10 +56,10 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 	
 	public static String PATH_SPLIT = "/";
 	
-	public static String ID_TITLE_SPLIT = "@@";
+	public static String ID_TITLE_SPLIT = "@";
 	
 	// Take care : $, # not work
-	public static String DRIVE_PATH_SEPARATOR = "~~";
+	public static String DRIVE_PATH_SEPARATOR = "~";
 	
 	private String title;
 
