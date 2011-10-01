@@ -40,7 +40,6 @@ import org.apache.commons.vfs.FileSystem;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.FileSystemOptions;
-import org.apache.commons.vfs.FileType;
 import org.apache.commons.vfs.Selectors;
 import org.apache.commons.vfs.UserAuthenticator;
 import org.apache.commons.vfs.VFS;
@@ -218,38 +217,33 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		}
 		
 		if ("folder".equals(type) || "drive".equals(type)) {
-			
 			if(resource.getChildren() != null) {
-				
-			List<FileObject> children = Arrays.asList(resource.getChildren());
-			
-			long totalSize = 0;
-			long fileCount = 0;
-			long folderCount = 0;
-			long childrenFolderCount = 0;
-
-			for(FileObject child: children) {
-
-				if ("folder".equals(child.getType().getName())) {
-					++folderCount;
-					if(child.getChildren() != null)
-						childrenFolderCount += child.getChildren().length;
-				} else if ("file".equals(child.getType().getName())) {
-					++fileCount;
-					totalSize += child.getContent().getSize();
+				long totalSize = 0;
+				long fileCount = 0;
+				long folderCount = 0;
+				long childrenFolderCount = 0;
+				for(FileObject child: resource.getChildren()) {
+					if(this.showHiddenFiles || !child.isHidden()) {
+						if ("folder".equals(child.getType().getName())) {
+							++folderCount;
+							if (child.getChildren() != null)
+								childrenFolderCount += child.getChildren().length;
+						} else if ("file".equals(child.getType().getName())) {
+							++fileCount;
+							totalSize += child.getContent().getSize();
+						}
+					}
 				}
-			}
-			
-			file.setTotalSize(totalSize);
-			file.setFileCount(fileCount);
-			file.setFolderCount(folderCount);
+				file.setTotalSize(totalSize);
+				file.setFileCount(fileCount);
+				file.setFolderCount(folderCount);
 			}
 		}
 		
 		final Calendar date = Calendar.getInstance();
 		date.setTimeInMillis(resource.getContent().getLastModifiedTime());
 		//In order to have a readable date 
-		file.setLastModifiedTime(new SimpleDateFormat("dd/MM/yyyy").format(date.getTime()));
+		file.setLastModifiedTime(new SimpleDateFormat(this.datePattern).format(date.getTime()));
 		
 		file.setHidden(resource.isHidden());
 		file.setReadable(resource.isReadable());

@@ -38,7 +38,7 @@ public abstract class FsAccess {
 
 	protected static String TOKEN_SPECIAL_CHAR =  "@";
 
-    protected String datePattern = "dd/MM/yyyy hh:mm:ss";
+    protected String datePattern = "dd/MM/yyyy hh:mm";
 
 	private List<String> memberOfAny;
 
