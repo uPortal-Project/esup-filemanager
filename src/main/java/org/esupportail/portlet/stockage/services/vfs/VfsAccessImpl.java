@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import org.apache.commons.vfs.FileSystem;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.FileSystemOptions;
+import org.apache.commons.vfs.FileType;
 import org.apache.commons.vfs.Selectors;
 import org.apache.commons.vfs.UserAuthenticator;
 import org.apache.commons.vfs.VFS;
@@ -215,32 +217,33 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 			file.setOverSizeLimit( file.getSize() > resourceUtils.getSizeLimit(title) );			
 		}
 		
-		long totalSize = 0;
-		long fileCount = 0;
-		long folderCount = 0;
 		if ("folder".equals(type) || "drive".equals(type)) {
-			FileObject[] children = resource.getChildren();
-			List<FileObject> toProcess = new ArrayList<FileObject>();
-			/*
-			toProcess.addAll(Arrays.asList(children));
 			
-			while(!toProcess.isEmpty()) {
-				FileObject processing = toProcess.get(0);
-				toProcess.remove(0);
+			if(resource.getChildren() != null) {
+				
+			List<FileObject> children = Arrays.asList(resource.getChildren());
 			
-				if (processing.getType() == FileType.FOLDER) {
+			long totalSize = 0;
+			long fileCount = 0;
+			long folderCount = 0;
+			long childrenFolderCount = 0;
+
+			for(FileObject child: children) {
+
+				if ("folder".equals(child.getType().getName())) {
 					++folderCount;
-					toProcess.addAll(Arrays.asList(processing.getChildren()));
-				} else if (processing.getType() == FileType.FILE) {
+					if(child.getChildren() != null)
+						childrenFolderCount += child.getChildren().length;
+				} else if ("file".equals(child.getType().getName())) {
 					++fileCount;
-					totalSize += processing.getContent().getSize();
+					totalSize += child.getContent().getSize();
 				}
 			}
-			*/
 			
 			file.setTotalSize(totalSize);
 			file.setFileCount(fileCount);
 			file.setFolderCount(folderCount);
+			}
 		}
 		
 		final Calendar date = Calendar.getInstance();
