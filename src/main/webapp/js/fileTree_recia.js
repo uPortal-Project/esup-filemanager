@@ -223,7 +223,7 @@
   }
   
   function handleItemClick(e) {
-
+	  
 	  /*Because of limitations with jQuerys double click, we are 
 	  	obliged to get a bit fancy in order to have a distinct
 	  	action on both the click and double click events*/
@@ -237,6 +237,11 @@
 	  jqElem.data("clicks", clicks); 
 	  
 	  console.log("Item clicked " + jqElem.html() + " clicks : " + clicks);
+	  
+	  if(useDoubleClick == "false") {
+		  handleItemDblClick(e, jqElem);
+		  return false;
+	  }
 	  
 	  if (clicks == 1) {
 		  //Start a timeout function.  If we get another click in time, it will

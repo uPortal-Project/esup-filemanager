@@ -85,6 +85,10 @@ public class ServletAjaxController implements InitializingBean {
 	@Qualifier("isPortlet")
 	protected Boolean isPortlet;
 	
+	@Autowired
+	@Qualifier("useDoubleClick")
+	protected Boolean useDoubleClick = true;
+	
 	//GP Recia Added in order to detect file type (image / sound / etc)
 	@Autowired
 	protected org.esupportail.portlet.stockage.services.ResourceUtils resourceUtils;
@@ -133,6 +137,7 @@ public class ServletAjaxController implements InitializingBean {
 		ModelMap model = new ModelMap();
 		model.put("command", new UploadBean());
 		model.put("sharedSessionId", userParameters.getSharedSessionId());
+		model.put("useDoubleClick", useDoubleClick);
         return new ModelAndView("view-servlet", model);
     }
 	
