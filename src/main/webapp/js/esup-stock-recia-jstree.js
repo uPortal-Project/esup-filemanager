@@ -41,7 +41,7 @@ function initJstree() {
 
                     // the result is fed to the AJAX request `data` option
                     var retData = {
-                        "dir": n == -1 ? "" : jQuery.data(n.get(0), "path"),
+                        "dir": n == -1 ? defaultPath : jQuery.data(n.get(0), "path"),
                         "sharedSessionId": sharedSessionId
                     };
 

@@ -57,9 +57,10 @@ public class PortletController implements InitializingBean {
 
 	protected Logger log = Logger.getLogger(PortletController.class);
 	
-	private static final String PREF_ESUPSTOCK_CONTEXTTOKEN = "contextToken";
-	
+	public static final String PREF_ESUPSTOCK_CONTEXTTOKEN = "contextToken";
 	public static final String PREF_PORTLET_VIEW = "defaultPortletView";
+	public static final String PREF_DEFAULT_PATH = "defaultPath";
+	
 	public static final String STANDARD_VIEW = "standard";
 	public static final String MOBILE_VIEW = "mobile";
 	public static final String WAI_VIEW = "wai";
@@ -113,6 +114,7 @@ public class PortletController implements InitializingBean {
 
         final PortletPreferences prefs = request.getPreferences();
     	String defaultPortletView = prefs.getValue(PREF_PORTLET_VIEW, STANDARD_VIEW);
+    	String defaultPath = prefs.getValue(PREF_DEFAULT_PATH, null);
     	
     	List<String> driveNames = userParameters.getDriveNames();
     	Map userInfos = userParameters.getUserInfos();
@@ -121,22 +123,25 @@ public class PortletController implements InitializingBean {
     	serverAccess.initializeServices(driveNames,  userInfos, userParameters);
     	
 	    if(userAgentInspector.isMobile(request)) {
-			return this.browseMobile(request, response, null);
+			return this.browseMobile(request, response, defaultPath);
 	    } else {
 	    	if(MOBILE_VIEW.equals(defaultPortletView))
-	    		return this.browseMobile(request, response, null);
+	    		return this.browseMobile(request, response, defaultPath);
 	    	else if(WAI_VIEW.equals(defaultPortletView))
-	    		return this.browseWai(request, response, null, null);
+	    		return this.browseWai(request, response, defaultPath, null);
 	    	else
-	    		return this.browseStandard(request, response);
+	    		return this.browseStandard(request, response, defaultPath);
 	    }
     }
     
 	@RequestMapping(value = {"VIEW"}, params = {"action=browseStandard"})
-    public ModelAndView browseStandard(RenderRequest request, RenderResponse response) {
+    public ModelAndView browseStandard(RenderRequest request, RenderResponse response, String dir) {
 		ModelMap model = new ModelMap();     
     	model.put("sharedSessionId", sharedSessionId);
 		model.put("useDoubleClick", useDoubleClick);
+		if(dir == null)
+			dir = "";
+		model.put("defaultPath", dir);
     	return new ModelAndView("view-portlet", model);
     }
     

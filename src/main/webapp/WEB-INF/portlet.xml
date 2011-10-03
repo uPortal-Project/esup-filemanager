@@ -57,6 +57,11 @@
         		<name>defaultPortletView</name>
         		<value>standard</value>
         	</preference>
+        	<preference>
+        		<name>defaultPath</name>
+        		<value>FS:</value>
+        		<!--value>FS:Shared~bob~home/bob</value-->
+        	</preference>      	
         </portlet-preferences>
     </portlet>
     
