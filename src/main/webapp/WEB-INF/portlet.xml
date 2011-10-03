@@ -52,7 +52,12 @@
             <short-title>esup-portlet-stockage</short-title>
             <keywords>esup-portlet-stockage</keywords>
         </portlet-info>  
- 
+        <portlet-preferences>
+        	<preference>
+        		<name>defaultPortletView</name>
+        		<value>standard</value>
+        	</preference>
+        </portlet-preferences>
     </portlet>
     
     <user-attribute>

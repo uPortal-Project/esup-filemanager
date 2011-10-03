@@ -31,7 +31,7 @@
   <!-- isPortlet must be True if you deploy esup-portlet-stockage in Portal like uPortal/EsupPortail -->
   <util:constant id="isPortlet" static-field="java.lang.Boolean.FALSE"/>
  
- <!-- use double click or simple click to browse folders -->
+  <!-- use double click or simple click to browse folders -->
   <util:constant id="useDoubleClick" static-field="java.lang.Boolean.TRUE"/>
 
   <!-- drivesCategories lets you organize the tree of your drives .

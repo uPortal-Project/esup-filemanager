@@ -40,6 +40,7 @@ import org.esupportail.portlet.stockage.services.ServersAccessService;
 import org.esupportail.portlet.stockage.services.UserAgentInspector;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -58,6 +59,11 @@ public class PortletController implements InitializingBean {
 	
 	private static final String PREF_ESUPSTOCK_CONTEXTTOKEN = "contextToken";
 	
+	public static final String PREF_PORTLET_VIEW = "defaultPortletView";
+	public static final String STANDARD_VIEW = "standard";
+	public static final String MOBILE_VIEW = "mobile";
+	public static final String WAI_VIEW = "wai";
+	
 	@Autowired
 	protected ServersAccessService serverAccess;
 	
@@ -68,6 +74,10 @@ public class PortletController implements InitializingBean {
 	
 	protected String sharedSessionId;
 	
+	
+	@Autowired
+	@Qualifier("useDoubleClick")
+	protected Boolean useDoubleClick = true;
 	
 	public void afterPropertiesSet() throws Exception {		
 		
@@ -95,13 +105,15 @@ public class PortletController implements InitializingBean {
 	   		
 	   		PortletUtils.setSessionAttribute(request, sharedSessionId, userParameters, PortletSession.APPLICATION_SCOPE);
 		}
+
 	}
 		
     @RequestMapping("VIEW")
     protected ModelAndView renderView(RenderRequest request, RenderResponse response) throws Exception {
 
-    	ModelMap model = new ModelMap();     
-		
+        final PortletPreferences prefs = request.getPreferences();
+    	String defaultPortletView = prefs.getValue(PREF_PORTLET_VIEW, STANDARD_VIEW);
+    	
     	List<String> driveNames = userParameters.getDriveNames();
     	Map userInfos = userParameters.getUserInfos();
     	
@@ -111,9 +123,21 @@ public class PortletController implements InitializingBean {
 	    if(userAgentInspector.isMobile(request)) {
 			return this.browseMobile(request, response, null);
 	    } else {
-	    	model.put("sharedSessionId", sharedSessionId);
-	    	return new ModelAndView("view-portlet", model);
+	    	if(MOBILE_VIEW.equals(defaultPortletView))
+	    		return this.browseMobile(request, response, null);
+	    	else if(WAI_VIEW.equals(defaultPortletView))
+	    		return this.browseWai(request, response, null, null);
+	    	else
+	    		return this.browseStandard(request, response);
 	    }
+    }
+    
+	@RequestMapping(value = {"VIEW"}, params = {"action=browseStandard"})
+    public ModelAndView browseStandard(RenderRequest request, RenderResponse response) {
+		ModelMap model = new ModelMap();     
+    	model.put("sharedSessionId", sharedSessionId);
+		model.put("useDoubleClick", useDoubleClick);
+    	return new ModelAndView("view-portlet", model);
     }
     
 	@RequestMapping(value = {"VIEW"}, params = {"action=browseMobile"})

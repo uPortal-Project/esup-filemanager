@@ -54,6 +54,7 @@
   var fileuploadTemplate = '<spring:message code="fileupload.template"/>';
   var fileTemplate = '<spring:message code="fileupload.fileTemplate"/>';
   var sharedSessionId = '${sharedSessionId}';
+  var useDoubleClick = '${useDoubleClick}';
 </script>
 
 <!-- JQUERY -->
