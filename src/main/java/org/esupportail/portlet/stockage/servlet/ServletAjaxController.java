@@ -59,6 +59,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.RequestContextUtils;
@@ -227,21 +228,19 @@ public class ServletAjaxController implements InitializingBean {
 	 * @return
 	 */
 	@RequestMapping("/fileChildren")
-    public @ResponseBody List<JsTreeFile> fileChildren(String dir, HttpServletRequest request) {
+    public @ResponseBody List<JsTreeFile> fileChildren(String dir, @RequestParam(required=false) String hierarchy, HttpServletRequest request) {
 		if(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE) ) {
 			List<JsTreeFile> files = this.serverAccess.getJsTreeFileRoots(userParameters);		
 			return files;
+		} else if("all".equals(hierarchy)) {
+			List<JsTreeFile> files =  this.serverAccess.getJsTreeFileRoots(dir, userParameters);
+			return files;
 		} else {
-			List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
-			List<JsTreeFile> folders = new ArrayList<JsTreeFile>(); 
-			for(JsTreeFile file: files) {
-				if(!"file".equals(file.getType()))
-					folders.add(file);
-			}
-			Collections.sort(folders);
+			List<JsTreeFile> folders = this.serverAccess.getFolderChildren(dir, userParameters);
 			return folders;
 		}
 	}
+
 
 	@RequestMapping("/removeFiles")
     public @ResponseBody Map removeFiles(FormCommand command) {
@@ -544,6 +543,7 @@ public class ServletAjaxController implements InitializingBean {
 	@ExceptionHandler(EsupStockPermissionDeniedException.class)
 	public ModelAndView handlePermissionDeniedException(EsupStockPermissionDeniedException ex, 
 										HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.error(ex);
 		String msg = context.getMessage("ajax.error.permissionDenied", null, locale); 
 		response.sendError(403, msg);
 		return null;
@@ -552,6 +552,7 @@ public class ServletAjaxController implements InitializingBean {
 	@ExceptionHandler(EsupStockLostSessionException.class)
 	public ModelAndView handleLostSessionException(EsupStockLostSessionException ex, 
 										HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.error(ex);
 		response.sendError(500, "reload");
 		return null;
 	}
@@ -560,6 +561,7 @@ public class ServletAjaxController implements InitializingBean {
 	@ExceptionHandler(EsupStockException.class)
 	public ModelAndView handleException(EsupStockException ex, 
 										HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.error(ex);
 		response.sendError(500, ex.getMessage());
 		return null;
 	}

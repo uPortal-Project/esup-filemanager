@@ -6,13 +6,16 @@ function initJstree() {
         //bindDragDropInLeftTree();
     }).bind("open_node.jstree", function (event, data) {
     	var treeNode = data.rslt.obj;
-    	var path = getPathFromLiNode(treeNode)
+    	var path = getPathFromLiNode(treeNode);
         console.log("JSTree open_node event on node " + path + " Binding drag/drop to folders -- Folders present : " + $('#arborescentArea [rel="folder"]').length);
 
     	//In case this is the first time the node is opened, we make sure that drag/drop has been initialized
         bindDragDropInLeftTree();
     }).bind('select_node.jstree', function (e, data) {
         handleLeftTreeSelection(data.rslt.obj);
+    }).bind('reopen.jstree', function () {
+    	if($("#fileTree").jstree("ui").data.ui.to_select.length == 0)
+    		$("#fileTree").jstree("ui").data.ui.to_select = [getLiIdFromPath(defaultPath)]; 
     }).jstree({
         // the list of plugins to include
         //"plugins" : [ "themes", "json_data", "ui", "crrm", "cookies", "dnd", "search", "types", "hotkeys", "contextmenu"],
@@ -22,11 +25,9 @@ function initJstree() {
         /* GIP RECIA : START --> Configuration of contextmenu plugin */
         "contextmenu": {
             "items": customMenu
-
-
         },
         /* GIP RECIA : END --> Configuration of contextmenu plugin */
-
+        
         // I usually configure the plugin that handles the data first - in this case JSON as it is most common
         "json_data": {
             // I chose an ajax enabled tree - again - as this is most common, and maybe a bit more complex
@@ -42,9 +43,10 @@ function initJstree() {
                     // the result is fed to the AJAX request `data` option
                     var retData = {
                         "dir": n == -1 ? defaultPath : jQuery.data(n.get(0), "path"),
-                        "sharedSessionId": sharedSessionId
+                        "sharedSessionId": sharedSessionId,
+                        "hierarchy": n == -1 ? "all" : ""
                     };
-
+                    
                     console.log("Jtree JSON data function : " + stringifyJSON(retData) + " loading node data ");
 
                     return retData;
@@ -55,25 +57,20 @@ function initJstree() {
                     //Save the path ==> id mappings in order to be able to look up the ids from paths later on
                     
                     $.each(data, function(idx, value) {
-                    	addPathToIdEntry(value.metadata.path, value.attr.id);
-                    	
-                    	if (value.children) {
-                    		$.each(value.children, function(idxChild, childValue) {
-	                        	addPathToIdEntry(childValue.metadata.path, childValue.attr.id);
-	                        });
-                    	
-                    	}
+                    	addPathAndChildrenPathesToIdEntry(value);
                     });
                     
                     bindDragDropInLeftTree();
+
                 }
             }
         },       
+     
         // the UI plugin - it handles selecting/deselecting/hovering nodes
         "ui": {
             // this makes the node with ID node_4 selected onload
             "select_multiple_modifier": false,
-            "select_limit": 1
+            "select_limit": 1           
         },
 
 
@@ -116,6 +113,7 @@ function initJstree() {
         }
 
     });
+
 }
 
 
@@ -413,6 +411,18 @@ function getPathToIdMap() {
 	}	
 	
 	return pathToIdMap;
+}
+
+function addPathAndChildrenPathesToIdEntry(value) {
+
+	addPathToIdEntry(value.metadata.path, value.attr.id);
+
+	if (value.children) {
+		$.each(value.children, function(idxChild, childValue) {
+			addPathAndChildrenPathesToIdEntry(childValue);
+		});
+
+	}
 }
 
 function addPathToIdEntry(path, id) {

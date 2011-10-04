@@ -21,25 +21,22 @@
 
 package org.esupportail.portlet.stockage.services;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.annotation.Resource;
-import javax.portlet.ActionRequest;
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletSession;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -54,6 +51,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 @Service("serversAccess")
 @Scope("session")
@@ -249,6 +247,19 @@ public class ServersAccessService implements DisposableBean {
 			return files;
 		}
 	}
+	
+
+	public List<JsTreeFile> getFolderChildren(String dir,
+			SharedUserPortletParameters userParameters) {
+		List<JsTreeFile> files = this.getChildren(dir, userParameters);
+		List<JsTreeFile> folders = new ArrayList<JsTreeFile>(); 
+		for(JsTreeFile file: files) {
+			if(!"file".equals(file.getType()))
+				folders.add(file);
+		}
+		Collections.sort(folders);
+		return folders;
+	}
 
 	public boolean remove(String dir, SharedUserPortletParameters userParameters) {
 		return this.getFsAccess(getDrive(dir), userParameters).remove(getLocalDir(dir), userParameters);
@@ -320,6 +331,58 @@ public class ServersAccessService implements DisposableBean {
 			}
 		}
 		return jsTreeFiles;
+	}
+	
+	public List<JsTreeFile> getJsTreeFileRoots(String dir, SharedUserPortletParameters userParameters) {
+		
+		JsTreeFile parentFile = null;
+		
+		List<JsTreeFile> drivesAndCategories = this.getJsTreeFileRoots(userParameters);
+		JsTreeFile jFile = this.get(dir, userParameters);
+		
+		Iterator<String> parentsPathes = jFile.getParentsPathes().keySet().iterator();
+		String parentPath = parentsPathes.next();
+		Assert.isTrue(JsTreeFile.ROOT_DRIVE.equals(parentPath));
+		
+		if(!parentsPathes.hasNext())
+			return drivesAndCategories;
+		
+		parentPath = parentsPathes.next();
+		for(JsTreeFile drive: drivesAndCategories) {
+			if(drive.getPath().equals(parentPath)) {
+				parentFile = drive;
+				break;
+			}
+		}
+		
+		if(!parentsPathes.hasNext())
+			return drivesAndCategories;
+		
+		parentPath = parentsPathes.next();
+		for(JsTreeFile category: parentFile.getChildren()) {
+			if(category.getPath().equals(parentPath)) {
+				parentFile = category;
+				break;
+			}
+		}
+
+		while(parentPath != null) {
+			List<JsTreeFile> folders = this.getFolderChildren(parentFile.getPath(), userParameters);	
+			parentFile.setChildren(folders);
+			
+			if(!parentsPathes.hasNext()) {
+				parentPath = null;
+			} else {
+				parentPath = parentsPathes.next();
+				for(JsTreeFile child: folders) {
+					if(child.getPath().equals(parentPath)) {
+						parentFile = child;
+						break;
+					}
+				}
+			}
+		}
+		return drivesAndCategories;
 	}
 	
 	private String getDriveCategory(String dir) {
@@ -431,6 +494,7 @@ public class ServersAccessService implements DisposableBean {
 		
 		return authenticateSuccess;
 	}
+
 
 
 }
