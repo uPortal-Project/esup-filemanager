@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.esupportail.portlet.stockage.beans.DownloadFile;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
@@ -36,6 +38,8 @@ import org.esupportail.portlet.stockage.services.uri.UriManipulateService;
 
 public abstract class FsAccess {
 
+	protected static final Log log = LogFactory.getLog(FsAccess.class);
+	
 	protected static String TOKEN_SPECIAL_CHAR =  "@";
 
     protected String datePattern = "dd/MM/yyyy hh:mm";
@@ -174,7 +178,8 @@ public abstract class FsAccess {
 		try {
 			this.get("", userParameters);
 		} catch(Exception e) {
-			// TODO : catch Exception corresponding to an authentication failure ...
+			// TODO : catch Exception corresponding to an authentication failure ...	
+			log.warn("Authenication failed : " + e.getMessage());
 			this.userAuthenticatorService.getUserPassword(userParameters).setPassword(null);
 			return false;
 		}

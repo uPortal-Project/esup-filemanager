@@ -209,25 +209,26 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 			title = resource.getName().getBaseName();
 		}
 		JsTreeFile file = new JsTreeFile(title, lid, type);
-		if("file".equals(type)) {
+
+		file.setHidden(resource.isHidden());
+
+		if ("file".equals(type)) {
 			String icon = resourceUtils.getIcon(title);
 			file.setIcon(icon);
-			file.setSize(resource.getContent().getSize());				
-			file.setOverSizeLimit( file.getSize() > resourceUtils.getSizeLimit(title) );			
+			file.setSize(resource.getContent().getSize());
+			file.setOverSizeLimit(file.getSize() > resourceUtils
+					.getSizeLimit(title));
 		}
-		
+
 		if ("folder".equals(type) || "drive".equals(type)) {
-			if(resource.getChildren() != null) {
+			if (resource.getChildren() != null) {
 				long totalSize = 0;
 				long fileCount = 0;
 				long folderCount = 0;
-				long childrenFolderCount = 0;
-				for(FileObject child: resource.getChildren()) {
-					if(this.showHiddenFiles || !child.isHidden()) {
+				for (FileObject child : resource.getChildren()) {
+					if (this.showHiddenFiles || !child.isHidden()) {
 						if ("folder".equals(child.getType().getName())) {
 							++folderCount;
-							if (child.getChildren() != null)
-								childrenFolderCount += child.getChildren().length;
 						} else if ("file".equals(child.getType().getName())) {
 							++fileCount;
 							totalSize += child.getContent().getSize();
@@ -239,15 +240,16 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 				file.setFolderCount(folderCount);
 			}
 		}
-		
+
 		final Calendar date = Calendar.getInstance();
 		date.setTimeInMillis(resource.getContent().getLastModifiedTime());
-		//In order to have a readable date 
-		file.setLastModifiedTime(new SimpleDateFormat(this.datePattern).format(date.getTime()));
-		
-		file.setHidden(resource.isHidden());
+		// In order to have a readable date
+		file.setLastModifiedTime(new SimpleDateFormat(this.datePattern)
+				.format(date.getTime()));
+
 		file.setReadable(resource.isReadable());
 		file.setWriteable(resource.isWriteable());
+
 		return file;
 	}
 
