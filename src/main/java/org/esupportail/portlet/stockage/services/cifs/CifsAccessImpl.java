@@ -30,6 +30,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -133,6 +134,8 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 	private SmbFile cd(String path, SharedUserPortletParameters userParameters) {
 		try {
 			this.open(userParameters);
+			if (!path.endsWith("/"))
+				path = path.concat("/");
 			if (path == null || path.length() == 0)
 				return root;
 			return new SmbFile(this.getUri() + path, userAuthenticator);
@@ -150,8 +153,10 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 	public JsTreeFile get(String path, SharedUserPortletParameters userParameters) {
 		try {
 			this.open(userParameters);
+			if (!path.endsWith("/"))
+				path = path.concat("/");
 			SmbFile resource = cd(path, userParameters);
-			return resourceAsJsTreeFile(resource);
+			return resourceAsJsTreeFile(resource, userParameters);
 		} catch (SmbAuthException sae) {
 			log.error(sae.getMessage());
 			root = null;
@@ -172,16 +177,17 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 		List<JsTreeFile> files = new ArrayList<JsTreeFile>();
 		try {
 			this.open(userParameters);
+			if (!path.endsWith("/"))
+				path = path.concat("/");
 			SmbFile resource = new SmbFile(this.getUri() + path, userAuthenticator);
 			if (resource.canRead()) {
 				for(SmbFile child: resource.listFiles()) {
-					//log.trace("children :" + child);
 					try {
-						if(this.showHiddenFiles || !child.isHidden()) {
-							files.add(resourceAsJsTreeFile(child));
+						if(!child.isHidden() || this.showHiddenFiles) {
+							files.add(resourceAsJsTreeFile(child, userParameters));
 						}
 					} catch (SmbException se) {
-						log.info("The resource isn't accessible and so will be ignored", se);
+						log.warn("The resource isn't accessible and so will be ignored", se);
 					}
 				}
 			}
@@ -195,7 +201,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 		}
 	}
 
-	private JsTreeFile resourceAsJsTreeFile(SmbFile resource) throws SmbException {
+	private JsTreeFile resourceAsJsTreeFile(SmbFile resource, SharedUserPortletParameters userParameters) throws SmbException {
 		String lid = resource.getCanonicalPath();
 		String rootPath = root.getCanonicalPath();
 		// lid must be a relative path from rootPath
@@ -218,13 +224,33 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 		}
 		JsTreeFile file = new JsTreeFile(title, lid, type);
 		if("file".equals(type)) {
-			String icon = resourceUtils.getIcon(title);
+			String icon = getResourceUtils().getIcon(title);
 			file.setIcon(icon);
 			file.setSize(resource.getContentLength());
-			file.setLastModifiedTime(new SimpleDateFormat(this.datePattern).format(resource.getLastModified()));
-		} else if ("folder".equals(type)) {
-			file.setLastModifiedTime(new SimpleDateFormat(this.datePattern).format(resource.getLastModified()));
 		}
+
+		if ("folder".equals(type) || "drive".equals(type)) {
+			if (resource.listFiles() != null) {
+				long totalSize = 0;
+				long fileCount = 0;
+				long folderCount = 0;
+				for (SmbFile child : resource.listFiles()) {
+					if (this.showHiddenFiles || !child.isHidden()) {
+						if (child.isDirectory()) {
+							++folderCount;
+						} else if (child.isFile()) {
+							++fileCount;
+							totalSize += child.getContentLength();
+						}
+					}
+				}
+				file.setTotalSize(totalSize);
+				file.setFileCount(fileCount);
+				file.setFolderCount(folderCount);
+			}
+		}
+
+		file.setLastModifiedTime(new SimpleDateFormat(this.datePattern).format(resource.getLastModified()));
 		file.setHidden(resource.isHidden());
 		file.setWriteable(resource.canWrite());
 		file.setReadable(file.isReadable());
