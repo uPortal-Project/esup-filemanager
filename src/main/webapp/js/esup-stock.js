@@ -1,8 +1,11 @@
 /*
- * Copyright (C) 2010 Esup Portail http://www.esup-portail.org
- * Copyright (C) 2010 UNR RUNN http://www.unr-runn.fr
- * @Author (C) 2010 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
- * @Contributor (C) 2010 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+ * Copyright (C) 2011 Esup Portail http://www.esup-portail.org
+ * Copyright (C) 2011 UNR RUNN http://www.unr-runn.fr
+ * @Author (C) 2011 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
+ * @Contributor (C) 2011 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+ * @Contributor (C) 2011 Julien Marchal <Julien.Marchal@univ-nancy2.fr>
+ * @Contributor (C) 2011 Julien Gribonvald <Julien.Gribonvald@recia.fr>
+ * @Contributor (C) 2011 David Clarke <david.clarke@anu.edu.au>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +20,11 @@
  */
 
 "use strict";
+var uploadListFadeoutTime = 3000;
+var infoTolbarFadeoutTime = 8000;
 
 (function ($) {
-	
+		
 	$(document).ready(function() { 
 		
 		function cursor_wait() {
@@ -35,58 +40,80 @@
 		var uploader =  new qq.FileUploader({
 			multiple: true,
 			template: fileuploadTemplate,
+			fileTemplate: fileTemplate,  			
 			element: document.getElementById('file-uploader'),
 			action: '/esup-portlet-stockage/servlet-ajax/uploadFile',     
 			onSubmit: function(id, fileName){
 					uploader.setParams({
-						dir: $("#bigdirectory").attr("rel")
+						dir: $("#bigdirectory").attr("rel"),
+						sharedSessionId: sharedSessionId
 		 			});
 					cursor_wait();
+					$('.qq-upload-list').show();
 			},
 			onComplete: function(id, fileName, result){
 				cursor_clear();
 				$("#info-toolbar").html(result.msg);
+				$('#info-toolbar').show();
 				if(result.success) {
-					id = $("#bigdirectory").attr('rel');
-					obj = document.getElementById(id);
+					var id = $("#bigdirectory").attr('rel');
+					var obj = document.getElementById(id);
 					$("#fileTree").jstree("refresh", obj); 
 					$("#fileTree").jstree("select_node", obj, true); 
 				}
+				if(uploader.getInProgress() == 0) {
+					$('.qq-upload-list').fadeOut(uploadListFadeoutTime);
+					$('#info-toolbar').fadeOut(infoTolbarFadeoutTime);
+				}							
+			},
+			onCancel: function(id, fileName){
+				if(uploader.getInProgress() == 0) {
+					$('.qq-upload-list').fadeOut(uploadListFadeoutTime);
+				}			
+				$('#info-toolbar').fadeOut(infoTolbarFadeoutTime);
 			}
-		 });  
+		 });
 
 		     $('#toolbar-copy').bind('click', function() {
 		    	    cursor_wait();
-		    		dirs = getCheckedDirs();
-		    		prepareCopyFilesUrl = '/esup-portlet-stockage/servlet-ajax/prepareCopyFiles';
+		    		var dirs = getCheckedDirs();
+		    		var prepareCopyFilesUrl = '/esup-portlet-stockage/servlet-ajax/prepareCopyFiles';
 		    		 $.post(prepareCopyFilesUrl, $("#filesForm").serialize(), function(data){
 		    		   cursor_clear();
 		  	    	   $("#info-toolbar").html(data.msg);
+					   $('#info-toolbar').show();
+					   $('#info-toolbar').fadeOut(infoTolbarFadeoutTime);
 		    		 });
 		     });
 
 		     $('#toolbar-cut').bind('click', function() {
 		    	cursor_wait();
-		 		dirs = getCheckedDirs();
-		 		prepareCutFilesUrl = '/esup-portlet-stockage/servlet-ajax/prepareCutFiles';
+		 		var dirs = getCheckedDirs();
+		 		var prepareCutFilesUrl = '/esup-portlet-stockage/servlet-ajax/prepareCutFiles';
 		 		 $.post(prepareCutFilesUrl, $("#filesForm").serialize(), function(data){
 		 			   cursor_clear();
 			    	   $("#info-toolbar").html(data.msg);
+					   $('#info-toolbar').show();
+					   $('#info-toolbar').fadeOut(infoTolbarFadeoutTime);
 			    	});
 		 	 });
 
 		     $('#toolbar-past').bind('click', function() {
 		    	 cursor_wait();
-		    	 id = $("#bigdirectory").attr('rel');
-		    	 pastFilesUrl = '/esup-portlet-stockage/servlet-ajax/pastFiles';
-		 		 $.post(pastFilesUrl, "dir="+id, function(data){
+		    	 var id = $("#bigdirectory").attr('rel');
+		    	 var pastFilesUrl = '/esup-portlet-stockage/servlet-ajax/pastFiles';
+		 		 $.post(pastFilesUrl, "dir="+id+"&sharedSessionId="+sharedSessionId, function(data){
 		 			 cursor_clear();
 		 			 if(data.status) {
 			    	   $("#info-toolbar").html(data.msg);
+					   $('#info-toolbar').show();
+					   $('#info-toolbar').fadeOut(infoTolbarFadeoutTime);
 		 			 } else {
 		 				$("#info-toolbar").html(data.msg);
+						$('#info-toolbar').show();
+					    $('#info-toolbar').fadeOut(infoTolbarFadeoutTime);
 		 			 }
-			    	   obj = document.getElementById(id);
+			    	   var obj = document.getElementById(id);
 			    	   $("#fileTree").jstree("refresh", obj); 
 			    	   $("#fileTree").jstree("select_node", obj, true); 
 			      });
@@ -98,7 +125,7 @@
 		  	});
 
 		     $('#toolbar-rename').bind('click', function() {
-			 dirs = getCheckedDirs();
+			 var dirs = getCheckedDirs();
 			 if(dirs.length == 0) { 
 		    	     $(".renameSpan").removeClass('esupHide');
 			 } else {
@@ -110,16 +137,20 @@
 
 			$('#toolbar-delete').bind('click', function() {
 				cursor_wait();
-         		removeFilesUrl = '/esup-portlet-stockage/servlet-ajax/removeFiles';
+				var removeFilesUrl = '/esup-portlet-stockage/servlet-ajax/removeFiles';
 			    $.post(removeFilesUrl, $("#filesForm").serialize(), function(data){
 			    	    cursor_clear();
 			    		if(data.status) {
 			    			$("#info-toolbar").html(data.msg);
+							$('#info-toolbar').show();
+							$('#info-toolbar').fadeOut(infoTolbarFadeoutTime);
 			 			} else {
 			 				$("#info-toolbar").html(data.msg);
+							$('#info-toolbar').show();
+							$('#info-toolbar').fadeOut(infoTolbarFadeoutTime);
 			 			}
-			    	   id = $("#bigdirectory").attr('rel');
-			    	   obj = document.getElementById(id);
+			    	   var id = $("#bigdirectory").attr('rel');
+			    	   var obj = document.getElementById(id);
 			    	   $("#fileTree").jstree("refresh", obj); 
 			    	   $("#fileTree").jstree("select_node", obj, true); 
 			    	   
@@ -127,16 +158,16 @@
 			});
 			
 			$('#toolbar-zip').bind('click', function() {
-	    		dirs = getCheckedDirs();
+	    		var dirs = getCheckedDirs();
 	    		if(dirs.length > 0) {
-	    			downloadZipUrl = '/esup-portlet-stockage/servlet-ajax/downloadZip';
+	    			var downloadZipUrl = '/esup-portlet-stockage/servlet-ajax/downloadZip';
 	    			$("#filesForm").attr("action", downloadZipUrl);
 	    			$("#filesForm").submit();
 	    		}
 			});
 
 			function getCheckedDirs()  {
-				dirs = new Array;
+				var dirs = new Array;
 				$(".browsercheck:checked").each(function() {
 			 	  dirs.push($(this).val());
 				});
@@ -166,7 +197,8 @@
 							"data" : function (n) { 
 								// the result is fed to the AJAX request `data` option
 								return { 
-									"dir" : n.attr ? n.attr("id") : ""	
+									"dir" : n.attr ? n.attr("id") : "",
+									"sharedSessionId" : sharedSessionId
 								}; 
 							}
 						}
@@ -227,7 +259,8 @@
 						type: 'POST',
 						url: '/esup-portlet-stockage/servlet-ajax/htmlFileTree',
 						data : { 
-							"dir" : data.rslt.obj.attr("id")
+							"dir" : data.rslt.obj.attr("id"),
+							"sharedSessionId" : sharedSessionId
 						}, 
 						success : function (r) {
 							cursor_clear();
@@ -252,7 +285,8 @@
 					type: 'POST',
 					url: '/esup-portlet-stockage/servlet-ajax/downloadFile',
 					data : { 
-						"dir" : dir
+						"dir" : dir,
+						"sharedSessionId" : sharedSessionId
 					}
 				});
 				
@@ -266,14 +300,14 @@
 
 function getFile(parentDir, fileId) {
 	if(parentDir != null) {
-		parentObj = document.getElementById(parentDir);
+		var parentObj = document.getElementById(parentDir);
 		$("#fileTree").jstree("open_node", parentObj, function() {
-			obj = document.getElementById(fileId);
+			var obj = document.getElementById(fileId);
 			$("#fileTree").jstree("select_node", obj, true); 
 		}, true);
 	} else {
-		if(fileId != 'FS:') {
-			obj = document.getElementById(fileId);
+		if(fileId != 'FS%3A') {
+			var obj = document.getElementById(fileId);
 			$("#fileTree").jstree("select_node", obj, true); 
 		} else {
 			$.ajax({
@@ -281,7 +315,8 @@ function getFile(parentDir, fileId) {
 				type: 'POST',
 				url: '/esup-portlet-stockage/servlet-ajax/htmlFileTree',
 				data : { 
-					"dir" : fileId
+					"dir" : fileId,
+					"sharedSessionId" : sharedSessionId
 				}, 
 				success : function (r) {
 					$("#browserMain").html(r);
@@ -300,7 +335,8 @@ function newDir(parentDir, newDir) {
 		data : { 
 			"parentDir" : parentDir,
 			"title" : newDir,
-			"type" : "folder"
+			"type" : "folder",
+			"sharedSessionId" : sharedSessionId
 		}, 
 		success : function (r) {
 			$("#browserMain").html(r);
@@ -317,7 +353,8 @@ function rename(parentDir, dir, title) {
 		data : { 
 			"parentDir" : parentDir,
 			"dir" : dir,
-			"title" : title
+			"title" : title,
+			"sharedSessionId" : sharedSessionId
 		}, 
 		success : function (r) {
 			$("#browserMain").html(r);
@@ -334,10 +371,14 @@ function authenticate(dir, username, password) {
 		data : { 
 			"dir" : dir,
 			"username" : username,
-			"password" : password
+			"password" : password,
+			"sharedSessionId" : sharedSessionId
 		}, 
 		success : function (data) { 
 			$("#info-toolbar").html(data.msg);
+			$('#info-toolbar').show();
+ 		    $('#info-toolbar').fadeOut(infoTolbarFadeoutTime);
+
 			if(data.status) 
 				getFile(null, dir);
 		}

@@ -1,8 +1,11 @@
 /**
- * Copyright (C) 2010 Esup Portail http://www.esup-portail.org
- * Copyright (C) 2010 UNR RUNN http://www.unr-runn.fr
- * @Author (C) 2010 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
- * @Contributor (C) 2010 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+ * Copyright (C) 2011 Esup Portail http://www.esup-portail.org
+ * Copyright (C) 2011 UNR RUNN http://www.unr-runn.fr
+ * @Author (C) 2011 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
+ * @Contributor (C) 2011 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+ * @Contributor (C) 2011 Julien Marchal <Julien.Marchal@univ-nancy2.fr>
+ * @Contributor (C) 2011 Julien Gribonvald <Julien.Gribonvald@recia.fr>
+ * @Contributor (C) 2011 David Clarke <david.clarke@anu.edu.au>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +29,7 @@ import java.util.List;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -38,29 +42,44 @@ import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.stockage.beans.UserPassword;
 import org.esupportail.portlet.stockage.services.ServersAccessService;
+import org.esupportail.portlet.stockage.utils.URLEncodingUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.portlet.ModelAndView;
+import org.springframework.web.portlet.context.PortletRequestAttributes;
 
 @Controller
 @Scope("request")
-public class PortletControllerWai {
+public class PortletControllerAction  implements InitializingBean {
 
-	protected Logger log = Logger.getLogger(PortletControllerWai.class);
+	protected Logger log = Logger.getLogger(PortletControllerAction.class);
 	
 	@Autowired
 	protected ServersAccessService serverAccess;
 	
 	@Autowired
 	protected BasketSession basketSession;
-
+	
+	protected SharedUserPortletParameters userParameters;
 		
+	
+	public void afterPropertiesSet() throws Exception {		
+		PortletRequestAttributes requestAttributes = (PortletRequestAttributes)RequestContextHolder.currentRequestAttributes();
+		PortletRequest request = requestAttributes.getRequest();
+		PortletSession session = request.getPortletSession();
+
+		String sharedSessionId = (String)request.getParameter("sharedSessionId");
+		userParameters = (SharedUserPortletParameters) session.getAttribute(sharedSessionId, PortletSession.APPLICATION_SCOPE);
+	}
+	
 	@RequestMapping(value = { "VIEW" }, params = { "action=formProcessWai" })
-	public void formProcessWai(FormCommand command, @RequestParam String dir,
+	public void formProcessWai(FormCommand command, @RequestParam String dir, @RequestParam String sharedSessionId,
 			@RequestParam(required = false) String prepareCopy,
 			@RequestParam(required = false) String prepareCut,
 			@RequestParam(required = false) String past,
@@ -76,12 +95,14 @@ public class PortletControllerWai {
 			String url = "/esup-portlet-stockage/servlet-ajax/downloadZip?";
 			for(String commandDir: command.getDirs()) {
 				url = url + "dirs=" + URLEncoder.encode(commandDir, "utf8") + "&";
+				url = url + "sharedSessionId=" + URLEncoder.encode(sharedSessionId, "utf8") + "&";
 			}
 			url = url.substring(0, url.length()-1);
 			response.sendRedirect(url);
 			
 		} else  if (rename != null) {
 			response.setRenderParameter("dir", dir);
+			response.setRenderParameter("sharedSessionId", sharedSessionId);
 			response.setRenderParameter("dirs", command.getDirs().toArray(new String[] {}));
 			response.setRenderParameter("action", "renameWai");
 		} else {
@@ -97,12 +118,12 @@ public class PortletControllerWai {
 			} else if (past != null) {
 				this.serverAccess.moveCopyFilesIntoDirectory(dir, basketSession
 						.getDirsToCopy(), "copy"
-						.equals(basketSession.getGoal()));
-				msg = "ajax.past.ok";
+						.equals(basketSession.getGoal()), userParameters);
+				msg = "ajax.paste.ok";
 			} else if (delete != null) {
 				msg = "ajax.remove.ok"; 
 				for(String dirToDelete: command.getDirs()) {
-					if(!this.serverAccess.remove(dirToDelete)) {
+					if(!this.serverAccess.remove(dirToDelete, userParameters)) {
 						msg = "ajax.remove.failed"; 
 					}
 				}
@@ -111,6 +132,7 @@ public class PortletControllerWai {
 			if(msg != null)
 				response.setRenderParameter("msg", msg);
 			response.setRenderParameter("dir", dir);
+			response.setRenderParameter("sharedSessionId", sharedSessionId);
 			response.setRenderParameter("action", "browseWai");
 		}
 	}
@@ -125,16 +147,17 @@ public class PortletControllerWai {
 	}
 				
 	@RequestMapping(value = { "VIEW" }, params = { "action=formCreateWai" })
-	public void formCreateWai(FormCommand command, @RequestParam String dir,
+	public void formCreateWai(FormCommand command, @RequestParam String dir, @RequestParam String sharedSessionId,
 			@RequestParam String folderName,
 			ActionRequest request, ActionResponse response) throws IOException {
 		
 		String msg = null;
-		this.serverAccess.createFile(dir, folderName, "folder");
+		this.serverAccess.createFile(dir, folderName, "folder", userParameters);
 		
 		if(msg != null)
 			response.setRenderParameter("msg", msg);
 		response.setRenderParameter("dir", dir);
+		response.setRenderParameter("sharedSessionId", sharedSessionId);
 		response.setRenderParameter("action", "browseWai");
 	}
 	
@@ -144,7 +167,7 @@ public class PortletControllerWai {
     								@RequestParam List<String> dirs) {
 		
 		ModelMap model = new ModelMap();
-		List<JsTreeFile> files = this.serverAccess.getChildren(dir);
+		List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
 		List<JsTreeFile> filesToRename = new ArrayList<JsTreeFile>();
 		if(!dirs.isEmpty()) {
 			for(JsTreeFile file: files) {
@@ -160,22 +183,23 @@ public class PortletControllerWai {
 	}
 	
 	@RequestMapping(value = { "VIEW" }, params = { "action=formRenameWai" })
-	public void formRenameWai(@RequestParam String dir,
+	public void formRenameWai(@RequestParam String dir, @RequestParam String sharedSessionId,
 			ActionRequest request, ActionResponse response) throws IOException {
 		
 		String msg = null;
 		
-		List<JsTreeFile> files = this.serverAccess.getChildren(dir);
+		List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
 		for(JsTreeFile file: files) {
 			String newTitle = request.getParameter(file.getPath());
 			if(newTitle != null && newTitle.length() != 0 && !file.getTitle().equals(newTitle)) {
-				this.serverAccess.renameFile(file.getPath(), newTitle);
+				this.serverAccess.renameFile(file.getPath(), newTitle, userParameters);
 			}
 		}
 		
 		if(msg != null)
 			response.setRenderParameter("msg", msg);
 		response.setRenderParameter("dir", dir);
+		response.setRenderParameter("sharedSessionId", sharedSessionId);
 		response.setRenderParameter("action", "browseWai");
 	}
 	
@@ -191,35 +215,55 @@ public class PortletControllerWai {
 	
 	@RequestMapping(value = {"VIEW"}, params = {"action=formUploadWai"})
     public void formUploadWai(ActionRequest request, ActionResponse response,
-    								@RequestParam String dir, FileUpload command) throws IOException {
-	
+    								@RequestParam String dir, @RequestParam String sharedSessionId, FileUpload command) throws IOException {
+		
 		String filename = command.getQqfile().getOriginalFilename();
 		InputStream inputStream = command.getQqfile().getInputStream();
-		this.serverAccess.putFile(dir, filename, inputStream);
+		this.serverAccess.putFile(dir, filename, inputStream, userParameters);
 		
 		response.setRenderParameter("dir", dir);
+		response.setRenderParameter("sharedSessionId", sharedSessionId);
 		response.setRenderParameter("action", "browseWai");
 	}
 	
 	@RequestMapping(value = {"VIEW"}, params = {"action=formAuthenticationWai"})
     public void formAuthenticationWai(ActionRequest request, ActionResponse response,
-    								@RequestParam String dir, @RequestParam String username, @RequestParam String password) throws IOException {
-	
+    								@RequestParam String dir, @RequestParam String sharedSessionId, @RequestParam String username, @RequestParam String password) throws IOException {
+		
 		String msg = "auth.bad";
-		if(this.serverAccess.authenticate(dir, username, password, request)) {
+		if(this.serverAccess.authenticate(dir, username, password, userParameters)) {
 			msg = "auth.ok";
 		
 			// we keep username+password in session so that we can reauthenticate on drive in servlet mode 
 			// (and so that download file would be ok for example with the servlet ...)
-			PortletSession session = request.getPortletSession();
-			SharedUserPortletParameters userParameters = (SharedUserPortletParameters) session.getAttribute(SharedUserPortletParameters.SHARED_PARAMETER_SESSION_ID, PortletSession.APPLICATION_SCOPE);
 			String driveName = this.serverAccess.getDrive(dir);
 			userParameters.getUserPassword4AuthenticatedFormDrives().put(driveName, new UserPassword(username, password));
 		}
 			
 		response.setRenderParameter("msg", msg);
 		response.setRenderParameter("dir", dir);
+		response.setRenderParameter("sharedSessionId", sharedSessionId);
 		response.setRenderParameter("action", "browseWai");
 	}
     
+	@RequestMapping(value = {"VIEW"}, params = {"action=formAuthenticationMobile"})
+    public void formAuthenticationMobile(ActionRequest request, ActionResponse response,
+    								@RequestParam String dir, @RequestParam String sharedSessionId, @RequestParam String username, @RequestParam String password) throws IOException {
+		
+		String msg = "auth.bad";
+		if(this.serverAccess.authenticate(dir, username, password, userParameters)) {
+			msg = "auth.ok";
+			
+			// we keep username+password in session so that we can reauthenticate on drive in servlet mode 
+			// (and so that download file would be ok for example with the servlet ...)
+			String driveName = this.serverAccess.getDrive(dir);
+			userParameters.getUserPassword4AuthenticatedFormDrives().put(driveName, new UserPassword(username, password));
+		}
+		
+		response.setRenderParameter("msg", msg);
+		response.setRenderParameter("dir", dir);
+		response.setRenderParameter("sharedSessionId", sharedSessionId);
+		response.setRenderParameter("action", "browseMobile");
+	}
+
 }

@@ -1,9 +1,12 @@
 <%--
 
-    Copyright (C) 2010 Esup Portail http://www.esup-portail.org
-    Copyright (C) 2010 UNR RUNN http://www.unr-runn.fr
-    @Author (C) 2010 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
-    @Contributor (C) 2010 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+    Copyright (C) 2011 Esup Portail http://www.esup-portail.org
+    Copyright (C) 2011 UNR RUNN http://www.unr-runn.fr
+    @Author (C) 2011 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
+    @Contributor (C) 2011 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+    @Contributor (C) 2011 Julien Marchal <Julien.Marchal@univ-nancy2.fr>
+    @Contributor (C) 2011 Julien Gribonvald <Julien.Gribonvald@recia.fr>
+    @Contributor (C) 2011 David Clarke <david.clarke@anu.edu.au>
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -38,6 +41,7 @@
 <portlet:actionURL var="formRenameWai">
   <portlet:param name="action" value="formRenameWai"/>
   <portlet:param name="dir" value="${currentDir}"/>
+  <portlet:param name="sharedSessionId" value="${n}"/>
   <portlet:param name="filesToRename" value="${files}"/>
 </portlet:actionURL>
 
@@ -57,7 +61,7 @@
        		 <label>
           		${file.title}
       		  </label>
-       		 <input type="text" name="${file.path}" value="${file.title}"/>
+       		 <input type="text" name="${file.id}" value="${file.title}"/>
        		</li>
 		</c:forEach>
 		

@@ -1,8 +1,11 @@
 /**
- * Copyright (C) 2010 Esup Portail http://www.esup-portail.org
- * Copyright (C) 2010 UNR RUNN http://www.unr-runn.fr
- * @Author (C) 2010 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
- * @Contributor (C) 2010 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+ * Copyright (C) 2011 Esup Portail http://www.esup-portail.org
+ * Copyright (C) 2011 UNR RUNN http://www.unr-runn.fr
+ * @Author (C) 2011 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
+ * @Contributor (C) 2011 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+ * @Contributor (C) 2011 Julien Marchal <Julien.Marchal@univ-nancy2.fr>
+ * @Contributor (C) 2011 Julien Gribonvald <Julien.Gribonvald@recia.fr>
+ * @Contributor (C) 2011 David Clarke <david.clarke@anu.edu.au>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,28 +26,41 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.esupportail.portlet.stockage.beans.DownloadFile;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.stockage.beans.UserPassword;
 import org.esupportail.portlet.stockage.services.auth.FormUserPasswordAuthenticatorService;
 import org.esupportail.portlet.stockage.services.auth.UserAuthenticatorService;
+import org.esupportail.portlet.stockage.services.uri.UriManipulateService;
 
 public abstract class FsAccess {
 
+	protected static final Log log = LogFactory.getLog(FsAccess.class);
+	
 	protected static String TOKEN_SPECIAL_CHAR =  "@";
-	
+
+    protected String datePattern = "dd/MM/yyyy hh:mm";
+
 	private List<String> memberOfAny;
-	
+
 	private String contextToken;
-	
+
 	protected String driveName;
-	
+
 	protected String uri;
-	
+
 	protected String icon;
-	
+
 	protected UserAuthenticatorService userAuthenticatorService;
+
+	protected UriManipulateService uriManipulateService;
+
+	public void setDatePattern(String datePattern) {
+		this.datePattern = datePattern;
+	}
 
 	public List<String> getMemberOfAny() {
 		return memberOfAny;
@@ -91,10 +107,15 @@ public abstract class FsAccess {
 		this.userAuthenticatorService = userAuthenticatorService;
 	}
 
+	public void setUriManipulateService(
+			UriManipulateService uriManipulateService) {
+		this.uriManipulateService = uriManipulateService;
+	}
+
 	public void initializeService(Map userInfos,
 			SharedUserPortletParameters userParameters) {
 		if(userInfos != null) {
-			for(String userInfoKey : (Set<String>)userInfos.keySet()) { 
+			for(String userInfoKey : (Set<String>)userInfos.keySet()) {
 				String userInfo = (String)userInfos.get(userInfoKey);
 				String userInfoKeyToken = TOKEN_SPECIAL_CHAR.concat(userInfoKey).concat(TOKEN_SPECIAL_CHAR);
 				this.uri = this.uri.replaceAll(userInfoKeyToken, userInfo);
@@ -102,61 +123,64 @@ public abstract class FsAccess {
 		}
 		if(this.userAuthenticatorService != null && userInfos != null)
 			this.userAuthenticatorService.initialize(userInfos, userParameters);
+		if(this.uriManipulateService != null)
+			this.uri = this.uriManipulateService.manipulate(uri);
 	}
 
-	public abstract void open() ;
+	public abstract void open(SharedUserPortletParameters userParameters) ;
 
 	public abstract void close();
 
 	public abstract boolean isOpened();
 
-	public abstract JsTreeFile get(String path) ;
+	public abstract JsTreeFile get(String path, SharedUserPortletParameters userParameters) ;
 
-	public abstract List<JsTreeFile> getChildren(String path);
+	public abstract List<JsTreeFile> getChildren(String path, SharedUserPortletParameters userParameters);
 
-	public abstract boolean remove(String path);
+	public abstract boolean remove(String path, SharedUserPortletParameters userParameters);
 
 	public abstract String createFile(String parentPath, String title,
-			String type);
+			String type, SharedUserPortletParameters userParameters);
 
-	public abstract boolean renameFile(String path, String title);
+	public abstract boolean renameFile(String path, String title, SharedUserPortletParameters userParameters);
 
 	public abstract boolean moveCopyFilesIntoDirectory(String dir,
-			List<String> filesToCopy, boolean copy);
+			List<String> filesToCopy, boolean copy, SharedUserPortletParameters userParameters);
 
-	public abstract DownloadFile getFile(String dir);
+	public abstract DownloadFile getFile(String dir, SharedUserPortletParameters userParameters);
 
 	public abstract boolean putFile(String dir, String filename,
-			InputStream inputStream);
-	
+			InputStream inputStream, SharedUserPortletParameters userParameters);
+
 	public boolean supportIntraCopyPast() {
 		return true;
 	}
-	
+
 	public boolean supportIntraCutPast() {
 		return true;
 	}
 
-	public boolean formAuthenticationRequired() {
+	public boolean formAuthenticationRequired(SharedUserPortletParameters userParameters) {
 		if(this.userAuthenticatorService instanceof FormUserPasswordAuthenticatorService) {
-			if(this.userAuthenticatorService.getUserPassword().getPassword() == null || this.userAuthenticatorService.getUserPassword().getPassword().length() == 0)
+			if(this.userAuthenticatorService.getUserPassword(userParameters).getPassword() == null || this.userAuthenticatorService.getUserPassword(userParameters).getPassword().length() == 0)
 				return true;
 		}
 		return false;
 	}
 
-	public UserPassword getUserPassword() {
-		return this.userAuthenticatorService.getUserPassword();
+	public UserPassword getUserPassword(SharedUserPortletParameters userParameters) {
+		return this.userAuthenticatorService.getUserPassword(userParameters);
 	}
 
-	public boolean authenticate(String username, String password) {
-		this.userAuthenticatorService.getUserPassword().setUsername(username);
-		this.userAuthenticatorService.getUserPassword().setPassword(password);
-		try { 
-			this.get("");
+	public boolean authenticate(String username, String password, SharedUserPortletParameters userParameters) {
+		this.userAuthenticatorService.getUserPassword(userParameters).setUsername(username);
+		this.userAuthenticatorService.getUserPassword(userParameters).setPassword(password);
+		try {
+			this.get("", userParameters);
 		} catch(Exception e) {
-			// TODO : catch Exception corresponding to an authentication failure ... 
-			this.userAuthenticatorService.getUserPassword().setPassword(null);
+			// TODO : catch Exception corresponding to an authentication failure ...	
+			log.warn("Authenication failed : " + e.getMessage());
+			this.userAuthenticatorService.getUserPassword(userParameters).setPassword(null);
 			return false;
 		}
 		return true;

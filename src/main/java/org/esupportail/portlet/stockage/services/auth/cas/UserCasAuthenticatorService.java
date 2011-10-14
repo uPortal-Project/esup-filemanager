@@ -1,8 +1,11 @@
 /**
- * Copyright (C) 2010 Esup Portail http://www.esup-portail.org
- * Copyright (C) 2010 UNR RUNN http://www.unr-runn.fr
- * @Author (C) 2010 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
- * @Contributor (C) 2010 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+ * Copyright (C) 2011 Esup Portail http://www.esup-portail.org
+ * Copyright (C) 2011 UNR RUNN http://www.unr-runn.fr
+ * @Author (C) 2011 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
+ * @Contributor (C) 2011 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+ * @Contributor (C) 2011 Julien Marchal <Julien.Marchal@univ-nancy2.fr>
+ * @Contributor (C) 2011 Julien Gribonvald <Julien.Gribonvald@recia.fr>
+ * @Contributor (C) 2011 David Clarke <david.clarke@anu.edu.au>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,26 +91,12 @@ public class UserCasAuthenticatorService implements UserAuthenticatorService {
 		this.userCasAuthenticatorServiceRoot.initialize(userInfos, userParameters);
     }
 
-    public UserPassword getUserPassword() {
+    public UserPassword getUserPassword(SharedUserPortletParameters userParameters) {
 
         if (log.isDebugEnabled()) {
             log.debug("getting credentials using " + this.getClass().getName());
         }
         
-        // trying to retrieve userParameters with ContextUtils (portlet mode)
-        SharedUserPortletParameters userParameters = (SharedUserPortletParameters) ContextUtils.getSessionAttribute(SharedUserPortletParameters.SHARED_PARAMETER_SESSION_ID);
-		// if no success we're trying with RequestContextHolder (servlet mode)
-        if(userParameters == null) {
-        	RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        	userParameters = (SharedUserPortletParameters)requestAttributes.getAttribute(SharedUserPortletParameters.SHARED_PARAMETER_SESSION_ID, PortletSession.APPLICATION_SCOPE);
-        }
-
-        
-        if(userParameters == null) {
-			log.warn("userParameters is null, if esup-portlet-stockage runs like a portlet, there is a problem (if so, check isPortlet constant in drives.xml)");
-			userParameters = new SharedUserPortletParameters();
-		}
-
         log.debug("getting CAS credentials from session");
 
         CASReceipt receipt = userParameters.getReceipt();

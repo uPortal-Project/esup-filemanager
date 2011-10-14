@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2010 Esup Portail http://www.esup-portail.org
-    Copyright (C) 2010 UNR RUNN http://www.unr-runn.fr
-    @Author (C) 2010 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
-    @Contributor (C) 2010 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+    Copyright (C) 2011 Esup Portail http://www.esup-portail.org
+    Copyright (C) 2011 UNR RUNN http://www.unr-runn.fr
+    @Author (C) 2011 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
+    @Contributor (C) 2011 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+    @Contributor (C) 2011 Julien Marchal <Julien.Marchal@univ-nancy2.fr>
+    @Contributor (C) 2011 Julien Gribonvald <Julien.Gribonvald@recia.fr>
+    @Contributor (C) 2011 David Clarke <david.clarke@anu.edu.au>
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -22,6 +25,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
 >
+
+    <!-- we juste define PropertyPlaceholderConfigurer so that you can use java env var in your drives.xml if you need -->
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
     
     <!--
      | Message source for this context, loaded from localized "messages_xx" files
@@ -85,6 +91,39 @@
 				<entry key="xml" value="txt"/>
 				<entry key="csv" value="xls"/>
 				<entry key="docx" value="doc"/>
+			</map>
+		</property>
+		
+		<!-- Added for RECIA.  In order to know what type of file is in the details area -->
+		<property name="typeMap">
+			<map>
+				<entry key="jpg" value="image"/>
+				<entry key="xcf" value="image"/>
+				<entry key="tif" value="image"/>
+				<entry key="dia" value="image"/>
+				<entry key="gif" value="image"/>
+				<entry key="bmp" value="image"/>
+				<entry key="png" value="image"/>
+				<entry key="mp3" value="audio"/>
+				<entry key="ogg" value="audio"/>
+				<entry key="wma" value="audio"/>
+			</map>
+		</property>
+		
+		<!-- Added for RECIA. In order to limit the size of the filetype.  Any file greater than the size will not allow streaming / slideshow
+		/ view in original size functionality -->
+		<property name="sizeLimitMap">
+			<map>
+				<entry key="jpg" value="2"/>
+				<entry key="xcf" value="2"/>
+				<entry key="tif" value="2"/>
+				<entry key="dia" value="2"/>
+				<entry key="gif" value="2"/>
+				<entry key="bmp" value="2"/>
+				<entry key="png" value="2"/>
+				<entry key="mp3" value="2"/>
+				<entry key="ogg" value="2"/>
+				<entry key="wma" value="2"/>
 			</map>
 		</property>
 	</bean>

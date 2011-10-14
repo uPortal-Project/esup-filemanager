@@ -1,8 +1,11 @@
 /**
- * Copyright (C) 2010 Esup Portail http://www.esup-portail.org
- * Copyright (C) 2010 UNR RUNN http://www.unr-runn.fr
- * @Author (C) 2010 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
- * @Contributor (C) 2010 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+ * Copyright (C) 2011 Esup Portail http://www.esup-portail.org
+ * Copyright (C) 2011 UNR RUNN http://www.unr-runn.fr
+ * @Author (C) 2011 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
+ * @Contributor (C) 2011 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+ * @Contributor (C) 2011 Julien Marchal <Julien.Marchal@univ-nancy2.fr>
+ * @Contributor (C) 2011 Julien Gribonvald <Julien.Gribonvald@recia.fr>
+ * @Contributor (C) 2011 David Clarke <david.clarke@anu.edu.au>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -154,9 +157,9 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		return file;
 	}
 
-	private CmisObject getCmisObject(String path) {
+	private CmisObject getCmisObject(String path, SharedUserPortletParameters userParameters) {
 		if(!this.isOpened()) {
-			this.open();
+			this.open(userParameters);
 		}
 		String lid = null;
 		// in fact we don't use 'path' but ID
@@ -179,7 +182,7 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	}
 
 	@Override
-	public void open() {
+	public void open(SharedUserPortletParameters userParameters) {
 		Map<String, String> parameters = new HashMap<String, String>();
 
 		parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB
@@ -189,7 +192,7 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		parameters.put(SessionParameter.REPOSITORY_ID, respositoryId);
 
 		if(userAuthenticatorService != null) {
-			UserPassword userPassword = userAuthenticatorService.getUserPassword();
+			UserPassword userPassword = userAuthenticatorService.getUserPassword(userParameters);
 			parameters.put(SessionParameter.USER, userPassword.getUsername());
 			parameters.put(SessionParameter.PASSWORD, userPassword.getPassword());
 			
@@ -218,14 +221,14 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 
 
 	@Override
-	public JsTreeFile get(String path) {
-		CmisObject cmisObject = getCmisObject(path);
+	public JsTreeFile get(String path, SharedUserPortletParameters userParameters) {
+		CmisObject cmisObject = getCmisObject(path, userParameters);
 		return cmisObjectAsJsTreeFile(cmisObject, path, null);
 	}
 
 	@Override
-	public List<JsTreeFile> getChildren(String path) {	
-		Folder folder =  (Folder)  getCmisObject(path);
+	public List<JsTreeFile> getChildren(String path, SharedUserPortletParameters userParameters) {	
+		Folder folder =  (Folder)  getCmisObject(path, userParameters);
 		ItemIterable<CmisObject> pl = folder.getChildren();
 
 		List<JsTreeFile> childrens = new ArrayList<JsTreeFile>();
@@ -237,8 +240,8 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	}
 
 	@Override
-	public DownloadFile getFile(String dir) {
-		CmisObject cmisObject = getCmisObject(dir);
+	public DownloadFile getFile(String dir, SharedUserPortletParameters userParameters) {
+		CmisObject cmisObject = getCmisObject(dir, userParameters);
 		Document document = (Document) cmisObject;
 		String filename = document.getName();
 		InputStream inputStream = document.getContentStream().getStream();
@@ -248,8 +251,8 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	}
 
 	@Override
-	public String createFile(String parentPath, String title, String type) {
-		Folder parent = (Folder)getCmisObject(parentPath);
+	public String createFile(String parentPath, String title, String type, SharedUserPortletParameters userParameters) {
+		Folder parent = (Folder)getCmisObject(parentPath, userParameters);
 		CmisObject createdObject = null; 
 		if("folder".equals(type)) {
 			Map prop = new HashMap();
@@ -268,9 +271,9 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	
 	@Override
 	public boolean moveCopyFilesIntoDirectory(String dir,
-			List<String> filesToCopy, boolean copy) {
+			List<String> filesToCopy, boolean copy, SharedUserPortletParameters userParameters) {
 		try {
-			Folder targetFolder = (Folder)getCmisObject(dir);
+			Folder targetFolder = (Folder)getCmisObject(dir, userParameters);
 			if(copy) {
 				return false;
 				/*for(String fileTocopy : filesToCopy) {
@@ -289,13 +292,13 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 						sourceFolderId = lid_nameList.get(0);
 					} else {
 						// that's the root
-						sourceFolderId = getCmisObject("").getId();
+						sourceFolderId = getCmisObject("", userParameters).getId();
 					}
 
 					ObjectId sourceFolderObjectId = cmisSession.createObjectId(sourceFolderId);
 					ObjectId targetFolderObjectId = cmisSession.createObjectId(targetFolder.getId());
 
-					FileableCmisObject cmisObjectToCutPast = (FileableCmisObject) getCmisObject(fileTocopy);
+					FileableCmisObject cmisObjectToCutPast = (FileableCmisObject) getCmisObject(fileTocopy, userParameters);
 					cmisObjectToCutPast.move(sourceFolderObjectId, targetFolderObjectId);
 				}
 			}
@@ -307,8 +310,8 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	}
 
 	@Override
-	public boolean putFile(String dir, String filename, InputStream inputStream) {
-		Folder targetFolder = (Folder)getCmisObject(dir);
+	public boolean putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters) {
+		Folder targetFolder = (Folder)getCmisObject(dir, userParameters);
 		Map prop = new HashMap();
 		prop.put(PropertyIds.OBJECT_TYPE_ID, BaseTypeId.CMIS_DOCUMENT.value());
 		prop.put(PropertyIds.NAME, String.valueOf(filename));
@@ -320,8 +323,8 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	}
 
 	@Override
-	public boolean remove(String path) {
-		CmisObject cmisObject = getCmisObject(path);
+	public boolean remove(String path, SharedUserPortletParameters userParameters) {
+		CmisObject cmisObject = getCmisObject(path, userParameters);
 		cmisObject.delete(true);
 		return true;
 	}
@@ -330,8 +333,8 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	 * Doesn't work ??
 	 */
 	@Override
-	public boolean renameFile(String path, String title) {
-		CmisObject cmisObject = getCmisObject(path);
+	public boolean renameFile(String path, String title, SharedUserPortletParameters userParameters) {
+		CmisObject cmisObject = getCmisObject(path, userParameters);
 		cmisObject.setName(title);
 		return true;
 	}

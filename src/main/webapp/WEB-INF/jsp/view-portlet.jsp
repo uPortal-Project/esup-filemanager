@@ -1,9 +1,12 @@
 <%--
 
-    Copyright (C) 2010 Esup Portail http://www.esup-portail.org
-    Copyright (C) 2010 UNR RUNN http://www.unr-runn.fr
-    @Author (C) 2010 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
-    @Contributor (C) 2010 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+    Copyright (C) 2011 Esup Portail http://www.esup-portail.org
+    Copyright (C) 2011 UNR RUNN http://www.unr-runn.fr
+    @Author (C) 2011 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
+    @Contributor (C) 2011 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+    @Contributor (C) 2011 Julien Marchal <Julien.Marchal@univ-nancy2.fr>
+    @Contributor (C) 2011 Julien Gribonvald <Julien.Gribonvald@recia.fr>
+    @Contributor (C) 2011 David Clarke <david.clarke@anu.edu.au>
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -29,8 +32,30 @@
   <portlet:namespace />
 </c:set>
 
+  <!-- Framework CSS  GIP Recia  For a bug in Chrome, important to load css 
+    before javascript as some parts of JS Read the css files 
+    See http://api.jquery.com/ready/ for further explanation
+    -->
+<link 
+    rel="stylesheet"
+    href="/esup-portlet-stockage/css/blueprint/screen-runn.css"
+    type="text/css"
+    media="screen, projection">
+
+<link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock.css" type="text/css" media="screen, projection">
+
+    <link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock-recia.css" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="/esup-portlet-stockage/css/jquery-ui-1.8.15.custom.css" type="text/css"  media="screen, projection">
+    <link rel="stylesheet" href="/esup-portlet-stockage/css/jquery.contextMenu.css" type="text/css"  media="screen, projection">
+    <link rel="stylesheet" href="/esup-portlet-stockage/css/jquery.diaporama.css" type="text/css"  media="screen, projection">
+    <link type="text/css" href="/esup-portlet-stockage/css/jplayer.blue.monday.css" rel="stylesheet" />    
+
 <script type="text/javascript">
   var fileuploadTemplate = '<spring:message code="fileupload.template"/>';
+  var fileTemplate = '<spring:message code="fileupload.fileTemplate"/>';
+  var sharedSessionId = '${sharedSessionId}';
+  var useDoubleClick = '${useDoubleClick}';
+  var defaultPath = '${defaultPath}';
 </script>
 
 <!-- JQUERY -->
@@ -46,22 +71,33 @@
 <script type="text/javascript" src="/esup-portlet-stockage/js/fileuploader.js">
 </script>
 
-<script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock.js">
-</script>
+     <script type="text/javascript" src="/esup-portlet-stockage/js/jquery-ui-1.8.15.custom.min.js">
+      </script>
+    <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia.js">
+    </script>
+    <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia-dragdrop.js">
+    </script>
+    <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia-cutpaste.js">
+    </script>
+    <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia-jstree.js">
+    </script>
+    <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia-actions.js">
+    </script>
+    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.jplayer.min.js">
+    </script>
+    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.contextMenu.js">
+    </script>
+    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.jDiaporama.js">
+    </script>        
+    <script type="text/javascript" src="/esup-portlet-stockage/js/fileTree_recia.js">
+    </script>  
 
-<!-- Framework CSS -->
-<link 
-    rel="stylesheet"
-    href="/esup-portlet-stockage/css/blueprint/screen-runn.css"
-    type="text/css"
-    media="screen, projection">
 
-<link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock.css" type="text/css" media="screen, projection">
 
 <div id="accessible-version">
 	<a href="<portlet:renderURL> <portlet:param name="action" value="browseWai"/></portlet:renderURL>">
   		<spring:message code="version.accessible"/>
 	</a>
 </div>
-             
-<jsp:include page="body.jsp" />
+
+    <jsp:include page="body_recia.jsp" />

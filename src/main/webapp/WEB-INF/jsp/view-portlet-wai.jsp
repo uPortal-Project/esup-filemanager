@@ -1,9 +1,12 @@
 <%--
 
-    Copyright (C) 2010 Esup Portail http://www.esup-portail.org
-    Copyright (C) 2010 UNR RUNN http://www.unr-runn.fr
-    @Author (C) 2010 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
-    @Contributor (C) 2010 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+    Copyright (C) 2011 Esup Portail http://www.esup-portail.org
+    Copyright (C) 2011 UNR RUNN http://www.unr-runn.fr
+    @Author (C) 2011 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
+    @Contributor (C) 2011 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+    @Contributor (C) 2011 Julien Marchal <Julien.Marchal@univ-nancy2.fr>
+    @Contributor (C) 2011 Julien Gribonvald <Julien.Gribonvald@recia.fr>
+    @Contributor (C) 2011 David Clarke <david.clarke@anu.edu.au>
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -38,6 +41,7 @@
 <portlet:actionURL var="formProcessWai">
   <portlet:param name="action" value="formProcessWai"/>
   <portlet:param name="dir" value="${currentDir}"/>
+  <portlet:param name="sharedSessionId" value="${n}"/>
 </portlet:actionURL>
 
 
@@ -88,7 +92,7 @@
             <c:choose>
               <c:when test="${'file' == file.type}">
                 <img src="${file.icon}" alt="" />
-                <a class="file" href="/esup-portlet-stockage/servlet-ajax/downloadFile?dir=${file.path}">
+                <a class="file" href="/esup-portlet-stockage/servlet-ajax/downloadFile?dir=${file.path}&sharedSessionId=${sharedSessionId}">
                   ${file.title}
                 </a>
               </c:when>
@@ -124,7 +128,7 @@
     <li class="toolbar-item">
     <input 
         type="submit"
-        value="<spring:message code="toolbar.past"/>"
+        value="<spring:message code="toolbar.paste"/>"
         id="toolbar-past-wai"
         name="past"/>
     <li class="toolbar-item">
@@ -146,13 +150,13 @@
 </li>
 <li class="toolbar-item">
 <a  id="toolbar-create-wai" 
-	href="<portlet:renderURL><portlet:param name="action" value="createFolderWai"/><portlet:param name="dir" value="${currentDir}"/></portlet:renderURL>">
+	href="<portlet:renderURL><portlet:param name="action" value="createFolderWai"/><portlet:param name="dir" value="${currentDir}"/><portlet:param name="sharedSessionId" value="${n}"/></portlet:renderURL>">
 	<spring:message code="toolbar.create"/>
 </a>
 </li>
 <li class="toolbar-item">
 <a  id="toolbar-upload-wai" 
-	href="<portlet:renderURL><portlet:param name="action" value="fileUploadWai"/><portlet:param name="dir" value="${currentDir}"/></portlet:renderURL>">
+	href="<portlet:renderURL><portlet:param name="action" value="fileUploadWai"/><portlet:param name="dir" value="${currentDir}"/><portlet:param name="sharedSessionId" value="${n}"/></portlet:renderURL>">
 	<spring:message code="toolbar.upload"/>
 </a>
 </li>
@@ -167,7 +171,7 @@
 
 </div>
 
-<a href="<portlet:renderURL> <portlet:param name="action" value="browse"/></portlet:renderURL>">
+<a href="<portlet:renderURL> <portlet:param name="action" value="browseStandard"/></portlet:renderURL>">
 	<spring:message code="version.standard"/>
 </a>
 

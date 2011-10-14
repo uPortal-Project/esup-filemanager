@@ -1,8 +1,11 @@
 /**
- * Copyright (C) 2010 Esup Portail http://www.esup-portail.org
- * Copyright (C) 2010 UNR RUNN http://www.unr-runn.fr
- * @Author (C) 2010 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
- * @Contributor (C) 2010 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+ * Copyright (C) 2011 Esup Portail http://www.esup-portail.org
+ * Copyright (C) 2011 UNR RUNN http://www.unr-runn.fr
+ * @Author (C) 2011 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
+ * @Contributor (C) 2011 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+ * @Contributor (C) 2011 Julien Marchal <Julien.Marchal@univ-nancy2.fr>
+ * @Contributor (C) 2011 Julien Gribonvald <Julien.Gribonvald@recia.fr>
+ * @Contributor (C) 2011 David Clarke <david.clarke@anu.edu.au>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,12 +47,30 @@ public class ResourceUtils implements InitializingBean, ResourceLoaderAware {
 	
 	protected Map<String, String> iconsMap;
 	
+	protected Map<String, String> typeMap;
+	
+	protected Map<String, Long> sizeLimitMap;
+	
+	public static enum Type {
+		UNKNOWN,
+		IMAGE,
+		AUDIO;		
+	}
+	
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		rl = resourceLoader;
 	}
 	
 	public void setIconsMap(Map<String, String> iconsMap) {
 		this.iconsMap = new CaseInsensitiveMap(iconsMap);
+	}
+	
+	public void settypeMap(Map<String, String> typeMap) {
+		this.typeMap = new CaseInsensitiveMap(typeMap);
+	}
+	
+	public void setSizeLimitMap(Map<String, Long> sizeLimitMap) {
+		this.sizeLimitMap = sizeLimitMap;
 	}
 
 	public void afterPropertiesSet() throws Exception {
@@ -72,6 +93,49 @@ public class ResourceUtils implements InitializingBean, ResourceLoaderAware {
 		
 	}
 	
+	/**
+	 * @param filename
+	 * @return size limit in bytes
+	 */
+	public Long getSizeLimit(String filename) {
+		Long limit = sizeLimitMap.get(getFileExtension(filename));
+		if (limit == null) {
+			return Long.MAX_VALUE;			
+		}
+		
+		limit *= (1024 * 1024);
+		
+		//overflow
+		if (limit < 0) {
+			return Long.MAX_VALUE;
+		}
+		
+		return limit;
+	}
+	
+	private String getFileExtension(String filename) {
+		int idx = filename.lastIndexOf(".")+1;
+		String mime = filename.substring(idx);		
+		return mime.toLowerCase();
+	}
+	
+	/**
+	 * Added for Recia
+	 * From a filename, retrieve the type of file.  This is used to
+	 * personalize the details area. 
+	 */
+	public Type getType(String filename) {
+		
+		
+		String typeStr = typeMap.get(getFileExtension(filename));
+		
+		if (typeStr == null) {
+			return Type.UNKNOWN;
+		}
+		
+		return Type.valueOf(typeStr.toUpperCase());		
+	}
+	
 	
 	private String getIconFromMime(String mime) {
 		if(iconsMap.containsKey(mime)) 
@@ -84,9 +148,7 @@ public class ResourceUtils implements InitializingBean, ResourceLoaderAware {
 	}
 	
 	public String getIcon(String filename) {
-		int idx = filename.lastIndexOf(".")+1;
-		String mime = filename.substring(idx);
-		return getIconFromMime(mime);
+		return getIconFromMime(getFileExtension(filename));
 	}
  
 }

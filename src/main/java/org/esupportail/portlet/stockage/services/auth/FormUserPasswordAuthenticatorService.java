@@ -1,8 +1,11 @@
 /**
- * Copyright (C) 2010 Esup Portail http://www.esup-portail.org
- * Copyright (C) 2010 UNR RUNN http://www.unr-runn.fr
- * @Author (C) 2010 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
- * @Contributor (C) 2010 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+ * Copyright (C) 2011 Esup Portail http://www.esup-portail.org
+ * Copyright (C) 2011 UNR RUNN http://www.unr-runn.fr
+ * @Author (C) 2011 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
+ * @Contributor (C) 2011 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+ * @Contributor (C) 2011 Julien Marchal <Julien.Marchal@univ-nancy2.fr>
+ * @Contributor (C) 2011 Julien Gribonvald <Julien.Gribonvald@recia.fr>
+ * @Contributor (C) 2011 David Clarke <david.clarke@anu.edu.au>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,31 +21,11 @@
 
 package org.esupportail.portlet.stockage.services.auth;
 
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
-import org.esupportail.portlet.stockage.beans.UserPassword;
 
 public class FormUserPasswordAuthenticatorService extends UserPasswordAuthenticatorService {
 
 	protected static final Log log = LogFactory.getLog(FormUserPasswordAuthenticatorService.class);
-
-	protected String userInfo4Username;
-	
-	/**
-	 * To set a default username retrieving from user uPortal attributes
-	 * @param userInfo4Username
-	 */
-	public void setUserInfo4Username(String userInfo4Username) {
-		this.userInfo4Username = userInfo4Username;
-	}
-
-	public void initialize(Map userInfos, SharedUserPortletParameters userParameters) {
-		if(userInfo4Username != null && userInfos != null && userInfos.containsKey(userInfo4Username)) {
-			this.setUsername((String)userInfos.get(userInfo4Username));
-		}
-	}
 	
 }

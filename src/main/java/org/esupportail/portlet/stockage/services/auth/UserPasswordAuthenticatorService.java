@@ -1,8 +1,11 @@
 /**
- * Copyright (C) 2010 Esup Portail http://www.esup-portail.org
- * Copyright (C) 2010 UNR RUNN http://www.unr-runn.fr
- * @Author (C) 2010 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
- * @Contributor (C) 2010 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+ * Copyright (C) 2011 Esup Portail http://www.esup-portail.org
+ * Copyright (C) 2011 UNR RUNN http://www.unr-runn.fr
+ * @Author (C) 2011 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
+ * @Contributor (C) 2011 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+ * @Contributor (C) 2011 Julien Marchal <Julien.Marchal@univ-nancy2.fr>
+ * @Contributor (C) 2011 Julien Gribonvald <Julien.Gribonvald@recia.fr>
+ * @Contributor (C) 2011 David Clarke <david.clarke@anu.edu.au>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,18 +34,35 @@ public class UserPasswordAuthenticatorService implements UserAuthenticatorServic
 
 	protected UserPassword userPassword = new UserPassword();
 
+	protected String userInfo4Username;
+	
 	public void setUsername(String username) {
 		userPassword.setUsername(username);
 	}
+	
 	public void setPassword(String password) {
 		userPassword.setPassword(password);
 	}
+	
+	public void setDomain(String domain) {
+		userPassword.setDomain(domain);
+	}
+
+	/**
+	 * To set a default username retrieving from user uPortal attributes
+	 * @param userInfo4Username
+	 */
+	public void setUserInfo4Username(String userInfo4Username) {
+		this.userInfo4Username = userInfo4Username;
+	}
 
 	public void initialize(Map userInfos, SharedUserPortletParameters userParameters) {
-		// nothing to do
+		if(userInfo4Username != null && userInfos != null && userInfos.containsKey(userInfo4Username)) {
+			this.setUsername((String)userInfos.get(userInfo4Username));
+		}
 	}
 	
-	public UserPassword getUserPassword() {
+	public UserPassword getUserPassword(SharedUserPortletParameters userParameters) {
 		return userPassword;
 	}
 

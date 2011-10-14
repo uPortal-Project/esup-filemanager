@@ -1,8 +1,11 @@
 /**
- * Copyright (C) 2010 Esup Portail http://www.esup-portail.org
- * Copyright (C) 2010 UNR RUNN http://www.unr-runn.fr
- * @Author (C) 2010 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
- * @Contributor (C) 2010 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+ * Copyright (C) 2011 Esup Portail http://www.esup-portail.org
+ * Copyright (C) 2011 UNR RUNN http://www.unr-runn.fr
+ * @Author (C) 2011 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
+ * @Contributor (C) 2011 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+ * @Contributor (C) 2011 Julien Marchal <Julien.Marchal@univ-nancy2.fr>
+ * @Contributor (C) 2011 Julien Gribonvald <Julien.Gribonvald@recia.fr>
+ * @Contributor (C) 2011 David Clarke <david.clarke@anu.edu.au>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,7 +82,7 @@ public class TrustedCmisAccessImpl extends CmisAccessImpl {
 
 	
 	@Override
-	public void open() {
+	public void open(SharedUserPortletParameters userParameters) {
 		Map<String, String> parameters = new HashMap<String, String>();
 
 		parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB
@@ -89,7 +92,7 @@ public class TrustedCmisAccessImpl extends CmisAccessImpl {
 		parameters.put(SessionParameter.REPOSITORY_ID, respositoryId);
 
 		if(userAuthenticatorService != null) {
-			UserPassword userPassword = userAuthenticatorService.getUserPassword();
+			UserPassword userPassword = userAuthenticatorService.getUserPassword(userParameters);
 			parameters.put(SessionParameter.USER, userPassword.getUsername());
 			parameters.put(SessionParameter.PASSWORD, userPassword.getPassword());
 			
