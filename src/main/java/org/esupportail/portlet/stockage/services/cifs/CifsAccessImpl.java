@@ -190,6 +190,8 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 						log.warn("The resource isn't accessible and so will be ignored", se);
 					}
 				}
+			} else {
+				log.warn("The resource can't be read " + resource.toString());
 			}
 			return files;
 		} catch (SmbException se) {
@@ -253,7 +255,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 		file.setLastModifiedTime(new SimpleDateFormat(this.datePattern).format(resource.getLastModified()));
 		file.setHidden(resource.isHidden());
 		file.setWriteable(resource.canWrite());
-		file.setReadable(file.isReadable());
+		file.setReadable(resource.canRead());
 		return file;
 	}
 
@@ -277,7 +279,12 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 	@Override
 	public String createFile(String parentPath, String title, String type, SharedUserPortletParameters userParameters) {
 		try {
-			SmbFile newFile = new SmbFile(root.getPath() + parentPath + title, this.userAuthenticator);
+			String ppath = parentPath;
+			if (!ppath.isEmpty() && !ppath.endsWith("/")) {
+				ppath = ppath + "/";
+			}
+			SmbFile newFile = new SmbFile(root.getPath() + ppath + title, this.userAuthenticator);
+			log.info("newFile : " + newFile.toString());
 			if ("folder".equals(type)) {
 				newFile.mkdir();
 				log.info("folder " + title + " created");
