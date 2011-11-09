@@ -59,7 +59,7 @@ $.ajaxSetup({
                     'paddingRight':'2px'
                    }).resizable({
                        minHeight: 122,
-                       maxHeight: 500,
+                       maxHeight: 600,
                        minWidth: 122,
                        maxWidth: 738,
                        ghost: false,
