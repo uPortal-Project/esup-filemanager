@@ -87,24 +87,32 @@ $.ajaxSetup({
                               width:'100%',
                               height:'100%'});
 
-        $("#browserMain").css({overflow:'auto',
+        $("#browserMain").css({
             width:'100%',
             height:'100%'});
+        
+        $("#browserArea").css('overflow','auto');
 
 
-        // take care of resizing window 
+        // take care of resizing window
+        var esupStockResizeDoit;
         $(window).resize(function() {
+        	clearTimeout(esupStockResizeDoit);
         	console.log("Handler for .resize() called.");
-        	
-             var finalWidthArbo = $("#leftArea").width();
-             console.log("change width to detail and arborescence area " + finalWidthArbo);
-             $("#detailArea").css("width", finalWidthArbo);
-             $("#arborescentArea").parent().css("width", finalWidthArbo);
-             
-             var finalHeightArbo = $("#leftArea").height()-$("#detailArea").height();
-             console.log("change height to arborescence area " + finalHeightArbo);
-             $("#arborescentArea").parent().css("height", finalHeightArbo);        
-        });
+        	esupStockResizeDoit = setTimeout(function(){
+	            $("#leftArea").css("width", "30%");
+	            $("#browserArea").css("width", "67%");
+	        	
+	             var finalWidthArbo = $("#leftArea").width();
+	             console.log("change width to detail and arborescence area " + finalWidthArbo);
+	             $("#detailArea").css("width", finalWidthArbo);
+	             $("#arborescentArea").parent().css("width", finalWidthArbo);
+	             
+	             var finalHeightArbo = $("#leftArea").height()-$("#detailArea").height();
+	             console.log("change height to arborescence area " + finalHeightArbo);
+	             $("#arborescentArea").parent().css("height", finalHeightArbo);   
+        	}, 100);
+        }); 
         
         
         
@@ -146,7 +154,6 @@ $.ajaxSetup({
 
        
         //must be done after the uploader is initialized
-
         initToolBar();
 
         //Move the browser area menu to the body in order that it is positioned correctly

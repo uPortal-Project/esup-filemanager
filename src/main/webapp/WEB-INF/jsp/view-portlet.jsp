@@ -32,8 +32,8 @@
   <portlet:namespace />
 </c:set>
 
-  <!-- Framework CSS  GIP Recia  For a bug in Chrome, important to load css 
-    before javascript as some parts of JS Read the css files 
+  <!-- Framework CSS  GIP Recia  For a bug in Chrome, important to load css
+    before javascript as some parts of JS Read the css files
     See http://api.jquery.com/ready/ for further explanation
     -->
 
@@ -41,11 +41,11 @@
 
     <link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock.css" type="text/css" media="screen, projection">
     <link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock-recia.css" type="text/css" media="screen, projection">
-    
+
     <link rel="stylesheet" href="/esup-portlet-stockage/css/jquery-ui-1.8.15.custom.css" type="text/css"  media="screen, projection">
     <link rel="stylesheet" href="/esup-portlet-stockage/css/jquery.contextMenu.css" type="text/css"  media="screen, projection">
     <link rel="stylesheet" href="/esup-portlet-stockage/css/jquery.diaporama.css" type="text/css"  media="screen, projection">
-    <link type="text/css" href="/esup-portlet-stockage/css/jplayer.blue.monday.css" rel="stylesheet" />    
+    <link type="text/css" href="/esup-portlet-stockage/css/jplayer.blue.monday.css" rel="stylesheet" />
 
     <script type="text/javascript">
       var fileuploadTemplate = '<spring:message code="fileupload.template"/>';
@@ -55,12 +55,8 @@
       var defaultPath = '${defaultPath}';
     </script>
 
-
-
-   <script type="text/javascript" src="/esup-portlet-stockage/js/fluid-all-1.1.2.js">
-    </script> 
     <script type="text/javascript" src="/esup-portlet-stockage/js/jquery-1.4.2.min.js">
-    </script> 
+    </script>
     <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.jstree.js">
     </script>
     <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.cookie.js">
@@ -73,7 +69,10 @@
 
     <script type="text/javascript" src="/esup-portlet-stockage/js/jquery-ui-1.8.15.custom.min.js">
     </script>
-     
+
+    <script type="text/javascript" src="/esup-portlet-stockage/js/fluid-all-1.1.3.min.js">
+    </script>
+
     <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia.js">
     </script>
     <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia-dragdrop.js">
@@ -89,10 +88,10 @@
     <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.contextMenu.js">
     </script>
     <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.jDiaporama.js">
-    </script>        
+    </script>
     <script type="text/javascript" src="/esup-portlet-stockage/js/fileTree_recia.js">
     </script>
- 
+
 
 
 

@@ -52,13 +52,13 @@
       var fileTemplate = '<spring:message code="fileupload.fileTemplate"/>';
       var sharedSessionId = '${sharedSessionId}';
       var useDoubleClick = '${useDoubleClick}';
-      var defaultPath = 'FS:';
+      var defaultPath = 'FS:Shared';
     </script>
 
-    <script type="text/javascript" src="/esup-portlet-stockage/js/fluid-all-1.1.2.js">
+    <script type="text/javascript" src="/esup-portlet-stockage/js/fluid-all-1.1.3.min.js">
     </script> 
     <script type="text/javascript" src="/esup-portlet-stockage/js/jquery-1.4.2.min.js">
-    </script> 
+    </script>        
     <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.jstree.js">
     </script>
     <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.cookie.js">
@@ -71,7 +71,7 @@
 
     <script type="text/javascript" src="/esup-portlet-stockage/js/jquery-ui-1.8.15.custom.min.js">
     </script>
-     
+    
     <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia.js">
     </script>
     <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia-dragdrop.js">
