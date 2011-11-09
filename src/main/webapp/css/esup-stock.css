@@ -19,29 +19,28 @@
  * limitations under the License.
  */
 
-#accessible-version {
-text-align: right;
+.esupstock table {
+margin-bottom: 1.4em;
+width: 100%;
+}
+.esupstock  thead th {
+background: #c3d9ff;
+}
+.esupstock td, 
+.esupstock th {
+border: 0;
+margin: 0;
+padding: 0.2em;
 }
 
-.esupstock .container {
-	margin-left: 10px;	
+#accessible-version {
+text-align: right;
 }
 
 .esupstock .browserlist { 
 list-style: none; 
 }
 
-.esupstock #jqueryFileTree { 
-padding: 2px;
-margin: 0px;
-}
-
-.esupstock .container #fileTree,
-.esupstock .container #browserMain { 
-height:400px; 
-overflow:auto; 
-border:1px solid gray;
-}
 
 .esupstock #bigdirectory {
 text-decoration: underline;
@@ -58,7 +57,6 @@ border-bottom: 1px solid #bbb;
 background: #f3f3f3;
 padding: 20px 0px 5px 0px;
 border: 1px solid #bbb;
-margin-bottom: 5px;
 }
 
 .esupstock .toolbar-item {  
@@ -108,17 +106,14 @@ background: url(/esup-portlet-stockage/img/package-x-generic.png) no-repeat cent
 .esupstock #info-toolbar span {
 display: block;
 text-align: center;
-margin-bottom: 5px;
 }
 
 .esupstock #info-toolbar .info {
 background: #aaff44;
-border: 1px solid #44aa00;
 }
 
 .esupstock #info-toolbar .warn {
 background: #ffaa44;
-border: 1px solid #aa4400;
 }
 
 .esupstock .esupHide {
@@ -135,6 +130,7 @@ text-decoration: none;
 width: 60px;
 font-weight:bold;
 }
+
 
 .esupstock .qq-upload-list {
  display:none;
@@ -195,11 +191,6 @@ padding: 10px;
 .esupstock #authenticationForm label,
 .esupstock #authenticationForm input {
 display: block;
-}
-
-.esupstock .span-12 {
-margin: 0px;
-width: 49%;
 }
 
 /* Hack for uPortal 2.x */

@@ -17,10 +17,8 @@
  */
 .esupstock .container #fileTree,
 .esupstock .container #browserMain { 
-/* GIP RECIA : add width : 100% */
-width:100%;
-/* GIP RECIA remove border:1px solid gray; */
-border :0;
+width: 100%;
+border: 0;
 }
 
 
@@ -158,19 +156,8 @@ margin: 0px;
 }
 
 .esupstock a.enabled:hover { 
-font-weight: bold;
-}
-
-.width-2, .width-3 {
-    float: left;
-}
-
-.width-2 {
-	/*width: 135px;*/
-}
-
-.width-3 {
-    /*width: 230px;*/
+color: #11d;
+background-color: #f8f8f8 !important;
 }
 
 .separator {
@@ -212,10 +199,17 @@ font-weight: bold;
 
 /* Left tree area */
 
+#leftArea {
+	width: 30%;
+}
+
+#browserArea {
+	width: 67%;
+}
+
 #arborescentArea {
-	height:420px;
-	width: 268px;
 	background: none repeat scroll 0 0 #FFFFEE;	
+	height:320px;
 }
 
 #arborescentArea h3 {
@@ -230,11 +224,13 @@ font-weight: bold;
 /* Browser Area */
 
 #browserArea {
-	float: left;width:658px;height:530px;
+	float: left;
+	height:420px; 
 }
 
-.esupstock .container #browserMain {
-	height:530px;
+.esupstock .container #browserArea #browserMain {
+	height:420px;
+	display: inline-block;
 }
 
 .readable, .writeable {
@@ -255,7 +251,6 @@ font-weight: bold;
 
 #detailArea {
 	background:#FFFFEE none repeat scroll 0 0; 	
-	width: 268px;	
 	overflow: hidden;
 }
 

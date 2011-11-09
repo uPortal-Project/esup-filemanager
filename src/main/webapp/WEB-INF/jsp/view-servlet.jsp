@@ -35,22 +35,18 @@
     before javascript as some parts of JS Read the css files 
     See http://api.jquery.com/ready/ for further explanation
     -->
-    <link 
-        rel="stylesheet"
-        href="/esup-portlet-stockage/css/blueprint/screen.css"
-        type="text/css"
-        media="screen, projection">
-
-    <link rel="stylesheet" href="/esup-portlet-stockage/css/blueprint/print.css" type="text/css" media="print">
+    
+    <link rel="stylesheet" href="/esup-portlet-stockage/css/fss-framework-1.1.2.css" type="text/css" media="screen, projection">
 
     <link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock.css" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock-recia.css" type="text/css" media="screen, projection">
 
-        <link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock-recia.css" type="text/css" media="screen, projection">
-        <link rel="stylesheet" href="/esup-portlet-stockage/css/jquery-ui-1.8.15.custom.css" type="text/css"  media="screen, projection">
-        <link rel="stylesheet" href="/esup-portlet-stockage/css/jquery.contextMenu.css" type="text/css"  media="screen, projection">
-        <link rel="stylesheet" href="/esup-portlet-stockage/css/jquery.diaporama.css" type="text/css"  media="screen, projection">
-        <link type="text/css" href="/esup-portlet-stockage/css/jplayer.blue.monday.css" rel="stylesheet" />        
+    <link rel="stylesheet" href="/esup-portlet-stockage/css/jquery-ui-1.8.15.custom.css" type="text/css"  media="screen, projection">
+    <link rel="stylesheet" href="/esup-portlet-stockage/css/jquery.contextMenu.css" type="text/css"  media="screen, projection">
+    <link rel="stylesheet" href="/esup-portlet-stockage/css/jquery.diaporama.css" type="text/css"  media="screen, projection">
+    <link type="text/css" href="/esup-portlet-stockage/css/jplayer.blue.monday.css" rel="stylesheet" />        
 
+    
     <script type="text/javascript">
       var fileuploadTemplate = '<spring:message code="fileupload.template"/>';
       var fileTemplate = '<spring:message code="fileupload.fileTemplate"/>';
@@ -59,8 +55,8 @@
       var defaultPath = 'FS:';
     </script>
 
-    <!-- JQUERY -->
- 
+    <script type="text/javascript" src="/esup-portlet-stockage/js/fluid-all-1.1.2.js">
+    </script> 
     <script type="text/javascript" src="/esup-portlet-stockage/js/jquery-1.4.2.min.js">
     </script> 
     <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.jstree.js">
@@ -73,28 +69,27 @@
     <script type="text/javascript" src="/esup-portlet-stockage/js/fileuploader.js">
     </script>
 
-     <script type="text/javascript" src="/esup-portlet-stockage/js/jquery-ui-1.8.15.custom.min.js">
-      </script>
+    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery-ui-1.8.15.custom.min.js">
+    </script>
      
-         <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia.js">
-        </script>
-        <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia-dragdrop.js">
-        </script>
-        <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia-cutpaste.js">
-        </script>
-        <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia-jstree.js">
-        </script>
-        <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia-actions.js">
-        </script>
-        <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.jplayer.min.js">
-        </script>
-        <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.contextMenu.js">
-        </script>
-        <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.jDiaporama.js">
-        </script>        
-        <script type="text/javascript" src="/esup-portlet-stockage/js/fileTree_recia.js">
-        </script>
-
+    <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia.js">
+    </script>
+    <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia-dragdrop.js">
+    </script>
+    <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia-cutpaste.js">
+    </script>
+    <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia-jstree.js">
+    </script>
+    <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia-actions.js">
+    </script>
+    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.jplayer.min.js">
+    </script>
+    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.contextMenu.js">
+    </script>
+    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.jDiaporama.js">
+    </script>        
+    <script type="text/javascript" src="/esup-portlet-stockage/js/fileTree_recia.js">
+    </script>
 
   </head>
 

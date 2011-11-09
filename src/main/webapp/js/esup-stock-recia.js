@@ -44,8 +44,9 @@ $.ajaxSetup({
     	var treeAreaWidth = $('#arborescentArea').css("width");
     	var treeAreaHeight = $('#arborescentArea').css("height");
     	
-    	//In order for resizable and scrollbars to work together, we wrap the tree area in a div.  Technique
-    	//is from : http://stackoverflow.com/questions/3858460/jquery-ui-resizable-with-scroll-bars
+    	//In order for resizable and scrollbars to work together, we wrap the tree area in a div.  
+    	// Technique is from :
+    	// http://stackoverflow.com/questions/3858460/jquery-ui-resizable-with-scroll-bars
     	
         $("#arborescentArea")
         .wrap('<div/>')
@@ -57,8 +58,8 @@ $.ajaxSetup({
                     'paddingBottom':'2px',
                     'paddingRight':'2px'
                    }).resizable({
-                       // minHeight: 1,
-                       // maxHeight: 150,
+                       minHeight: 122,
+                       maxHeight: 500,
                        minWidth: 122,
                        maxWidth: 738,
                        ghost: false,
@@ -76,67 +77,37 @@ $.ajaxSetup({
 
                            //change width of main left container                
                            $("#leftArea").css("width", finalWidthArbo);
+                           
+                           var newHeight = $("#leftArea").height();
+                           console.log("newHeight for browserArea " + newHeight);
+                           $("#browserArea").css("height", $("#leftArea").height());
                        }
                    }).find("#arborescentArea")
                         .css({overflow:'auto',
                               width:'100%',
                               height:'100%'});
-    
-        
-        $("#detailArea").resizable({
-            // minHeight: 1,
-            // maxHeight: 150,
-            minWidth: 122,
-            maxWidth: 738,
-            stop: function (event, ui) {
-                var offsetWidth = ui.size.width - ui.originalSize.width;
-                var newWidth = $("#browserArea").width() - offsetWidth; // - * - = +
-                $("#browserArea").css("width", newWidth);
-                var finalWidthArbo = $("#detailArea").width();
-                //change width to detail area
-                $("#arborescentArea").parent().css("width", finalWidthArbo);
 
-                //change width of main left container                
-                $("#leftArea").css("width", finalWidthArbo);
-            }
+        $("#browserMain").css({overflow:'auto',
+            width:'100%',
+            height:'100%'});
+
+
+        // take care of resizing window 
+        $(window).resize(function() {
+        	console.log("Handler for .resize() called.");
+        	
+             var finalWidthArbo = $("#leftArea").width();
+             console.log("change width to detail and arborescence area " + finalWidthArbo);
+             $("#detailArea").css("width", finalWidthArbo);
+             $("#arborescentArea").parent().css("width", finalWidthArbo);
+             
+             var finalHeightArbo = $("#leftArea").height()-$("#detailArea").height();
+             console.log("change height to arborescence area " + finalHeightArbo);
+             $("#arborescentArea").parent().css("height", finalHeightArbo);        
         });
         
         
         
-        $("#browserArea").resizable({
-            //     minHeight: 1,
-            //  maxHeight: 666,
-            minWidth: 198,
-            maxWidth: 805,
-            ghost: true,
-            helper: false,
-            handles: 'w',
-            stop: function (event, ui) {
-                var offsetWidth = ui.size.width - ui.originalSize.width;
-                var newWidth = $("#arborescentArea").parent().width() - offsetWidth; // - * - = +
-                //no change left position 
-                $("#browserArea").css("left", 0);
-
-                //change width of main left container                
-                $("#leftArea").css("width", newWidth);
-                //change width of arborescent area
-                $("#arborescentArea").parent().css("width", newWidth);
-                //change width of detail area
-                $("#detailArea").css("width", newWidth);
-
-/*
-                //d�but pour test
-                var formWidth = $("#browserArea").height();
-                var listWidth = $("#arborescentArea").height();
-
-                var texte = "offsetWidth = " + offsetWidth + "<br/>" + "newWidth = " + newWidth + "<br/><br/>";
-                texte += "browserArea = " + formWidth + "<br/>";
-                texte += "ArboArea = " + listWidth;*/
-
-
-            }
-        }); /* GIP recia : END --> manage size of container */
-
         initJstree();
 
         var uploader = new qq.FileUploader({
@@ -232,17 +203,18 @@ function cursor_clear() {
 function showInfoToolBar(msg) {
     console.log("showInfoToolBar");
     $("#info-toolbar").html(msg);
-    $("#info-toolbar span").show('blind', {
-        direction: 'horizontal'
-    }, 2000);
+    /*$("#info-toolbar span").show('blind', {
+        direction: 'vertical'
+    }, 2000);*/
     setTimeout("hideInfoToolBar()", 4000);
 }
 
 function hideInfoToolBar() {
     console.log("hideInfoToolBar");
-    $("#info-toolbar span").hide('blind', {
-        direction: 'horizontal'
-    }, 2000);
+    /*$("#info-toolbar span").hide('blind', {
+        direction: 'vertical'
+    }, 2000);*/
+    $("#info-toolbar").html("<span>...</span>");
 }
 
 
