@@ -98,10 +98,10 @@
 				<div class="fl-col-flex2">
 
 					<div id="leftArea" class="fl-col fl-force-left">
+					     	<h3 class="ui-widget-header ui-corner-all arborescentAreaTitle">
+						  	<spring:message code="treearea.header" />
+						</h3>
 						<div id="arborescentArea">
-							<h3 class="ui-widget-header ui-corner-all">
-								<spring:message code="treearea.header" />
-							</h3>
 							<div id="fileTree">
 								<spring:message code="error.javascriptengine" />
 							</div>
