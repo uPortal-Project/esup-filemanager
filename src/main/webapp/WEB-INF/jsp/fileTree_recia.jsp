@@ -59,7 +59,7 @@
           <th><spring:message code="browserArea.header.modified" /></th>
         </tr>
       </thead>
-      <tbody >
+      <tbody id="jqueryFileTreeBody">
         <c:forEach var="file" items="${files}">
 
           <c:choose>

@@ -400,13 +400,13 @@
     	  elems.bind('dblclick', handleItemDblClick);
       } 
       
-      $("#jqueryFileTree").selectable({
+      $("#jqueryFileTreeBody").selectable({
           cancel: 'a,span,#newFileOrFolderInput',
           filter: '.selectable',
           stop: function () {
         	  console.log("jquery ui selectable : stop event");
               
-              if ($(this).attr("id") == "jqueryFileTree") {
+              if ($(this).attr("id") == "jqueryFileTreeBody") {
                   console.log("Not selecting container obj");
                   
                   //Make sure Details area is up to date
@@ -437,11 +437,14 @@
   }
 
   function initializeBrowserMain(innerHtml) {
-
 	  if (innerHtml != null) {
 		  $("#browserMain").html(innerHtml);
 	  }
       console.log("initializeBrowserMain");
+
+      $("#jqueryFileTree").css({display:'block', overflow:'auto',
+      		  height: '100%',
+      		  width: '100%'});      
 
       initDragAndDrop();
       initContextMenu();

@@ -23,13 +23,19 @@ border: 0;
 
 
 /* GIP RECIA multi selected style */
-#jqueryFileTree .ui-selecting { background: #e1f3fb; }
-#jqueryFileTree .ui-selected { background: #BEEBFF; }
+#jqueryFileTreeBody .ui-selecting { background: #e1f3fb; }
+#jqueryFileTreeBody .ui-selected { background: #BEEBFF; }
 
-#jqueryFileTree {
+#jqueryFileTreeBody {
 	/*For multiselection with mouse to work, this element is "selectable" to allow selection starting from the edge*/
 	height: 100%;
 }
+
+#jqueryFileTree {
+	/*For multiselection with mouse to work, this element is "selectable" to allow selection starting from the edge*/
+	width: 100%;
+}
+
 
 /* GIP RECIA hack css it isn't possible without it to associate event with selectable plugin due to use event.stopPropagation() 
 .fileTreeRef {position:absolute;z-index:1000;}

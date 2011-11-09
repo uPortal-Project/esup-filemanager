@@ -89,9 +89,7 @@ $.ajaxSetup({
 
         $("#browserMain").css({
             width:'100%',
-            height:'100%'});
-        
-        $("#browserArea").css('overflow','auto');
+            height:'92%'});
 
 
         // take care of resizing window

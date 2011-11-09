@@ -25,6 +25,7 @@ width: 100%;
 }
 .esupstock  thead th {
 background: #c3d9ff;
+text-align: left;
 }
 .esupstock td, 
 .esupstock th {
