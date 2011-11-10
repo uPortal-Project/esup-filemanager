@@ -124,7 +124,7 @@
     <property name="driveName" value="bob"/>
     <property name="icon" value="/esup-portlet-stockage/img/drives/root.png" />
     <property name="uri" value="file:///"/>
-    <property name="showHiddenFiles" value="true"/>
+    <property name="showHiddenFiles" value="false"/>
     <property name="contextToken" value="justbob"/>
     <property name="resourceUtils" ref="resourceUtils"/>
   </bean>

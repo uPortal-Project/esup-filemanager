@@ -1415,6 +1415,8 @@ function downloadZip() {
     }
 }
 
+$.downloadZip = function() { downloadZip(); };
+
 
 function deleteFiles(dirsDataStruct) {
     console.log("deleteFiles");

@@ -45,7 +45,7 @@
 
 $(document).ready(function () {
     $('#detail-zip-download').bind('click', function () {
-        downloadZip();
+        $.downloadZip();
     });
 
     init_diaporama();
