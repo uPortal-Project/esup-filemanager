@@ -10,7 +10,7 @@
 
 <div class="details-attribute-header"><spring:message code="details.numselected" /> : </div>
 <div class="details-attribute">${numselected}</div>
-        
+
 <div class="details-spacer"></div>
 <div id="detail-zip-download"><spring:message code="toolbar.zip" /></div>
 
@@ -36,10 +36,12 @@
 
 <% } %>
 
-    
+
 
 
 <script type="text/javascript">
+
+( function($) {
 
 $(document).ready(function () {
     $('#detail-zip-download').bind('click', function () {
@@ -51,19 +53,19 @@ $(document).ready(function () {
     $('#detail-view-images').bind('click', function () {
         show_images();
     });
-	
+
 });
 
 function init_diaporama() {
-	var jDiaporamaElem =  $(".diaporama1");
-	var jDiaporamaObj = jDiaporamaElem.jDiaporama({
-		animationSpeed: "slow",
-		paused: false,
-		delay:5
-	});
+  var jDiaporamaElem =  $(".diaporama1");
+  var jDiaporamaObj = jDiaporamaElem.jDiaporama({
+    animationSpeed: "slow",
+    paused: false,
+    delay:5
+  });
 
-	  jDiaporamaElem.data("obj", jDiaporamaObj);
-  
+    jDiaporamaElem.data("obj", jDiaporamaObj);
+
 }
 
 
@@ -73,12 +75,12 @@ function show_images() {
 
   var dialogButtons = {};
 
-  dialogButtons[$("#prev_text").html()] = function() {                
-      $(".jDiaporama_controls .prev").click();              
+  dialogButtons[$("#prev_text").html()] = function() {
+      $(".jDiaporama_controls .prev").click();
   };
 
-  dialogButtons[$("#next_text").html()] = function() {                
-      $(".jDiaporama_controls .next").click();              
+  dialogButtons[$("#next_text").html()] = function() {
+      $(".jDiaporama_controls .next").click();
   };
 
   dialogButtons[$("#ok_text").html()] = function () {
@@ -92,12 +94,12 @@ function show_images() {
       var diapDivMoved = $("body #diaporamaDivId");
 
       diapDivMoved.remove();
-      
+
       $("#detailArea #detail-view-images").after(diapDivMoved);
   };
 
-  
-   
+
+
     //$("body").css("cursor", "progress");
     diapDiv.dialog({
         modal: true,
@@ -117,7 +119,7 @@ function show_images() {
               var dialog_content = diapDiv.closest(".ui-dialog-content");
               var dialog_titlebar = dialog.find("div.ui-dialog-titlebar");
               var dialog_buttonpane = dialog.find("div.ui-dialog-buttonpane");
-               
+
               dialog.css("height", "600px");
               dialog_content.css("height", "490px");
               dialog_content.css("width", "624px");
@@ -125,14 +127,14 @@ function show_images() {
               dialog_content.css("padding", "0");
               dialog_content.css("top", "4px");
 
-              dialog_titlebar.css("left", "8px"); 
-              dialog_titlebar.css("padding-left", "-4px");              
+              dialog_titlebar.css("left", "8px");
+              dialog_titlebar.css("padding-left", "-4px");
               dialog_titlebar.css("padding-right", "-4px");
               dialog_titlebar.css("width", "100%");
 
               dialog_buttonpane.css("top", "4px");
               dialog_buttonpane.css("position", "relative");
-              
+
               //console.log(dialog.html());
               //console.log(dialog_content.html());
             }
@@ -141,7 +143,7 @@ function show_images() {
 
     });
 }
-    
+
 // Returns the cursor to the default pointer
 
 
@@ -149,5 +151,7 @@ function hide_image() {
     //$("body").css("cursor", "auto");
     $("#diaporamaDivId").dialog('close');
 }
+
+})(jQuery);
 
 </script>

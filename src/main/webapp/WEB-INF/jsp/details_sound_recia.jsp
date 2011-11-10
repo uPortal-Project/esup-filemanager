@@ -44,7 +44,7 @@
       </div>
     </div>
   </div>
-  
+
   <div class="details-spacer"></div>
 <div class="details-attribute-header"><spring:message code="details.title" /> : </div>
 <div class="details-attribute"><img src="${file.icon}" alt="icon" /> ${file.title}</div>
@@ -61,7 +61,7 @@
 
 <div class="details-spacer"></div>
 
-   
+
 
 
     <form:form method="post" id="detailsFileForm">
@@ -72,40 +72,41 @@
 
 
       <div id="detail-download">
-          <spring:message code="details.download" />        
+          <spring:message code="details.download" />
       </div>
 
 
     </form:form>
-  
+
 
 
 
 <script type="text/javascript">
 
-    
+( function($) {
+
 $(document).ready(function () {
 
-	<% if(! ((org.esupportail.portlet.stockage.beans.JsTreeFile) request.getAttribute("file")).isOverSizeLimit() ) { %>
-	  
-	console.log("Doc ready details sound");
-    
-	 $("#jquery_jplayer_1").jPlayer({
-		 solution:"flash" , //, html",
-	        ready: function () {
+  <% if(! ((org.esupportail.portlet.stockage.beans.JsTreeFile) request.getAttribute("file")).isOverSizeLimit() ) { %>
+
+  console.log("Doc ready details sound");
+
+   $("#jquery_jplayer_1").jPlayer({
+     solution:"flash" , //, html",
+          ready: function () {
               console.log("ready js player div");
-	          $(this).jPlayer("setMedia", {
-	            mp3: "/esup-portlet-stockage/servlet-ajax/fetchSound?path=${path}&sharedSessionId=${sharedSessionId}"
-	          });
-	        },
-	        swfPath: "..${isPortlet ? '/esup-portlet-stockage' : ''}/js",
-	        supplied: "mp3"
-	      });
+            $(this).jPlayer("setMedia", {
+              mp3: "/esup-portlet-stockage/servlet-ajax/fetchSound?path=${path}&sharedSessionId=${sharedSessionId}"
+            });
+          },
+          swfPath: "..${isPortlet ? '/esup-portlet-stockage' : ''}/js",
+          supplied: "mp3"
+        });
 
 
 
-	 <% } %>
-    
+   <% } %>
+
 
     $('#detail-download').bind('click', function () {
 
@@ -118,12 +119,9 @@ $(document).ready(function () {
         return true;
     });
 
-    
+
 } );
 
-  
-  
+})(jQuery);
 
-        
-        
-        </script>
+</script>

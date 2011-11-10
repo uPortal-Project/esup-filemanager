@@ -31,7 +31,7 @@
 
 
   <div id="detail-download">
-      <spring:message code="details.download" />        
+      <spring:message code="details.download" />
   </div>
 
 </form:form>
@@ -41,12 +41,13 @@
 
 
 <script type="text/javascript">
-  
-  $(document).ready(function(){      
-  	$('#detail-download').bind('click', function() {	    		
-			$("#detailsFileForm").submit();
-			return true;
-	});			
-  });
 
+( function($) {
+  $(document).ready(function(){
+    $('#detail-download').bind('click', function() {
+      $("#detailsFileForm").submit();
+      return true;
+  });
+  });
+})(jQuery);
 </script>

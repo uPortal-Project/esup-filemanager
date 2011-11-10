@@ -21,7 +21,7 @@
 
 <div class="details-attribute-header"><spring:message code="details.imagesize" /> : </div>
 <div class="details-attribute"><div id="image_width"></div>px X <div id="image_height"></div>px</div>
-    
+
 <div class="details-attribute-header"><spring:message code="details.size" /> : </div>
 <div class="details-attribute">
   ${file.formattedSize.size}
@@ -42,13 +42,13 @@
 
 
     <div id="detail-download" >
-      
+
         <spring:message code="details.download" />
-      
+
     </div>
 
     <div id="detail-view-image" >
-     <spring:message code="details.viewimage" />     
+     <spring:message code="details.viewimage" />
     </div>
   </form:form>
 
@@ -56,6 +56,9 @@
 <div class="details-spacer"></div>
 
 <script type="text/javascript">
+
+( function($) {
+
 function show_image(image_width, image_height) {
 
 
@@ -111,7 +114,7 @@ function show_image(image_width, image_height) {
         dialog_content.css("height", "500px");
         dialog_content.css("padding", "0");
         dialog_content.css("top", "4px");
-        
+
         $('#image_original_size').css("width", "100%");
         $('#image_original_size').css("height", "500");
 
@@ -147,7 +150,7 @@ $(document).ready(function () {
 
     //Scale the minature, also handle proportionately wide or tall images
     if (image_width < 200 && image_height < 200) {
-      //small image                
+      //small image
       //set miniature to be the actual dimensions as both are < 200
       $(".detailsImage").css("width", image_width);
       $(".detailsImage").css("height", image_height);
@@ -185,4 +188,7 @@ $(document).ready(function () {
   });
 
 });
+
+})(jQuery);
+
 </script>
