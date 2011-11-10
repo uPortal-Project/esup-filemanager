@@ -46,7 +46,7 @@ if(jQuery)( function($) {
               console.log("Right click context menu");
               /* GIP RECIA when a right click is enabled we must simulate a left click, only if ctrl is not pressed */
               if (!e.ctrlKey) {
-                handleItemSelection(srcElement, e);
+                $.handleItemSelection(srcElement, e);
               }
 
 

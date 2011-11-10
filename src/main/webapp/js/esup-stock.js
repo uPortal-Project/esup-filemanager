@@ -1818,6 +1818,8 @@ function deleteFiles(dirsDataStruct) {
         }
     }
 
+    $.handleItemSelection = function(elemClicked, event) {handleItemSelection(elemClicked, event);};
+
   /**
    * Initializes context menu events
    */
@@ -1965,6 +1967,9 @@ function showInfoToolBar(msg) {
         direction: 'vertical'
     }, 2000);*/
     setTimeout("hideInfoToolBar()", 4000);
+    $("#info-toolbar").bind('click', function () {
+	    hideInfoToolBar() ;
+    });
 }
 
 function hideInfoToolBar() {
