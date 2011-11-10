@@ -264,27 +264,16 @@ background-color: #f8f8f8 !important;
 	margin: 0;
 }
 
-.details-attribute-header {
+.esupstock .details { 
+margin-left: 5px;         
+} 
+
+.esupstock .details-attribute-header {
 	font-weight: bold;
-	display: inline;
 	float: left;	
-	clear: left;
-	white-space: pre;
-	padding-left: 5px;
 }
 
-.details-attribute {
-	display: block;
-	
-	overflow: hidden;
-}
-
-.details-spacer {
-	clear: both;
-	height: 10px;
-}
-
-.detailsImage {
+.esupstock .detailsImage {
 	width: 200px; 
 	height: auto;
 }

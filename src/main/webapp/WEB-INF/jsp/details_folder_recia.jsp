@@ -8,18 +8,18 @@
     <spring:message code="details.header" />
 </h3>
 
-<div class="details-spacer"></div>
+<dl class="details">
 
-<div class="details-attribute-header"><spring:message code="details.title" /> : </div>
-<div class="details-attribute"><img src="${file.icon}" alt="icon" /> ${file.title}</div>
+<dt class="details-attribute-header"><spring:message code="details.title" /> : </dt>
+<dd class="details-attribute"><img src="${file.icon}" alt="icon" /> ${file.title}</dd>
 
-<div class="details-attribute-header"><spring:message code="details.folders" /> : </div>
-<div class="details-attribute">${file.folderCount}</div>
+<dt class="details-attribute-header"><spring:message code="details.folders" /> : </dt>
+<dd class="details-attribute">${file.folderCount}</dd>
 
-<div class="details-attribute-header"><spring:message code="details.files" /> : </div>
-<div class="details-attribute">${file.fileCount}</div>
+<dt class="details-attribute-header"><spring:message code="details.files" /> : </dt>
+<dd class="details-attribute">${file.fileCount}</dd>
 
-<div class="details-attribute-header"><spring:message code="details.totalsize" /> : </div>
-<div class="details-attribute">${file.formattedTotalSize.size} <spring:message code="details.${file.formattedTotalSize.unit}"/></div>
+<dt class="details-attribute-header"><spring:message code="details.totalsize" /> : </dt>
+<dd class="details-attribute">${file.formattedTotalSize.size} <spring:message code="details.${file.formattedTotalSize.unit}"/></dd>
 
-<div class="details-spacer"></div>
+</dl>
