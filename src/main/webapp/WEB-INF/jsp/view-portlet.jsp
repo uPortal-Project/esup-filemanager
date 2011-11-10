@@ -37,8 +37,6 @@
     See http://api.jquery.com/ready/ for further explanation
     -->
 
-    <link rel="stylesheet" href="/esup-portlet-stockage/css/fss-framework-1.1.2.css" type="text/css" media="screen, projection">
-
     <link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock.css" type="text/css" media="screen, projection">
     <link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock-recia.css" type="text/css" media="screen, projection">
 
@@ -50,38 +48,23 @@
     <script type="text/javascript">
       var fileuploadTemplate = '<spring:message code="fileupload.template"/>';
       var fileTemplate = '<spring:message code="fileupload.fileTemplate"/>';
-   	  var sharedSessionId = '${sharedSessionId}';
+       var sharedSessionId = '${sharedSessionId}';
       var useDoubleClick = '${useDoubleClick}';
       var defaultPath = '${defaultPath}';
     </script>
 
     <script type="text/javascript" src="/esup-portlet-stockage/js/jquery-1.4.2.min.js">
     </script>
-    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.jstree.js">
+    <script type="text/javascript">
+    var jQuery = $.noConflict(true);
     </script>
     <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.cookie.js">
     </script>
-    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.hotkeys.js">
-    </script>
-
-    <script type="text/javascript" src="/esup-portlet-stockage/js/fileuploader.js">
-    </script>
-
     <script type="text/javascript" src="/esup-portlet-stockage/js/jquery-ui-1.8.15.custom.min.js">
     </script>
-
-    <script type="text/javascript" src="/esup-portlet-stockage/js/fluid-all-1.1.3.min.js">
+    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.hotkeys.js">
     </script>
-
-    <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia.js">
-    </script>
-    <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia-dragdrop.js">
-    </script>
-    <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia-cutpaste.js">
-    </script>
-    <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia-jstree.js">
-    </script>
-    <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock-recia-actions.js">
+    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.jstree.js">
     </script>
     <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.jplayer.min.js">
     </script>
@@ -89,16 +72,17 @@
     </script>
     <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.jDiaporama.js">
     </script>
-    <script type="text/javascript" src="/esup-portlet-stockage/js/fileTree_recia.js">
+    <script type="text/javascript" src="/esup-portlet-stockage/js/fileuploader.js">
+    </script>
+    <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock.js">
     </script>
 
 
 
-
 <div id="accessible-version">
-	<a href="<portlet:renderURL> <portlet:param name="action" value="browseWai"/></portlet:renderURL>">
-  		<spring:message code="version.accessible"/>
-	</a>
+  <a href="<portlet:renderURL> <portlet:param name="action" value="browseWai"/></portlet:renderURL>">
+      <spring:message code="version.accessible"/>
+  </a>
 </div>
 
     <jsp:include page="body_recia.jsp" />
