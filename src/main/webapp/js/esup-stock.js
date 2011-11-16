@@ -89,16 +89,16 @@ $.ajaxSetup({
               });
 
       } else {
-
           $("#arborescentArea").css({overflow:'auto',
               width: $("#leftArea").width(),
               height:'320px'});
+          $("#browserArea").css({overflow:'auto',
+              height:'460px'});
       }
 
       $("#browserMain").css({
           width:'100%',
           height:'92%'});
-
 
         initJstree();
 
@@ -1908,9 +1908,11 @@ function deleteFiles(dirsDataStruct) {
     }
       console.log("initializeBrowserMain");
 
-      $("#jqueryFileTree").css({display:'block', overflow:'auto',
+      if (!esupStockFixBlockSizes) {
+        $("#jqueryFileTree").css({display:'block', overflow:'auto',
             height: '100%',
             width: '100%'});
+      }
 
       initDragAndDrop();
       initContextMenu();
@@ -1968,7 +1970,7 @@ function showInfoToolBar(msg) {
     }, 2000);*/
     setTimeout("hideInfoToolBar()", 4000);
     $("#info-toolbar").bind('click', function () {
-	    hideInfoToolBar() ;
+      hideInfoToolBar() ;
     });
 }
 
