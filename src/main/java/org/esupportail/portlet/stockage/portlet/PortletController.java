@@ -80,6 +80,11 @@ public class PortletController implements InitializingBean {
 	@Qualifier("useDoubleClick")
 	protected Boolean useDoubleClick = true;
 	
+	@Autowired
+	@Qualifier("useCursorWaitDialog")
+	protected Boolean useCursorWaitDialog = false;
+	
+	
 	public void afterPropertiesSet() throws Exception {		
 		
 		PortletRequestAttributes requestAttributes = (PortletRequestAttributes)RequestContextHolder.currentRequestAttributes();
@@ -139,6 +144,7 @@ public class PortletController implements InitializingBean {
 		ModelMap model = new ModelMap();     
     	model.put("sharedSessionId", sharedSessionId);
 		model.put("useDoubleClick", useDoubleClick);
+		model.put("useCursorWaitDialog", useCursorWaitDialog);
 		if(dir == null)
 			dir = "";
 		model.put("defaultPath", dir);

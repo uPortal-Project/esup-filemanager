@@ -5,6 +5,7 @@ var uploadListFadeoutTime = 3000;
 var infoTolbarFadeoutTime = 8000;
 var esupStockFixBlockSizes = $.browser.msie;
 //esupStockFixBlockSizes = true;
+var cursorWaitDialog = (useCursorWaitDialog == 'true');
 
 //IE does not define this by default
 if ("undefined" === typeof window.console)
@@ -1934,29 +1935,32 @@ function getCheckedDirs() {
 
 function cursor_wait() {
     console.log("cursor_wait");
+    $("body").css("cursor", "wait");
 
-    var dialogElem = $("#waitingDialog");
+    if(cursorWaitDialog) {
+      var dialogElem = $("#waitingDialog");
 
-    if (dialogElem.dialog("isOpen")) {
-        console.log("cursor_wait already open");
+      if (dialogElem.dialog("isOpen")) {
+          console.log("cursor_wait already open");
+      }
+
+      dialogElem.dialog({
+          modal: true,
+          resizable: false,
+          closeOnEscape: false,
+          dialogClass: "waiting-dialog"
+      });
     }
-
-    dialogElem.dialog({
-        modal: true,
-        resizable: false,
-        closeOnEscape: false,
-        dialogClass: "waiting-dialog"
-    });
-
-
 }
 
 // Returns the cursor to the default pointer
 
 function cursor_clear() {
-    //$("body").css("cursor", "auto");
     console.log("Cursor clear");
-    $("#waitingDialog").dialog('close');
+    $("body").css("cursor", "auto");
+    if(cursorWaitDialog) {
+      $("#waitingDialog").dialog('close');
+    }
 }
 
 
