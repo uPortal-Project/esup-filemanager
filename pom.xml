@@ -6,7 +6,7 @@
   <artifactId>esup-portlet-stockage</artifactId>
   <packaging>war</packaging>
   <name>esup-portlet-stockage</name>
-  <version>1.1.1</version>
+  <version>1.2.0-RC1</version>
 
 
   <repositories>
