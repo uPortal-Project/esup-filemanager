@@ -27,7 +27,7 @@ width: 100%;
 background: #c3d9ff;
 text-align: left;
 }
-.esupstock td, 
+.esupstock td,
 .esupstock th {
 border: 0;
 margin: 0;
@@ -38,8 +38,8 @@ padding: 0.2em;
 text-align: right;
 }
 
-.esupstock .browserlist { 
-list-style: none; 
+.esupstock .browserlist {
+list-style: none;
 }
 
 
@@ -60,48 +60,48 @@ padding: 20px 0px 5px 0px;
 border: 1px solid #bbb;
 }
 
-.esupstock .toolbar-item {  
+.esupstock .toolbar-item {
 display: block;
 float: left;
 padding: 20px 0px 0px 0px;
 }
 
-.esupstock .toolbar-item a { 
+.esupstock .toolbar-item a {
 padding: 24px 5px 0px 10px;
-margin: 0px 10px; 
+margin: 0px 10px;
 }
 
-.esupstock #toolbar-create {  
-background: url(/esup-portlet-stockage/img/new_folder_24px.gif) no-repeat center top; 
+.esupstock #toolbar-create {
+background: url(/esup-portlet-stockage/img/new_folder_24px.gif) no-repeat center top;
 }
 
-.esupstock #toolbar-refresh {  
-background: url(/esup-portlet-stockage/img/refresh_24px.gif) no-repeat center top; 
+.esupstock #toolbar-refresh {
+background: url(/esup-portlet-stockage/img/refresh_24px.gif) no-repeat center top;
 }
 
-.esupstock #toolbar-copy {  
-background: url(/esup-portlet-stockage/img/copy_24px.gif) no-repeat center top; 
+.esupstock #toolbar-copy {
+background: url(/esup-portlet-stockage/img/copy_24px.gif) no-repeat center top;
 }
 
-.esupstock #toolbar-cut {  
-background: url(/esup-portlet-stockage/img/cut_24px.gif) no-repeat center top; 
+.esupstock #toolbar-cut {
+background: url(/esup-portlet-stockage/img/cut_24px.gif) no-repeat center top;
 }
 
-.esupstock #toolbar-past {  
-background: url(/esup-portlet-stockage/img/paste_24px.gif) no-repeat center top; 
+.esupstock #toolbar-past {
+background: url(/esup-portlet-stockage/img/paste_24px.gif) no-repeat center top;
 }
 
-.esupstock #toolbar-rename {  
-background: url(/esup-portlet-stockage/img/rename_24px.gif) no-repeat center top; 
+.esupstock #toolbar-rename {
+background: url(/esup-portlet-stockage/img/rename_24px.gif) no-repeat center top;
 }
 
-.esupstock #toolbar-delete {  
-background: url(/esup-portlet-stockage/img/delete_24px.gif) no-repeat center top; 
+.esupstock #toolbar-delete {
+background: url(/esup-portlet-stockage/img/delete_24px.gif) no-repeat center top;
 }
 
-.esupstock #toolbar-zip {  
+.esupstock #toolbar-zip {
 padding-top: 30px;
-background: url(/esup-portlet-stockage/img/package-x-generic.png) no-repeat center top; 
+background: url(/esup-portlet-stockage/img/package-x-generic.png) no-repeat center top;
 }
 
 .esupstock #info-toolbar span {
@@ -118,14 +118,14 @@ background: #ffaa44;
 }
 
 .esupstock .esupHide {
-display: none;	
+display: none;
 }
 
 .esupstock .qq-upload-button {
 display: block;
 padding: 24px 5px 0px 10px;
 margin-top: -23px;
-background: url(/esup-portlet-stockage/img/upload_24px.gif) no-repeat top; 
+background: url(/esup-portlet-stockage/img/upload_24px.gif) no-repeat top;
 color: #5a95cf!important;
 text-decoration: none;
 width: 60px;
@@ -143,7 +143,7 @@ font-weight:bold;
  left:30%;
  list-style: none;
  padding:25px;
- z-index:2000; 
+ z-index:2000;
 }
 
 .esupstock .qq-upload-list li {
@@ -200,5 +200,8 @@ margin: 0px 5px 0px 0px;
 padding: 0px 0px 0px 15px;
 }
 
-
+/* bug JSTree :
+http://code.google.com/p/jstree/issues/detail?id=922&q=IE%20expand&colspec=ID%20Type%20Status%20Priority%20Owner%20Summary
+*/
+/*.esupstock li.jstree-closed ul {display:none;}*/
 
