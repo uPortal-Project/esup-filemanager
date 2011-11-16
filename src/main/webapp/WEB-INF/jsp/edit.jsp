@@ -33,27 +33,44 @@
 <portlet:defineObjects />
 
 <c:set var="n">
-  <portlet:namespace />
+	<portlet:namespace />
 </c:set>
 
 <div class="portlet-title">
-  <h2>
-    <spring:message code="help.title" />
-  </h2>
+	<h2>
+		<spring:message code="edit.title" />
+	</h2>
 </div>
+
+<span><spring:message code="edit.legend"/></span>
 
 <div class="portlet-section">
 
-  <div class="portlet-section-body">
-    <p>
-      <spring:message code="help.description" />
-    </p>
-  </div>
+	<div class="portlet-section-body">
+	  
+	  <portlet:actionURL var="updatePreferencesUrl">
+    	<portlet:param name="action" value="updatePreferences"/>
+  	  </portlet:actionURL>
+	
+	  <form id="${n}updatePreferences" class="updatePreferences" action="${updatePreferencesUrl}" method="post">
 
-  <portlet:renderURL var="viewUrl" portletMode="VIEW"/>
-  <a href="${viewUrl}" class="portlet-form-button">
-  	<spring:message code="help.backView"/>
-  </a>
+			<fieldset>
+				<legend><spring:message code="edit.viewMode"/></legend>
+				<ul>
+					<li>
+						<input type="radio" name="viewMode" value="standard" ${viewMode == 'standard'? 'checked="checked"' : ''}/><spring:message code="edit.viewMode.standard"/>
+					</li>
+					<li>
+						<input type="radio" name="viewMode" value="wai" ${viewMode == 'wai'? 'checked="checked"' : ''}/><spring:message code="edit.viewMode.wai"/>
+					</li>
+					<li>
+						<input type="radio" name="viewMode" value="mobile" ${viewMode == 'mobile'? 'checked="checked"' : ''}/><spring:message code="edit.viewMode.mobile"/>
+					</li>									
+				</ul>
+			</fieldset>
+			<input type="submit" value="<spring:message code="edit.done"/>" class="portlet-form-button"/>
+		</form>
+
+	</div>
 
 </div>
-
