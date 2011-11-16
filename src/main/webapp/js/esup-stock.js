@@ -2130,4 +2130,7 @@ function authenticate(dir, username, password) {
         }
     });
 }
+
+$.authenticate = function(dir, username, password) { authenticate(dir, username, password); };
+
 })(jQuery);

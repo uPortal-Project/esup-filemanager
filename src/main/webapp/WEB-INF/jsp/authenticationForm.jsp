@@ -30,6 +30,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 
+<div id="jqueryFileTree" >
 
   <form:form method="post" id="authenticationForm">
 
@@ -54,12 +55,12 @@
 
   (function ($) {
     $('#authenticate').bind('click', function() {
-      authenticate($("#currentDir").val(), $("#username").val(), $("#password").val());
+      $.authenticate($("#currentDir").val(), $("#username").val(), $("#password").val());
     });
    
    $('#password').keyup(function(e) {
       if(e.keyCode == 13) {
-         authenticate($("#currentDir").val(), $("#username").val(), $("#password").val());
+         $.authenticate($("#currentDir").val(), $("#username").val(), $("#password").val());
       }
     });
             
@@ -68,4 +69,5 @@
     
 </script>
    
+</div>
     
