@@ -1986,6 +1986,8 @@ function hideInfoToolBar() {
     $("#info-toolbar").html("<span>...</span>");
 }
 
+$.hideInfoToolBar = function() {hideInfoToolBar();};
+
 
 function getBrowserAreaCheckedSelectionData() {
     console.log("getBrowserAreaCheckedSelectionData");

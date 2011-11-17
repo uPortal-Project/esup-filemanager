@@ -57,8 +57,13 @@
     $('#authenticate').bind('click', function() {
       $.authenticate($("#currentDir").val(), $("#username").val(), $("#password").val());
     });
-   
+    
+    $('#username').keyup(function(e) {
+  	  $.hideInfoToolBar();
+    });
+    
    $('#password').keyup(function(e) {
+	  $.hideInfoToolBar();
       if(e.keyCode == 13) {
          $.authenticate($("#currentDir").val(), $("#username").val(), $("#password").val());
       }

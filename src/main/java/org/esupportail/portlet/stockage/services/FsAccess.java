@@ -179,7 +179,8 @@ public abstract class FsAccess {
 			this.get("", userParameters);
 		} catch(Exception e) {
 			// TODO : catch Exception corresponding to an authentication failure ...	
-			log.warn("Authenication failed : " + e.getMessage());
+			log.warn("Authentication failed : " + e.getMessage());
+			log.info("Full stack of exception occured during authentication which failed ...", e);
 			this.userAuthenticatorService.getUserPassword(userParameters).setPassword(null);
 			return false;
 		}
