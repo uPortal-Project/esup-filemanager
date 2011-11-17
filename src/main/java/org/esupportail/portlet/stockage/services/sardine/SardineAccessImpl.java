@@ -70,10 +70,16 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 
 					root = SardineFactory.begin(userPassword.getUsername(),
 							userPassword.getPassword());
+				} else {
+					root = SardineFactory.begin();
 				}
 				this.rootPath = uri + "/";
+				
+				// to be sure that webdav access is ok, we try to retriev root ressources
+				root.getResources(this.rootPath);
 			}
 		} catch (SardineException se) {
+			root = null;
 			throw new EsupStockException(se);
 		}
 	}
