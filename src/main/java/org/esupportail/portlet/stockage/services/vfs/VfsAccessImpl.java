@@ -146,7 +146,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 			} else {
 				returnValue = root.resolveFile(path);
 			}
-			
+
 			//Added for GIP Recia : make sure that the file is up to date
 			returnValue.refresh();
 			return returnValue;
@@ -170,7 +170,9 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		try {
 			List<JsTreeFile> files = new ArrayList<JsTreeFile>();
 			FileObject resource = cd(path, userParameters);
-			for(FileObject child: resource.getChildren())
+			FileObject[] children = resource.getChildren();
+			if(children != null)
+			    for(FileObject child: children)
 				if(this.showHiddenFiles || !child.isHidden())
 					files.add(resourceAsJsTreeFile(child));
 			return files;
