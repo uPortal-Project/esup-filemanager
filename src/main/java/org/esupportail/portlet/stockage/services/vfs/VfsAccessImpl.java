@@ -74,8 +74,6 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 
     protected boolean strictHostKeyChecking = true;
 
-    protected boolean showHiddenFiles = false;
-
 	public void setResourceUtils(ResourceUtils resourceUtils) {
 		this.resourceUtils = resourceUtils;
 	}
@@ -86,10 +84,6 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 
     public void setStrictHostKeyChecking(boolean strictHostKeyChecking) {
 		this.strictHostKeyChecking = strictHostKeyChecking;
-	}
-
-	public void setShowHiddenFiles(boolean showHiddenFiles) {
-		this.showHiddenFiles = showHiddenFiles;
 	}
 
 	public void initializeService(Map userInfos, SharedUserPortletParameters userParameters) {

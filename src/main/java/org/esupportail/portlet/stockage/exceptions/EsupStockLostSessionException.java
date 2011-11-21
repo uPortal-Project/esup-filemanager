@@ -29,4 +29,8 @@ public class EsupStockLostSessionException extends EsupStockException {
 		super(message);
 	}
 	
+	public EsupStockLostSessionException(Exception e) {
+		super(e);
+	}
+	
 }

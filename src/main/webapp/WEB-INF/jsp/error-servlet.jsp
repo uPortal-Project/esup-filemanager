@@ -29,18 +29,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>esup-servlet-stockage</title>
 
-<!-- Framework CSS -->
-<link rel="stylesheet"
-	href="/esup-portlet-stockage/css/blueprint/screen.css" type="text/css"
-	media="screen, projection">
-
-<link rel="stylesheet"
-	href="/esup-portlet-stockage/css/blueprint/print.css" type="text/css"
-	media="print">
-
 <link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock.css"
 	type="text/css" media="screen, projection">
-
 
 </head>
 

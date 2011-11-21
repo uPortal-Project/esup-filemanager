@@ -1034,7 +1034,7 @@ function handleLeftTreeSelection(treeNode) {
             if (r.statusText == 'reload') {
                 location.reload();
             } else {
-                showInfoToolBar(r.responseText);
+                showDialogError(r.responseText);
             }
 
 
@@ -1063,12 +1063,29 @@ function updateDetailsArea(dataObj) {
             if (response.statusText == 'reload') {
                 location.reload();
             } else {
-                showInfoToolBar(response.responseText);
+                showDialogError(response.responseText);
             }
 
         },
         complete: cursor_clear
     });
+}
+
+function showDialogError(error) {
+	 console.log("showDialogError");
+	 console.log("error : " + error);
+	 
+     var dialogElem = $("#errorDialog");
+
+     if (dialogElem.dialog("isOpen")) {
+         console.log("errorDialog already open");
+     }
+     dialogElem.html(error);
+     dialogElem.dialog({
+         modal: true,
+         resizable: true,
+         closeOnEscape: true
+     });
 }
 
 function handleBrowserAreaSelection() {
@@ -1972,7 +1989,7 @@ function showInfoToolBar(msg) {
     /*$("#info-toolbar span").show('blind', {
         direction: 'vertical'
     }, 2000);*/
-    setTimeout("hideInfoToolBar()", 4000);
+    setTimeout(function() { hideInfoToolBar(); }, 4000);
     $("#info-toolbar").bind('click', function () {
       hideInfoToolBar() ;
     });

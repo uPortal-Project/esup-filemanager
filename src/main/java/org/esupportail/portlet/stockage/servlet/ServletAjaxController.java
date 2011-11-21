@@ -23,6 +23,7 @@ package org.esupportail.portlet.stockage.servlet;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -462,11 +463,12 @@ public class ServletAjaxController implements InitializingBean {
 	
 	/**
 	 * Added for GIP Recia : Return the correct details view based on the requested file(s)
+	 * @throws UnsupportedEncodingException 
 	 * 
 	 */
 	@RequestMapping("/detailsArea")
 	public ModelAndView detailsArea(FormCommand command,
-			HttpServletRequest request, HttpServletResponse response) {
+			HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
 		ModelMap model = new ModelMap();
 
 		String sharedSessionId = request.getParameter("sharedSessionId");
@@ -475,9 +477,9 @@ public class ServletAjaxController implements InitializingBean {
 		if (command == null || command.getDirs() == null) {
 			return new ModelAndView("details_empty", model);
 		}
-
+/*
 		try {
-
+*/
 			// See if we go to the multiple files/folder view or not
 			if (command.getDirs().size() == 1) {
 				String path = command.getDirs().get(0);
@@ -532,14 +534,16 @@ public class ServletAjaxController implements InitializingBean {
 				model.put("image_paths", image_paths);
 				return new ModelAndView("details_files_recia", model);
 			}
-
+/*
 		} catch (Exception ex) {
+			log.warn("Exception during retrieve details infos : " + ex.getMessage());
+			log.info("Full satcktrace of exception occured retrieving details infos", ex);
 			response.setStatus(403);
 			model.put("errorText",
 					context.getMessage("ajax.detailsArea.failed", null, locale));
 			return new ModelAndView("ajax_error_recia", model);
 		}
-
+*/
 		// Unknown resource type
 		return new ModelAndView("details_empty", model);
 
@@ -548,7 +552,7 @@ public class ServletAjaxController implements InitializingBean {
 	@ExceptionHandler(EsupStockPermissionDeniedException.class)
 	public ModelAndView handlePermissionDeniedException(EsupStockPermissionDeniedException ex, 
 										HttpServletRequest request, HttpServletResponse response) throws IOException {
-		log.error(ex);
+		log.error("EsupStockPermissionDeniedException caught on ServletAjaxController ..." ,ex);
 		String msg = context.getMessage("ajax.error.permissionDenied", null, locale); 
 		response.sendError(403, msg);
 		return null;
@@ -557,7 +561,7 @@ public class ServletAjaxController implements InitializingBean {
 	@ExceptionHandler(EsupStockLostSessionException.class)
 	public ModelAndView handleLostSessionException(EsupStockLostSessionException ex, 
 										HttpServletRequest request, HttpServletResponse response) throws IOException {
-		log.error(ex);
+		log.error("EsupStockLostSessionException caught on ServletAjaxController ..." ,ex);
 		response.sendError(500, "reload");
 		return null;
 	}
@@ -566,9 +570,14 @@ public class ServletAjaxController implements InitializingBean {
 	@ExceptionHandler(EsupStockException.class)
 	public ModelAndView handleException(EsupStockException ex, 
 										HttpServletRequest request, HttpServletResponse response) throws IOException {
-		log.error(ex);
-		response.sendError(500, ex.getMessage());
-		return null;
+		log.error("EsupStockException caught on ServletAjaxController ..." ,ex);
+		//response.sendError(500, ex.getMessage());
+		response.setStatus(500);
+		
+		ModelMap model = new ModelMap();
+		model.put("exception", ex);
+		
+		return new ModelAndView("error-servlet", model);
 	}
 
 }

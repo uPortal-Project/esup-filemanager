@@ -195,7 +195,7 @@ background-color: #f8f8f8 !important;
 	margin: 0 7px 20px 0;
 }
 
-#delete-confirm-ok, #waitingDialog {
+#delete-confirm-ok, #waitingDialog, #errorDialog {
 	display: none;
 }
 
@@ -268,6 +268,7 @@ background-color: #f8f8f8 !important;
 margin-left: 5px;         
 } 
 
+.esupstock #detailsFileForm,
 .esupstock .details-attribute-header {
 	font-weight: bold;
 	float: left;	
@@ -381,4 +382,3 @@ margin-left: 5px;
 	text-wrap: unrestricted;
 	word-wrap: break-word;
 }
-	

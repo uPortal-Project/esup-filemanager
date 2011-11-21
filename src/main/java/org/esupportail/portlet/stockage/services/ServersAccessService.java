@@ -47,6 +47,7 @@ import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.stockage.beans.UserPassword;
 import org.esupportail.portlet.stockage.exceptions.EsupStockException;
+import org.esupportail.portlet.stockage.exceptions.EsupStockLostSessionException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -170,8 +171,10 @@ public class ServersAccessService implements DisposableBean {
 			UserPassword userPassword = userParameters.getUserPassword4AuthenticatedFormDrives().get(driveName);
 			if(userPassword != null)
 				fsAccess.authenticate(userPassword.getUsername(), userPassword.getPassword(), userParameters);
-			else
-				log.warn("Here we should have username & password ? What's wrong ? :(");
+			else {
+				//log.warn("ere we should have username & password ? What's wrong ? :(");
+				throw new EsupStockLostSessionException("Here we should have username & password. Session lost ?");
+			}
 		}
 	}
 

@@ -22,17 +22,22 @@
 package org.esupportail.portlet.stockage.services.sardine;
 
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.vfs.FileObject;
 import org.esupportail.portlet.stockage.beans.DownloadFile;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.stockage.beans.UserPassword;
 import org.esupportail.portlet.stockage.exceptions.EsupStockException;
+import org.esupportail.portlet.stockage.exceptions.EsupStockLostSessionException;
+import org.esupportail.portlet.stockage.exceptions.EsupStockPermissionDeniedException;
 import org.esupportail.portlet.stockage.services.FsAccess;
 import org.esupportail.portlet.stockage.services.ResourceUtils;
 import org.springframework.beans.factory.DisposableBean;
@@ -80,6 +85,9 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 			}
 		} catch (SardineException se) {
 			root = null;
+			if(se.getStatusCode() == 401) {
+				throw new EsupStockLostSessionException(se);
+			}
 			throw new EsupStockException(se);
 		}
 	}
@@ -107,9 +115,10 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 			if (resources != null && !resources.isEmpty())
 				return resourceAsJsTreeFile(resources.get(0));
 		} catch (SardineException se) {
+			log.error("SardineException retrieving this file  : " + path);
 			throw new EsupStockException(se);
 		}
-		return null; // Just to shutup compiler for now
+		return null; 
 	}
 
 	@Override
@@ -161,7 +170,39 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 		if ("file".equals(type)) {
 			String icon = resourceUtils.getIcon(title);
 			file.setIcon(icon);
+			file.setSize(resource.getContentLength().longValue());
+			file.setOverSizeLimit(file.getSize() > resourceUtils
+					.getSizeLimit(title));
 		}
+		
+		try {
+			if (resource.isDirectory()) {
+				List<DavResource> children;
+					children = root.getResources(resource.getAbsoluteUrl());
+				long totalSize = 0;
+				long fileCount = 0;
+				long folderCount = 0;
+				for (DavResource child : children) {
+					if (child.isDirectory()) {
+						++folderCount;
+					} else {
+						++fileCount;
+						totalSize += child.getContentLength().longValue();
+					}
+					file.setTotalSize(totalSize);
+					file.setFileCount(fileCount);
+					file.setFolderCount(folderCount);
+				}
+			}
+		} catch (SardineException ex) {
+			log.warn("Error retrying children of this resource : " + resource.getAbsoluteUrl(), ex);
+		}
+
+		final Calendar date = Calendar.getInstance();
+		date.setTimeInMillis(resource.getModified().getTime());
+		// In order to have a readable date
+		file.setLastModifiedTime(new SimpleDateFormat(this.datePattern)
+				.format(date.getTime()));
 
 		return file;
 	}

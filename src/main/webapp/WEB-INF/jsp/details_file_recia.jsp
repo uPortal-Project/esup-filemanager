@@ -2,7 +2,7 @@
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <h3 class="ui-widget-header ui-corner-all"><spring:message code="details.header"/></h3>
 
@@ -18,9 +18,10 @@
 </div>
 <div class="details-attribute-header"><spring:message code="details.type" /> : </div>
 <div class="details-attribute">${file.mimeType}</div>
-<div class="details-attribute-header"><spring:message code="details.lastModifiedTime" /> : </div>
-<div class="details-attribute">${file.lastModifiedTime}</div>
-
+<c:if test="${not empty file.lastModifiedTime}">
+	<div class="details-attribute-header"><spring:message code="details.lastModifiedTime" /> : </div>
+	<div class="details-attribute">${file.lastModifiedTime}</div>
+</c:if>
 <div class="details-spacer"></div>
 <form:form method="post" id="detailsFileForm"
   action="/esup-portlet-stockage/servlet-ajax/downloadFile">

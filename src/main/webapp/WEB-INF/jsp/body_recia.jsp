@@ -138,10 +138,14 @@
 						code="browserarea.menu.delete" /> </a></li>
 		</ul>
 
-		<!--  GIP RECIA : define the overlay when an action clic -->
 		<div id="waitingDialog"
 			title="<spring:message code="ajax.overlay.title"/>">
 			<spring:message code="ajax.overlay.body" />
+		</div>
+		
+		<div id="errorDialog"
+			title="<spring:message code="ajax.error.title"/>">
+			...
 		</div>
 
 	</div>
