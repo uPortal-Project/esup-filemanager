@@ -512,7 +512,7 @@ function initJstree() {
 
                     // the result is fed to the AJAX request `data` option
                     var retData = {
-                        "dir": n == -1 ? defaultPath : $.data(n.get(0), "path"),
+                        "dir": n == -1 ? defaultPath : $.data(n.get(0), "encPath"),
                         "sharedSessionId": sharedSessionId,
                         "hierarchy": n == -1 ? "all" : ""
                     };
@@ -780,9 +780,9 @@ function customMenu(node) {
  */
 
 function getPathFromLiNode(treeNode) {
-  //console.log("getPathFromLiNode: TreeNode : " + treeNode.html() + " Data :" + $.data(treeNode.get(0), "path"));
+    //console.log("getPathFromLiNode: TreeNode : " + treeNode.html() + " Data :" + $.data(treeNode.get(0), "encPath"));
 
-    return $.data(treeNode.get(0), "path");
+    return $.data(treeNode.get(0), "encPath");
 }
 
 function getTypeFromLiNode(treeNode) {
@@ -809,13 +809,14 @@ function getLiIdFromPath(path) {
  */
 
 function getParentPath(path) {
-    var tokens = path.split(/[~\/]/);
+    //var tokens = path.split(/[~\/]/);
+	var tokens = path.split(/(%7E)|(%2F)/);
 
     var parentPath = path;
 
     if (tokens.length > 0) {
         var lastToken = tokens.pop();
-        parentPath = parentPath.substring(0, path.length - lastToken.length - 1);
+        parentPath = parentPath.substring(0, path.length - lastToken.length - 3);
     }
 
     return parentPath;
@@ -885,7 +886,7 @@ function getPathToIdMap() {
 
 function addPathAndChildrenPathesToIdEntry(value) {
 
-  addPathToIdEntry(value.metadata.path, value.attr.id);
+  addPathToIdEntry(value.metadata.encPath, value.attr.id);
 
   if (value.children) {
     $.each(value.children, function(idxChild, childValue) {
@@ -896,7 +897,7 @@ function addPathAndChildrenPathesToIdEntry(value) {
 }
 
 function addPathToIdEntry(path, id) {
-  //console.log("addPathToIdEntry.  Adding path " + path + ", " + id);
+  console.log("addPathToIdEntry.  Adding path " + path + ", " + id);
 
   var pathToIdMap = getPathToIdMap();
   pathToIdMap[path] = id;

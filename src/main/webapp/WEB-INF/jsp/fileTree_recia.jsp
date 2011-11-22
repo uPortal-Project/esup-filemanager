@@ -27,11 +27,11 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <div class="breadcrumbs">
-  <c:forEach var="parent" items="${resource.parentsPathes}" varStatus="item">
+  <c:forEach var="parent" items="${resource.parentsEncPathes}" varStatus="item">
     <c:choose>
       <c:when test="${item.last}">
         <img src="${resource.icon}" alt="icon" />
-        <span id="bigdirectory" rel="${resource.path}"> ${resource.title} </span>
+        <span id="bigdirectory" rel="${resource.encPath}"> ${resource.title} </span>
       </c:when>
       <c:otherwise>
         <a class="fileTreeRefCrumbs" href="#" rel="${parent.key}">
@@ -69,9 +69,9 @@
                   <div class="readable">${file.readable}</div>
                   <div class="writeable">${file.writeable}</div>
                   <div class="draggable droppable">
-                    <form:checkbox path="dirs" cssClass="browsercheck" value="${file.path}" />
+                    <form:checkbox path="dirs" cssClass="browsercheck" value="${file.encPath}" />
 
-                    <a class="fileTreeRef" href="" title="${file.title}" rel="${file.path}"
+                    <a class="fileTreeRef" href="" title="${file.title}" rel="${file.encPath}"
                       onclick="return false;">
                       <img src="${file.icon}" alt="icon" />
                       ${file.title}
@@ -95,7 +95,7 @@
               <tr>
                 <td><div class="droppable">
                     <img src="${file.icon}" alt="icon" />
-                    <a class="fileCatRef" href="" title="${file.title}" rel="${file.path}"
+                    <a class="fileCatRef" href="" title="${file.title}" rel="${file.encPath}"
                       onclick="return false;"> ${file.title} </a>
                   </div></td>
                 <td />
@@ -107,7 +107,7 @@
               <tr>
                 <td><div>
                     <img src="${file.icon}" alt="icon" />
-                    <a class="fileCatRef" href="" title="${file.title}" rel="${file.path}"
+                    <a class="fileCatRef" href="" title="${file.title}" rel="${file.encPath}"
                       onclick="return false;"> ${file.title} </a>
                   </div></td>
                 <td />
@@ -121,9 +121,9 @@
                   <div class="draggable">
                     <div class="readable">${file.readable}</div>
                     <div class="writeable">${file.writeable}</div>
-                    <form:checkbox path="dirs" cssClass="browsercheck" value="${file.path}" />
+                    <form:checkbox path="dirs" cssClass="browsercheck" value="${file.encPath}" />
 
-                    <a class="file" href="" title="${file.title}" rel="${file.path}"
+                    <a class="file" href="" title="${file.title}" rel="${file.encPath}"
                       onclick="return false;">
                       <img src="${file.icon}" alt="icon" />
                       ${file.title}

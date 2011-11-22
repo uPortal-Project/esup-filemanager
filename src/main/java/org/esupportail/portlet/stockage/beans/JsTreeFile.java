@@ -62,7 +62,7 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 	public static String DRIVE_PATH_SEPARATOR = "~";
 
 	private String title;
-
+	
 	private String lid;
 
 	private String type;
@@ -308,9 +308,11 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		if(lid != null && lid.length() != 0)
 			path = path.concat(DRIVE_PATH_SEPARATOR).concat(lid);
 		// Usefull for CIFS, because it needs / at end of path, but js script hates it!
-		if (path.endsWith("/"))
-			path = path.substring(0, path.length()-1);
+		//if (path.endsWith("/"))
+		//	path = path.substring(0, path.length()-1);
 		attr.put("path", path);
+		String encPath =  URLEncodingUtils.encode(path);
+		attr.put("encPath", encPath);
 		attr.put("type", type);
 		return attr;
 	}
@@ -394,7 +396,11 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		//Changed for GIP Recia, use meta data as that contains the raw data
 		return this.getMetadata().get("path");
 	}
-
+	
+    public String getEncPath() {
+		return this.getMetadata().get("encPath");
+	}
+	
 	public String getType() {
 		//Changed for GIP Recia, use meta data as that contains the raw data
 		return this.getMetadata().get("type");
@@ -453,6 +459,24 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 			}
 		}
 		return parentsPathes;
+	}
+
+	// Map<path, List<title, icon>>                                                                                                                     
+	public static SortedMap<String, List<String>> getParentsEncPathes(String path, String categoryIcon, String driveIcon) {
+		SortedMap<String, List<String>> parentPathes = getParentsPathes(path, categoryIcon, driveIcon);
+		SortedMap<String, List<String>> encodedParentPathes = new  TreeMap<String, List<String>>();
+		for(String pathKey : parentPathes.keySet()) {
+			String encodedPath = URLEncodingUtils.encode(pathKey);
+			encodedParentPathes.put(encodedPath, parentPathes.get(pathKey));
+		}
+		return encodedParentPathes;
+	}
+                                                                                                                 
+	// Map<path, List<title, icon>>                                                                                                                     
+	public SortedMap<String, List<String>> getParentsEncPathes() {
+		String categoryIcon = this.category != null ? this.category.getIcon() : null;
+		String driveIcon = this.drive != null ? this.drive.getIcon() : null;
+		return getParentsEncPathes(this.getPath(), categoryIcon, driveIcon);
 	}
 
 

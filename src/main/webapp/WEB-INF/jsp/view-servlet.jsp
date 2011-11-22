@@ -53,7 +53,7 @@
       var sharedSessionId = '${sharedSessionId}';
       var useDoubleClick = '${useDoubleClick}';
       var useCursorWaitDialog = '${useCursorWaitDialog}';
-      var defaultPath = 'FS:Shared';
+      var defaultPath = 'FS%3AShared';
     </script>
 
     <script type="text/javascript" src="/esup-portlet-stockage/js/jquery-1.4.2.min.js">
