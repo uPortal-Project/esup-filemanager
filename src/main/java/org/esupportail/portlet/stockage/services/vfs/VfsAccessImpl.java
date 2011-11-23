@@ -217,23 +217,29 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		}
 
 		if ("folder".equals(type) || "drive".equals(type)) {
-			if (resource.getChildren() != null) {
-				long totalSize = 0;
-				long fileCount = 0;
-				long folderCount = 0;
-				for (FileObject child : resource.getChildren()) {
-					if (this.showHiddenFiles || !child.isHidden()) {
-						if ("folder".equals(child.getType().getName())) {
-							++folderCount;
-						} else if ("file".equals(child.getType().getName())) {
-							++fileCount;
-							totalSize += child.getContent().getSize();
+			try {
+				if (resource.getChildren() != null) {
+					long totalSize = 0;
+					long fileCount = 0;
+					long folderCount = 0;
+					for (FileObject child : resource.getChildren()) {
+						if (this.showHiddenFiles || !child.isHidden()) {
+							if ("folder".equals(child.getType().getName())) {
+								++folderCount;
+							} else if ("file".equals(child.getType().getName())) {
+								++fileCount;
+								totalSize += child.getContent().getSize();
+							}
 						}
 					}
-				}
-				file.setTotalSize(totalSize);
-				file.setFileCount(fileCount);
-				file.setFolderCount(folderCount);
+					file.setTotalSize(totalSize);
+					file.setFileCount(fileCount);
+					file.setFolderCount(folderCount);
+				} 
+			} catch(FileSystemException fse) {
+				// we don't want that exception during retrieving details 
+				// of the folder breaks  all this method ...
+				log.error("Exception during retrieveing details on children of " + lid, fse);
 			}
 		}
 

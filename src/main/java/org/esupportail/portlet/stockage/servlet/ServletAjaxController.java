@@ -193,8 +193,8 @@ public class ServletAjaxController implements InitializingBean {
 				log.warn("Error retrieving file", ex);
 				//Usually a duplicate name problem.  Tell the ajax handler that
 				//there is a problem and send the translated error message
-				response.setStatus(403);
-				model.put("errorText", context.getMessage("ajax.browserArea.failed", null, locale));
+				response.setStatus(500);
+				model.put("errorText", context.getMessage("ajax.browserArea.failed", null, locale) + "<br/><i>" + ex.getMessage() + "</i>");
 				return new ModelAndView("ajax_error_recia", model);
 			}
 		}
