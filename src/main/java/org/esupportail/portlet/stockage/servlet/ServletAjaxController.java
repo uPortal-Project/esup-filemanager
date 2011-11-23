@@ -174,7 +174,7 @@ public class ServletAjaxController implements InitializingBean {
 			model.put("files", files);
 		} else {
 			if(this.serverAccess.formAuthenticationRequired(dir, userParameters)) {
-				model = new ModelMap("currentDir", dir);
+				model = new ModelMap("currentDir", encodeDir(dir));
 				model.put("sharedSessionId", userParameters.getSharedSessionId());
 				model.put("username", this.serverAccess.getUserPassword(dir, userParameters).getUsername());
 				model.put("password", this.serverAccess.getUserPassword(dir, userParameters).getPassword());
