@@ -11,17 +11,20 @@ public class PathEncodingUtils {
 
 	protected static final Log log = LogFactory.getLog(PathEncodingUtils.class);
 
+	protected static final String PREFIX_CODE = "path_";
+	
 	public static String encode(String path) {
 		if(path == null)
 			return null;
 		String encodedPath = path;
 		encodedPath = Base64.encodeBytes(path.getBytes(), Base64.URL_SAFE);
-		return encodedPath;
+		return PREFIX_CODE + encodedPath;
 	}
 	
 	public static String decodeDir(String dir) {
-		if(dir == null)
+		if(dir == null || "".equals(dir))
 			return null;
+		dir = dir.substring(PREFIX_CODE.length());
 		dir = new String(Base64.decode(dir, Base64.URL_SAFE));
 		return dir;
 	}

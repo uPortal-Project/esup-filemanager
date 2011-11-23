@@ -24,7 +24,6 @@ package org.esupportail.portlet.stockage.servlet;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -512,8 +511,8 @@ public class ServletAjaxController implements InitializingBean {
 				} else if (resource.getType().equals("file")) {
 					model.put("file", resource);
 					model.put("size", resource.getSize());
-					model.put("path", path);
-					model.put("urlEncPath", URLEncoder.encode(path, "UTF-8"));
+					model.put("path", encodeDir(path));
+					model.put("urlEncPath", encodeDir(path));
 
 					org.esupportail.portlet.stockage.services.ResourceUtils.Type fileType = resourceUtils
 							.getType(resource.getTitle());
@@ -543,7 +542,7 @@ public class ServletAjaxController implements InitializingBean {
 					org.esupportail.portlet.stockage.services.ResourceUtils.Type fileType = resourceUtils
 							.getType(resource.getTitle());
 					if (fileType == Type.IMAGE && !resource.isOverSizeLimit()) {
-						image_paths.add(URLEncoder.encode(filePath, "UTF-8"));
+						image_paths.add(encodeDir(filePath));
 					}
 				}
 				model.put("image_paths", image_paths);
@@ -615,6 +614,8 @@ public class ServletAjaxController implements InitializingBean {
         return PathEncodingUtils.decodeDir(dir);
     }
 
-
+    private String encodeDir(String dir) {
+        return PathEncodingUtils.encode(dir);
+    }
 
 }
