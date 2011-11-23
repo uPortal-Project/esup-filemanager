@@ -61,7 +61,7 @@
        		 <label>
           		${file.title}
       		  </label>
-       		 <input type="text" name="${file.path}" value="${file.title}"/>
+       		 <input type="text" name="${file.encPath}" value="${file.title}"/>
        		</li>
 		</c:forEach>
 		

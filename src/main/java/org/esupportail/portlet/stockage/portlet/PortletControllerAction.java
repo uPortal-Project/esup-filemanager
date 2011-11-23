@@ -96,7 +96,7 @@ public class PortletControllerAction  implements InitializingBean {
 		if (zip != null) {
 			String url = "/esup-portlet-stockage/servlet-ajax/downloadZip?";
 			for(String commandDir: command.getDirs()) {
-				url = url + "dirs=" + URLEncoder.encode(commandDir, "utf8") + "&";
+				url = url + "dirs=" + URLEncoder.encode(encodeDir(commandDir), "utf8") + "&";
 				url = url + "sharedSessionId=" + URLEncoder.encode(sharedSessionId, "utf8") + "&";
 			}
 			url = url.substring(0, url.length()-1);
@@ -110,11 +110,11 @@ public class PortletControllerAction  implements InitializingBean {
 		} else {
 
 			if (prepareCopy != null) {
-				basketSession.setDirsToCopy(command.getDirs());
+				basketSession.setDirsToCopy(encodeDirs(command.getDirs()));
 				basketSession.setGoal("copy");
 				msg = "ajax.copy.ok";
 			} else if (prepareCut != null) {
-				basketSession.setDirsToCopy(command.getDirs());
+				basketSession.setDirsToCopy(encodeDirs(command.getDirs()));
 				basketSession.setGoal("cut");
 				msg = "ajax.cut.ok";
 			} else if (past != null) {
@@ -142,8 +142,6 @@ public class PortletControllerAction  implements InitializingBean {
 	@RequestMapping(value = {"VIEW"}, params = {"action=createFolderWai"})
     public ModelAndView createFolderWai(RenderRequest request, RenderResponse response,
     								@RequestParam String dir) {
-		
-		dir = decodeDir(dir);
 		
 		ModelMap model = new ModelMap();	
 		model.put("currentDir", dir);
@@ -187,7 +185,7 @@ public class PortletControllerAction  implements InitializingBean {
 			filesToRename = files;
 		}
 		model.put("files", filesToRename);
-		model.put("currentDir", dir);
+		model.put("currentDir", encodeDir(dir));
 		return new ModelAndView("view-portlet-rename-wai", model);
 	}
 	
@@ -217,8 +215,6 @@ public class PortletControllerAction  implements InitializingBean {
 	@RequestMapping(value = {"VIEW"}, params = {"action=fileUploadWai"})
     public ModelAndView fileUploadWai(RenderRequest request, RenderResponse response,
     								@RequestParam String dir) {
-		
-		dir = decodeDir(dir);
 		
 		ModelMap model = new ModelMap();
 		model.put("currentDir", dir);
