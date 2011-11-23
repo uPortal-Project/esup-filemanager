@@ -76,11 +76,11 @@ public class PortletController implements InitializingBean {
 	protected String sharedSessionId;
 	
 	
-	@Autowired
+	@Autowired(required=false)
 	@Qualifier("useDoubleClick")
 	protected Boolean useDoubleClick = true;
 	
-	@Autowired
+	@Autowired(required=false)
 	@Qualifier("useCursorWaitDialog")
 	protected Boolean useCursorWaitDialog = false;
 	
