@@ -89,6 +89,8 @@ public class PortletControllerAction  implements InitializingBean {
 			@RequestParam(required = false) String createFolder,
 			ActionRequest request, ActionResponse response) throws IOException {
 		
+		dir = decodeDir(dir);
+		
 		String msg = null;
 
 		if (zip != null) {
@@ -101,9 +103,9 @@ public class PortletControllerAction  implements InitializingBean {
 			response.sendRedirect(url);
 			
 		} else  if (rename != null) {
-			response.setRenderParameter("dir", dir);
+			response.setRenderParameter("dir", encodeDir(dir));
 			response.setRenderParameter("sharedSessionId", sharedSessionId);
-			response.setRenderParameter("dirs", command.getDirs().toArray(new String[] {}));
+			response.setRenderParameter("dirs", encodeDirs(command.getDirs()).toArray(new String[] {}));
 			response.setRenderParameter("action", "renameWai");
 		} else {
 
@@ -131,7 +133,7 @@ public class PortletControllerAction  implements InitializingBean {
 
 			if(msg != null)
 				response.setRenderParameter("msg", msg);
-			response.setRenderParameter("dir", dir);
+			response.setRenderParameter("dir", encodeDir(dir));
 			response.setRenderParameter("sharedSessionId", sharedSessionId);
 			response.setRenderParameter("action", "browseWai");
 		}
@@ -140,6 +142,8 @@ public class PortletControllerAction  implements InitializingBean {
 	@RequestMapping(value = {"VIEW"}, params = {"action=createFolderWai"})
     public ModelAndView createFolderWai(RenderRequest request, RenderResponse response,
     								@RequestParam String dir) {
+		
+		dir = decodeDir(dir);
 		
 		ModelMap model = new ModelMap();	
 		model.put("currentDir", dir);
@@ -151,12 +155,14 @@ public class PortletControllerAction  implements InitializingBean {
 			@RequestParam String folderName,
 			ActionRequest request, ActionResponse response) throws IOException {
 		
+		dir = decodeDir(dir);
+		
 		String msg = null;
 		this.serverAccess.createFile(dir, folderName, "folder", userParameters);
 		
 		if(msg != null)
 			response.setRenderParameter("msg", msg);
-		response.setRenderParameter("dir", dir);
+		response.setRenderParameter("dir", encodeDir(dir));
 		response.setRenderParameter("sharedSessionId", sharedSessionId);
 		response.setRenderParameter("action", "browseWai");
 	}
@@ -165,6 +171,9 @@ public class PortletControllerAction  implements InitializingBean {
     public ModelAndView renameWai(RenderRequest request, RenderResponse response,
     								@RequestParam String dir,
     								@RequestParam List<String> dirs) {
+		
+		dir = decodeDir(dir);
+		dirs = decodeDirs(dirs);
 		
 		ModelMap model = new ModelMap();
 		List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
@@ -186,6 +195,8 @@ public class PortletControllerAction  implements InitializingBean {
 	public void formRenameWai(@RequestParam String dir, @RequestParam String sharedSessionId,
 			ActionRequest request, ActionResponse response) throws IOException {
 		
+		dir = decodeDir(dir);
+		
 		String msg = null;
 		
 		List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
@@ -198,7 +209,7 @@ public class PortletControllerAction  implements InitializingBean {
 		
 		if(msg != null)
 			response.setRenderParameter("msg", msg);
-		response.setRenderParameter("dir", dir);
+		response.setRenderParameter("dir", encodeDir(dir));
 		response.setRenderParameter("sharedSessionId", sharedSessionId);
 		response.setRenderParameter("action", "browseWai");
 	}
@@ -206,6 +217,8 @@ public class PortletControllerAction  implements InitializingBean {
 	@RequestMapping(value = {"VIEW"}, params = {"action=fileUploadWai"})
     public ModelAndView fileUploadWai(RenderRequest request, RenderResponse response,
     								@RequestParam String dir) {
+		
+		dir = decodeDir(dir);
 		
 		ModelMap model = new ModelMap();
 		model.put("currentDir", dir);
@@ -217,11 +230,13 @@ public class PortletControllerAction  implements InitializingBean {
     public void formUploadWai(ActionRequest request, ActionResponse response,
     								@RequestParam String dir, @RequestParam String sharedSessionId, FileUpload command) throws IOException {
 		
+		dir = decodeDir(dir);
+		
 		String filename = command.getQqfile().getOriginalFilename();
 		InputStream inputStream = command.getQqfile().getInputStream();
 		this.serverAccess.putFile(dir, filename, inputStream, userParameters);
 		
-		response.setRenderParameter("dir", dir);
+		response.setRenderParameter("dir", encodeDir(dir));
 		response.setRenderParameter("sharedSessionId", sharedSessionId);
 		response.setRenderParameter("action", "browseWai");
 	}
@@ -230,6 +245,8 @@ public class PortletControllerAction  implements InitializingBean {
     public void formAuthenticationWai(ActionRequest request, ActionResponse response,
     								@RequestParam String dir, @RequestParam String sharedSessionId, @RequestParam String username, @RequestParam String password) throws IOException {
 		
+		dir = decodeDir(dir);
+		
 		String msg = "auth.bad";
 		if(this.serverAccess.authenticate(dir, username, password, userParameters)) {
 			msg = "auth.ok";
@@ -241,7 +258,7 @@ public class PortletControllerAction  implements InitializingBean {
 		}
 			
 		response.setRenderParameter("msg", msg);
-		response.setRenderParameter("dir", dir);
+		response.setRenderParameter("dir", encodeDir(dir));
 		response.setRenderParameter("sharedSessionId", sharedSessionId);
 		response.setRenderParameter("action", "browseWai");
 	}
@@ -250,6 +267,8 @@ public class PortletControllerAction  implements InitializingBean {
     public void formAuthenticationMobile(ActionRequest request, ActionResponse response,
     								@RequestParam String dir, @RequestParam String sharedSessionId, @RequestParam String username, @RequestParam String password) throws IOException {
 		
+		dir = decodeDir(dir);
+		
 		String msg = "auth.bad";
 		if(this.serverAccess.authenticate(dir, username, password, userParameters)) {
 			msg = "auth.ok";
@@ -261,9 +280,25 @@ public class PortletControllerAction  implements InitializingBean {
 		}
 		
 		response.setRenderParameter("msg", msg);
-		response.setRenderParameter("dir", dir);
+		response.setRenderParameter("dir", encodeDir(dir));
 		response.setRenderParameter("sharedSessionId", sharedSessionId);
 		response.setRenderParameter("action", "browseMobile");
 	}
 
+    private String decodeDir(String dir) {
+        return URLEncodingUtils.decodeDir(dir);
+    }
+    
+    private List<String> decodeDirs(List<String> dirs) {
+        return URLEncodingUtils.decodeDirs(dirs);
+    }
+    
+    private String encodeDir(String dir) {
+        return URLEncodingUtils.encode(dir);
+    }
+    
+    private List<String> encodeDirs(List<String> dirs) {
+        return URLEncodingUtils.encodeDirs(dirs);
+    }
+    
 }

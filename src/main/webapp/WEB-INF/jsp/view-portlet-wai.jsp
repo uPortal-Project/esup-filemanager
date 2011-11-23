@@ -171,8 +171,4 @@
 
 </div>
 
-<a href="<portlet:renderURL> <portlet:param name="action" value="browseStandard"/></portlet:renderURL>">
-	<spring:message code="version.standard"/>
-</a>
-
 

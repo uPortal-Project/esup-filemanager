@@ -44,4 +44,13 @@ public class URLEncodingUtils {
 			decodedDirs.add(decodeDir(dir));
 		return decodedDirs;
 	}
+	
+	public static List<String> encodeDirs(List<String> dirs) {
+		if(dirs == null)
+			return null;
+		List<String> encodedDirs = new Vector<String>(dirs.size());
+		for(String dir: dirs)
+			encodedDirs.add(encode(dir));
+		return encodedDirs;
+	}
 }

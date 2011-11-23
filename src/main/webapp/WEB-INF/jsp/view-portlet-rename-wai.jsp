@@ -61,7 +61,7 @@
        		 <label>
           		${file.title}
       		  </label>
-       		 <input type="text" name="${file.id}" value="${file.title}"/>
+       		 <input type="text" name="${file.path}" value="${file.title}"/>
        		</li>
 		</c:forEach>
 		
@@ -77,9 +77,5 @@
   </div>
 
 </div>
-
-<a href="<portlet:renderURL> <portlet:param name="action" value="browse"/></portlet:renderURL>">
-  <spring:message code="version.standard"/>
-</a>
 
 

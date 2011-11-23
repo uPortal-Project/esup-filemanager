@@ -38,6 +38,7 @@ import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.stockage.services.ServersAccessService;
 import org.esupportail.portlet.stockage.services.UserAgentInspector;
+import org.esupportail.portlet.stockage.utils.URLEncodingUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -177,6 +178,9 @@ public class PortletController implements InitializingBean {
     public ModelAndView browseWai(RenderRequest request, RenderResponse response,
     								@RequestParam(required=false) String dir,
     								@RequestParam(required=false) String msg) {
+		
+		dir = decodeDir(dir);
+		
 		if(!serverAccess.isInitialized(userParameters)) {
 			serverAccess.initializeServices(userParameters.getDriveNames(),  userParameters.getUserInfos(), userParameters);
 		}
@@ -239,4 +243,7 @@ public class PortletController implements InitializingBean {
 		return new ModelAndView("help", model);
 	}
 
+    private String decodeDir(String dir) {
+        return URLEncodingUtils.decodeDir(dir);
+    }
 }
