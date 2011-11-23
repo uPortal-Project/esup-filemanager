@@ -194,19 +194,15 @@ public class PortletControllerAction  implements InitializingBean {
 			ActionRequest request, ActionResponse response) throws IOException {
 		
 		dir = decodeDir(dir);
-		
-		String msg = null;
-		
+
 		List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
 		for(JsTreeFile file: files) {
-			String newTitle = request.getParameter(file.getPath());
+			String newTitle = request.getParameter(file.getEncPath());
 			if(newTitle != null && newTitle.length() != 0 && !file.getTitle().equals(newTitle)) {
 				this.serverAccess.renameFile(file.getPath(), newTitle, userParameters);
 			}
 		}
 		
-		if(msg != null)
-			response.setRenderParameter("msg", msg);
 		response.setRenderParameter("dir", encodeDir(dir));
 		response.setRenderParameter("sharedSessionId", sharedSessionId);
 		response.setRenderParameter("action", "browseWai");
