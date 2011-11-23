@@ -38,7 +38,7 @@ import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.stockage.services.ServersAccessService;
 import org.esupportail.portlet.stockage.services.UserAgentInspector;
-import org.esupportail.portlet.stockage.utils.URLEncodingUtils;
+import org.esupportail.portlet.stockage.utils.PathEncodingUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -249,10 +249,10 @@ public class PortletController implements InitializingBean {
 	}
 
     private String decodeDir(String dir) {
-        return URLEncodingUtils.decodeDir(dir);
+        return PathEncodingUtils.decodeDir(dir);
     }
    
     private String encodeDir(String dir) {
-        return URLEncodingUtils.encode(dir);
+        return PathEncodingUtils.encode(dir);
     }
 }

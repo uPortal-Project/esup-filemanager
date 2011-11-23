@@ -51,7 +51,7 @@ import org.esupportail.portlet.stockage.exceptions.EsupStockLostSessionException
 import org.esupportail.portlet.stockage.exceptions.EsupStockPermissionDeniedException;
 import org.esupportail.portlet.stockage.services.ResourceUtils.Type;
 import org.esupportail.portlet.stockage.services.ServersAccessService;
-import org.esupportail.portlet.stockage.utils.URLEncodingUtils;
+import org.esupportail.portlet.stockage.utils.PathEncodingUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -612,7 +612,7 @@ public class ServletAjaxController implements InitializingBean {
 	}
 	
     private String decodeDir(String dir) {
-        return URLEncodingUtils.decodeDir(dir);
+        return PathEncodingUtils.decodeDir(dir);
     }
 
 

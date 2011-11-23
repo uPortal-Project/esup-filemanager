@@ -1,8 +1,5 @@
 package org.esupportail.portlet.stockage.utils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.List;
 import java.util.Vector;
 
@@ -10,9 +7,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.esupportail.commons.utils.Base64;
 
-public class URLEncodingUtils {
+public class PathEncodingUtils {
 
-	protected static final Log log = LogFactory.getLog(URLEncodingUtils.class);
+	protected static final Log log = LogFactory.getLog(PathEncodingUtils.class);
 
 	public static String encode(String path) {
 		if(path == null)

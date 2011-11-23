@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.esupportail.portlet.stockage.utils.URLEncodingUtils;
+import org.esupportail.portlet.stockage.utils.PathEncodingUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +40,7 @@ public class BasketSession {
 	private String goal;
 
 	public List<String> getDirsToCopy() {
-		return URLEncodingUtils.decodeDirs(dirsToCopy);
+		return PathEncodingUtils.decodeDirs(dirsToCopy);
 	}
 
 	public void setDirsToCopy(List<String> dirsToCopy) {

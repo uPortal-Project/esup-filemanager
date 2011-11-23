@@ -23,7 +23,7 @@ package org.esupportail.portlet.stockage.beans;
 
 import java.io.Serializable;
 
-import org.esupportail.portlet.stockage.utils.URLEncodingUtils;
+import org.esupportail.portlet.stockage.utils.PathEncodingUtils;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 public class UploadBean implements Serializable {
@@ -43,7 +43,7 @@ public class UploadBean implements Serializable {
 	}
 
 	public String getFolder() {
-		return URLEncodingUtils.decodeDir(folder);
+		return PathEncodingUtils.decodeDir(folder);
 	}
 
 	public void setFolder(String folder) {

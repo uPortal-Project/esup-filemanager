@@ -36,7 +36,7 @@ import javax.activation.MimetypesFileTypeMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.esupportail.portlet.stockage.utils.URLEncodingUtils;
+import org.esupportail.portlet.stockage.utils.PathEncodingUtils;
 
 public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 
@@ -311,7 +311,7 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		//if (path.endsWith("/"))
 		//	path = path.substring(0, path.length()-1);
 		attr.put("path", path);
-		String encPath =  URLEncodingUtils.encode(path);
+		String encPath =  PathEncodingUtils.encode(path);
 		attr.put("encPath", encPath);
 		attr.put("type", type);
 		return attr;
@@ -466,7 +466,7 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		SortedMap<String, List<String>> parentPathes = getParentsPathes(path, categoryIcon, driveIcon);
 		SortedMap<String, List<String>> encodedParentPathes = new  TreeMap<String, List<String>>();
 		for(String pathKey : parentPathes.keySet()) {
-			String encodedPath = URLEncodingUtils.encode(pathKey);
+			String encodedPath = PathEncodingUtils.encode(pathKey);
 			encodedParentPathes.put(encodedPath, parentPathes.get(pathKey));
 		}
 		return encodedParentPathes;

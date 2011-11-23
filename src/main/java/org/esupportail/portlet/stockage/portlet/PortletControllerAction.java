@@ -42,7 +42,7 @@ import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.stockage.beans.UserPassword;
 import org.esupportail.portlet.stockage.services.ServersAccessService;
-import org.esupportail.portlet.stockage.utils.URLEncodingUtils;
+import org.esupportail.portlet.stockage.utils.PathEncodingUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -278,19 +278,19 @@ public class PortletControllerAction  implements InitializingBean {
 	}
 
     private String decodeDir(String dir) {
-        return URLEncodingUtils.decodeDir(dir);
+        return PathEncodingUtils.decodeDir(dir);
     }
     
     private List<String> decodeDirs(List<String> dirs) {
-        return URLEncodingUtils.decodeDirs(dirs);
+        return PathEncodingUtils.decodeDirs(dirs);
     }
     
     private String encodeDir(String dir) {
-        return URLEncodingUtils.encode(dir);
+        return PathEncodingUtils.encode(dir);
     }
     
     private List<String> encodeDirs(List<String> dirs) {
-        return URLEncodingUtils.encodeDirs(dirs);
+        return PathEncodingUtils.encodeDirs(dirs);
     }
     
 }
