@@ -178,7 +178,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 			return files;
 		} catch(FileSystemException fse) {
 			Throwable cause = ExceptionUtils.getCause(fse);
-			if(cause.getClass().equals(SftpException.class)) {
+			if(cause != null && cause.getClass().equals(SftpException.class)) {
 				SftpException sfe = (SftpException)cause;
 				if(sfe.id == ChannelSftp.SSH_FX_PERMISSION_DENIED)
 					throw new EsupStockPermissionDeniedException(sfe);

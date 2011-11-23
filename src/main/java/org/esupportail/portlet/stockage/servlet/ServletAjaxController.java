@@ -31,6 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -269,8 +271,8 @@ public class ServletAjaxController implements InitializingBean {
 	
 	@RequestMapping("/createFile")
     public ModelAndView createFile(String parentDir, String title, String type, HttpServletRequest request, HttpServletResponse response) {
-		parentDir = decodeDir(parentDir);
-		String fileDir = this.serverAccess.createFile(parentDir, title, type, userParameters);
+		String parentDirDecoded = decodeDir(parentDir);
+		String fileDir = this.serverAccess.createFile(parentDirDecoded, title, type, userParameters);
 		if(fileDir != null) {
 			return this.fileTree(parentDir, request, response);
 		} 
@@ -450,7 +452,6 @@ public class ServletAjaxController implements InitializingBean {
 	// take care : we don't send json like application/json but like text/html !
 	// goal is that the json is written in a frame
 	public  ModelAndView upload(String dir, String filename, InputStream inputStream) {
-		dir = decodeDir(dir);
 		boolean success = true;
 		String text = "";
 		try {
@@ -562,6 +563,22 @@ public class ServletAjaxController implements InitializingBean {
 		return new ModelAndView("details_empty", model);
 
 	}
+	
+	@RequestMapping("/getParentPath")
+	public @ResponseBody String getParentPath(String dir,
+			HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
+
+		dir = decodeDir(dir);
+		
+		JsTreeFile file = this.serverAccess.get(dir, userParameters);
+		SortedMap<String, List<String>> parentsEncPathesMap = file.getParentsEncPathes();		
+		List<String> parentsEncPathes = new Vector<String>(parentsEncPathesMap.keySet());
+		
+		String parentDir = parentsEncPathes.get(parentsEncPathes.size()-2);
+		
+		return parentDir;
+	}
+	
 	
 	@ExceptionHandler(EsupStockPermissionDeniedException.class)
 	public ModelAndView handlePermissionDeniedException(EsupStockPermissionDeniedException ex, 

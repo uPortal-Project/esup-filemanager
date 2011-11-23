@@ -809,16 +809,27 @@ function getLiIdFromPath(path) {
  */
 
 function getParentPath(path) {
-    //var tokens = path.split(/[~\/]/);
-	var tokens = path.split(/(%7E)|(%2F)/);
+	
+	var parentPath = '';
+	
+    $.ajax({
+        async: false,
+        type: 'POST',
+        url: '/esup-portlet-stockage/servlet-ajax/getParentPath',
+        data:  {
+            "dir": path,
+            "sharedSessionId": sharedSessionId
+        },
+        success: function (parentPathResp) {
+        	parentPath = parentPathResp;
+        },
+        error: function (response) {
+            console.log("getParentPath failed");
+            $("#detailArea").html("");
+            showDialogError("getParentPath failed : " + response.responseText);
+        }
+    });
 
-    var parentPath = path;
-
-    if (tokens.length > 0) {
-        var lastToken = tokens.pop();
-        parentPath = parentPath.substring(0, path.length - lastToken.length - 3);
-    }
-    	
     return parentPath;
 }
 

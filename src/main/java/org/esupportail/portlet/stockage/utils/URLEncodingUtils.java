@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.esupportail.commons.utils.Base64;
 
 public class URLEncodingUtils {
 
@@ -17,22 +18,14 @@ public class URLEncodingUtils {
 		if(path == null)
 			return null;
 		String encodedPath = path;
-		try {
-			encodedPath = URLEncoder.encode(path, "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			log.warn("problem encoding id ...", e);
-		}
+		encodedPath = Base64.encodeBytes(path.getBytes(), Base64.URL_SAFE);
 		return encodedPath;
 	}
 	
 	public static String decodeDir(String dir) {
 		if(dir == null)
 			return null;
-		try {
-			dir = URLDecoder.decode(dir, "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			log.error("error decoding this path : " + dir);
-		}
+		dir = new String(Base64.decode(dir, Base64.URL_SAFE));
 		return dir;
 	}
 
