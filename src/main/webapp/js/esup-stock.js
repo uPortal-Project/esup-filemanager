@@ -1432,7 +1432,8 @@ function downloadFile(fileName) {
     var url = '/esup-portlet-stockage/servlet-ajax/downloadFile?dir=' + encodeURIComponent(fileName) + '&sharedSessionId=' + sharedSessionId;
 
     console.log(url);
-    window.open(url);
+    //window.open(url);
+    window.location.href = url;
 }
 
 function downloadZip() {
