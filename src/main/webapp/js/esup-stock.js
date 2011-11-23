@@ -84,9 +84,9 @@ $.ajaxSetup({
                 $("#detailArea").css("width", finalWidthArbo);
                 $("#arborescentArea").parent().css("width", finalWidthArbo);
 
-                var finalHeightArbo = $("#leftArea").height()-$("#detailArea").height();
-                console.log("change height to arborescence area " + finalHeightArbo);
-                $("#arborescentArea").parent().css("height", finalHeightArbo);
+                //var finalHeightArbo = $("#leftArea").height()-$("#detailArea").height()-$("#arborescentAreaTitle").height();
+                //console.log("change height to arborescence area " + finalHeightArbo);
+                //$("#arborescentArea").parent().css("height", finalHeightArbo);
               });
 
       } else {
