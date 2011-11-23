@@ -24,8 +24,6 @@ package org.esupportail.portlet.stockage.beans;
 import java.io.Serializable;
 import java.util.List;
 
-import org.esupportail.portlet.stockage.utils.PathEncodingUtils;
-
 public class FormCommand implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -33,7 +31,7 @@ public class FormCommand implements Serializable {
 	private List<String> dirs;
 
 	public List<String> getDirs() {
-		return PathEncodingUtils.decodeDirs(dirs);
+		return dirs;
 	}
 
 	public void setDirs(List<String> dirs) {

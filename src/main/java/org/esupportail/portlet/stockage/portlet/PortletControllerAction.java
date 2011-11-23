@@ -110,11 +110,11 @@ public class PortletControllerAction  implements InitializingBean {
 		} else {
 
 			if (prepareCopy != null) {
-				basketSession.setDirsToCopy(encodeDirs(command.getDirs()));
+				basketSession.setDirsToCopy(command.getDirs());
 				basketSession.setGoal("copy");
 				msg = "ajax.copy.ok";
 			} else if (prepareCut != null) {
-				basketSession.setDirsToCopy(encodeDirs(command.getDirs()));
+				basketSession.setDirsToCopy(command.getDirs());
 				basketSession.setGoal("cut");
 				msg = "ajax.cut.ok";
 			} else if (past != null) {
