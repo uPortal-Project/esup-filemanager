@@ -88,11 +88,11 @@ public class ServletAjaxController implements InitializingBean {
 	@Qualifier("isPortlet")
 	protected Boolean isPortlet;
 	
-	@Autowired
+	@Autowired(required=false)
 	@Qualifier("useDoubleClick")
 	protected Boolean useDoubleClick = true;
 	
-	@Autowired
+	@Autowired(required=false)
 	@Qualifier("useCursorWaitDialog")
 	protected Boolean useCursorWaitDialog = false;
 	
