@@ -818,7 +818,7 @@ function getParentPath(path) {
         var lastToken = tokens.pop();
         parentPath = parentPath.substring(0, path.length - lastToken.length - 3);
     }
-
+    	
     return parentPath;
 }
 
@@ -1775,7 +1775,7 @@ function deleteFiles(dirsDataStruct) {
 
   function handleFileDoubleClick(elemClicked, event) {
     console.log("handleFileDoubleClick");
-      id = elemClicked.attr('rel');
+      var id = elemClicked.attr('rel');
       downloadFile(id);
   }
 
