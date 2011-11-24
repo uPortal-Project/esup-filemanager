@@ -196,7 +196,7 @@ function handleDrop(dragElement, dropElement) {
   //Basically, look for the 2nd ~ on both the source and target.  If the left part is the
   //same, we will do a cut / paste otherwise a copy / paste
 
-  var sourceStockageArea = getStockageArea(sourcePath)
+  var sourceStockageArea = getStockageArea(sourcePath);
   var targetStockageArea = getStockageArea(targetPath);
 
   var isCopy = true;
@@ -413,7 +413,7 @@ function canPaste(targetPath) {
     //To check validity, any of the source will work as they are all in the same directory as it is impossible to select files from multiple levels
     var sourcePath = dirs[0];
 
-  return isValidPaste(sourcePath, targetPath)
+  return isValidPaste(sourcePath, targetPath);
 }
 
 function pasteToPath(path) {
@@ -847,7 +847,7 @@ function getStockageArea(path) {
         return tokens[0] + ":" + tokens[1] + "~" + tokens[2];
     }
 
-    console.log("Unknown stockage area for path : " + path)
+    console.log("Unknown stockage area for path : " + path);
     return "";
 }
 
@@ -1101,7 +1101,7 @@ function showDialogError(error) {
 }
 
 function handleBrowserAreaSelection() {
-    console.log("handleBrowserAreaSelection")
+    console.log("handleBrowserAreaSelection");
 
     //refresh the details area
     updateDetailsArea($('#filesForm').serialize());
@@ -1668,7 +1668,7 @@ function deleteFiles(dirsDataStruct) {
 
               var elem = $("#myMenu li." + actionName);
               if (elem.length == 0) {
-                  console.log("No BA menu items! " + actionName)
+                  console.log("No BA menu items! " + actionName);
                   return;
               }
               if (enabled) {
@@ -1794,7 +1794,7 @@ function deleteFiles(dirsDataStruct) {
   function handleShiftSelection(elemClicked, event) {
 
     console.log("Shift key pressed");
-    var selector = "#browserArea .file, #browserArea .fileTreeRef"
+    var selector = "#browserArea .file, #browserArea .fileTreeRef";
     var selectableItems = $(selector);
 
     var lastItemChecked = $("#browserArea").data("lastItemChecked");
@@ -1918,7 +1918,7 @@ function deleteFiles(dirsDataStruct) {
           },
           create: function () {
               // On cache les checkboxs une fois le plugin initialisé
-              $(".browsercheck", this).hide()
+              $(".browsercheck", this).hide();
           },
           selecting: function (event, ui) {
             //Only update once we are done
