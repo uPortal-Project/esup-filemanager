@@ -524,12 +524,6 @@ function initJstree() {
                 "success": function (data, textStatus, jqXHR) {
                     console.log("JSTree ajax data loaded");
 
-                    //Save the path ==> id mappings in order to be able to look up the ids from paths later on
-
-                    $.each(data, function(idx, value) {
-                      addPathAndChildrenPathesToIdEntry(value);
-                    });
-
                     bindDragDropInLeftTree();
 
                 }
@@ -790,24 +784,12 @@ function getTypeFromLiNode(treeNode) {
 }
 
 function getLiIdFromPath(path) {
-
-  var pathToIdMap = getPathToIdMap();
-  var li_id = pathToIdMap[path];
-
-    console.log("li id is : [" + li_id + "] for path [" + path + "]");
-    return li_id;
+  return path;
 }
 
 /*
- * Given a path, returns its parent.
- * Examples
- *  getParentPath("FS:Shared~bob2~images/galerie/htdhtd") ==
- *   "FS:Shared~bob2~images/galerie"
- *
- *  getParentPath("FS:Shared~bob2) ==
- *   "FS:Shared"
+ * Given a path, returns its parent path.
  */
-
 function getParentPath(path) {
 	
 	var parentPath = '';
@@ -836,8 +818,9 @@ function getParentPath(path) {
 /*
  * getStockageArea("FS:Shared~bob2~images/galerie/htdhtd") ==
  *   "FS:Shared~bob2"
+ *   
+ *   TODO ...
  */
-
 function getStockageArea(path) {
     var tokens = path.split(/[~\/:]/);
 
@@ -885,36 +868,6 @@ function openAndSelectLiNode(path, withRefresh) {
 
 }
 
-function getPathToIdMap() {
-  var pathToIdMap = $("#arborescentArea").data("pathToIdMap");
-
-  if (pathToIdMap == null) {
-    pathToIdMap = {};
-  }
-
-  return pathToIdMap;
-}
-
-function addPathAndChildrenPathesToIdEntry(value) {
-
-  addPathToIdEntry(value.metadata.encPath, value.attr.id);
-
-  if (value.children) {
-    $.each(value.children, function(idxChild, childValue) {
-      addPathAndChildrenPathesToIdEntry(childValue);
-    });
-
-  }
-}
-
-function addPathToIdEntry(path, id) {
-  console.log("addPathToIdEntry.  Adding path " + path + ", " + id);
-
-  var pathToIdMap = getPathToIdMap();
-  pathToIdMap[path] = id;
-
-  $("#arborescentArea").data("pathToIdMap", pathToIdMap);
-}
 
 /**
  *
