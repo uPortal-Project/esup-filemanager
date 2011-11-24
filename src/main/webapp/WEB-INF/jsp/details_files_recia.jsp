@@ -1,4 +1,3 @@
-
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
@@ -14,27 +13,28 @@
 <div class="details-spacer"></div>
 <div id="detail-zip-download"><spring:message code="toolbar.zip" /></div>
 
-<% if (  !((java.util.List<String>) request.getAttribute("image_paths")).isEmpty()) {  %>
-<div id="detail-view-images">
-   <spring:message code="details.images.title" />
-</div>
+<c:if test="${not empty image_paths}">
 
-<div id="diaporamaDivId" title='<spring:message code="details.images.title" />' >
-    <ul class="diaporama1">
-        <c:forEach var="path" items="${image_paths}">
-            <li><img
-                src="/esup-portlet-stockage/servlet-ajax/fetchImage?path=${path}&sharedSessionId=${sharedSessionId}"
-                alt="Image" title="${path}" />
-            </li>
-        </c:forEach>
-    </ul>
-</div>
+	<div id="detail-view-images">
+	   <spring:message code="details.images.title" />
+	</div>
+	
+	<div id="diaporamaDivId" title='<spring:message code="details.images.title" />' >
+	    <ul class="diaporama1">
+	        <c:forEach var="path" items="${image_paths}">
+	            <li><img
+	                src="/esup-portlet-stockage/servlet-ajax/fetchImage?path=${path}&sharedSessionId=${sharedSessionId}"
+	                alt="Image" title="${path}" />
+	            </li>
+	        </c:forEach>
+	    </ul>
+	</div>
+	
+	<div id ="ok_text" ><spring:message code="details.images.ok"/></div>
+	<div id = "next_text" ><spring:message code="details.images.next"/></div>
+	<div id ="prev_text" ><spring:message code="details.images.prev"/></div>
 
-<div id ="ok_text" ><spring:message code="details.images.ok"/></div>
-<div id = "next_text" ><spring:message code="details.images.next"/></div>
-<div id ="prev_text" ><spring:message code="details.images.prev"/></div>
-
-<% } %>
+</c:if>
 
 
 

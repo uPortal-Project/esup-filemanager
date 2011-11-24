@@ -2,6 +2,7 @@
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
   <h3 class="ui-widget-header ui-corner-all" ><spring:message code="details.header"/></h3>
 
@@ -68,7 +69,7 @@
 
       <input name="sharedSessionId" type="hidden" />
 
-      <input name="dir" type="hidden" value="${path}" />
+      <input name="dir" type="hidden" value="${file.encPath}" />
 
 
       <div id="detail-download">
@@ -87,7 +88,7 @@
 
 $(document).ready(function () {
 
-  <% if(! ((org.esupportail.portlet.stockage.beans.JsTreeFile) request.getAttribute("file")).isOverSizeLimit() ) { %>
+  <c:if test="${not file.overSizeLimit}">
 
   console.log("Doc ready details sound");
 
@@ -96,16 +97,16 @@ $(document).ready(function () {
           ready: function () {
               console.log("ready js player div");
             $(this).jPlayer("setMedia", {
-              mp3: "/esup-portlet-stockage/servlet-ajax/fetchSound?path=${path}&sharedSessionId=${sharedSessionId}"
+              mp3: "/esup-portlet-stockage/servlet-ajax/fetchSound?path=${file.encPath}&sharedSessionId=${sharedSessionId}"
             });
           },
-          swfPath: "..${isPortlet ? '/esup-portlet-stockage' : ''}/js",
+          swfPath: "/esup-portlet-stockage/js",
           supplied: "mp3"
         });
 
 
 
-   <% } %>
+   </c:if>
 
 
     $('#detail-download').bind('click', function () {

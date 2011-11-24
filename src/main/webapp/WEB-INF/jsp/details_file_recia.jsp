@@ -28,7 +28,7 @@
 
   <input name="sharedSessionId" type="hidden" value="${sharedSessionId}" />
 
-  <input name="dir" type="hidden" value="${path}" />
+  <input name="dir" type="hidden" value="${file.encPath}" />
 
 
   <div id="detail-download">
@@ -36,8 +36,6 @@
   </div>
 
 </form:form>
-
-
 
 
 

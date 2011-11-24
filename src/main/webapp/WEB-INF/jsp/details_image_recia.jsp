@@ -10,7 +10,7 @@
 
 
   <img
-    src="/esup-portlet-stockage/servlet-ajax/fetchImage?path=${urlEncPath}&sharedSessionId=${sharedSessionId}"
+    src="/esup-portlet-stockage/servlet-ajax/fetchImage?path=${file.encPath}&sharedSessionId=${sharedSessionId}"
     class="detailsImage"
     alt="image" />
 
@@ -38,7 +38,7 @@
 
     <input name="sharedSessionId" type="hidden" value="${sharedSessionId}" />
 
-    <input name="dir" type="hidden" value="${path}" />
+    <input name="dir" type="hidden" value="${file.encPath}" />
 
 
     <div id="detail-download" >
