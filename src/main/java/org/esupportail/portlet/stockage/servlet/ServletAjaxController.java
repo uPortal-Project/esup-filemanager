@@ -48,6 +48,7 @@ import org.esupportail.portlet.stockage.beans.UploadBean;
 import org.esupportail.portlet.stockage.exceptions.EsupStockException;
 import org.esupportail.portlet.stockage.exceptions.EsupStockLostSessionException;
 import org.esupportail.portlet.stockage.exceptions.EsupStockPermissionDeniedException;
+import org.esupportail.portlet.stockage.services.ResourceUtils;
 import org.esupportail.portlet.stockage.services.ResourceUtils.Type;
 import org.esupportail.portlet.stockage.services.ServersAccessService;
 import org.esupportail.portlet.stockage.utils.PathEncodingUtils;
@@ -290,7 +291,7 @@ public class ServletAjaxController implements InitializingBean {
 		parentDir = decodeDir(parentDir);
 		dir = decodeDir(dir);
 		if(this.serverAccess.renameFile(dir, title, userParameters)) {
-			return this.fileTree(parentDir, request, response);	
+			return this.fileTree(encodeDir(parentDir), request, response);	
 		}
 		
 		//Usually means file does not exist
@@ -505,20 +506,15 @@ public class ServletAjaxController implements InitializingBean {
 				// view
 				if (resource.getType().equals("folder")
 						|| resource.getType().equals("drive")) {
-					model.put("size", resource.getSize());
 					model.put("file", resource);
 					return new ModelAndView("details_folder_recia", model);
 				} else if (resource.getType().equals("file")) {
 					model.put("file", resource);
-					model.put("size", resource.getSize());
-					model.put("path", encodeDir(path));
-					model.put("urlEncPath", encodeDir(path));
 
-					org.esupportail.portlet.stockage.services.ResourceUtils.Type fileType = resourceUtils
+					ResourceUtils.Type fileType = resourceUtils
 							.getType(resource.getTitle());
 
 					if (fileType == Type.AUDIO && !resource.isOverSizeLimit()) {
-						model.put("isPortlet", this.isPortlet);
 						return new ModelAndView("details_sound_recia", model);
 					} else if (fileType == Type.IMAGE
 							&& !resource.isOverSizeLimit()) {

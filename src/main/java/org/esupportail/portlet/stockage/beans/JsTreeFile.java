@@ -35,7 +35,6 @@ import javax.activation.MimetypesFileTypeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.esupportail.portlet.stockage.utils.PathEncodingUtils;
 
 public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
