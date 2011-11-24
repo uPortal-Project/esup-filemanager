@@ -545,15 +545,9 @@ public class ServletAjaxController implements InitializingBean {
 			HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
 
 		dir = decodeDir(dir);
-		
-		// TODO: tip so that we don't need to access to this file on the file system
-		// indeed, we just want to compute the parent path of this path (dir)
-		JsTreeFile file = this.serverAccess.get(dir, userParameters, false);
-		//JsTreeFile file = new JsTreeFile("", dir, "");
-		
-		SortedMap<String, List<String>> parentsEncPathesMap = file.getParentsEncPathes();		
+
+		SortedMap<String, List<String>> parentsEncPathesMap = JsTreeFile.getParentsEncPathes(dir, null, null);		
 		List<String> parentsEncPathes = new Vector<String>(parentsEncPathesMap.keySet());
-		
 		String parentDir = parentsEncPathes.get(parentsEncPathes.size()-2);
 		
 		return parentDir;
