@@ -107,13 +107,13 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 	}
 
 	@Override
-	public JsTreeFile get(String path, SharedUserPortletParameters userParameters, boolean folderDetails) {
+	public JsTreeFile get(String path, SharedUserPortletParameters userParameters, boolean folderDetails, boolean fileDetails) {
 		try {
 			this.open(userParameters);
 			List<DavResource> resources = root.getResources(this.rootPath
 					+ path);
 			if (resources != null && !resources.isEmpty())
-				return resourceAsJsTreeFile(resources.get(0), folderDetails);
+				return resourceAsJsTreeFile(resources.get(0), folderDetails, fileDetails);
 		} catch (SardineException se) {
 			log.error("SardineException retrieving this file  : " + path);
 			throw new EsupStockException(se);
@@ -132,7 +132,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 				if (resource.getName().equals("")) // Don't need the root of the
 					// folder
 					continue;
-				files.add(resourceAsJsTreeFile(resource, false));
+				files.add(resourceAsJsTreeFile(resource, false, true));
 			}
 			return files;
 		} catch (SardineException se) {
@@ -141,8 +141,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 		}
 	}
 
-	private JsTreeFile resourceAsJsTreeFile(DavResource resource, boolean folderDetails) {
-		// TODO: folderDetails
+	private JsTreeFile resourceAsJsTreeFile(DavResource resource, boolean folderDetails, boolean fileDetails) {
 		String lid = resource.getAbsoluteUrl();
 		// lid must be a relative path from rootPath
 		if (lid.startsWith(this.rootPath))
@@ -168,7 +167,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 		
 		JsTreeFile file = new JsTreeFile(title, lid, type);
 
-		if ("file".equals(type)) {
+		if (fileDetails && "file".equals(type)) {
 			String icon = resourceUtils.getIcon(title);
 			file.setIcon(icon);
 			file.setSize(resource.getContentLength().longValue());
@@ -177,7 +176,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 		}
 		
 		try {
-			if (resource.isDirectory()) {
+			if (folderDetails && resource.isDirectory()) {
 				List<DavResource> children;
 					children = root.getResources(resource.getAbsoluteUrl());
 				long totalSize = 0;

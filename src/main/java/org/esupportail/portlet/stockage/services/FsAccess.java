@@ -139,7 +139,7 @@ public abstract class FsAccess {
 
 	public abstract boolean isOpened();
 
-	public abstract JsTreeFile get(String path, SharedUserPortletParameters userParameters, boolean folderDetails) ;
+	public abstract JsTreeFile get(String path, SharedUserPortletParameters userParameters, boolean folderDetails, boolean fileDetails) ;
 
 	public abstract List<JsTreeFile> getChildren(String path, SharedUserPortletParameters userParameters);
 
@@ -182,7 +182,7 @@ public abstract class FsAccess {
 		this.userAuthenticatorService.getUserPassword(userParameters).setUsername(username);
 		this.userAuthenticatorService.getUserPassword(userParameters).setPassword(password);
 		try {
-			this.get("", userParameters, false);
+			this.get("", userParameters, false, false);
 		} catch(Exception e) {
 			// TODO : catch Exception corresponding to an authentication failure ...	
 			log.warn("Authentication failed : " + e.getMessage());

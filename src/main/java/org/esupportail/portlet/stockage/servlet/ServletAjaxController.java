@@ -183,7 +183,7 @@ public class ServletAjaxController implements InitializingBean {
 			}
 						
 			try {
-				JsTreeFile resource = this.serverAccess.get(dir, userParameters, false);
+				JsTreeFile resource = this.serverAccess.get(dir, userParameters, false, false);
 				model.put("resource", resource);
 				List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
 				Collections.sort(files);
@@ -497,7 +497,7 @@ public class ServletAjaxController implements InitializingBean {
 			this.serverAccess.updateUserParameters(path, userParameters);
 
 			// get resource with folder details (if it's a folder ...)
-			JsTreeFile resource = this.serverAccess.get(path, userParameters, true);
+			JsTreeFile resource = this.serverAccess.get(path, userParameters, true, true);
 			
 			// Based on the resource type, direct to appropriate details view
 			if ("folder".equals(resource.getType()) || "drive".equals(resource.getType())) {
@@ -525,7 +525,7 @@ public class ServletAjaxController implements InitializingBean {
 			List<String> image_paths = new ArrayList<String>();
 
 			for (String filePath : command.getDirs()) {
-				JsTreeFile resource = this.serverAccess.get(filePath, userParameters, false);
+				JsTreeFile resource = this.serverAccess.get(filePath, userParameters, false, true);
 				org.esupportail.portlet.stockage.services.ResourceUtils.Type fileType = resourceUtils.getType(resource.getTitle());
 				if (fileType == Type.IMAGE && !resource.isOverSizeLimit()) {
 					image_paths.add(encodeDir(filePath));

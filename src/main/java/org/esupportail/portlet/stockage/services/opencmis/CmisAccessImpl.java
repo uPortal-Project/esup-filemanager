@@ -129,8 +129,9 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	 * @param parentPath
 	 * @return a JsTreeFile where lid = /cmis_parent_parent_object_idJsTreeFile.ID_TITLE_SPLITcmis_parent_parent_object_name/cmis_parent_object_idJsTreeFile.ID_TITLE_SPLITcmis_parent_object_name/cmis_object_idJsTreeFile.ID_TITLE_SPLITcmis_object_name
 	 */
-	private JsTreeFile cmisObjectAsJsTreeFile(CmisObject cmisObject, String path, String parentPath, boolean folderDetails) {
+	private JsTreeFile cmisObjectAsJsTreeFile(CmisObject cmisObject, String path, String parentPath, boolean folderDetails, boolean fileDetails) {
 		// TODO: folderDetails
+		// TODO: fileDetails
 		String title = cmisObject.getName();
 		String lid = cmisObject.getId().concat(JsTreeFile.ID_TITLE_SPLIT).concat(title);
 		if(path != null) {
@@ -151,7 +152,7 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		}
 		
 		JsTreeFile file = new JsTreeFile(title, lid, type);
-		if("file".equals(type)) {
+		if(fileDetails && "file".equals(type)) {
 			String icon = resourceUtils.getIcon(title);
 			file.setIcon(icon);
 		}
@@ -222,9 +223,9 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 
 
 	@Override
-	public JsTreeFile get(String path, SharedUserPortletParameters userParameters, boolean folderDetails) {
+	public JsTreeFile get(String path, SharedUserPortletParameters userParameters, boolean folderDetails, boolean fileDetails) {
 		CmisObject cmisObject = getCmisObject(path, userParameters);
-		return cmisObjectAsJsTreeFile(cmisObject, path, null, folderDetails);
+		return cmisObjectAsJsTreeFile(cmisObject, path, null, folderDetails, fileDetails);
 	}
 
 	@Override
@@ -234,7 +235,7 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 
 		List<JsTreeFile> childrens = new ArrayList<JsTreeFile>();
 	   for (CmisObject cmisObject : pl) {
-		   childrens.add(cmisObjectAsJsTreeFile(cmisObject, null, path, false));
+		   childrens.add(cmisObjectAsJsTreeFile(cmisObject, null, path, false, true));
 	   }
 	   
 	   return childrens;
@@ -266,7 +267,7 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 			prop.put(PropertyIds.NAME, String.valueOf(title));
 			createdObject = parent.createDocument(prop, null, null, null, null, null, cmisSession.getDefaultContext());
 		}
-		JsTreeFile createdJsTreeFile = this.cmisObjectAsJsTreeFile(createdObject, null, parentPath, false);
+		JsTreeFile createdJsTreeFile = this.cmisObjectAsJsTreeFile(createdObject, null, parentPath, false, false);
 		return createdJsTreeFile.getPath();
 	}
 	

@@ -150,13 +150,13 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 	 * @return
 	 */
 	@Override
-	public JsTreeFile get(String path, SharedUserPortletParameters userParameters, boolean folderDetails) {
+	public JsTreeFile get(String path, SharedUserPortletParameters userParameters, boolean folderDetails, boolean fileDetails) {
 		try {
 			this.open(userParameters);
 			if (!path.endsWith("/"))
 				path = path.concat("/");
 			SmbFile resource = cd(path, userParameters);
-			return resourceAsJsTreeFile(resource, userParameters, folderDetails);
+			return resourceAsJsTreeFile(resource, userParameters, folderDetails, fileDetails);
 		} catch (SmbAuthException sae) {
 			log.error(sae.getMessage());
 			root = null;
@@ -184,7 +184,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 				for(SmbFile child: resource.listFiles()) {
 					try {
 						if(!child.isHidden() || this.showHiddenFiles) {
-							files.add(resourceAsJsTreeFile(child, userParameters, false));
+							files.add(resourceAsJsTreeFile(child, userParameters, false, true));
 						}
 					} catch (SmbException se) {
 						log.warn("The resource isn't accessible and so will be ignored", se);
@@ -203,7 +203,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 		}
 	}
 
-	private JsTreeFile resourceAsJsTreeFile(SmbFile resource, SharedUserPortletParameters userParameters, boolean folderDetails) throws SmbException {
+	private JsTreeFile resourceAsJsTreeFile(SmbFile resource, SharedUserPortletParameters userParameters, boolean folderDetails, boolean fileDetails) throws SmbException {
 		String lid = resource.getCanonicalPath();
 		String rootPath = root.getCanonicalPath();
 		// lid must be a relative path from rootPath
@@ -225,7 +225,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 			title = resource.getName().replace("/", "");
 		}
 		JsTreeFile file = new JsTreeFile(title, lid, type);
-		if("file".equals(type)) {
+		if(fileDetails && "file".equals(type)) {
 			String icon = getResourceUtils().getIcon(title);
 			file.setIcon(icon);
 			file.setSize(resource.getContentLength());
