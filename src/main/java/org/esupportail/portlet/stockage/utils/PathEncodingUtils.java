@@ -26,6 +26,7 @@ public class PathEncodingUtils {
 			return null;
 		String encodedPath = path;
 		encodedPath = Base64.encodeBytes(path.getBytes(), Base64.URL_SAFE);
+		encodedPath = encodedPath.replaceAll("\n", "");
 		encodedPath = encodedPath.replaceAll("=", "");
 		return PREFIX_CODE + encodedPath;
 	}
