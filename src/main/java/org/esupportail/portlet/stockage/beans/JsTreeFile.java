@@ -283,6 +283,7 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		Map<String, String> attr = new HashMap<String, String>();
 
 		String id = "file_" + this.getPath().hashCode();
+		id = PathEncodingUtils.encode(this.getPath());
 		attr.put("id", id);
 
 		//Use rel which to store the type of node for the js tree

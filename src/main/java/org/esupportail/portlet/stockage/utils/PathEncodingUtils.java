@@ -7,6 +7,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.esupportail.commons.utils.Base64;
 
+/**
+ * This Class provides encode/decode methods for path string
+ * so that we have a two-way converter between a path and a string/id
+ * using only alphanumeric char, '_' char and '-' char.
+ * This id can be used with jquery, like id of html tag, etc.
+ * Moreover this id desn't need specific encoding characters for accents 
+ * (because we don't use accents).
+ */
 public class PathEncodingUtils {
 
 	protected static final Log log = LogFactory.getLog(PathEncodingUtils.class);
@@ -18,6 +26,7 @@ public class PathEncodingUtils {
 			return null;
 		String encodedPath = path;
 		encodedPath = Base64.encodeBytes(path.getBytes(), Base64.URL_SAFE);
+		encodedPath = encodedPath.replaceAll("=", "");
 		return PREFIX_CODE + encodedPath;
 	}
 	
@@ -25,6 +34,11 @@ public class PathEncodingUtils {
 		if(dir == null || "".equals(dir))
 			return null;
 		dir = dir.substring(PREFIX_CODE.length());
+		int nb_equals_to_add = 4 - dir.length() % 4;
+		if(nb_equals_to_add == 1)
+			dir = dir + "=";
+		if(nb_equals_to_add == 2)
+			dir = dir + "==";
 		dir = new String(Base64.decode(dir, Base64.URL_SAFE));
 		return dir;
 	}
