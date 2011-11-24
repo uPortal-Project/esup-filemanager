@@ -107,13 +107,13 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 	}
 
 	@Override
-	public JsTreeFile get(String path, SharedUserPortletParameters userParameters) {
+	public JsTreeFile get(String path, SharedUserPortletParameters userParameters, boolean folderDetails) {
 		try {
 			this.open(userParameters);
 			List<DavResource> resources = root.getResources(this.rootPath
 					+ path);
 			if (resources != null && !resources.isEmpty())
-				return resourceAsJsTreeFile(resources.get(0));
+				return resourceAsJsTreeFile(resources.get(0), folderDetails);
 		} catch (SardineException se) {
 			log.error("SardineException retrieving this file  : " + path);
 			throw new EsupStockException(se);
@@ -132,7 +132,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 				if (resource.getName().equals("")) // Don't need the root of the
 					// folder
 					continue;
-				files.add(resourceAsJsTreeFile(resource));
+				files.add(resourceAsJsTreeFile(resource, false));
 			}
 			return files;
 		} catch (SardineException se) {
@@ -141,7 +141,8 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 		}
 	}
 
-	private JsTreeFile resourceAsJsTreeFile(DavResource resource) {
+	private JsTreeFile resourceAsJsTreeFile(DavResource resource, boolean folderDetails) {
+		// TODO: folderDetails
 		String lid = resource.getAbsoluteUrl();
 		// lid must be a relative path from rootPath
 		if (lid.startsWith(this.rootPath))

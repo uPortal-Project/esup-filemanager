@@ -150,13 +150,13 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 	 * @return
 	 */
 	@Override
-	public JsTreeFile get(String path, SharedUserPortletParameters userParameters) {
+	public JsTreeFile get(String path, SharedUserPortletParameters userParameters, boolean folderDetails) {
 		try {
 			this.open(userParameters);
 			if (!path.endsWith("/"))
 				path = path.concat("/");
 			SmbFile resource = cd(path, userParameters);
-			return resourceAsJsTreeFile(resource, userParameters);
+			return resourceAsJsTreeFile(resource, userParameters, folderDetails);
 		} catch (SmbAuthException sae) {
 			log.error(sae.getMessage());
 			root = null;
@@ -184,7 +184,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 				for(SmbFile child: resource.listFiles()) {
 					try {
 						if(!child.isHidden() || this.showHiddenFiles) {
-							files.add(resourceAsJsTreeFile(child, userParameters));
+							files.add(resourceAsJsTreeFile(child, userParameters, false));
 						}
 					} catch (SmbException se) {
 						log.warn("The resource isn't accessible and so will be ignored", se);
@@ -203,7 +203,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 		}
 	}
 
-	private JsTreeFile resourceAsJsTreeFile(SmbFile resource, SharedUserPortletParameters userParameters) throws SmbException {
+	private JsTreeFile resourceAsJsTreeFile(SmbFile resource, SharedUserPortletParameters userParameters, boolean folderDetails) throws SmbException {
 		String lid = resource.getCanonicalPath();
 		String rootPath = root.getCanonicalPath();
 		// lid must be a relative path from rootPath
@@ -231,7 +231,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 			file.setSize(resource.getContentLength());
 		}
 
-		if ("folder".equals(type) || "drive".equals(type)) {
+		if(folderDetails && ("folder".equals(type) || "drive".equals(type))) {
 			if (resource.listFiles() != null) {
 				long totalSize = 0;
 				long fileCount = 0;

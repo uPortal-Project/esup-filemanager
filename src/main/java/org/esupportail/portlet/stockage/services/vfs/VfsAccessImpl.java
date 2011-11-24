@@ -156,10 +156,10 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 	}
 
 	@Override
-	public JsTreeFile get(String path, SharedUserPortletParameters userParameters) {
+	public JsTreeFile get(String path, SharedUserPortletParameters userParameters, boolean folderDetails) {
 		try {
 			FileObject resource = cd(path, userParameters);			
-			return resourceAsJsTreeFile(resource);
+			return resourceAsJsTreeFile(resource, folderDetails);
 		} catch(FileSystemException fse) {
 			throw new EsupStockException(fse);
 		}
@@ -174,7 +174,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 			if(children != null)
 			    for(FileObject child: children)
 				if(this.showHiddenFiles || !child.isHidden())
-					files.add(resourceAsJsTreeFile(child));
+					files.add(resourceAsJsTreeFile(child, false));
 			return files;
 		} catch(FileSystemException fse) {
 			Throwable cause = ExceptionUtils.getCause(fse);
@@ -189,7 +189,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 
 	
 	
-	private JsTreeFile resourceAsJsTreeFile(FileObject resource) throws FileSystemException {
+	private JsTreeFile resourceAsJsTreeFile(FileObject resource, boolean folderDetails) throws FileSystemException {
 		String lid = resource.getName().getPath();
 		String rootPath = this.root.getName().getPath();
 		// lid must be a relative path from rootPath
@@ -216,7 +216,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 					.getSizeLimit(title));
 		}
 
-		if ("folder".equals(type) || "drive".equals(type)) {
+		if(folderDetails && ("folder".equals(type) || "drive".equals(type))) {
 			try {
 				if (resource.getChildren() != null) {
 					long totalSize = 0;

@@ -198,7 +198,7 @@ public class ServersAccessService implements DisposableBean {
 	}
 	
 
-	public JsTreeFile get(String dir, SharedUserPortletParameters userParameters) {
+	public JsTreeFile get(String dir, SharedUserPortletParameters userParameters, boolean folderDetails) {
 		String category = getDriveCategory(dir);
 		String driveName = getDrive(dir);
 		if(driveName == null || driveName.length() == 0) {
@@ -211,7 +211,7 @@ public class ServersAccessService implements DisposableBean {
 		} else {
 			// get drive or folder or file
 			String path = getLocalDir(dir);		
-			JsTreeFile jsTreeFile = this.getFsAccess(driveName, userParameters).get(path, userParameters);
+			JsTreeFile jsTreeFile = this.getFsAccess(driveName, userParameters).get(path, userParameters, folderDetails);
 			DrivesCategory dCat = this.drivesCategories.get(category);
 			jsTreeFile.setCategory(category, dCat.getIcon());		
 			jsTreeFile.setDrive(driveName, this.getFsAccess(driveName, userParameters).getIcon());
@@ -277,7 +277,7 @@ public class ServersAccessService implements DisposableBean {
 	}
 
 	private boolean interMoveCopyFile(String newDir, String refDir, boolean copy, SharedUserPortletParameters userParameters) {
-		JsTreeFile ref = this.get(refDir, userParameters);
+		JsTreeFile ref = this.get(refDir, userParameters, false);
 		boolean allIsOk = true;
 		if("file".equals(ref.getType())) {
 			DownloadFile file = this.getFile(refDir, userParameters);
@@ -341,7 +341,7 @@ public class ServersAccessService implements DisposableBean {
 		JsTreeFile parentFile = null;
 		
 		List<JsTreeFile> drivesAndCategories = this.getJsTreeFileRoots(userParameters);
-		JsTreeFile jFile = this.get(dir, userParameters);
+		JsTreeFile jFile = this.get(dir, userParameters, false);
 		
 		Iterator<String> parentsPathes = jFile.getParentsPathes().keySet().iterator();
 		String parentPath = parentsPathes.next();
@@ -439,7 +439,7 @@ public class ServersAccessService implements DisposableBean {
 	}
 	
 	private void addChildrensTozip(ZipOutputStream out, String dir, String folder, SharedUserPortletParameters userParameters) throws IOException {
-		JsTreeFile tFile = get(dir, userParameters);
+		JsTreeFile tFile = get(dir, userParameters, false);
 		if("file".equals(tFile.getType())) {
 			DownloadFile dFile = getFile(dir, userParameters);
 			

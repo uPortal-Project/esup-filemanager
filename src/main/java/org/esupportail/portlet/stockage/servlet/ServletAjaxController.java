@@ -183,7 +183,7 @@ public class ServletAjaxController implements InitializingBean {
 			}
 						
 			try {
-				JsTreeFile resource = this.serverAccess.get(dir, userParameters);
+				JsTreeFile resource = this.serverAccess.get(dir, userParameters, false);
 				model.put("resource", resource);
 				List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
 				Collections.sort(files);
@@ -477,13 +477,11 @@ public class ServletAjaxController implements InitializingBean {
 	
 	
 	/**
-	 * Added for GIP Recia : Return the correct details view based on the requested file(s)
-	 * @throws UnsupportedEncodingException 
-	 * 
+	 * Return the correct details view based on the requested file(s)
 	 */
 	@RequestMapping("/detailsArea")
 	public ModelAndView detailsArea(FormCommand command,
-			HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
+			HttpServletRequest request, HttpServletResponse response) {
 		ModelMap model = new ModelMap();
 
 		String sharedSessionId = request.getParameter("sharedSessionId");
@@ -492,68 +490,51 @@ public class ServletAjaxController implements InitializingBean {
 		if (command == null || command.getDirs() == null) {
 			return new ModelAndView("details_empty", model);
 		}
-/*
-		try {
-*/
-			// See if we go to the multiple files/folder view or not
-			if (command.getDirs().size() == 1) {
-				String path = command.getDirs().get(0);
-				this.serverAccess.updateUserParameters(path, userParameters);
 
-				JsTreeFile resource = this.serverAccess.get(path,
-						userParameters);
-				// Based on the resource type, direct to appropriate details
-				// view
-				if (resource.getType().equals("folder")
-						|| resource.getType().equals("drive")) {
-					model.put("file", resource);
-					return new ModelAndView("details_folder_recia", model);
-				} else if (resource.getType().equals("file")) {
-					model.put("file", resource);
+		// See if we go to the multiple files/folder view or not
+		if (command.getDirs().size() == 1) {
+			String path = command.getDirs().get(0);
+			this.serverAccess.updateUserParameters(path, userParameters);
 
-					ResourceUtils.Type fileType = resourceUtils
-							.getType(resource.getTitle());
-
-					if (fileType == Type.AUDIO && !resource.isOverSizeLimit()) {
-						return new ModelAndView("details_sound_recia", model);
-					} else if (fileType == Type.IMAGE
-							&& !resource.isOverSizeLimit()) {
-						return new ModelAndView("details_image_recia", model);
-					} else {
-						// generic file page
-						return new ModelAndView("details_file_recia", model);
-					}
+			// get resource with folder details (if it's a folder ...)
+			JsTreeFile resource = this.serverAccess.get(path, userParameters, true);
+			
+			// Based on the resource type, direct to appropriate details view
+			if ("folder".equals(resource.getType()) || "drive".equals(resource.getType())) {
+				model.put("file", resource);
+				return new ModelAndView("details_folder_recia", model);
+			} else if ("file".equals(resource.getType())) {
+				model.put("file", resource);
+				ResourceUtils.Type fileType = resourceUtils.getType(resource.getTitle());
+				if (fileType == Type.AUDIO && !resource.isOverSizeLimit()) {
+					return new ModelAndView("details_sound_recia", model);
+				} else if (fileType == Type.IMAGE
+						&& !resource.isOverSizeLimit()) {
+					return new ModelAndView("details_image_recia", model);
+				} else {
+					// generic file page
+					return new ModelAndView("details_file_recia", model);
 				}
-			} else if (command.getDirs().size() > 1) {
-				// Add data for multiple files details view
-				model.put("numselected", command.getDirs().size());
-
-				// Find the resources which are files and add them to the
-				// image_paths array
-				List<String> image_paths = new ArrayList<String>();
-
-				for (String filePath : command.getDirs()) {
-					JsTreeFile resource = this.serverAccess.get(filePath,
-							userParameters);
-					org.esupportail.portlet.stockage.services.ResourceUtils.Type fileType = resourceUtils
-							.getType(resource.getTitle());
-					if (fileType == Type.IMAGE && !resource.isOverSizeLimit()) {
-						image_paths.add(encodeDir(filePath));
-					}
-				}
-				model.put("image_paths", image_paths);
-				return new ModelAndView("details_files_recia", model);
 			}
-/*
-		} catch (Exception ex) {
-			log.warn("Exception during retrieve details infos : " + ex.getMessage());
-			log.info("Full satcktrace of exception occured retrieving details infos", ex);
-			response.setStatus(403);
-			model.put("errorText",
-					context.getMessage("ajax.detailsArea.failed", null, locale));
-			return new ModelAndView("ajax_error_recia", model);
+		} else if (command.getDirs().size() > 1) {
+			// Add data for multiple files details view
+			model.put("numselected", command.getDirs().size());
+
+			// Find the resources which are files and add them to the
+			// image_paths array
+			List<String> image_paths = new ArrayList<String>();
+
+			for (String filePath : command.getDirs()) {
+				JsTreeFile resource = this.serverAccess.get(filePath, userParameters, false);
+				org.esupportail.portlet.stockage.services.ResourceUtils.Type fileType = resourceUtils.getType(resource.getTitle());
+				if (fileType == Type.IMAGE && !resource.isOverSizeLimit()) {
+					image_paths.add(encodeDir(filePath));
+				}
+			}
+			model.put("image_paths", image_paths);
+			return new ModelAndView("details_files_recia", model);
 		}
-*/
+
 		// Unknown resource type
 		return new ModelAndView("details_empty", model);
 
@@ -565,7 +546,11 @@ public class ServletAjaxController implements InitializingBean {
 
 		dir = decodeDir(dir);
 		
-		JsTreeFile file = this.serverAccess.get(dir, userParameters);
+		// TODO: tip so that we don't need to access to this file on the file system
+		// indeed, we just want to compute the parent path of this path (dir)
+		JsTreeFile file = this.serverAccess.get(dir, userParameters, false);
+		//JsTreeFile file = new JsTreeFile("", dir, "");
+		
 		SortedMap<String, List<String>> parentsEncPathesMap = file.getParentsEncPathes();		
 		List<String> parentsEncPathes = new Vector<String>(parentsEncPathesMap.keySet());
 		

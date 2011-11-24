@@ -129,7 +129,8 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	 * @param parentPath
 	 * @return a JsTreeFile where lid = /cmis_parent_parent_object_idJsTreeFile.ID_TITLE_SPLITcmis_parent_parent_object_name/cmis_parent_object_idJsTreeFile.ID_TITLE_SPLITcmis_parent_object_name/cmis_object_idJsTreeFile.ID_TITLE_SPLITcmis_object_name
 	 */
-	private JsTreeFile cmisObjectAsJsTreeFile(CmisObject cmisObject, String path, String parentPath) {
+	private JsTreeFile cmisObjectAsJsTreeFile(CmisObject cmisObject, String path, String parentPath, boolean folderDetails) {
+		// TODO: folderDetails
 		String title = cmisObject.getName();
 		String lid = cmisObject.getId().concat(JsTreeFile.ID_TITLE_SPLIT).concat(title);
 		if(path != null) {
@@ -221,9 +222,9 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 
 
 	@Override
-	public JsTreeFile get(String path, SharedUserPortletParameters userParameters) {
+	public JsTreeFile get(String path, SharedUserPortletParameters userParameters, boolean folderDetails) {
 		CmisObject cmisObject = getCmisObject(path, userParameters);
-		return cmisObjectAsJsTreeFile(cmisObject, path, null);
+		return cmisObjectAsJsTreeFile(cmisObject, path, null, folderDetails);
 	}
 
 	@Override
@@ -233,7 +234,7 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 
 		List<JsTreeFile> childrens = new ArrayList<JsTreeFile>();
 	   for (CmisObject cmisObject : pl) {
-		   childrens.add(cmisObjectAsJsTreeFile(cmisObject, null, path));
+		   childrens.add(cmisObjectAsJsTreeFile(cmisObject, null, path, false));
 	   }
 	   
 	   return childrens;
@@ -265,7 +266,7 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 			prop.put(PropertyIds.NAME, String.valueOf(title));
 			createdObject = parent.createDocument(prop, null, null, null, null, null, cmisSession.getDefaultContext());
 		}
-		JsTreeFile createdJsTreeFile = this.cmisObjectAsJsTreeFile(createdObject, null, parentPath);
+		JsTreeFile createdJsTreeFile = this.cmisObjectAsJsTreeFile(createdObject, null, parentPath, false);
 		return createdJsTreeFile.getPath();
 	}
 	
