@@ -53,7 +53,7 @@
       var sharedSessionId = '${sharedSessionId}';
       var useDoubleClick = '${useDoubleClick}';
       var useCursorWaitDialog = '${useCursorWaitDialog}';
-      var defaultPath = '';
+      var defaultPath = '${defaultPath}';
     </script>
 
     <script type="text/javascript" src="/esup-portlet-stockage/js/jquery-1.4.2.min.js">

@@ -148,6 +148,8 @@ public class ServletAjaxController implements InitializingBean {
 		model.put("sharedSessionId", userParameters.getSharedSessionId());
 		model.put("useDoubleClick", useDoubleClick);
 		model.put("useCursorWaitDialog", useCursorWaitDialog);
+		String defaultPath = encodeDir(JsTreeFile.ROOT_DRIVE);
+		model.put("defaultPath", defaultPath);
         return new ModelAndView("view-servlet", model);
     }
 	
