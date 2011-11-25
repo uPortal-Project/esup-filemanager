@@ -835,7 +835,6 @@ function getStockageArea(path) {
 /**
  * Opens and then selects an LI Node
  */
-
 function openAndSelectLiNode(path, withRefresh) {
 
 
@@ -851,7 +850,7 @@ function openAndSelectLiNode(path, withRefresh) {
       }
     } else {
       var parentNode = getLiNodeFromPath(parentPath);
-      console.log("openAndSelectLiNode.  parentNode : " + getJqueryObj(parentNode).html() );
+      //console.log("openAndSelectLiNode.  parentNode : " + getJqueryObj(parentNode).html() );
       $("#fileTree").jstree("open_node", parentNode, function () {
         var nodeToSelect = getLiNodeFromPath(path);
             console.log("Selecting node after open " + path + " node: " + getJqueryObj(nodeToSelect).html());
