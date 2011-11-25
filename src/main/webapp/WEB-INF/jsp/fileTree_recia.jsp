@@ -27,7 +27,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <div class="breadcrumbs">
-  <c:forEach var="parent" items="${resource.parentsEncPathes}" varStatus="item">
+  <c:forEach var="parent" items="${parentsEncPathes}" varStatus="item">
     <c:choose>
       <c:when test="${item.last}">
         <img src="${resource.icon}" alt="icon" />

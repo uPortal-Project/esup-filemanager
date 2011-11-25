@@ -62,7 +62,7 @@
         <%-- this block is used only when javascript is disabled --%>
 
         <div class="breadcrumbs">
-          <c:forEach var="parent" items="${resource.parentsEncPathes}" varStatus="item">
+          <c:forEach var="parent" items="${parentsEncPathes}" varStatus="item">
             <c:set var="iconAlt">
             	<c:if test="${item.first}">/</c:if>
             </c:set>

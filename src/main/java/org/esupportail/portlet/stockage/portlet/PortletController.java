@@ -228,6 +228,8 @@ public class PortletController implements InitializingBean {
 		pathEncodingUtils.encodeDir(files);
 		model.put("files", files);
 		model.put("currentDir", dir);
+		SortedMap<String, List<String>> parentsEncPathes = pathEncodingUtils.getParentsEncPathes(resource);
+		model.put("parentsEncPathes", parentsEncPathes); 
 		return model;
 	}
 	

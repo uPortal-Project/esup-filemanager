@@ -187,6 +187,8 @@ public class ServletAjaxController implements InitializingBean {
 			Collections.sort(files);
 			pathEncodingUtils.encodeDir(files);
 			model.put("files", files); 
+			SortedMap<String, List<String>> parentsEncPathes = pathEncodingUtils.getParentsEncPathes(resource);
+			model.put("parentsEncPathes", parentsEncPathes); 
 		} catch (Exception ex) {
 			//Added for GIP Recia : Error handling
 			log.warn("Error retrieving file", ex);

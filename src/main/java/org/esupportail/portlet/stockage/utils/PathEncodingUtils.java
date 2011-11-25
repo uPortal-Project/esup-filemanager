@@ -48,7 +48,6 @@ public abstract class PathEncodingUtils {
 
 	public void encodeDir(JsTreeFile file) {
 		file.setEncPath(encodeDir(file.getPath()));
-		file.setParentsEncPathes(getParentsEncPathes(file));
 		encodeDir(file.getChildren());
 	}
 

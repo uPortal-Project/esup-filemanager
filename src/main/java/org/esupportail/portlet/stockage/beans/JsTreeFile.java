@@ -99,8 +99,6 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 	
 	private String encPath;
 	
-	private SortedMap<String, List<String>> parentsEncPathes;
-	
 
 	public boolean isOverSizeLimit() {
 		return overSizeLimit;
@@ -406,19 +404,6 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
      */
     public String getEncPath() {
 		return encPath;
-	}
-    
-    public void setParentsEncPathes(SortedMap<String, List<String>> parentsEncPathes) {
-		this.parentsEncPathes = parentsEncPathes;
-	}
-	  
-    /**
-     * Take Care !
-     * Use it only in jsp, after that controller calls setParentsEncPathes via pathEncodingUtils bean !
-     * @return Map<encPath, List<title, icon>>   
-     */
-    public SortedMap<String, List<String>> getParentsEncPathes() {
-		return parentsEncPathes;
 	}
 
 	public String getType() {
