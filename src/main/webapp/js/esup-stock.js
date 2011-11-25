@@ -922,7 +922,7 @@ function updateActions(setActionElementEnabled) {
     //And a cut or copy must have been completed
     && canPaste(baSelData.path));
 
-    setActionElementEnabled("delete", baSelData.writeable && baSelData.numberItemsChecked > 0 && !baSelData.containsEmptyDir);
+    setActionElementEnabled("delete", baSelData.writeable && baSelData.numberItemsChecked > 0);
 
     setActionElementEnabled("cut", baSelData.readable && baSelData.writeable && baSelData.numberItemsChecked > 0);
 
@@ -2001,24 +2001,10 @@ function getBrowserAreaCheckedSelectionData() {
     var readable = true;
     var writeable = true;
     
-    returnData.containsEmptyDir = false;
-    
     var parentTds = getParentRow(checkedItems);
 
     parentTds.each(function (idx, elem) {
-var parentTd = $(elem);
-        
-        //If the file is a directory, we need to find out if it is empty or not
-        var isDirectory = parentTd.find("a.fileTreeRef").length > 0;
-        if (isDirectory) {        
-	        var path = parentTd.find("input[type='checkbox']").val();
-	        console.log("Checking if " + path + " is empty");
-	        var jsTreeDomJqObj = $("#" + getLiIdFromPath(path));
-	        if (jsTreeDomJqObj.data("isEmpty") != "true") {
-	        	console.log("Found an empty directory : " + path);
-	        	returnData.containsEmptyDir = true;
-	        }	        
-	    }
+    	var parentTd = $(elem);
         
         readable = readable && parentTd.find("div.readable").html() === "true";
         writeable = writeable && parentTd.find("div.writeable").html() === "true";

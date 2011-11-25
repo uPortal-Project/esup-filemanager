@@ -303,7 +303,7 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		Map<String, String> attr = new HashMap<String, String>();
 		String encPath =  getEncPath();
 		attr.put("encPath", encPath);
-		attr.put("type", getType());
+		attr.put("type", getType());                                                                                     
 		return attr;
 	}
 
