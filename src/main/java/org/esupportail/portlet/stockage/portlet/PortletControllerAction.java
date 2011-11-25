@@ -286,7 +286,7 @@ public class PortletControllerAction  implements InitializingBean {
     }
     
     private String encodeDir(String dir) {
-        return PathEncodingUtils.encode(dir);
+        return PathEncodingUtils.encodeDir(dir);
     }
     
     private List<String> encodeDirs(List<String> dirs) {

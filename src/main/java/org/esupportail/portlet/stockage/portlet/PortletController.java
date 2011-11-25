@@ -162,7 +162,7 @@ public class PortletController implements InitializingBean {
 		ModelMap model;
 		if( !(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE)) ) {
 			if(this.serverAccess.formAuthenticationRequired(decodedDir, userParameters)) {
-				SortedMap<String, List<String>> parentPathes = JsTreeFile.getParentsEncPathes(decodedDir, null, null);
+				SortedMap<String, List<String>> parentPathes = PathEncodingUtils.getParentsEncPathes(decodedDir, null, null);
 				// we want to get the (last-1) key of sortedmap "parentPathes"
 				String parentDir = parentPathes.subMap(parentPathes.firstKey(), parentPathes.lastKey()).lastKey();
 				model = new ModelMap("currentDir", dir);
@@ -192,7 +192,7 @@ public class PortletController implements InitializingBean {
 		ModelMap model;
 		if( !(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE)) ) {
 			if(this.serverAccess.formAuthenticationRequired(dir, userParameters)) {
-				SortedMap<String, List<String>> parentPathes = JsTreeFile.getParentsEncPathes(decodedDir, null, null);
+				SortedMap<String, List<String>> parentPathes = PathEncodingUtils.getParentsEncPathes(decodedDir, null, null);
 				// we want to get the (last-1) key of sortedmap "parentPathes"
 				String parentDir = parentPathes.subMap(parentPathes.firstKey(), parentPathes.lastKey()).lastKey();
 				model = new ModelMap("currentDir", dir);
@@ -244,6 +244,6 @@ public class PortletController implements InitializingBean {
     }
    
     private String encodeDir(String dir) {
-        return PathEncodingUtils.encode(dir);
+        return PathEncodingUtils.encodeDir(dir);
     }
 }

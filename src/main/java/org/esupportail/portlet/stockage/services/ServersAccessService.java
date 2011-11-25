@@ -48,6 +48,7 @@ import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.stockage.beans.UserPassword;
 import org.esupportail.portlet.stockage.exceptions.EsupStockException;
 import org.esupportail.portlet.stockage.exceptions.EsupStockLostSessionException;
+import org.esupportail.portlet.stockage.utils.PathEncodingUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -358,7 +359,8 @@ public class ServersAccessService implements DisposableBean {
 		List<JsTreeFile> rootAndDrivesAndCategories = this.getJsTreeFileRoots(userParameters);
 		JsTreeFile jFile = this.get(dir, userParameters, false, false);
 		
-		Iterator<String> parentsPathes = jFile.getParentsPathes().keySet().iterator();
+		//Iterator<String> parentsPathes = jFile.getParentsPathes().keySet().iterator();
+		Iterator<String> parentsPathes = PathEncodingUtils.getParentsPathes(jFile.getPath(), null, null).keySet().iterator();
 		String parentPath = parentsPathes.next();
 		Assert.isTrue(JsTreeFile.ROOT_DRIVE.equals(parentPath));
 		

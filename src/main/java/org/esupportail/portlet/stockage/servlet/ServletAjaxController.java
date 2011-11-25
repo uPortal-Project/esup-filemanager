@@ -176,12 +176,13 @@ public class ServletAjaxController implements InitializingBean {
 			model.put("password", this.serverAccess.getUserPassword(dir, userParameters).getPassword());
 			return new ModelAndView("authenticationForm", model);
 		}
-
 		try {
 			JsTreeFile resource = this.serverAccess.get(dir, userParameters, false, false);
+			this.encodeDir(resource);
 			model.put("resource", resource);
 			List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
 			Collections.sort(files);
+			this.encodeDir(files);
 			model.put("files", files); 
 		} catch (Exception ex) {
 			//Added for GIP Recia : Error handling
@@ -234,16 +235,16 @@ public class ServletAjaxController implements InitializingBean {
 	@RequestMapping("/fileChildren")
     public @ResponseBody List<JsTreeFile> fileChildren(String dir, @RequestParam(required=false) String hierarchy, HttpServletRequest request) {
 		dir = decodeDir(dir);
+		List<JsTreeFile> files;
 		if(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE) ) {
-			List<JsTreeFile> files = this.serverAccess.getJsTreeFileRoots(userParameters);		
-			return files;
+			files = this.serverAccess.getJsTreeFileRoots(userParameters);		
 		} else if("all".equals(hierarchy)) {
-			List<JsTreeFile> files =  this.serverAccess.getJsTreeFileRoots(dir, userParameters);
-			return files;
+			files =  this.serverAccess.getJsTreeFileRoots(dir, userParameters);
 		} else {
-			List<JsTreeFile> folders = this.serverAccess.getFolderChildren(dir, userParameters);
-			return folders;
+			files = this.serverAccess.getFolderChildren(dir, userParameters);
 		}
+		encodeDir(files);
+		return files;
 	}
 
 
@@ -492,6 +493,7 @@ public class ServletAjaxController implements InitializingBean {
 
 			// get resource with folder details (if it's a folder ...)
 			JsTreeFile resource = this.serverAccess.get(path, userParameters, true, true);
+			this.encodeDir(resource);
 			
 			// Based on the resource type, direct to appropriate details view
 			if ("folder".equals(resource.getType()) || "drive".equals(resource.getType())) {
@@ -541,7 +543,7 @@ public class ServletAjaxController implements InitializingBean {
 		dir = decodeDir(dir);
 		String parentDir;
 		
-		SortedMap<String, List<String>> parentsEncPathesMap = JsTreeFile.getParentsEncPathes(dir, null, null);		
+		SortedMap<String, List<String>> parentsEncPathesMap = PathEncodingUtils.getParentsEncPathes(dir, null, null);		
 		List<String> parentsEncPathes = new Vector<String>(parentsEncPathesMap.keySet());
 		if(parentsEncPathes.size()<2)
 			parentDir = this.serverAccess.getJsTreeFileRoot().getEncPath();
@@ -588,7 +590,14 @@ public class ServletAjaxController implements InitializingBean {
     }
 
     private String encodeDir(String dir) {
-        return PathEncodingUtils.encode(dir);
+        return PathEncodingUtils.encodeDir(dir);
     }
 
+	private void encodeDir(JsTreeFile file) {
+		PathEncodingUtils.encodeDir(file);
+	}
+
+	private void encodeDir(List<JsTreeFile> files) {
+		PathEncodingUtils.encodeDir(files);
+	}
 }

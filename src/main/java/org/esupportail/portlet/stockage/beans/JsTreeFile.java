@@ -24,18 +24,15 @@ package org.esupportail.portlet.stockage.beans;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.text.DateFormat;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
-import java.util.TreeMap;
 
 import javax.activation.MimetypesFileTypeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.esupportail.portlet.stockage.utils.PathEncodingUtils;
 
 public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 
@@ -84,21 +81,26 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 
 	private long size;
 
-	//Added for GIP Recia : The cumulative size of a directory
+	// The cumulative size of a directory
 	private long totalSize;
 
-	//Added for GIP Recia : How many folders are in a directory (recursive)
+	// How many folders are in a directory (recursive)
 	private long folderCount;
 
-	//Added for GIP Recia : How many files are in a directory (recursive)
+	//  How many files are in a directory (recursive)
 	private long fileCount;
 
-	//Added for GIP Recia : Whether or not this file is over the size limit defined in applicationContext.xml.  Used to limit access to streaming / slideshow functionality
+	// Whether or not this file is over the size limit defined in applicationContext.xml.  Used to limit access to streaming / slideshow functionality
 	//for large files
 	private boolean overSizeLimit;
 
-	//Added for GIP Recia : Used to look up the mime type for the files in the details view
+	// Used to look up the mime type for the files in the details view
 	static MimetypesFileTypeMap mimeMap;
+	
+	private String encPath;
+	
+	private SortedMap<String, List<String>> parentsEncPathes;
+	
 
 	public boolean isOverSizeLimit() {
 		return overSizeLimit;
@@ -237,6 +239,14 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 	public void setDrive(String driveName, String icon) {
 		this.drive = new JsTreeFile(driveName, "", "drive");
 		this.drive.setIcon(icon);
+	}
+	
+	public String getCategoryIcon() {
+		return this.category != null ? this.category.getIcon() : null;
+	}
+
+	public String getDriveIcon() {
+		return this.drive != null ? this.drive.getIcon() : null;
 	}
 
 	public void setTitle(String title) {
@@ -385,11 +395,23 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		return path;
 	}
 	
-    public String getEncPath() {
-    	String encPath = PathEncodingUtils.encode(this.getPath());
-		return encPath;
+    public void setEncPath(String encPath) {
+		this.encPath = encPath;
 	}
 	
+    public String getEncPath() {
+		return encPath;
+	}
+    
+    public void setParentsEncPathes(SortedMap<String, List<String>> parentsEncPathes) {
+		this.parentsEncPathes = parentsEncPathes;
+	}
+	
+    // Map<encPath, List<title, icon>>     
+    public SortedMap<String, List<String>> getParentsEncPathes() {
+		return parentsEncPathes;
+	}
+
 	public String getType() {
 		return type;
 	}
@@ -407,68 +429,7 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		this.children = children;
 		this.setState("open");
 	}
-
-	// Map<path, List<title, icon>>
-    public SortedMap<String, List<String>> getParentsPathes() {
-	String categoryIcon = this.category != null ? this.category.getIcon() : null;
-        String driveIcon = this.drive != null ? this.drive.getIcon() : null;
-	return getParentsPathes(this.getPath(), categoryIcon, driveIcon);
-}
-
-	// Map<path, List<title, icon>>
-	public static SortedMap<String, List<String>> getParentsPathes(String path, String categoryIcon, String driveIcon) {
-		SortedMap<String, List<String>> parentsPathes = new TreeMap<String, List<String>>();
-		String pathBase = ROOT_DRIVE;
-		List<String> rootTitleIcon =  Arrays.asList(ROOT_DRIVE_NAME, ROOT_ICON_PATH);
-		parentsPathes.put(pathBase, rootTitleIcon);
-		String regexp = "(/|".concat(DRIVE_PATH_SEPARATOR).concat(")");
-		String driveRootPath = path.substring(pathBase.length());
-		if(driveRootPath.length() != 0) {
-			List<String> relParentsPathes = Arrays.asList(driveRootPath.split(regexp));
-			pathBase = pathBase.concat(relParentsPathes.get(0));
-			List<String> categoryTitleIcon =  Arrays.asList(relParentsPathes.get(0), categoryIcon);
-			parentsPathes.put(pathBase, categoryTitleIcon);
-			if(relParentsPathes.size() > 1) {
-				pathBase = pathBase.concat(DRIVE_PATH_SEPARATOR).concat(relParentsPathes.get(1));
-				List<String> driveTitleIcon =  Arrays.asList(relParentsPathes.get(1), driveIcon);
-				parentsPathes.put(pathBase, driveTitleIcon);
-				pathBase = pathBase.concat(DRIVE_PATH_SEPARATOR);
-				for(String parentPath: relParentsPathes.subList(2, relParentsPathes.size())) {
-					pathBase = pathBase.concat(parentPath);
-					List<String> folderTitleIds = Arrays.asList(parentPath.split(ID_TITLE_SPLIT));
-					String title = folderTitleIds.get(folderTitleIds.size()-1);
-					List<String> folderTitleIcon =  Arrays.asList(title, FOLDER_ICON_PATH);
-					if(driveRootPath.endsWith("/"))
-						pathBase = pathBase.concat("/");
-					parentsPathes.put(pathBase, folderTitleIcon);
-					if(!driveRootPath.endsWith("/"))
-						pathBase = pathBase.concat("/");
-				}
-			}
-		}
-		return parentsPathes;
-	}
-
-	// Map<path, List<title, icon>>                                                                                                                     
-	public static SortedMap<String, List<String>> getParentsEncPathes(String path, String categoryIcon, String driveIcon) {
-		SortedMap<String, List<String>> parentPathes = getParentsPathes(path, categoryIcon, driveIcon);
-		SortedMap<String, List<String>> encodedParentPathes = new  TreeMap<String, List<String>>();
-		for(String pathKey : parentPathes.keySet()) {
-			String encodedPath = PathEncodingUtils.encode(pathKey);
-			encodedParentPathes.put(encodedPath, parentPathes.get(pathKey));
-		}
-		return encodedParentPathes;
-	}
-                                                                                                                 
-	// Map<path, List<title, icon>>                                                                                                                     
-	public SortedMap<String, List<String>> getParentsEncPathes() {
-		String categoryIcon = this.category != null ? this.category.getIcon() : null;
-		String driveIcon = this.drive != null ? this.drive.getIcon() : null;
-		return getParentsEncPathes(this.getPath(), categoryIcon, driveIcon);
-	}
-
-
-
+                                                                                                             
 	public int compareTo(JsTreeFile o) {
 		//Changed for GIP Recia.  Use the getters instead of getAttr directly
 		if(this.getType().equals("folder") &&
