@@ -20,6 +20,9 @@
 	</div>
 	
 	<div id="diaporamaDivId" title='<spring:message code="details.images.title" />' >
+	</div>
+
+    <div id="diaporamaSource" style="display:none" >
 	    <ul class="diaporama1">
 	        <c:forEach var="path" items="${image_paths}">
 	            <li><img
@@ -47,110 +50,91 @@ $(document).ready(function () {
     $('#detail-zip-download').bind('click', function () {
         $.downloadZip();
     });
-
-    init_diaporama();
-
+    
     $('#detail-view-images').bind('click', function () {
-        show_images();
-    });
+    	var diapWidth = 0.8 * $(window).width();
+        var diapHeight = 0.8 * $(window).height();
 
-});
+        console.log("Diap width/height " + diapWidth + ", " + diapHeight);
 
-function init_diaporama() {
-  var jDiaporamaElem =  $(".diaporama1");
-  var jDiaporamaObj = jDiaporamaElem.jDiaporama({
-    animationSpeed: "slow",
-    paused: false,
-    delay:5
-  });
+        //Adjustments done by experimentation (where scrollbars are not visible)
+        var imgWidth = diapWidth - 40;
+        var imgHeight = diapHeight - 137;
 
-    jDiaporamaElem.data("obj", jDiaporamaObj);
+        console.log("Image max w/h " + imgWidth + ", " + imgHeight);
 
-}
+        setoptions_diaporama(imgWidth, imgHeight);
 
+        show_images(diapWidth, diapHeight);
+      });
 
-function show_images() {
+	});
 
-  var diapDiv = $("#detailArea #diaporamaDivId");
+	function setoptions_diaporama(imgWidth, imgHeight) {
+	  console.log("setoptions_diaporama Img max width " + imgWidth);
 
-  var dialogButtons = {};
-
-  dialogButtons[$("#prev_text").html()] = function() {
-      $(".jDiaporama_controls .prev").click();
-  };
-
-  dialogButtons[$("#next_text").html()] = function() {
-      $(".jDiaporama_controls .next").click();
-  };
-
-  dialogButtons[$("#ok_text").html()] = function () {
-      //$(this).dialog("close");
-
-      //Error in IE the 2nd time unless the dialog is destroyed completely
-      $(this).dialog("destroy");
-
-      //Put it back in details area
-
-      var diapDivMoved = $("body #diaporamaDivId");
-
-      diapDivMoved.remove();
-
-      $("#detailArea #detail-view-images").after(diapDivMoved);
-  };
+	  $("#diaporamaDivId").html( $("#diaporamaSource").html() );
+	  
+	  $("#diaporamaDivId .diaporama1").jDiaporama( {
+	  	animationSpeed: "slow",
+	    paused: false,
+	    delay: 5,
+	    maxImageWidth: imgWidth,
+	    maxImageHeight: imgHeight
+	  });
+	}
 
 
+	function show_images(diapWidth, diapHeight) {
 
-    //$("body").css("cursor", "progress");
-    diapDiv.dialog({
-        modal: true,
-        closeOnEscape: true,
-        width:  640,
-        height:  480,
-        resizable: true,
-        draggable: true,
-        buttons: dialogButtons,
-        open: function (event, ui) {
-            console.log("Open dialog");
-            //Workaround for IE as the height tends to be the height of the image regardless of the height passed in
-            if (jQuery.browser.msie) {
-              console.log("IE workaround");
+	  var diapDiv = $("#diaporamaDivId");
 
-              var dialog = diapDiv.closest(".ui-dialog");
-              var dialog_content = diapDiv.closest(".ui-dialog-content");
-              var dialog_titlebar = dialog.find("div.ui-dialog-titlebar");
-              var dialog_buttonpane = dialog.find("div.ui-dialog-buttonpane");
+	  //Create hash of dialog buttons, the key being their localized name and the value being the function executed 
+	  var dialogButtons = {};
 
-              dialog.css("height", "600px");
-              dialog_content.css("height", "490px");
-              dialog_content.css("width", "624px");
-              dialog_content.css("left", "8px");
-              dialog_content.css("padding", "0");
-              dialog_content.css("top", "4px");
+	  dialogButtons[$("#prev_text").html()] = function () {
+	    $(".jDiaporama_controls .prev").click();
+	  };
 
-              dialog_titlebar.css("left", "8px");
-              dialog_titlebar.css("padding-left", "-4px");
-              dialog_titlebar.css("padding-right", "-4px");
-              dialog_titlebar.css("width", "100%");
+	  dialogButtons[$("#next_text").html()] = function () {
+	    $(".jDiaporama_controls .next").click();
+	  };
 
-              dialog_buttonpane.css("top", "4px");
-              dialog_buttonpane.css("position", "relative");
-
-              //console.log(dialog.html());
-              //console.log(dialog_content.html());
-            }
-
-          }
-
-    });
-}
-
-// Returns the cursor to the default pointer
+	  dialogButtons[$("#ok_text").html()] = function () {
+	    $(this).dialog("close");
+	  };
 
 
-function hide_image() {
-    //$("body").css("cursor", "auto");
-    $("#diaporamaDivId").dialog('close');
-}
+
+	  //$("body").css("cursor", "progress");
+	  diapDiv.dialog({
+	    modal: true,
+	    closeOnEscape: true,
+	    width: diapWidth,
+	    height: diapHeight,
+	    resizable: true,
+	    draggable: true,
+	    buttons: dialogButtons,
+	    close: function (event, ui) {
+	      console.log("View images dialog close");
+	      //Error in IE the 2nd time unless the dialog is destroyed completely
+	      $(this).dialog("destroy");
+
+	      //Put it back in details area
+
+	      var diapDivMoved = $("body #diaporamaDivId");
+	      diapDivMoved.remove();      
+	      $("#detailArea #detail-view-images").after(diapDivMoved);
+	    }
+	  });
+	}
+
+	// Returns the cursor to the default pointer
+
+	function hide_image() {
+	  //$("body").css("cursor", "auto");
+	  $("#diaporamaDivId").dialog('close');
+	}
 
 })(jQuery);
 

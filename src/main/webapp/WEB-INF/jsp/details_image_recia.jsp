@@ -59,135 +59,127 @@
 
 ( function($) {
 
-function show_image(image_width, image_height) {
+	function show_image(image_width, image_height) {
+
+		  //Manually cleanup the dialogs sometimes there are some dialogs hanging around
+		  $("#image_original_size").remove();
+		  $("body .image-dialog").remove();
 
 
-  //Manually cleanup the dialogs sometimes there are some dialogs hanging around
-  $("#image_original_size").remove();
-  $("body .image-dialog").remove();
+		  var img_element = $("img.detailsImage")[0];
 
+		  var divDialog = $("<div>");
+		  divDialog.attr("id", "image_original_size");
+		  divDialog.attr("title", "<spring:message code='details.image.title'/>");
 
-  var img_element = $("img.detailsImage")[0];
+		  var imgDialog = $("<img>");
+		  imgDialog.attr("src", img_element.src);
+		  imgDialog.attr("id", "image_original_size_img");
 
-  var divDialog = $("<div>");
-  divDialog.attr("id", "image_original_size");
-  divDialog.attr("title", "<spring:message code='details.image.title'/>");
+		  divDialog.append(imgDialog);
 
-  var imgDialog = $("<img>");
-  imgDialog.attr("src", img_element.src);
-  imgDialog.attr("id", "image_original_size_img");
+		  var dialogButtons = {};
 
-  divDialog.append(imgDialog);
+		  dialogButtons[ "<spring:message code='details.images.ok'/>" ] = function () {
+		      $(this).dialog("close");
+		  };
 
-  var dialogButtons = {};
+		  var maxWidth = 0.8 * $(window).width();
+		  var maxHeight = 0.8 * $(window).height();
 
-  dialogButtons[ "<spring:message code='details.images.ok'/>" ] = function () {
-      $(this).dialog("close");
-  };
+		  var ratio = 1.0;
 
+		  if (maxWidth < image_width) {
+		    ratio = image_width / maxWidth;
+		  }
 
-  //$("body").css("cursor", "progress");
-  divDialog.dialog({
-    modal: true,
-    closeOnEscape: true,
-    width: 30 + Math.min(900, image_width),
-    height: 110 + Math.min(600, image_height),
-    resizable: true,
-    dialogClass: 'image-dialog',
-    draggable: true,
-    autoOpen: false,
-    buttons: dialogButtons,
-    close: function (event, ui) {
-      console.log("Destroying dialog");
-      //$(this).dialog("destroy");
-    },
-    open: function (event, ui) {
-      console.log("Open dialog");
-      //Workaround for IE as the height tends to be the height of the image regardless of the height passed in
-      if (jQuery.browser.msie) {
-        console.log("IE workaround");
+		  if (maxHeight < image_height) {
+		    ratio = Math.max(ratio, image_height / maxHeight);
+		  }
 
-        var dialog = $('#image_original_size_img').closest(".ui-dialog");
-        var dialog_content = $('#image_original_size_img').closest(".ui-dialog-content");
+		  image_width = image_width / ratio;
+		  image_height = image_height / ratio;
 
-        dialog.css("height", "600px");
-        dialog_content.css("height", "500px");
-        dialog_content.css("padding", "0");
-        dialog_content.css("top", "4px");
+		  imgDialog.width(image_width);
+		  imgDialog.height(image_height);
 
-        $('#image_original_size').css("width", "100%");
-        $('#image_original_size').css("height", "500");
+		  //$("body").css("cursor", "progress");
+		  divDialog.dialog({
+		    modal: true,
+		    closeOnEscape: true,
+		    width: 30 + image_width,
+		    height: 110 + image_height,
+		    resizable: true,
+		    dialogClass: 'image-dialog',
+		    draggable: true,
+		    autoOpen: false,
+		    buttons: dialogButtons
+		  });
 
-        $('div.ui-widget-overlay').css("height", "auto");
-      }
+		  divDialog.dialog("open");
 
-    }
-  });
+		}
 
-  divDialog.dialog("open");
+		// Returns the cursor to the default pointer
 
-}
+		$(document).ready(function () {
 
-// Returns the cursor to the default pointer
+		  console.log("Details image page ready");
+		  var img_element = $("img.detailsImage")[0];
 
-$(document).ready(function () {
+		  console.log("details_image_recia.jsp : img_element.src : " + img_element.src);
 
-  console.log("Details image page ready");
-  var img_element = $("img.detailsImage")[0];
+		  var image_width;
+		  var image_height;
 
-  console.log("details_image_recia.jsp : img_element.src : " + img_element.src);
+		  $("<img/>") // Make in memory copy of image to avoid css issues
+		  .attr("src", img_element.src)
+		  //Run the load event handler only once
+		  .one('load', function () {
+		    console.log("Image loaded");
+		    image_width = this.width;
+		    image_height = this.height;
 
-  var image_width;
-  var image_height;
+		    //Scale the minature, also handle proportionately wide or tall images
+		    if (image_width < 200 && image_height < 200) {
+		      //small image                
+		      //set miniature to be the actual dimensions as both are < 200
+		      $(".detailsImage").css("width", image_width);
+		      $(".detailsImage").css("height", image_height);
+		    } else if (image_height > 200 && image_height >= image_width) {
+		      //taller images / rectangular, limit height and scale width (width will always be less than 200)
+		      $(".detailsImage").css("width", "auto");
+		      $(".detailsImage").css("height", "200px");
+		    } else if (image_width > 200 && image_width > image_height) {
+		      //Similar case to tall images
+		      $(".detailsImage").css("width", "200px");
+		      $(".detailsImage").css("height", "auto");
+		    }
 
-  $("<img/>") // Make in memory copy of image to avoid css issues
-  .attr("src", img_element.src)
-  //Run the load event handler only once
-  .one('load', function () {
-    console.log("Image loaded");
-    image_width = this.width;
-    image_height = this.height;
+		    $("#image_width").html('' + image_width);
+		    $("#image_height").html('' + image_height);
+		    $("#detail-view-image").show();
 
-    //Scale the minature, also handle proportionately wide or tall images
-    if (image_width < 200 && image_height < 200) {
-      //small image
-      //set miniature to be the actual dimensions as both are < 200
-      $(".detailsImage").css("width", image_width);
-      $(".detailsImage").css("height", image_height);
-    } else if (image_height > 200 && image_height >= image_width) {
-      //taller images / rectangular, limit height and scale width (width will always be less than 200)
-      $(".detailsImage").css("width", "auto");
-      $(".detailsImage").css("height", "200px");
-    } else if (image_width > 200 && image_width > image_height) {
-      //Similar case to tall images
-      $(".detailsImage").css("width", "200px");
-      $(".detailsImage").css("height", "auto");
-    }
+		  }).each(function () {
+		    //In case the image is already cached, we need to make sure that load was called
+		    if (this.complete) $(this).load();
+		  });
 
-    $("#image_width").html('' + image_width);
-    $("#image_height").html('' + image_height);
-    $("#detail-view-image").show();
+		  $('#detail-download').bind('click', function () {
+		    $("#detailsFileForm").attr("action", '/esup-portlet-stockage/servlet-ajax/downloadFile');
+		    $("#detailsFileForm").submit();
+		    return true;
+		  });
 
-  }).each(function () {
-    //In case the image is already cached, we need to make sure that load was called
-    if (this.complete) $(this).load();
-  });
+		  var imageDetailLink = $('#detail-view-image');
+		  imageDetailLink.unbind('click');
 
-  $('#detail-download').bind('click', function () {
-    $("#detailsFileForm").attr("action", '/esup-portlet-stockage/servlet-ajax/downloadFile');
-    $("#detailsFileForm").submit();
-    return true;
-  });
+		  imageDetailLink.bind('click', function () {
+		    console.log("Image detail click");
+		    show_image(image_width, image_height);
+		  });
 
-  var imageDetailLink = $('#detail-view-image');
-  imageDetailLink.unbind('click');
-
-  imageDetailLink.bind('click', function () {
-    console.log("Image detail click");
-    show_image(image_width, image_height);
-  });
-
-});
+		});
 
 })(jQuery);
 

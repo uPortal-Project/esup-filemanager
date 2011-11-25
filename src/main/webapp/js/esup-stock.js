@@ -923,7 +923,7 @@ function updateActions(setActionElementEnabled) {
     //And a cut or copy must have been completed
     && canPaste(baSelData.path));
 
-    setActionElementEnabled("delete", baSelData.writeable && baSelData.numberItemsChecked > 0);
+    setActionElementEnabled("delete", baSelData.writeable && baSelData.numberItemsChecked > 0 && !baSelData.containsEmptyDir);
 
     setActionElementEnabled("cut", baSelData.readable && baSelData.writeable && baSelData.numberItemsChecked > 0);
 
@@ -1057,7 +1057,7 @@ function handleBrowserAreaSelection() {
     //refresh the details area
     updateDetailsArea($('#filesForm').serialize());
 
-    //Update based on the currently selected items
+    //Update toolbar based on the currently selected items
     updateActions(setToolbarActionElementEnabled);
 
 }
@@ -1614,7 +1614,7 @@ function deleteFiles(dirsDataStruct) {
           console.log("Context menu callback");
           console.log(el);
 
-          //Enable / disable context menu items using same method as toolbar
+          //Enable / disable browser area (not the jsTree on the left) context menu items using same method as toolbar
           updateActions(function (actionName, enabled) {
 
               var elem = $("#myMenu li." + actionName);
@@ -2001,11 +2001,26 @@ function getBrowserAreaCheckedSelectionData() {
 
     var readable = true;
     var writeable = true;
-
+    
+    returnData.containsEmptyDir = false;
+    
     var parentTds = getParentRow(checkedItems);
 
     parentTds.each(function (idx, elem) {
-        var parentTd = $(elem);
+var parentTd = $(elem);
+        
+        //If the file is a directory, we need to find out if it is empty or not
+        var isDirectory = parentTd.find("a.fileTreeRef").length > 0;
+        if (isDirectory) {        
+	        var path = parentTd.find("input[type='checkbox']").val();
+	        console.log("Checking if " + path + " is empty");
+	        var jsTreeDomJqObj = $("#" + getLiIdFromPath(path));
+	        if (jsTreeDomJqObj.data("isEmpty") != "true") {
+	        	console.log("Found an empty directory : " + path);
+	        	returnData.containsEmptyDir = true;
+	        }	        
+	    }
+        
         readable = readable && parentTd.find("div.readable").html() === "true";
         writeable = writeable && parentTd.find("div.writeable").html() === "true";
 
@@ -2082,6 +2097,7 @@ function getJqueryObj(elem) {
 
 function authenticate(dir, username, password) {
     console.log("authenticate");
+    cursor_wait();
     $.ajax({
         async: true,
         type: 'POST',
@@ -2095,7 +2111,8 @@ function authenticate(dir, username, password) {
         success: function (data) {
             showInfoToolBar(data.msg);
             if (data.status) getFile(null, dir);
-        }
+        },
+        complete: cursor_clear
     });
 }
 
