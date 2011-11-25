@@ -221,12 +221,13 @@ public class PortletController implements InitializingBean {
 		ModelMap model = new ModelMap();
 		String decodedDir = pathEncodingUtils.decodeDir(dir);
 		JsTreeFile resource = this.serverAccess.get(decodedDir, userParameters, false, false);
+		pathEncodingUtils.encodeDir(resource);
 		model = new ModelMap("resource", resource);
 		List<JsTreeFile> files = this.serverAccess.getChildren(decodedDir, userParameters);
 		Collections.sort(files);
 		pathEncodingUtils.encodeDir(files);
 		model.put("files", files);
-		model.put("currentDir", pathEncodingUtils.encodeDir(resource.getPath()));
+		model.put("currentDir", dir);
 		return model;
 	}
 	
