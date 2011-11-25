@@ -492,11 +492,9 @@ function initJstree() {
         /* GIP RECIA : add plugins "contextmenu", "dnd" */
         "plugins": ["themes", "json_data", "ui", "crrm", "cookies", "types", "contextmenu"],
         // Plugin configuration
-        /* GIP RECIA : START --> Configuration of contextmenu plugin */
         "contextmenu": {
             "items": customMenu
         },
-        /* GIP RECIA : END --> Configuration of contextmenu plugin */
 
         // I usually configure the plugin that handles the data first - in this case JSON as it is most common
         "json_data": {

@@ -273,20 +273,15 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 	/*
 	 * Used by JSTree to populate the nodes as well as some of the getters
 	 * to retrieve data.
-	 *
-	 * For GIP Recia fixed a bug where the id's invalid characters interefered with the JSTree's refresh functionality
-	 * Now there are 2 distinct maps, attr which will become the html attributes and metadata which will be accessible
-	 * on the JStree nodes via JQuery's data() function.
 	 */
 	public Map<String, String> getAttr() {
 		Map<String, String> attr = new HashMap<String, String>();
 
-		String id = "file_" + this.getPath().hashCode();
-		id = PathEncodingUtils.encode(this.getPath());
+		String id = this.getEncPath();
 		attr.put("id", id);
 
 		//Use rel which to store the type of node for the js tree
-		attr.put("rel", type);
+		attr.put("rel", getType());
 		return attr;
 	}
 
@@ -294,26 +289,13 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 	 * The JSON plugin in JSTree will use this to populate jQuery.data.  This allows us to store extra
 	 * data without worrying about html constraints or limits.
 	 *
-	 * see getAttr for more information
-	 *
 	 * @return
 	 */
 	public Map<String, String> getMetadata() {
 		Map<String, String> attr = new HashMap<String, String>();
-		String path = ROOT_DRIVE;
-		if(category != null && category.getTitle().length() != 0)
-			path = path.concat(category.getTitle());
-		if(drive != null && drive.getTitle().length() != 0)
-			path = path.concat(DRIVE_PATH_SEPARATOR).concat(drive.getTitle());
-		if(lid != null && lid.length() != 0)
-			path = path.concat(DRIVE_PATH_SEPARATOR).concat(lid);
-		// Usefull for CIFS, because it needs / at end of path, but js script hates it!
-		//if (path.endsWith("/"))
-		//	path = path.substring(0, path.length()-1);
-		attr.put("path", path);
-		String encPath =  PathEncodingUtils.encode(path);
+		String encPath =  getEncPath();
 		attr.put("encPath", encPath);
-		attr.put("type", type);
+		attr.put("type", getType());
 		return attr;
 	}
 
@@ -393,17 +375,23 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 	}
 
 	public String getPath() {
-		//Changed for GIP Recia, use meta data as that contains the raw data
-		return this.getMetadata().get("path");
+		String path = ROOT_DRIVE;
+		if(category != null && category.getTitle().length() != 0)
+			path = path.concat(category.getTitle());
+		if(drive != null && drive.getTitle().length() != 0)
+			path = path.concat(DRIVE_PATH_SEPARATOR).concat(drive.getTitle());
+		if(lid != null && lid.length() != 0)
+			path = path.concat(DRIVE_PATH_SEPARATOR).concat(lid);
+		return path;
 	}
 	
     public String getEncPath() {
-		return this.getMetadata().get("encPath");
+    	String encPath = PathEncodingUtils.encode(this.getPath());
+		return encPath;
 	}
 	
 	public String getType() {
-		//Changed for GIP Recia, use meta data as that contains the raw data
-		return this.getMetadata().get("type");
+		return type;
 	}
 
 	//Added for GIP Recia : Return mime type for display in the details view
