@@ -201,7 +201,7 @@ public class PortletControllerAction  implements InitializingBean {
 
 		List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
 		for(JsTreeFile file: files) {
-			String newTitle = request.getParameter(file.getEncPath());
+		    String newTitle = request.getParameter(pathEncodingUtils.encodeDir(file.getPath()));
 			if(newTitle != null && newTitle.length() != 0 && !file.getTitle().equals(newTitle)) {
 				this.serverAccess.renameFile(file.getPath(), newTitle, userParameters);
 			}

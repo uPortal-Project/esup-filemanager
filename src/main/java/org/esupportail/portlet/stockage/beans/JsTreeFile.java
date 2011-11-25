@@ -399,6 +399,11 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		this.encPath = encPath;
 	}
 	
+    /**
+     * Take Care !
+     * Use it only in jsp, after that controller calls setEncPath via pathEncodingUtils bean !
+     * @return
+     */
     public String getEncPath() {
 		return encPath;
 	}
@@ -406,8 +411,12 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
     public void setParentsEncPathes(SortedMap<String, List<String>> parentsEncPathes) {
 		this.parentsEncPathes = parentsEncPathes;
 	}
-	
-    // Map<encPath, List<title, icon>>     
+	  
+    /**
+     * Take Care !
+     * Use it only in jsp, after that controller calls setParentsEncPathes via pathEncodingUtils bean !
+     * @return Map<encPath, List<title, icon>>   
+     */
     public SortedMap<String, List<String>> getParentsEncPathes() {
 		return parentsEncPathes;
 	}

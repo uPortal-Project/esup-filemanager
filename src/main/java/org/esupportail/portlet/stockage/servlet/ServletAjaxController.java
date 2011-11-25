@@ -546,14 +546,14 @@ public class ServletAjaxController implements InitializingBean {
 		dir = pathEncodingUtils.decodeDir(dir);
 		String parentDir;
 		
-		SortedMap<String, List<String>> parentsEncPathesMap = pathEncodingUtils.getParentsEncPathes(dir, null, null);		
-		List<String> parentsEncPathes = new Vector<String>(parentsEncPathesMap.keySet());
-		if(parentsEncPathes.size()<2)
-			parentDir = this.serverAccess.getJsTreeFileRoot().getEncPath();
+		SortedMap<String, List<String>> parentsPathesMap = pathEncodingUtils.getParentsPathes(dir, null, null);		
+		List<String> parentsPathes = new Vector<String>(parentsPathesMap.keySet());
+		if(parentsPathes.size()<2)
+			parentDir = this.serverAccess.getJsTreeFileRoot().getPath();
 		else
-			parentDir = parentsEncPathes.get(parentsEncPathes.size()-2);
+			parentDir = parentsPathes.get(parentsPathes.size()-2);
 		
-		return parentDir;
+		return pathEncodingUtils.encodeDir(parentDir);
 	}
 	
 	
