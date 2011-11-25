@@ -95,7 +95,7 @@ public class PortletControllerAction  implements InitializingBean {
 
 		if (zip != null) {
 			String url = "/esup-portlet-stockage/servlet-ajax/downloadZip?";
-			for(String commandDir: command.getDirs()) {
+			for(String commandDir: PathEncodingUtils.decodeDirs(command.getDirs())) {
 				url = url + "dirs=" + URLEncoder.encode(encodeDir(commandDir), "utf8") + "&";
 				url = url + "sharedSessionId=" + URLEncoder.encode(sharedSessionId, "utf8") + "&";
 			}
@@ -105,16 +105,16 @@ public class PortletControllerAction  implements InitializingBean {
 		} else  if (rename != null) {
 			response.setRenderParameter("dir", encodeDir(dir));
 			response.setRenderParameter("sharedSessionId", sharedSessionId);
-			response.setRenderParameter("dirs", encodeDirs(command.getDirs()).toArray(new String[] {}));
+			response.setRenderParameter("dirs", encodeDirs(PathEncodingUtils.decodeDirs(command.getDirs())).toArray(new String[] {}));
 			response.setRenderParameter("action", "renameWai");
 		} else {
 
 			if (prepareCopy != null) {
-				basketSession.setDirsToCopy(command.getDirs());
+				basketSession.setDirsToCopy(PathEncodingUtils.decodeDirs(command.getDirs()));
 				basketSession.setGoal("copy");
 				msg = "ajax.copy.ok";
 			} else if (prepareCut != null) {
-				basketSession.setDirsToCopy(command.getDirs());
+				basketSession.setDirsToCopy(PathEncodingUtils.decodeDirs(command.getDirs()));
 				basketSession.setGoal("cut");
 				msg = "ajax.cut.ok";
 			} else if (past != null) {
@@ -124,7 +124,7 @@ public class PortletControllerAction  implements InitializingBean {
 				msg = "ajax.paste.ok";
 			} else if (delete != null) {
 				msg = "ajax.remove.ok"; 
-				for(String dirToDelete: command.getDirs()) {
+				for(String dirToDelete: PathEncodingUtils.decodeDirs(command.getDirs())) {
 					if(!this.serverAccess.remove(dirToDelete, userParameters)) {
 						msg = "ajax.remove.failed"; 
 					}
@@ -185,6 +185,7 @@ public class PortletControllerAction  implements InitializingBean {
 			filesToRename = files;
 		}
 		model.put("files", filesToRename);
+		PathEncodingUtils.encodeDir(files);
 		model.put("currentDir", encodeDir(dir));
 		return new ModelAndView("view-portlet-rename-wai", model);
 	}
