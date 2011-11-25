@@ -36,6 +36,7 @@
 
     <context:component-scan base-package="org.esupportail.portlet.stockage.servlet"/>
     <context:component-scan base-package="org.esupportail.portlet.stockage.services"/>
+    <context:component-scan base-package="org.esupportail.portlet.stockage.utils"/>
     <context:component-scan base-package="org.esupportail.portlet.stockage.beans"/>
     
     <!-- Configures the @Controller programming model 

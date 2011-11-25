@@ -66,6 +66,9 @@ public class PortletControllerAction  implements InitializingBean {
 	@Autowired
 	protected BasketSession basketSession;
 	
+	@Autowired
+	protected PathEncodingUtils pathEncodingUtils;
+	
 	protected SharedUserPortletParameters userParameters;
 		
 	
@@ -89,32 +92,32 @@ public class PortletControllerAction  implements InitializingBean {
 			@RequestParam(required = false) String createFolder,
 			ActionRequest request, ActionResponse response) throws IOException {
 		
-		dir = decodeDir(dir);
+		dir = pathEncodingUtils.decodeDir(dir);
 		
 		String msg = null;
 
 		if (zip != null) {
 			String url = "/esup-portlet-stockage/servlet-ajax/downloadZip?";
-			for(String commandDir: PathEncodingUtils.decodeDirs(command.getDirs())) {
-				url = url + "dirs=" + URLEncoder.encode(encodeDir(commandDir), "utf8") + "&";
+			for(String commandDir: pathEncodingUtils.decodeDirs(command.getDirs())) {
+				url = url + "dirs=" + URLEncoder.encode(pathEncodingUtils.encodeDir(commandDir), "utf8") + "&";
 				url = url + "sharedSessionId=" + URLEncoder.encode(sharedSessionId, "utf8") + "&";
 			}
 			url = url.substring(0, url.length()-1);
 			response.sendRedirect(url);
 			
 		} else  if (rename != null) {
-			response.setRenderParameter("dir", encodeDir(dir));
+			response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
 			response.setRenderParameter("sharedSessionId", sharedSessionId);
-			response.setRenderParameter("dirs", encodeDirs(PathEncodingUtils.decodeDirs(command.getDirs())).toArray(new String[] {}));
+			response.setRenderParameter("dirs", pathEncodingUtils.encodeDirs(pathEncodingUtils.decodeDirs(command.getDirs())).toArray(new String[] {}));
 			response.setRenderParameter("action", "renameWai");
 		} else {
 
 			if (prepareCopy != null) {
-				basketSession.setDirsToCopy(PathEncodingUtils.decodeDirs(command.getDirs()));
+				basketSession.setDirsToCopy(pathEncodingUtils.decodeDirs(command.getDirs()));
 				basketSession.setGoal("copy");
 				msg = "ajax.copy.ok";
 			} else if (prepareCut != null) {
-				basketSession.setDirsToCopy(PathEncodingUtils.decodeDirs(command.getDirs()));
+				basketSession.setDirsToCopy(pathEncodingUtils.decodeDirs(command.getDirs()));
 				basketSession.setGoal("cut");
 				msg = "ajax.cut.ok";
 			} else if (past != null) {
@@ -124,7 +127,7 @@ public class PortletControllerAction  implements InitializingBean {
 				msg = "ajax.paste.ok";
 			} else if (delete != null) {
 				msg = "ajax.remove.ok"; 
-				for(String dirToDelete: PathEncodingUtils.decodeDirs(command.getDirs())) {
+				for(String dirToDelete: pathEncodingUtils.decodeDirs(command.getDirs())) {
 					if(!this.serverAccess.remove(dirToDelete, userParameters)) {
 						msg = "ajax.remove.failed"; 
 					}
@@ -133,7 +136,7 @@ public class PortletControllerAction  implements InitializingBean {
 
 			if(msg != null)
 				response.setRenderParameter("msg", msg);
-			response.setRenderParameter("dir", encodeDir(dir));
+			response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
 			response.setRenderParameter("sharedSessionId", sharedSessionId);
 			response.setRenderParameter("action", "browseWai");
 		}
@@ -153,14 +156,14 @@ public class PortletControllerAction  implements InitializingBean {
 			@RequestParam String folderName,
 			ActionRequest request, ActionResponse response) throws IOException {
 		
-		dir = decodeDir(dir);
+		dir = pathEncodingUtils.decodeDir(dir);
 		
 		String msg = null;
 		this.serverAccess.createFile(dir, folderName, "folder", userParameters);
 		
 		if(msg != null)
 			response.setRenderParameter("msg", msg);
-		response.setRenderParameter("dir", encodeDir(dir));
+		response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
 		response.setRenderParameter("sharedSessionId", sharedSessionId);
 		response.setRenderParameter("action", "browseWai");
 	}
@@ -170,8 +173,8 @@ public class PortletControllerAction  implements InitializingBean {
     								@RequestParam String dir,
     								@RequestParam List<String> dirs) {
 		
-		dir = decodeDir(dir);
-		dirs = decodeDirs(dirs);
+		dir = pathEncodingUtils.decodeDir(dir);
+		dirs = pathEncodingUtils.decodeDirs(dirs);
 		
 		ModelMap model = new ModelMap();
 		List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
@@ -185,8 +188,8 @@ public class PortletControllerAction  implements InitializingBean {
 			filesToRename = files;
 		}
 		model.put("files", filesToRename);
-		PathEncodingUtils.encodeDir(files);
-		model.put("currentDir", encodeDir(dir));
+		pathEncodingUtils.encodeDir(files);
+		model.put("currentDir", pathEncodingUtils.encodeDir(dir));
 		return new ModelAndView("view-portlet-rename-wai", model);
 	}
 	
@@ -194,7 +197,7 @@ public class PortletControllerAction  implements InitializingBean {
 	public void formRenameWai(@RequestParam String dir, @RequestParam String sharedSessionId,
 			ActionRequest request, ActionResponse response) throws IOException {
 		
-		dir = decodeDir(dir);
+		dir = pathEncodingUtils.decodeDir(dir);
 
 		List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
 		for(JsTreeFile file: files) {
@@ -204,7 +207,7 @@ public class PortletControllerAction  implements InitializingBean {
 			}
 		}
 		
-		response.setRenderParameter("dir", encodeDir(dir));
+		response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
 		response.setRenderParameter("sharedSessionId", sharedSessionId);
 		response.setRenderParameter("action", "browseWai");
 	}
@@ -223,13 +226,13 @@ public class PortletControllerAction  implements InitializingBean {
     public void formUploadWai(ActionRequest request, ActionResponse response,
     								@RequestParam String dir, @RequestParam String sharedSessionId, FileUpload command) throws IOException {
 		
-		dir = decodeDir(dir);
+		dir = pathEncodingUtils.decodeDir(dir);
 		
 		String filename = command.getQqfile().getOriginalFilename();
 		InputStream inputStream = command.getQqfile().getInputStream();
 		this.serverAccess.putFile(dir, filename, inputStream, userParameters);
 		
-		response.setRenderParameter("dir", encodeDir(dir));
+		response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
 		response.setRenderParameter("sharedSessionId", sharedSessionId);
 		response.setRenderParameter("action", "browseWai");
 	}
@@ -238,7 +241,7 @@ public class PortletControllerAction  implements InitializingBean {
     public void formAuthenticationWai(ActionRequest request, ActionResponse response,
     								@RequestParam String dir, @RequestParam String sharedSessionId, @RequestParam String username, @RequestParam String password) throws IOException {
 		
-		dir = decodeDir(dir);
+		dir = pathEncodingUtils.decodeDir(dir);
 		
 		String msg = "auth.bad";
 		if(this.serverAccess.authenticate(dir, username, password, userParameters)) {
@@ -251,7 +254,7 @@ public class PortletControllerAction  implements InitializingBean {
 		}
 			
 		response.setRenderParameter("msg", msg);
-		response.setRenderParameter("dir", encodeDir(dir));
+		response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
 		response.setRenderParameter("sharedSessionId", sharedSessionId);
 		response.setRenderParameter("action", "browseWai");
 	}
@@ -260,7 +263,7 @@ public class PortletControllerAction  implements InitializingBean {
     public void formAuthenticationMobile(ActionRequest request, ActionResponse response,
     								@RequestParam String dir, @RequestParam String sharedSessionId, @RequestParam String username, @RequestParam String password) throws IOException {
 		
-		dir = decodeDir(dir);
+		dir = pathEncodingUtils.decodeDir(dir);
 		
 		String msg = "auth.bad";
 		if(this.serverAccess.authenticate(dir, username, password, userParameters)) {
@@ -273,25 +276,9 @@ public class PortletControllerAction  implements InitializingBean {
 		}
 		
 		response.setRenderParameter("msg", msg);
-		response.setRenderParameter("dir", encodeDir(dir));
+		response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
 		response.setRenderParameter("sharedSessionId", sharedSessionId);
 		response.setRenderParameter("action", "browseMobile");
 	}
-
-    private String decodeDir(String dir) {
-        return PathEncodingUtils.decodeDir(dir);
-    }
-    
-    private List<String> decodeDirs(List<String> dirs) {
-        return PathEncodingUtils.decodeDirs(dirs);
-    }
-    
-    private String encodeDir(String dir) {
-        return PathEncodingUtils.encodeDir(dir);
-    }
-    
-    private List<String> encodeDirs(List<String> dirs) {
-        return PathEncodingUtils.encodeDirs(dirs);
-    }
     
 }

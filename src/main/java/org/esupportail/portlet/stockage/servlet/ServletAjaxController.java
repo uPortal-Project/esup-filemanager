@@ -98,9 +98,12 @@ public class ServletAjaxController implements InitializingBean {
 	@Qualifier("useCursorWaitDialog")
 	protected Boolean useCursorWaitDialog = false;
 	
-	//GP Recia Added in order to detect file type (image / sound / etc)
+	//GP Added in order to detect file type (image / sound / etc)
 	@Autowired
-	protected org.esupportail.portlet.stockage.services.ResourceUtils resourceUtils;
+	protected ResourceUtils resourceUtils;
+	
+	@Autowired
+	protected PathEncodingUtils pathEncodingUtils;
 	
 	protected SharedUserPortletParameters userParameters;
 
@@ -148,7 +151,7 @@ public class ServletAjaxController implements InitializingBean {
 		model.put("sharedSessionId", userParameters.getSharedSessionId());
 		model.put("useDoubleClick", useDoubleClick);
 		model.put("useCursorWaitDialog", useCursorWaitDialog);
-		String defaultPath = PathEncodingUtils.encodeDir(JsTreeFile.ROOT_DRIVE);
+		String defaultPath = pathEncodingUtils.encodeDir(JsTreeFile.ROOT_DRIVE);
 		model.put("defaultPath", defaultPath);
         return new ModelAndView("view-servlet", model);
     }
@@ -162,7 +165,7 @@ public class ServletAjaxController implements InitializingBean {
 	 */
 	@RequestMapping("/htmlFileTree")
 	public ModelAndView fileTree(String dir, HttpServletRequest request, HttpServletResponse response) {
-		dir = PathEncodingUtils.decodeDir(dir);
+		dir = pathEncodingUtils.decodeDir(dir);
 		if(userParameters == null) {
 			String infoMsg = "isPortlet = true but portlet/portal session is lost, user should refresh/reload the window ...";
 			log.info(infoMsg);
@@ -170,7 +173,7 @@ public class ServletAjaxController implements InitializingBean {
 		}
 		ModelMap model = new ModelMap();
 		if(this.serverAccess.formAuthenticationRequired(dir, userParameters)) {
-			model = new ModelMap("currentDir", PathEncodingUtils.encodeDir(dir));
+			model = new ModelMap("currentDir", pathEncodingUtils.encodeDir(dir));
 			model.put("sharedSessionId", userParameters.getSharedSessionId());
 			model.put("username", this.serverAccess.getUserPassword(dir, userParameters).getUsername());
 			model.put("password", this.serverAccess.getUserPassword(dir, userParameters).getPassword());
@@ -178,11 +181,11 @@ public class ServletAjaxController implements InitializingBean {
 		}
 		try {
 			JsTreeFile resource = this.serverAccess.get(dir, userParameters, false, false);
-			PathEncodingUtils.encodeDir(resource);
+			pathEncodingUtils.encodeDir(resource);
 			model.put("resource", resource);
 			List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
 			Collections.sort(files);
-			PathEncodingUtils.encodeDir(files);
+			pathEncodingUtils.encodeDir(files);
 			model.put("files", files); 
 		} catch (Exception ex) {
 			//Added for GIP Recia : Error handling
@@ -234,7 +237,7 @@ public class ServletAjaxController implements InitializingBean {
 	 */
 	@RequestMapping("/fileChildren")
     public @ResponseBody List<JsTreeFile> fileChildren(String dir, @RequestParam(required=false) String hierarchy, HttpServletRequest request) {
-		dir = PathEncodingUtils.decodeDir(dir);
+		dir = pathEncodingUtils.decodeDir(dir);
 		List<JsTreeFile> files;
 		if(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE) ) {
 			files = this.serverAccess.getJsTreeFileRoots(userParameters);		
@@ -243,7 +246,7 @@ public class ServletAjaxController implements InitializingBean {
 		} else {
 			files = this.serverAccess.getFolderChildren(dir, userParameters);
 		}
-		PathEncodingUtils.encodeDir(files);
+		pathEncodingUtils.encodeDir(files);
 		return files;
 	}
 
@@ -253,7 +256,7 @@ public class ServletAjaxController implements InitializingBean {
 		long allOk = 1;
 		String msg = context.getMessage("ajax.remove.ok", null, locale); 
 		Map jsonMsg = new HashMap(); 
-		for(String dir: PathEncodingUtils.decodeDirs(command.getDirs())) {
+		for(String dir: pathEncodingUtils.decodeDirs(command.getDirs())) {
 			if(!this.serverAccess.remove(dir, userParameters)) {
 				msg = context.getMessage("ajax.remove.failed", null, locale); 
 				allOk = 0;
@@ -266,7 +269,7 @@ public class ServletAjaxController implements InitializingBean {
 	
 	@RequestMapping("/createFile")
     public ModelAndView createFile(String parentDir, String title, String type, HttpServletRequest request, HttpServletResponse response) {
-		String parentDirDecoded = PathEncodingUtils.decodeDir(parentDir);
+		String parentDirDecoded = pathEncodingUtils.decodeDir(parentDir);
 		String fileDir = this.serverAccess.createFile(parentDirDecoded, title, type, userParameters);
 		if(fileDir != null) {
 			return this.fileTree(parentDir, request, response);
@@ -283,10 +286,10 @@ public class ServletAjaxController implements InitializingBean {
 	
 	@RequestMapping("/renameFile")
     public ModelAndView renameFile(String parentDir, String dir, String title, HttpServletRequest request, HttpServletResponse response) {
-		parentDir = PathEncodingUtils.decodeDir(parentDir);
-		dir = PathEncodingUtils.decodeDir(dir);
+		parentDir = pathEncodingUtils.decodeDir(parentDir);
+		dir = pathEncodingUtils.decodeDir(dir);
 		if(this.serverAccess.renameFile(dir, title, userParameters)) {
-			return this.fileTree(PathEncodingUtils.encodeDir(parentDir), request, response);	
+			return this.fileTree(pathEncodingUtils.encodeDir(parentDir), request, response);	
 		}
 		
 		//Usually means file does not exist
@@ -298,7 +301,7 @@ public class ServletAjaxController implements InitializingBean {
     
 	@RequestMapping("/prepareCopyFiles")
     public @ResponseBody Map prepareCopyFiles(FormCommand command) {
-		basketSession.setDirsToCopy(PathEncodingUtils.decodeDirs(command.getDirs()));
+		basketSession.setDirsToCopy(pathEncodingUtils.decodeDirs(command.getDirs()));
 		basketSession.setGoal("copy");
 		Map jsonMsg = new HashMap(); 
 		jsonMsg.put("status", new Long(1));
@@ -309,7 +312,7 @@ public class ServletAjaxController implements InitializingBean {
 	
 	@RequestMapping("/prepareCutFiles")
     public @ResponseBody Map prepareCutFiles(FormCommand command) {
-		basketSession.setDirsToCopy(PathEncodingUtils.decodeDirs(command.getDirs()));
+		basketSession.setDirsToCopy(pathEncodingUtils.decodeDirs(command.getDirs()));
 		basketSession.setGoal("cut");
 		Map jsonMsg = new HashMap(); 
 		jsonMsg.put("status", new Long(1));
@@ -320,7 +323,7 @@ public class ServletAjaxController implements InitializingBean {
 	
 	@RequestMapping("/pastFiles")
     public @ResponseBody Map pastFiles(String dir) {
-		dir = PathEncodingUtils.decodeDir(dir);
+		dir = pathEncodingUtils.decodeDir(dir);
 		Map jsonMsg = new HashMap(); 
 		if(this.serverAccess.moveCopyFilesIntoDirectory(dir, basketSession.getDirsToCopy(), "copy".equals(basketSession.getGoal()), userParameters)) {
 			jsonMsg.put("status", new Long(1));
@@ -337,7 +340,7 @@ public class ServletAjaxController implements InitializingBean {
 	
 	@RequestMapping("/authenticate")
     public @ResponseBody Map authenticate(String dir, String username, String password) {
-		dir = PathEncodingUtils.decodeDir(dir);
+		dir = pathEncodingUtils.decodeDir(dir);
 		Map jsonMsg = new HashMap(); 
 		if(this.serverAccess.authenticate(dir, username, password, userParameters)) {
 			jsonMsg.put("status", new Long(1));
@@ -362,7 +365,7 @@ public class ServletAjaxController implements InitializingBean {
 	@RequestMapping("/fetchImage")
 	public void fetchImage(String path, 
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
-		path = PathEncodingUtils.decodeDir(path);
+		path = pathEncodingUtils.decodeDir(path);
 		this.serverAccess.updateUserParameters(path, userParameters);
 		DownloadFile file = this.serverAccess.getFile(path, userParameters);
 		response.setContentType(file.getContentType());
@@ -380,7 +383,7 @@ public class ServletAjaxController implements InitializingBean {
 	@RequestMapping("/fetchSound")
 	public void fetchSound(String path, 
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
-		path = PathEncodingUtils.decodeDir(path);
+		path = pathEncodingUtils.decodeDir(path);
 		this.serverAccess.updateUserParameters(path, userParameters);
 		DownloadFile file = this.serverAccess.getFile(path, userParameters);
 		final String contentType = "audio/mpeg3";
@@ -395,7 +398,7 @@ public class ServletAjaxController implements InitializingBean {
 	@RequestMapping("/downloadFile")
     public void downloadFile(String dir, 
     								 HttpServletRequest request, HttpServletResponse response) throws IOException {
-		dir = PathEncodingUtils.decodeDir(dir);
+		dir = pathEncodingUtils.decodeDir(dir);
 		this.serverAccess.updateUserParameters(dir, userParameters);
 		DownloadFile file = this.serverAccess.getFile(dir, userParameters);
 		response.setContentType(file.getContentType());
@@ -410,7 +413,7 @@ public class ServletAjaxController implements InitializingBean {
 	@RequestMapping("/downloadZip")
     public void downloadZip(FormCommand command, 
     								HttpServletRequest request, HttpServletResponse response) throws IOException {
-		List<String> dirs = PathEncodingUtils.decodeDirs(command.getDirs());
+		List<String> dirs = pathEncodingUtils.decodeDirs(command.getDirs());
 		this.serverAccess.updateUserParameters(dirs.get(0), userParameters);
 		DownloadFile file = this.serverAccess.getZip(dirs, userParameters);
 		response.setContentType(file.getContentType());
@@ -426,7 +429,7 @@ public class ServletAjaxController implements InitializingBean {
 	@RequestMapping("/uploadFile")
 	public  ModelAndView uploadFile(String dir, FileUpload file, BindingResult result, HttpServletRequest request) throws IOException {		
 		
-		dir = PathEncodingUtils.decodeDir(dir);
+		dir = pathEncodingUtils.decodeDir(dir);
 		
 		String filename;
 		InputStream inputStream;	
@@ -482,18 +485,18 @@ public class ServletAjaxController implements InitializingBean {
 		String sharedSessionId = request.getParameter("sharedSessionId");
 		model.put("sharedSessionId", sharedSessionId);
 
-		if (command == null || PathEncodingUtils.decodeDirs(command.getDirs()) == null) {
+		if (command == null || pathEncodingUtils.decodeDirs(command.getDirs()) == null) {
 			return new ModelAndView("details_empty", model);
 		}
 
 		// See if we go to the multiple files/folder view or not
-		if (PathEncodingUtils.decodeDirs(command.getDirs()).size() == 1) {
-			String path = PathEncodingUtils.decodeDirs(command.getDirs()).get(0);
+		if (pathEncodingUtils.decodeDirs(command.getDirs()).size() == 1) {
+			String path = pathEncodingUtils.decodeDirs(command.getDirs()).get(0);
 			this.serverAccess.updateUserParameters(path, userParameters);
 
 			// get resource with folder details (if it's a folder ...)
 			JsTreeFile resource = this.serverAccess.get(path, userParameters, true, true);
-			PathEncodingUtils.encodeDir(resource);
+			pathEncodingUtils.encodeDir(resource);
 			
 			// Based on the resource type, direct to appropriate details view
 			if ("folder".equals(resource.getType()) || "drive".equals(resource.getType())) {
@@ -512,19 +515,19 @@ public class ServletAjaxController implements InitializingBean {
 					return new ModelAndView("details_file_recia", model);
 				}
 			}
-		} else if (PathEncodingUtils.decodeDirs(command.getDirs()).size() > 1) {
+		} else if (pathEncodingUtils.decodeDirs(command.getDirs()).size() > 1) {
 			// Add data for multiple files details view
-			model.put("numselected", PathEncodingUtils.decodeDirs(command.getDirs()).size());
+			model.put("numselected", pathEncodingUtils.decodeDirs(command.getDirs()).size());
 
 			// Find the resources which are files and add them to the
 			// image_paths array
 			List<String> image_paths = new ArrayList<String>();
 
-			for (String filePath : PathEncodingUtils.decodeDirs(command.getDirs())) {
+			for (String filePath : pathEncodingUtils.decodeDirs(command.getDirs())) {
 				JsTreeFile resource = this.serverAccess.get(filePath, userParameters, false, true);
 				org.esupportail.portlet.stockage.services.ResourceUtils.Type fileType = resourceUtils.getType(resource.getTitle());
 				if (fileType == Type.IMAGE && !resource.isOverSizeLimit()) {
-					image_paths.add(PathEncodingUtils.encodeDir(filePath));
+					image_paths.add(pathEncodingUtils.encodeDir(filePath));
 				}
 			}
 			model.put("image_paths", image_paths);
@@ -540,10 +543,10 @@ public class ServletAjaxController implements InitializingBean {
 	public @ResponseBody String getParentPath(String dir,
 			HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
 
-		dir = PathEncodingUtils.decodeDir(dir);
+		dir = pathEncodingUtils.decodeDir(dir);
 		String parentDir;
 		
-		SortedMap<String, List<String>> parentsEncPathesMap = PathEncodingUtils.getParentsEncPathes(dir, null, null);		
+		SortedMap<String, List<String>> parentsEncPathesMap = pathEncodingUtils.getParentsEncPathes(dir, null, null);		
 		List<String> parentsEncPathes = new Vector<String>(parentsEncPathesMap.keySet());
 		if(parentsEncPathes.size()<2)
 			parentDir = this.serverAccess.getJsTreeFileRoot().getEncPath();

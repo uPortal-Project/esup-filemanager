@@ -8,7 +8,6 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.esupportail.commons.utils.Base64;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
 
 /**
@@ -19,36 +18,17 @@ import org.esupportail.portlet.stockage.beans.JsTreeFile;
  * Moreover this id desn't need specific encoding characters for accents 
  * (because we don't use accents).
  */
-public class PathEncodingUtils {
+public abstract class PathEncodingUtils {
 
 	protected static final Log log = LogFactory.getLog(PathEncodingUtils.class);
 
 	protected static final String PREFIX_CODE = "path_";
 	
-	public static String encodeDir(String path) {
-		if(path == null)
-			return null;
-		String encodedPath = path;
-		encodedPath = Base64.encodeBytes(path.getBytes(), Base64.URL_SAFE);
-		encodedPath = encodedPath.replaceAll("\n", "");
-		encodedPath = encodedPath.replaceAll("=", "");
-		return PREFIX_CODE + encodedPath;
-	}
+	public abstract String encodeDir(String path);
 	
-	public static String decodeDir(String dir) {
-		if(dir == null || "".equals(dir))
-			return null;
-		dir = dir.substring(PREFIX_CODE.length());
-		int nb_equals_to_add = 4 - dir.length() % 4;
-		if(nb_equals_to_add == 1)
-			dir = dir + "=";
-		if(nb_equals_to_add == 2)
-			dir = dir + "==";
-		dir = new String(Base64.decode(dir, Base64.URL_SAFE));
-		return dir;
-	}
+	public abstract String decodeDir(String dir);
 
-	public static List<String> decodeDirs(List<String> dirs) {
+	public List<String> decodeDirs(List<String> dirs) {
 		if(dirs == null)
 			return null;
 		List<String> decodedDirs = new Vector<String>(dirs.size());
@@ -57,7 +37,7 @@ public class PathEncodingUtils {
 		return decodedDirs;
 	}
 	
-	public static List<String> encodeDirs(List<String> dirs) {
+	public List<String> encodeDirs(List<String> dirs) {
 		if(dirs == null)
 			return null;
 		List<String> encodedDirs = new Vector<String>(dirs.size());
@@ -66,24 +46,24 @@ public class PathEncodingUtils {
 		return encodedDirs;
 	}
 
-	public static void encodeDir(JsTreeFile file) {
+	public void encodeDir(JsTreeFile file) {
 		file.setEncPath(encodeDir(file.getPath()));
 		file.setParentsEncPathes(getParentsEncPathes(file));
 		encodeDir(file.getChildren());
 	}
 
-	public static void encodeDir(List<JsTreeFile> files) {
+	public void encodeDir(List<JsTreeFile> files) {
 		if(files!=null)
 			for(JsTreeFile file: files)
 				encodeDir(file);
 	}
 	
-	public static SortedMap<String, List<String>> getParentsPathes(JsTreeFile file) {
+	public SortedMap<String, List<String>> getParentsPathes(JsTreeFile file) {
 		return getParentsPathes(file.getPath(), file.getCategoryIcon(), file.getDriveIcon());
 	}
 	
 	// Map<path, List<title, icon>>
-	public static SortedMap<String, List<String>> getParentsPathes(String path, String categoryIcon, String driveIcon) {
+	public SortedMap<String, List<String>> getParentsPathes(String path, String categoryIcon, String driveIcon) {
 		SortedMap<String, List<String>> parentsPathes = new TreeMap<String, List<String>>();
 		String pathBase = JsTreeFile.ROOT_DRIVE;
 		List<String> rootTitleIcon =  Arrays.asList(JsTreeFile.ROOT_DRIVE_NAME, JsTreeFile.ROOT_ICON_PATH);
@@ -116,12 +96,12 @@ public class PathEncodingUtils {
 		return parentsPathes;
 	}
 
-	public static SortedMap<String, List<String>> getParentsEncPathes(JsTreeFile file) {
+	public SortedMap<String, List<String>> getParentsEncPathes(JsTreeFile file) {
 		return getParentsEncPathes(file.getPath(), file.getCategoryIcon(), file.getDriveIcon());
 	}
 	
 	// Map<path, List<title, icon>>                                                                                                                     
-	public static SortedMap<String, List<String>> getParentsEncPathes(String path, String categoryIcon, String driveIcon) {
+	public SortedMap<String, List<String>> getParentsEncPathes(String path, String categoryIcon, String driveIcon) {
 		SortedMap<String, List<String>> parentPathes = getParentsPathes(path, categoryIcon, driveIcon);
 		SortedMap<String, List<String>> encodedParentPathes = new  TreeMap<String, List<String>>();
 		for(String pathKey : parentPathes.keySet()) {

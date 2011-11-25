@@ -77,6 +77,8 @@ public class ServersAccessService implements DisposableBean {
 	@Resource(name="drivesCategories")
 	protected Map<String, DrivesCategory> drivesCategories;
 	
+	@Autowired
+	protected PathEncodingUtils pathEncodingUtils;
 	
 	public List<String> getRestrictedDrivesGroupsContext(PortletRequest request,
 			String contextToken) {
@@ -360,7 +362,7 @@ public class ServersAccessService implements DisposableBean {
 		JsTreeFile jFile = this.get(dir, userParameters, false, false);
 		
 		//Iterator<String> parentsPathes = jFile.getParentsPathes().keySet().iterator();
-		Iterator<String> parentsPathes = PathEncodingUtils.getParentsPathes(jFile.getPath(), null, null).keySet().iterator();
+		Iterator<String> parentsPathes = pathEncodingUtils.getParentsPathes(jFile.getPath(), null, null).keySet().iterator();
 		String parentPath = parentsPathes.next();
 		Assert.isTrue(JsTreeFile.ROOT_DRIVE.equals(parentPath));
 		
