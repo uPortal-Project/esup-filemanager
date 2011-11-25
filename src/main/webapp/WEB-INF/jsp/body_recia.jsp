@@ -98,7 +98,7 @@
 				<div class="fl-col-flex2">
 
 					<div id="leftArea" class="fl-col fl-force-left">
-					     	<h3 class="ui-widget-header ui-corner-all arborescentAreaTitle">
+					     <h3 class="ui-widget-header ui-corner-all arborescentAreaTitle">
 						  	<spring:message code="treearea.header" />
 						</h3>
 						<div id="arborescentArea">

@@ -201,7 +201,9 @@ public class ServersAccessService implements DisposableBean {
 	public JsTreeFile get(String dir, SharedUserPortletParameters userParameters, boolean folderDetails, boolean fileDetails) {
 		String category = getDriveCategory(dir);
 		String driveName = getDrive(dir);
-		if(driveName == null || driveName.length() == 0) {
+		if(category == null || category.length() == 0) {
+			return getJsTreeFileRoot();
+		} else if(driveName == null || driveName.length() == 0) {
 			// get category
 			DrivesCategory dCat = this.drivesCategories.get(category);
 			JsTreeFile jsTreeFile = new JsTreeFile(category, "", "category");
@@ -228,7 +230,9 @@ public class ServersAccessService implements DisposableBean {
 		String category = getDriveCategory(dir);
 		String driveName = getDrive(dir);
 		DrivesCategory dCat = this.drivesCategories.get(category);
-		if(driveName == null || driveName.length() == 0) {
+		if(category == null || category.length() == 0) {
+			return getJsTreeFileRoots(userParameters).get(0).getChildren();
+		} else if(driveName == null || driveName.length() == 0) {
 			// getChildren on a category -> list drives
 			List<JsTreeFile> files = new ArrayList<JsTreeFile>();
 			for(FsAccess drive: getCategoryFsAccess(dCat, userParameters)) {
@@ -321,7 +325,14 @@ public class ServersAccessService implements DisposableBean {
 		return this.getFsAccess(getDrive(dir), userParameters).putFile(getLocalDir(dir), filename, inputStream, userParameters);
 	}
 
+	public JsTreeFile getJsTreeFileRoot() {
+		JsTreeFile jsFileRoot = new JsTreeFile(JsTreeFile.ROOT_DRIVE_NAME, null, "root");
+		jsFileRoot.setIcon(JsTreeFile.ROOT_ICON_PATH);
+		return jsFileRoot;
+	}
+	
 	public List<JsTreeFile> getJsTreeFileRoots(SharedUserPortletParameters userParameters) {
+		JsTreeFile jsFileRoot = getJsTreeFileRoot();
 		List<JsTreeFile> jsTreeFiles = new ArrayList<JsTreeFile>();
 		for(String drivesCategoryName: this.drivesCategories.keySet()) {
 			DrivesCategory category = this.drivesCategories.get(drivesCategoryName);
@@ -333,9 +344,13 @@ public class ServersAccessService implements DisposableBean {
 				jsTreeFiles.add(jFile);
 			}
 		}
-		return jsTreeFiles;
+		jsFileRoot.setChildren(jsTreeFiles);
+		List<JsTreeFile> jsTreeFileRoots = new ArrayList<JsTreeFile>();
+		jsTreeFileRoots.add(jsFileRoot);
+		return jsTreeFileRoots;
 	}
-	
+
+
 	public List<JsTreeFile> getJsTreeFileRoots(String dir, SharedUserPortletParameters userParameters) {
 		
 		JsTreeFile parentFile = null;

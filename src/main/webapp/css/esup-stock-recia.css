@@ -382,3 +382,8 @@ margin-left: 5px;
 	text-wrap: unrestricted;
 	word-wrap: break-word;
 }
+
+
+.esupstock #path_RlM6 > ins, .esupstock #path_RlM6 > a {
+    display: none;
+}

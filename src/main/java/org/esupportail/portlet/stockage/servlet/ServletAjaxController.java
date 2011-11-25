@@ -169,36 +169,28 @@ public class ServletAjaxController implements InitializingBean {
 			throw new EsupStockLostSessionException(infoMsg);
 		}
 		ModelMap model = new ModelMap();
-		if(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE)) {
-			JsTreeFile jsFileRoot = new JsTreeFile(JsTreeFile.ROOT_DRIVE_NAME, null, "drive");
-			jsFileRoot.setIcon(JsTreeFile.ROOT_ICON_PATH);
-			model.put("resource", jsFileRoot);
-			List<JsTreeFile> files = this.serverAccess.getJsTreeFileRoots(userParameters);		
-			model.put("files", files);
-		} else {
-			if(this.serverAccess.formAuthenticationRequired(dir, userParameters)) {
-				model = new ModelMap("currentDir", encodeDir(dir));
-				model.put("sharedSessionId", userParameters.getSharedSessionId());
-				model.put("username", this.serverAccess.getUserPassword(dir, userParameters).getUsername());
-				model.put("password", this.serverAccess.getUserPassword(dir, userParameters).getPassword());
-				return new ModelAndView("authenticationForm", model);
-			}
-						
-			try {
-				JsTreeFile resource = this.serverAccess.get(dir, userParameters, false, false);
-				model.put("resource", resource);
-				List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
-				Collections.sort(files);
-				model.put("files", files); 
-			} catch (Exception ex) {
-				//Added for GIP Recia : Error handling
-				log.warn("Error retrieving file", ex);
-				//Usually a duplicate name problem.  Tell the ajax handler that
-				//there is a problem and send the translated error message
-				response.setStatus(500);
-				model.put("errorText", context.getMessage("ajax.browserArea.failed", null, locale) + "<br/><i>" + ex.getMessage() + "</i>");
-				return new ModelAndView("ajax_error_recia", model);
-			}
+		if(this.serverAccess.formAuthenticationRequired(dir, userParameters)) {
+			model = new ModelMap("currentDir", encodeDir(dir));
+			model.put("sharedSessionId", userParameters.getSharedSessionId());
+			model.put("username", this.serverAccess.getUserPassword(dir, userParameters).getUsername());
+			model.put("password", this.serverAccess.getUserPassword(dir, userParameters).getPassword());
+			return new ModelAndView("authenticationForm", model);
+		}
+
+		try {
+			JsTreeFile resource = this.serverAccess.get(dir, userParameters, false, false);
+			model.put("resource", resource);
+			List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
+			Collections.sort(files);
+			model.put("files", files); 
+		} catch (Exception ex) {
+			//Added for GIP Recia : Error handling
+			log.warn("Error retrieving file", ex);
+			//Usually a duplicate name problem.  Tell the ajax handler that
+			//there is a problem and send the translated error message
+			response.setStatus(500);
+			model.put("errorText", context.getMessage("ajax.browserArea.failed", null, locale) + "<br/><i>" + ex.getMessage() + "</i>");
+			return new ModelAndView("ajax_error_recia", model);
 		}
 		model.put("sharedSessionId", userParameters.getSharedSessionId());
 		FormCommand command = new FormCommand();
@@ -547,10 +539,14 @@ public class ServletAjaxController implements InitializingBean {
 			HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
 
 		dir = decodeDir(dir);
-
+		String parentDir;
+		
 		SortedMap<String, List<String>> parentsEncPathesMap = JsTreeFile.getParentsEncPathes(dir, null, null);		
 		List<String> parentsEncPathes = new Vector<String>(parentsEncPathesMap.keySet());
-		String parentDir = parentsEncPathes.get(parentsEncPathes.size()-2);
+		if(parentsEncPathes.size()<2)
+			parentDir = this.serverAccess.getJsTreeFileRoot().getEncPath();
+		else
+			parentDir = parentsEncPathes.get(parentsEncPathes.size()-2);
 		
 		return parentDir;
 	}

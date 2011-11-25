@@ -959,7 +959,7 @@ function handleLeftTreeSelection(treeNode) {
             var needsAuthentication = $("#browserMain #authenticationForm").length > 0;
 
             var type = getTypeFromLiNode(treeNode);
-            if (type != "category" && !needsAuthentication) {
+            if (type != "root" && type != "category" && !needsAuthentication) {
                 //refresh the details area
                 updateDetailsArea({
                     "dirs": path,
@@ -2057,23 +2057,8 @@ function getFile(parentDir, fileId) {
             $("#fileTree").jstree("select_node", obj, true);
         }, true);
     } else {
-        if (fileId != 'FS:') {
-            var obj = document.getElementById(fileId);
-            $("#fileTree").jstree("select_node", obj, true);
-        } else {
-            $.ajax({
-                async: true,
-                type: 'POST',
-                url: '/esup-portlet-stockage/servlet-ajax/htmlFileTree',
-                data: {
-                    "dir": fileId,
-                    "sharedSessionId": sharedSessionId
-                },
-                success: function (r) {
-                    $("#browserMain").html(r);
-                }
-            });
-        }
+        var obj = document.getElementById(fileId);
+        $("#fileTree").jstree("select_node", obj, true);
     }
 }
 
