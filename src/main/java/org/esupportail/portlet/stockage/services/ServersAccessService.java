@@ -355,7 +355,7 @@ public class ServersAccessService implements DisposableBean {
 		
 		JsTreeFile parentFile = null;
 		
-		List<JsTreeFile> drivesAndCategories = this.getJsTreeFileRoots(userParameters);
+		List<JsTreeFile> rootAndDrivesAndCategories = this.getJsTreeFileRoots(userParameters);
 		JsTreeFile jFile = this.get(dir, userParameters, false, false);
 		
 		Iterator<String> parentsPathes = jFile.getParentsPathes().keySet().iterator();
@@ -363,10 +363,10 @@ public class ServersAccessService implements DisposableBean {
 		Assert.isTrue(JsTreeFile.ROOT_DRIVE.equals(parentPath));
 		
 		if(!parentsPathes.hasNext())
-			return drivesAndCategories;
+			return rootAndDrivesAndCategories;
 		
 		parentPath = parentsPathes.next();
-		for(JsTreeFile drive: drivesAndCategories) {
+		for(JsTreeFile drive: rootAndDrivesAndCategories.get(0).getChildren()) {
 			if(drive.getPath().equals(parentPath)) {
 				parentFile = drive;
 				break;
@@ -374,7 +374,7 @@ public class ServersAccessService implements DisposableBean {
 		}
 		
 		if(!parentsPathes.hasNext())
-			return drivesAndCategories;
+			return rootAndDrivesAndCategories;
 		
 		parentPath = parentsPathes.next();
 		for(JsTreeFile category: parentFile.getChildren()) {
@@ -400,7 +400,7 @@ public class ServersAccessService implements DisposableBean {
 				}
 			}
 		}
-		return drivesAndCategories;
+		return rootAndDrivesAndCategories;
 	}
 	
 	private String getDriveCategory(String dir) {
@@ -512,7 +512,6 @@ public class ServersAccessService implements DisposableBean {
 		
 		return authenticateSuccess;
 	}
-
 
 
 }
