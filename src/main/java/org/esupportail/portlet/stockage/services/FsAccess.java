@@ -57,8 +57,6 @@ public abstract class FsAccess {
 	protected UserAuthenticatorService userAuthenticatorService;
 
 	protected UriManipulateService uriManipulateService;
-	
-    protected boolean showHiddenFiles = false;
 
 	public void setDatePattern(String datePattern) {
 		this.datePattern = datePattern;
@@ -112,10 +110,6 @@ public abstract class FsAccess {
 	public void setUriManipulateService(
 			UriManipulateService uriManipulateService) {
 		this.uriManipulateService = uriManipulateService;
-	}
-
-	public void setShowHiddenFiles(boolean showHiddenFiles) {
-		this.showHiddenFiles = showHiddenFiles;
 	}
 	
 	public void initializeService(Map userInfos,

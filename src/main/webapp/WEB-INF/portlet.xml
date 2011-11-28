@@ -61,7 +61,19 @@
         		<name>defaultPath</name>
         		<value>FS:</value>
         		<!--value>FS:Shared~bob~home/bob</value-->
-        	</preference>      	
+        	</preference>    
+        	<preference>
+        		<name>showHiddenFiles</name>
+        		<value>false</value>
+        	</preference> 	
+        	<preference>
+        		<name>useDoubleClick</name>
+        		<value>true</value>
+        	</preference>  	
+        	<preference>
+        		<name>useCursorWaitDialog</name>
+        		<value>false</value>
+        	</preference> 	
         </portlet-preferences>
     </portlet>
     

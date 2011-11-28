@@ -158,7 +158,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 	public JsTreeFile get(String path, SharedUserPortletParameters userParameters, boolean folderDetails, boolean fileDetails) {
 		try {
 			FileObject resource = cd(path, userParameters);			
-			return resourceAsJsTreeFile(resource, folderDetails, fileDetails);
+			return resourceAsJsTreeFile(resource, folderDetails, fileDetails, userParameters.isShowHiddenFiles());
 		} catch(FileSystemException fse) {
 			throw new EsupStockException(fse);
 		}
@@ -172,8 +172,8 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 			FileObject[] children = resource.getChildren();
 			if(children != null)
 			    for(FileObject child: children)
-				if(this.showHiddenFiles || !child.isHidden())
-					files.add(resourceAsJsTreeFile(child, false, true));
+				if(userParameters.isShowHiddenFiles() || !child.isHidden())
+					files.add(resourceAsJsTreeFile(child, false, true, userParameters.isShowHiddenFiles()));
 			return files;
 		} catch(FileSystemException fse) {
 			Throwable cause = ExceptionUtils.getCause(fse);
@@ -188,7 +188,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 
 	
 	
-	private JsTreeFile resourceAsJsTreeFile(FileObject resource, boolean folderDetails, boolean fileDetails) throws FileSystemException {
+	private JsTreeFile resourceAsJsTreeFile(FileObject resource, boolean folderDetails, boolean fileDetails, boolean showHiddenFiles) throws FileSystemException {
 		String lid = resource.getName().getPath();
 		String rootPath = this.root.getName().getPath();
 		// lid must be a relative path from rootPath
@@ -222,7 +222,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 					long fileCount = 0;
 					long folderCount = 0;
 					for (FileObject child : resource.getChildren()) {
-						if (this.showHiddenFiles || !child.isHidden()) {
+						if (showHiddenFiles || !child.isHidden()) {
 							if ("folder".equals(child.getType().getName())) {
 								++folderCount;
 							} else if ("file".equals(child.getType().getName())) {

@@ -517,5 +517,4 @@ public class ServersAccessService implements DisposableBean {
 		return authenticateSuccess;
 	}
 
-
 }

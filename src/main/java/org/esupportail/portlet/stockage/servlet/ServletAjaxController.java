@@ -90,12 +90,8 @@ public class ServletAjaxController implements InitializingBean {
 	@Qualifier("isPortlet")
 	protected Boolean isPortlet;
 	
-	@Autowired(required=false)
-	@Qualifier("useDoubleClick")
 	protected Boolean useDoubleClick = true;
 	
-	@Autowired(required=false)
-	@Qualifier("useCursorWaitDialog")
 	protected Boolean useCursorWaitDialog = false;
 	
 	//GP Added in order to detect file type (image / sound / etc)

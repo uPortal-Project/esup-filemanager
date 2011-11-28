@@ -69,6 +69,15 @@
     </bean>
 	
 	
+	<!-- there is two implementations for org.esupportail.portlet.stockage.utils.PathEncodingUtils 
+		Base64PathEncodingUtils need more cpu, MemoryMapPathEncodingUtils need more ram 
+		MemoryMapPathEncodingUtils gives id shorter than Base64PathEncodingUtils
+		Base64PathEncodingUtils seems faster than MemoryMapPathEncodingUtils (...)
+		We choose by default Base64PathEncodingUtils -->
+	<bean id="pathEncodingUtils" class="org.esupportail.portlet.stockage.utils.Base64PathEncodingUtils"/>
+	<!-- bean id="pathEncodingUtils" class="org.esupportail.portlet.stockage.utils.MemoryMapPathEncodingUtils"/-->
+	
+	
 	<bean id="resourceUtils" class="org.esupportail.portlet.stockage.services.ResourceUtils">
 		<property name="iconsMap">
 			<map>
@@ -94,7 +103,7 @@
 			</map>
 		</property>
 		
-		<!-- Added for RECIA.  In order to know what type of file is in the details area -->
+		<!-- Used in order to know what type of file is in the details area -->
 		<property name="typeMap">
 			<map>
 				<entry key="jpg" value="image"/>
@@ -110,7 +119,7 @@
 			</map>
 		</property>
 		
-		<!-- Added for RECIA. In order to limit the size of the filetype.  Any file greater than the size will not allow streaming / slideshow
+		<!-- Used in order to limit the size of the filetype.  Any file greater than the size will not allow streaming / slideshow
 		/ view in original size functionality -->
 		<property name="sizeLimitMap">
 			<map>

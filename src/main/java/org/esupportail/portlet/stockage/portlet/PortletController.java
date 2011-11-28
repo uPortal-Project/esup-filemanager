@@ -61,6 +61,9 @@ public class PortletController implements InitializingBean {
 	public static final String PREF_ESUPSTOCK_CONTEXTTOKEN = "contextToken";
 	public static final String PREF_PORTLET_VIEW = "defaultPortletView";
 	public static final String PREF_DEFAULT_PATH = "defaultPath";
+	public static final String PREF_SHOW_HIDDEN_FILES = "showHiddenFiles";
+	public static final String PREF_USE_DOUBLE_CLICK = "useDoubleClick";
+	public static final String PREF_USE_CURSOR_WAIT_DIALOG = "useCursorWaitDialog";
 	
 	public static final String STANDARD_VIEW = "standard";
 	public static final String MOBILE_VIEW = "mobile";
@@ -75,15 +78,6 @@ public class PortletController implements InitializingBean {
 	protected SharedUserPortletParameters userParameters;
 	
 	protected String sharedSessionId;
-	
-	
-	@Autowired(required=false)
-	@Qualifier("useDoubleClick")
-	protected Boolean useDoubleClick = true;
-	
-	@Autowired(required=false)
-	@Qualifier("useCursorWaitDialog")
-	protected Boolean useCursorWaitDialog = false;
 	
 	@Autowired
 	protected PathEncodingUtils pathEncodingUtils;
@@ -125,10 +119,13 @@ public class PortletController implements InitializingBean {
     	String defaultPath = prefs.getValue(PREF_DEFAULT_PATH, null);
     	defaultPath = pathEncodingUtils.encodeDir(defaultPath);
     	
+    	boolean showHiddenFiles = "true".equals(prefs.getValue(PREF_SHOW_HIDDEN_FILES, "false")); 	
+    	userParameters.setShowHiddenFiles(showHiddenFiles);
+    	
     	List<String> driveNames = userParameters.getDriveNames();
     	Map userInfos = userParameters.getUserInfos();
     	
-    	// note that we call serverAccess.initializeServices just for mobile and wai mode
+    	// note that we call serverAccess.initializeServices just for mobile and wai mode (here in portlet view)
     	serverAccess.initializeServices(driveNames,  userInfos, userParameters);
     	
 	    if(userAgentInspector.isMobile(request)) {
@@ -145,6 +142,10 @@ public class PortletController implements InitializingBean {
     
 	@RequestMapping(value = {"VIEW"}, params = {"action=browseStandard"})
     public ModelAndView browseStandard(RenderRequest request, RenderResponse response, String dir) {	
+        final PortletPreferences prefs = request.getPreferences();
+		boolean useDoubleClick = "true".equals(prefs.getValue(PREF_USE_DOUBLE_CLICK, "true")); 
+    	boolean useCursorWaitDialog = "true".equals(prefs.getValue(PREF_USE_CURSOR_WAIT_DIALOG, "false"));
+    	
 		ModelMap model = new ModelMap();     
     	model.put("sharedSessionId", sharedSessionId);
 		model.put("useDoubleClick", useDoubleClick);
@@ -236,13 +237,13 @@ public class PortletController implements InitializingBean {
     @RequestMapping("ABOUT")
 	public ModelAndView renderAboutView(RenderRequest request, RenderResponse response) throws Exception {
 		ModelMap model = new ModelMap();
-		return new ModelAndView("about", model);
+		return new ModelAndView("about-portlet", model);
 	}
     
     @RequestMapping("HELP")
 	public ModelAndView renderHelpView(RenderRequest request, RenderResponse response) throws Exception {
 		ModelMap model = new ModelMap();
-		return new ModelAndView("help", model);
+		return new ModelAndView("help-portlet", model);
 	}
 
 }
