@@ -187,4 +187,8 @@ public abstract class FsAccess {
 		return true;
 	}
 
+	@Deprecated
+	public void setShowHiddenFiles(boolean showHiddenFiles) {
+		log.warn("showHiddenFiles in FsAccess is now deprecated (it will not be used here), configure showHiddenFiles now in portlet.xml or when publishing your portlet");
+	}
 }

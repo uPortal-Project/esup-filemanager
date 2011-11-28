@@ -30,13 +30,6 @@
   
   <!-- isPortlet must be True if you deploy esup-portlet-stockage in Portal like uPortal/EsupPortail -->
   <util:constant id="isPortlet" static-field="java.lang.Boolean.FALSE"/>
- 
-  <!-- use double click or simple click to browse folders -->
-  <util:constant id="useDoubleClick" static-field="java.lang.Boolean.TRUE"/>
-
-  <!-- show a wait dialog when loading or not -->
-  <util:constant id="useCursorWaitDialog" static-field="java.lang.Boolean.FALSE"/>
-
 
   <!-- drivesCategories lets you organize the tree of your drives .
        On the root you can have categories and on each categories you can have drives.
@@ -128,7 +121,6 @@
     <property name="driveName" value="bob"/>
     <property name="icon" value="/esup-portlet-stockage/img/drives/root.png" />
     <property name="uri" value="file:///"/>
-    <property name="showHiddenFiles" value="false"/>
     <property name="contextToken" value="justbob"/>
     <property name="resourceUtils" ref="resourceUtils"/>
   </bean>
