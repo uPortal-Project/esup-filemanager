@@ -192,14 +192,14 @@ public class ServletAjaxController implements InitializingBean {
 			//there is a problem and send the translated error message
 			response.setStatus(500);
 			model.put("errorText", context.getMessage("ajax.browserArea.failed", null, locale) + "<br/><i>" + ex.getMessage() + "</i>");
-			return new ModelAndView("ajax_error_recia", model);
+			return new ModelAndView("ajax_error", model);
 		}
 		model.put("sharedSessionId", userParameters.getSharedSessionId());
 		FormCommand command = new FormCommand();
 	    model.put("command", command);
 	    
 	    /* GIP RECIA : Construct the view in terms of environment */ 
-	    final String view = getThumbnailMode() ? "fileTree_recia_thumbnails" : "fileTree_recia";
+	    final String view = getThumbnailMode() ? "fileTree_thumbnails" : "fileTree";
 	    
 	    return new ModelAndView(view, model);
 	 }
@@ -279,7 +279,7 @@ public class ServletAjaxController implements InitializingBean {
 		response.setStatus(403);
 		ModelMap modelMap = new ModelMap();
 		modelMap.put("errorText", context.getMessage("ajax.fileOrFolderCreate.failed", null, locale));
-		return new ModelAndView("ajax_error_recia", modelMap);
+		return new ModelAndView("ajax_error", modelMap);
     }
 	
 	@RequestMapping("/renameFile")
@@ -294,7 +294,7 @@ public class ServletAjaxController implements InitializingBean {
 		response.setStatus(403);
 		ModelMap modelMap = new ModelMap();
 		modelMap.put("errorText", context.getMessage("ajax.rename.failed", null, locale));
-		return new ModelAndView("ajax_error_recia", modelMap);
+		return new ModelAndView("ajax_error", modelMap);
     }
     
 	@RequestMapping("/prepareCopyFiles")
@@ -499,18 +499,18 @@ public class ServletAjaxController implements InitializingBean {
 			// Based on the resource type, direct to appropriate details view
 			if ("folder".equals(resource.getType()) || "drive".equals(resource.getType())) {
 				model.put("file", resource);
-				return new ModelAndView("details_folder_recia", model);
+				return new ModelAndView("details_folder", model);
 			} else if ("file".equals(resource.getType())) {
 				model.put("file", resource);
 				ResourceUtils.Type fileType = resourceUtils.getType(resource.getTitle());
 				if (fileType == Type.AUDIO && !resource.isOverSizeLimit()) {
-					return new ModelAndView("details_sound_recia", model);
+					return new ModelAndView("details_sound", model);
 				} else if (fileType == Type.IMAGE
 						&& !resource.isOverSizeLimit()) {
-					return new ModelAndView("details_image_recia", model);
+					return new ModelAndView("details_image", model);
 				} else {
 					// generic file page
-					return new ModelAndView("details_file_recia", model);
+					return new ModelAndView("details_file", model);
 				}
 			}
 		} else if (pathEncodingUtils.decodeDirs(command.getDirs()).size() > 1) {
@@ -529,7 +529,7 @@ public class ServletAjaxController implements InitializingBean {
 				}
 			}
 			model.put("image_paths", image_paths);
-			return new ModelAndView("details_files_recia", model);
+			return new ModelAndView("details_files", model);
 		}
 
 		// Unknown resource type

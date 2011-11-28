@@ -83,7 +83,7 @@
   </head>
 
   <body>
-       <jsp:include page="body_recia.jsp" />
+       <jsp:include page="body.jsp" />
   </body>
 
 </html>

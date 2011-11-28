@@ -127,7 +127,7 @@
 		  console.log("Details image page ready");
 		  var img_element = $("img.detailsImage")[0];
 
-		  console.log("details_image_recia.jsp : img_element.src : " + img_element.src);
+		  console.log("details_image.jsp : img_element.src : " + img_element.src);
 
 		  var image_width;
 		  var image_height;
