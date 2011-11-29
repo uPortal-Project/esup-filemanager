@@ -34,6 +34,7 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.esupportail.portlet.stockage.beans.FormCommand;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
@@ -43,7 +44,6 @@ import org.esupportail.portlet.stockage.services.UserAgentInspector;
 import org.esupportail.portlet.stockage.utils.PathEncodingUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -167,9 +167,9 @@ public class PortletController implements InitializingBean {
 		ModelMap model;
 		if( !(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE)) ) {
 			if(this.serverAccess.formAuthenticationRequired(decodedDir, userParameters)) {
-				SortedMap<String, List<String>> parentPathes = pathEncodingUtils.getParentsEncPathes(decodedDir, null, null);
+				ListOrderedMap parentPathes = pathEncodingUtils.getParentsEncPathes(decodedDir, null, null);
 				// we want to get the (last-1) key of sortedmap "parentPathes"
-				String parentDir = parentPathes.subMap(parentPathes.firstKey(), parentPathes.lastKey()).lastKey();
+				String parentDir = (String)parentPathes.get(parentPathes.size()-2);
 				model = new ModelMap("currentDir", dir);
 				model.put("parentDir", parentDir);
 				model.put("username", this.serverAccess.getUserPassword(decodedDir, userParameters).getUsername());
@@ -197,10 +197,9 @@ public class PortletController implements InitializingBean {
 		ModelMap model;
 		if( !(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE)) ) {
 			if(this.serverAccess.formAuthenticationRequired(dir, userParameters)) {
-				SortedMap<String, List<String>> parentPathes = pathEncodingUtils.getParentsEncPathes(decodedDir, null, null);
+				ListOrderedMap parentPathes = pathEncodingUtils.getParentsEncPathes(decodedDir, null, null);
 				// we want to get the (last-1) key of sortedmap "parentPathes"
-				String parentDir = parentPathes.subMap(parentPathes.firstKey(), parentPathes.lastKey()).lastKey();
-				model = new ModelMap("currentDir", dir);
+				String parentDir = (String)parentPathes.get(parentPathes.size()-2);				model = new ModelMap("currentDir", dir);
 				model.put("parentDir", parentDir);
 				model.put("username", this.serverAccess.getUserPassword(decodedDir, userParameters).getUsername());
 				model.put("password", this.serverAccess.getUserPassword(decodedDir, userParameters).getPassword());
@@ -231,7 +230,7 @@ public class PortletController implements InitializingBean {
 		pathEncodingUtils.encodeDir(files);
 		model.put("files", files);
 		model.put("currentDir", dir);
-		SortedMap<String, List<String>> parentsEncPathes = pathEncodingUtils.getParentsEncPathes(resource);
+		ListOrderedMap parentsEncPathes = pathEncodingUtils.getParentsEncPathes(resource);
 		model.put("parentsEncPathes", parentsEncPathes); 
 		return model;
 	}

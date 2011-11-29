@@ -29,6 +29,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Vector;
 
+import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
@@ -80,13 +81,13 @@ public abstract class PathEncodingUtils {
 				encodeDir(file);
 	}
 	
-	public SortedMap<String, List<String>> getParentsPathes(JsTreeFile file) {
+	public ListOrderedMap getParentsPathes(JsTreeFile file) {
 		return getParentsPathes(file.getPath(), file.getCategoryIcon(), file.getDriveIcon());
 	}
 	
 	// Map<path, List<title, icon>>
-	public SortedMap<String, List<String>> getParentsPathes(String path, String categoryIcon, String driveIcon) {
-		SortedMap<String, List<String>> parentsPathes = new TreeMap<String, List<String>>();
+	public ListOrderedMap getParentsPathes(String path, String categoryIcon, String driveIcon) {
+		ListOrderedMap parentsPathes = new ListOrderedMap();
 		String pathBase = JsTreeFile.ROOT_DRIVE;
 		List<String> rootTitleIcon =  Arrays.asList(JsTreeFile.ROOT_DRIVE_NAME, JsTreeFile.ROOT_ICON_PATH);
 		parentsPathes.put(pathBase, rootTitleIcon);
@@ -118,17 +119,17 @@ public abstract class PathEncodingUtils {
 		return parentsPathes;
 	}
 
-	public SortedMap<String, List<String>> getParentsEncPathes(JsTreeFile file) {
+	public ListOrderedMap getParentsEncPathes(JsTreeFile file) {
 		return getParentsEncPathes(file.getPath(), file.getCategoryIcon(), file.getDriveIcon());
 	}
 	
 	// Map<path, List<title, icon>>                                                                                                                     
-	public SortedMap<String, List<String>> getParentsEncPathes(String path, String categoryIcon, String driveIcon) {
-		SortedMap<String, List<String>> parentPathes = getParentsPathes(path, categoryIcon, driveIcon);
-		SortedMap<String, List<String>> encodedParentPathes = new  TreeMap<String, List<String>>();
-		for(String pathKey : parentPathes.keySet()) {
+	public ListOrderedMap getParentsEncPathes(String path, String categoryIcon, String driveIcon) {
+		ListOrderedMap parentPathes = getParentsPathes(path, categoryIcon, driveIcon);
+		ListOrderedMap encodedParentPathes = new  ListOrderedMap();
+		for(String pathKey : (List<String>)parentPathes.keyList()) {
 			String encodedPath = encodeDir(pathKey);
-			encodedParentPathes.put(encodedPath, parentPathes.get(pathKey));
+			encodedParentPathes.put(encodedPath, (List<String>)parentPathes.get(pathKey));
 		}
 		return encodedParentPathes;
 	}

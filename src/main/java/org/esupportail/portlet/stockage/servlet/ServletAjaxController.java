@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.esupportail.portlet.stockage.beans.BasketSession;
 import org.esupportail.portlet.stockage.beans.DownloadFile;
@@ -195,7 +196,7 @@ public class ServletAjaxController implements InitializingBean {
 			Collections.sort(files);
 			pathEncodingUtils.encodeDir(files);
 			model.put("files", files); 
-			SortedMap<String, List<String>> parentsEncPathes = pathEncodingUtils.getParentsEncPathes(resource);
+			ListOrderedMap parentsEncPathes = pathEncodingUtils.getParentsEncPathes(resource);
 			model.put("parentsEncPathes", parentsEncPathes); 
 		} catch (Exception ex) {
 			//Added for GIP Recia : Error handling
@@ -556,8 +557,8 @@ public class ServletAjaxController implements InitializingBean {
 		dir = pathEncodingUtils.decodeDir(dir);
 		String parentDir;
 		
-		SortedMap<String, List<String>> parentsPathesMap = pathEncodingUtils.getParentsPathes(dir, null, null);		
-		List<String> parentsPathes = new Vector<String>(parentsPathesMap.keySet());
+		ListOrderedMap parentsPathesMap = pathEncodingUtils.getParentsPathes(dir, null, null);		
+		List<String> parentsPathes = (List<String>)(parentsPathesMap.keyList());
 		if(parentsPathes.size()<2)
 			parentDir = this.serverAccess.getJsTreeFileRoot().getPath();
 		else
