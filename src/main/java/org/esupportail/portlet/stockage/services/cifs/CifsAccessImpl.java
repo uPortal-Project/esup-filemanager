@@ -32,7 +32,6 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -51,6 +50,7 @@ import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.stockage.beans.UserPassword;
 import org.esupportail.portlet.stockage.exceptions.EsupStockException;
+import org.esupportail.portlet.stockage.exceptions.EsupStockPermissionDeniedException;
 import org.esupportail.portlet.stockage.services.FsAccess;
 import org.esupportail.portlet.stockage.services.ResourceUtils;
 import org.springframework.beans.factory.DisposableBean;
@@ -65,8 +65,6 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 	private NtlmPasswordAuthentication userAuthenticator;
 
 	protected SmbFile root;
-
-	protected boolean showHiddenFiles = false;
 
 	/** CIFS properties */
 	protected Properties jcifsConfigProperties;
@@ -83,20 +81,16 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 		this.jcifsConfigProperties = jcifsConfigProperties;
 	}
 
-	public void setShowHiddenFiles(boolean showHiddenFiles) {
-		this.showHiddenFiles = showHiddenFiles;
-	}
-
 	@Override
 	public void open(SharedUserPortletParameters userParameters) {
 		try {
 			if(userAuthenticatorService != null && !this.isOpened() ) {
 				UserPassword userPassword = userAuthenticatorService.getUserPassword(userParameters);
 				userAuthenticator = new NtlmPasswordAuthentication(userPassword.getDomain(), userPassword.getUsername(), userPassword.getPassword()) ;
-					SmbFile smbFile = new SmbFile(this.getUri(), userAuthenticator);
-					if (smbFile.exists()) {
-						root = smbFile;
-					}
+				SmbFile smbFile = new SmbFile(this.getUri(), userAuthenticator);
+				if (smbFile.exists()) {
+					root = smbFile;
+				}
 			}
 		} catch (MalformedURLException me) {
 			log.error(me, me.getCause());
@@ -121,7 +115,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 	@Override
 	public void close() {
 		// TODO Auto-generated method stub
-		log.info("Close : Nothing to do with jcifs!");
+		log.debug("Close : Nothing to do with jcifs!");
 		this.root = null;
 	}
 
@@ -130,7 +124,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 	 */
 	@Override
 	public boolean isOpened() {
-			return (this.root != null) ;
+		return (this.root != null) ;
 	}
 
 	private SmbFile cd(String path, SharedUserPortletParameters userParameters) {
@@ -163,7 +157,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 			log.error(sae.getMessage());
 			root = null;
 			userAuthenticator = null;
-			throw new EsupStockException(sae);
+			throw new EsupStockPermissionDeniedException(sae);
 		} catch(SmbException se) {
 			log.error(se.getMessage());
 			throw new EsupStockException(se);
@@ -178,14 +172,15 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 	public List<JsTreeFile> getChildren(String path, SharedUserPortletParameters userParameters) {
 		List<JsTreeFile> files = new ArrayList<JsTreeFile>();
 		try {
+			String ppath = path;
 			this.open(userParameters);
-			if (!path.endsWith("/"))
-				path = path.concat("/");
-			SmbFile resource = new SmbFile(this.getUri() + path, userAuthenticator);
+			if (!ppath.endsWith("/"))
+				ppath = ppath.concat("/");
+			SmbFile resource = new SmbFile(this.getUri() + ppath, userAuthenticator);
 			if (resource.canRead()) {
 				for(SmbFile child: resource.listFiles()) {
 					try {
-						if(!child.isHidden() || this.showHiddenFiles) {
+						if(!child.isHidden() || userParameters.isShowHiddenFiles()) {
 							files.add(resourceAsJsTreeFile(child, userParameters, false, true));
 						}
 					} catch (SmbException se) {
@@ -196,6 +191,9 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 				log.warn("The resource can't be read " + resource.toString());
 			}
 			return files;
+		} catch (SmbAuthException sae) {
+			log.error(sae.getMessage());
+			throw new EsupStockPermissionDeniedException(sae);
 		} catch (SmbException se) {
 			log.error(se.getMessage());
 			throw new EsupStockException(se);
@@ -239,7 +237,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 				long fileCount = 0;
 				long folderCount = 0;
 				for (SmbFile child : resource.listFiles()) {
-					if (this.showHiddenFiles || !child.isHidden()) {
+					if (userParameters.isShowHiddenFiles() || !child.isHidden()) {
 						if (child.isDirectory()) {
 							++folderCount;
 						} else if (child.isFile()) {
