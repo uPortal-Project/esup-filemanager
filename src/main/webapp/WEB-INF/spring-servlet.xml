@@ -44,5 +44,12 @@
     <!-- Configures the @Controller programming model 
     -> enable json-> pojo with jackson-mapper-asl-->
 	<mvc:annotation-driven />
+	
+	<!-- for Servlet Mode ONLY ! for Portlet Mode use portal/portlet preferences -->
+  	<util:constant id="useDoubleClickModeServlet" static-field="java.lang.Boolean.TRUE"/>
+	<!-- for Servlet Mode ONLY ! for Portlet Mode use portal/portlet preferences -->
+  	<util:constant id="useCursorWaitDialogModeServlet" static-field="java.lang.Boolean.FALSE"/>
+  	<!-- for Servlet Mode ONLY ! for Portlet Mode use portal/portlet preferences -->
+  	<util:constant id="showHiddenFilesModeServlet" static-field="java.lang.Boolean.FALSE"/>
     
 </beans>

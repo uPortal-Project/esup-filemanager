@@ -47,7 +47,7 @@ public class SharedUserPortletParameters implements Serializable {
     
     protected Map<String, UserPassword> userPassword4AuthenticatedFormDrives = new HashMap<String, UserPassword>();
     
-    protected boolean showHiddenFiles = false;
+    protected boolean showHiddenFiles;
     
 	public SharedUserPortletParameters(String sharedSessionId) {
 		this.sharedSessionId = sharedSessionId;

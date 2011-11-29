@@ -92,9 +92,18 @@ public class ServletAjaxController implements InitializingBean {
 	@Qualifier("isPortlet")
 	protected Boolean isPortlet;
 	
+	@Autowired(required=false)
+	@Qualifier("useDoubleClickModeServlet")
 	protected Boolean useDoubleClick = true;
 	
+	@Autowired(required=false)
+	@Qualifier("useCursorWaitDialogModeServlet")
 	protected Boolean useCursorWaitDialog = false;
+	
+	@Autowired(required=false)
+	@Qualifier("showHiddenFilesModeServlet")
+	protected Boolean showHiddenFilesModeServlet = false;
+	
 	
 	//GP Added in order to detect file type (image / sound / etc)
 	@Autowired
@@ -122,6 +131,7 @@ public class ServletAjaxController implements InitializingBean {
 		if(!this.isPortlet && userParameters == null) {
 			log.debug("Servlet Access (no portlet mode : isPortlet property = false): init SharedUserPortletParameters");
 			userParameters = new SharedUserPortletParameters(sharedSessionId);
+			userParameters.setShowHiddenFiles(showHiddenFilesModeServlet);
 			List<String> driveNames = serverAccess.getRestrictedDrivesGroupsContext(null, null);
 			userParameters.setDriveNames(driveNames);
 			session.setAttribute(sharedSessionId, userParameters);
