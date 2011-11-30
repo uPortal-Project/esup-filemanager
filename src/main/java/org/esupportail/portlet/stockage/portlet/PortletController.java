@@ -26,7 +26,6 @@ package org.esupportail.portlet.stockage.portlet;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
@@ -100,11 +99,11 @@ public class PortletController implements InitializingBean {
 	    	final PortletPreferences prefs = request.getPreferences();
 	    	String contextToken = prefs.getValue(PREF_ESUPSTOCK_CONTEXTTOKEN, null);
 	    	
-			List<String> driveNames = serverAccess.getRestrictedDrivesGroupsContext(request, contextToken);
-			userParameters.setDriveNames(driveNames);
-			
 			Map userInfos = (Map) request.getAttribute(PortletRequest.USER_INFO);	
 			userParameters.setUserInfos(userInfos);
+			
+			List<String> driveNames = serverAccess.getRestrictedDrivesGroupsContext(request, contextToken, userInfos);
+			userParameters.setDriveNames(driveNames);
 						
 	   		log.info("set SharedUserPortletParameters in application session");
 	   		
@@ -124,11 +123,8 @@ public class PortletController implements InitializingBean {
     	boolean showHiddenFiles = "true".equals(prefs.getValue(PREF_SHOW_HIDDEN_FILES, "false")); 	
     	userParameters.setShowHiddenFiles(showHiddenFiles);
     	
-    	List<String> driveNames = userParameters.getDriveNames();
-    	Map userInfos = userParameters.getUserInfos();
-    	
     	// note that we call serverAccess.initializeServices just for mobile and wai mode (here in portlet view)
-    	serverAccess.initializeServices(driveNames,  userInfos, userParameters);
+    	serverAccess.initializeServices(userParameters);
     	
 	    if(userAgentInspector.isMobile(request)) {
 			return this.browseMobile(request, response, defaultPath);
@@ -191,7 +187,7 @@ public class PortletController implements InitializingBean {
 		String decodedDir = pathEncodingUtils.decodeDir(dir);
 		
 		if(!serverAccess.isInitialized(userParameters)) {
-			serverAccess.initializeServices(userParameters.getDriveNames(),  userParameters.getUserInfos(), userParameters);
+			serverAccess.initializeServices(userParameters);
 		}
 		
 		ModelMap model;

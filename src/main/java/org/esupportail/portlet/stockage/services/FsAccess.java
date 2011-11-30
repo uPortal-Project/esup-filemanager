@@ -49,6 +49,8 @@ public abstract class FsAccess {
     protected String datePattern = "dd/MM/yyyy hh:mm";
 
 	private List<String> memberOfAny;
+	
+	private Map<String, String> hasAttributs;
 
 	private String contextToken;
 
@@ -72,6 +74,14 @@ public abstract class FsAccess {
 
 	public void setMemberOfAny(List<String> memberOfAny) {
 		this.memberOfAny = memberOfAny;
+	}
+
+	public Map<String, String> getHasAttributs() {
+		return hasAttributs;
+	}
+
+	public void setHasAttributs(Map<String, String> hasAttributs) {
+		this.hasAttributs = hasAttributs;
 	}
 
 	public String getContextToken() {

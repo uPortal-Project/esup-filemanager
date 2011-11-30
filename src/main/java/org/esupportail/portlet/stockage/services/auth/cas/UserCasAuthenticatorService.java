@@ -55,6 +55,7 @@ import org.apache.commons.logging.LogFactory;
 import org.esupportail.commons.utils.ContextUtils;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.stockage.beans.UserPassword;
+import org.esupportail.portlet.stockage.exceptions.EsupStockException;
 import org.esupportail.portlet.stockage.services.auth.UserAuthenticatorService;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -103,8 +104,7 @@ public class UserCasAuthenticatorService implements UserAuthenticatorService {
 
         CASReceipt receipt = userParameters.getReceipt();
         if (receipt == null) {
-            log.warn("Cannot find a CAS receipt object in session");
-            return null;
+            throw new EsupStockException("Cannot find a CAS receipt object in session");
         }
 
         // get a proxy ticket for the feed's url and append it to the url

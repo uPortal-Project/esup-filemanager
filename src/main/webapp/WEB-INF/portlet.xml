@@ -95,5 +95,9 @@
         <description>affiliation</description>
         <name>affiliation</name>
     </user-attribute>
+    <user-attribute>
+        <description>composante</description>
+        <name>composante</name>
+    </user-attribute>
 
 </portlet-app>

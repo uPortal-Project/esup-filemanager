@@ -133,7 +133,7 @@ public class ServletAjaxController implements InitializingBean {
 			log.debug("Servlet Access (no portlet mode : isPortlet property = false): init SharedUserPortletParameters");
 			userParameters = new SharedUserPortletParameters(sharedSessionId);
 			userParameters.setShowHiddenFiles(showHiddenFilesModeServlet);
-			List<String> driveNames = serverAccess.getRestrictedDrivesGroupsContext(null, null);
+			List<String> driveNames = serverAccess.getRestrictedDrivesGroupsContext(null, null, null);
 			userParameters.setDriveNames(driveNames);
 			session.setAttribute(sharedSessionId, userParameters);
 		} else if(userParameters == null) {
@@ -146,9 +146,7 @@ public class ServletAjaxController implements InitializingBean {
 		}
 		
 		if(userParameters != null && !serverAccess.isInitialized(userParameters)) {
-			serverAccess.initializeServices(this.userParameters.getDriveNames(), 
-											this.userParameters.getUserInfos(), 
-											this.userParameters);
+			serverAccess.initializeServices(this.userParameters);
 		}
 	}
 	

@@ -48,7 +48,6 @@ import org.esupportail.portlet.stockage.beans.DrivesCategory;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.stockage.beans.UserPassword;
-import org.esupportail.portlet.stockage.exceptions.EsupStockException;
 import org.esupportail.portlet.stockage.exceptions.EsupStockLostSessionException;
 import org.esupportail.portlet.stockage.utils.PathEncodingUtils;
 import org.springframework.beans.factory.DisposableBean;
@@ -83,7 +82,7 @@ public class ServersAccessService implements DisposableBean {
 	protected PathEncodingUtils pathEncodingUtils;
 	
 	public List<String> getRestrictedDrivesGroupsContext(PortletRequest request,
-			String contextToken) {
+			String contextToken, Map userInfos) {
 				
 		List<String> driveNames = new ArrayList<String>(this.servers.keySet());
 		
@@ -98,7 +97,7 @@ public class ServersAccessService implements DisposableBean {
 		
 		// groups restriction
 		if(request != null)
-			for(FsAccess server: this.servers.values()) {
+			for(FsAccess server: this.servers.values()) {				
 				boolean isUserInAnyRole = false;
 				if(server.getMemberOfAny() != null) {
 					for(String group: server.getMemberOfAny()) {
@@ -115,17 +114,36 @@ public class ServersAccessService implements DisposableBean {
 					driveNames.remove(server.getDriveName());
 		}
 		
+		// HasAttribut restriction
+		if(userInfos != null)
+			for(FsAccess server: this.servers.values()) {	
+				boolean userHasAttributs = true;
+				if(server.getHasAttributs() != null) {
+					for(String attr: server.getHasAttributs().keySet()) {
+						String attrValue = (String)userInfos.get(attr);
+						String regex = server.getHasAttributs().get(attr);	
+						if(attrValue == null || !attrValue.matches(regex)) {
+							userHasAttributs = false;
+							break;
+						}
+					}
+				}
+				
+				if(!userHasAttributs)
+					driveNames.remove(server.getDriveName());
+			}
+		
 		return driveNames;
 	}
 	
 
-	public void initializeServices(List<String> driveNames, Map userInfos, SharedUserPortletParameters userParameters) {
+	public void initializeServices(SharedUserPortletParameters userParameters) {
 		
 		this.restrictedServers.put(userParameters.getSharedSessionId(), new HashMap<String, FsAccess>());
 		Map<String, FsAccess> rServers = this.restrictedServers.get(userParameters.getSharedSessionId());
 		
-		if(driveNames != null) {
-			for(String driveName : driveNames) {
+		if(userParameters.getDriveNames() != null) {
+			for(String driveName : userParameters.getDriveNames()) {
 				rServers.put(driveName, this.servers.get(driveName));
 			}
 		}
