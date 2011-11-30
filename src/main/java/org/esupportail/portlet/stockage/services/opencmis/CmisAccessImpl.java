@@ -112,7 +112,7 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		this.rootPath = rootPath;
 	}
 
-	public void initializeService(Map userInfos, SharedUserPortletParameters userParameters) {
+	protected void manipulateUri(Map userInfos) {
 		if(rootPath != null & userInfos != null) {
 			for(String userInfoKey : (Set<String>)userInfos.keySet()) { 
 					String userInfo = (String)userInfos.get(userInfoKey);
@@ -122,7 +122,8 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 					this.rootPath = this.rootPath.replaceAll(userInfoKeyToken, userInfo);
 			}
 		}	
-		super.initializeService(userInfos, userParameters);
+		if(this.uriManipulateService != null)
+			this.uri = this.uriManipulateService.manipulate(uri);
 	}
 	
 	/**
@@ -162,9 +163,7 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	}
 
 	private CmisObject getCmisObject(String path, SharedUserPortletParameters userParameters) {
-		if(!this.isOpened()) {
-			this.open(userParameters);
-		}
+		this.open(userParameters);
 		String lid = null;
 		// in fact we don't use 'path' but ID
 		if(path.equals("")) {
@@ -187,24 +186,30 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 
 	@Override
 	public void open(SharedUserPortletParameters userParameters) {
-		Map<String, String> parameters = new HashMap<String, String>();
-
-		parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB
-				.value());
-
-		parameters.put(SessionParameter.ATOMPUB_URL, uri);
-		parameters.put(SessionParameter.REPOSITORY_ID, respositoryId);
-
-		if(userAuthenticatorService != null) {
-			UserPassword userPassword = userAuthenticatorService.getUserPassword(userParameters);
-			parameters.put(SessionParameter.USER, userPassword.getUsername());
-			parameters.put(SessionParameter.PASSWORD, userPassword.getPassword());
-			
-		}
-		try {
-			cmisSession = SessionFactoryImpl.newInstance().createSession(parameters);	
-		} catch(CmisConnectionException ce) {
-			log.warn("failed to retriev cmisSession : " + uri + " , repository is not accessible or simply not started ?", ce);
+	
+		super.open(userParameters);
+		
+		if(!this.isOpened()) {
+		
+			Map<String, String> parameters = new HashMap<String, String>();
+	
+			parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB
+					.value());
+	
+			parameters.put(SessionParameter.ATOMPUB_URL, uri);
+			parameters.put(SessionParameter.REPOSITORY_ID, respositoryId);
+	
+			if(userAuthenticatorService != null) {
+				UserPassword userPassword = userAuthenticatorService.getUserPassword(userParameters);
+				parameters.put(SessionParameter.USER, userPassword.getUsername());
+				parameters.put(SessionParameter.PASSWORD, userPassword.getPassword());
+				
+			}
+			try {
+				cmisSession = SessionFactoryImpl.newInstance().createSession(parameters);	
+			} catch(CmisConnectionException ce) {
+				log.warn("failed to retrieve cmisSession : " + uri + " , repository is not accessible or simply not started ?", ce);
+			}
 		}
 	}
 	

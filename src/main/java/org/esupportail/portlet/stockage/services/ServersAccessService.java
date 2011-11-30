@@ -127,32 +127,10 @@ public class ServersAccessService implements DisposableBean {
 		if(driveNames != null) {
 			for(String driveName : driveNames) {
 				rServers.put(driveName, this.servers.get(driveName));
-				rServers.get(driveName).initializeService(userInfos, userParameters);
 			}
-			//this.open(driveNames);
 		}
 		isInitializedMap.put(userParameters.getSharedSessionId(), true);
 	}
-	
-	private void open(List<String> driveNames, SharedUserPortletParameters userParameters) {
-		if(driveNames != null) {
-			for(String driveName : driveNames) {
-				try {
-					this.restrictedServers.get(userParameters.getSharedSessionId()).get(driveName).open(userParameters);
-				} catch (EsupStockException e) {
-					log.error("problem opening" +  driveName + " drive", e);
-				}
-			}
-		} else {
-			for(FsAccess server : this.restrictedServers.get(userParameters.getSharedSessionId()).values()) {
-				try {
-					server.open(userParameters);
-				} catch (EsupStockException e) {
-					log.error("problem opening" +  server.getDriveName() + " drive", e);
-				}
-			}
-		}
-	}	
 	
 	public boolean isInitialized(SharedUserPortletParameters userParameters) {
 		if(isInitializedMap.containsKey(userParameters.getSharedSessionId()))
@@ -177,7 +155,7 @@ public class ServersAccessService implements DisposableBean {
 			if(userPassword != null)
 				fsAccess.authenticate(userPassword.getUsername(), userPassword.getPassword(), userParameters);
 			else {
-				//log.warn("ere we should have username & password ? What's wrong ? :(");
+				//log.warn("here we should have username & password ? What's wrong ? :(");
 				throw new EsupStockLostSessionException("Here we should have username & password. Session lost ?");
 			}
 		}

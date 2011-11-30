@@ -114,8 +114,7 @@ public abstract class FsAccess {
 		this.uriManipulateService = uriManipulateService;
 	}
 	
-	public void initializeService(Map userInfos,
-			SharedUserPortletParameters userParameters) {
+	protected void manipulateUri(Map userInfos) {
 		if(userInfos != null) {
 			for(String userInfoKey : (Set<String>)userInfos.keySet()) {
 				String userInfo = (String)userInfos.get(userInfoKey);
@@ -123,17 +122,21 @@ public abstract class FsAccess {
 				this.uri = this.uri.replaceAll(userInfoKeyToken, userInfo);
 			}
 		}
-		if(this.userAuthenticatorService != null && userInfos != null)
-			this.userAuthenticatorService.initialize(userInfos, userParameters);
 		if(this.uriManipulateService != null)
 			this.uri = this.uriManipulateService.manipulate(uri);
 	}
 
-	public abstract void open(SharedUserPortletParameters userParameters) ;
+	protected void open(SharedUserPortletParameters userParameters) {
+		if(!this.isOpened()) {
+			manipulateUri(userParameters.getUserInfos());
+			if(this.userAuthenticatorService != null)
+				this.userAuthenticatorService.initialize(userParameters);
+		}
+	}
 
 	public abstract void close();
 
-	public abstract boolean isOpened();
+	protected abstract boolean isOpened();
 
 	public abstract JsTreeFile get(String path, SharedUserPortletParameters userParameters, boolean folderDetails, boolean fileDetails) ;
 

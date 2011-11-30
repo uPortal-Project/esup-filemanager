@@ -89,8 +89,8 @@ public class UserCasAuthenticatorService implements UserAuthenticatorService {
 		this.target = target;
 	}
 
-	public void initialize(Map userInfos, SharedUserPortletParameters userParameters) {
-		this.userCasAuthenticatorServiceRoot.initialize(userInfos, userParameters);
+	public void initialize(SharedUserPortletParameters userParameters) {
+		this.userCasAuthenticatorServiceRoot.initialize(userParameters);
     }
 
     public UserPassword getUserPassword(SharedUserPortletParameters userParameters) {

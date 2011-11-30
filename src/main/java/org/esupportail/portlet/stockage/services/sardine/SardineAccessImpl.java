@@ -62,13 +62,9 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 		this.resourceUtils = resourceUtils;
 	}
 
-	public void initializeService(Map userInfos,
-			SharedUserPortletParameters userParameters) {
-		super.initializeService(userInfos, userParameters);
-	}
-
 	@Override
-	public void open(SharedUserPortletParameters userParameters) {
+	protected void open(SharedUserPortletParameters userParameters) {
+		super.open(userParameters);
 		try {
 			if (!isOpened()) {
 				if (userAuthenticatorService != null) {
@@ -104,7 +100,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 	}
 
 	@Override
-	public boolean isOpened() {
+	protected boolean isOpened() {
 		return (root != null);
 	}
 

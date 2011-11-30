@@ -77,11 +77,12 @@ public class UserCasAuthenticatorServiceRoot {
 		this.userInfoTicketProperty = userInfoTicketProperty;
 	}
 
-	public void initialize(Map userInfos, SharedUserPortletParameters userParameters) {
+	public void initialize(SharedUserPortletParameters userParameters) {
 		
 		if(userParameters.getReceipt() == null) {
         
 			if (proxyTicketService != null) {
+				Map userInfos = userParameters.getUserInfos();
 				String ticket = (String) userInfos.get(this.userInfoTicketProperty);
 				if (ticket != null) {
 					try {

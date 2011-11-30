@@ -69,46 +69,47 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 	/** CIFS properties */
 	protected Properties jcifsConfigProperties;
 
-	public void initializeService(Map userInfos, SharedUserPortletParameters userParameters) {
-		// we set the jcifs properties given in the bean for the drive
-		if (this.jcifsConfigProperties != null && !this.jcifsConfigProperties.isEmpty()) {
-			Config.setProperties(jcifsConfigProperties);
-		}
-		super.initializeService(userInfos, userParameters);
-	}
-
 	public void setJcifsConfigProperties(Properties jcifsConfigProperties) {
 		this.jcifsConfigProperties = jcifsConfigProperties;
 	}
 
 	@Override
 	public void open(SharedUserPortletParameters userParameters) {
-		try {
-			if(userAuthenticatorService != null && !this.isOpened() ) {
-				UserPassword userPassword = userAuthenticatorService.getUserPassword(userParameters);
-				userAuthenticator = new NtlmPasswordAuthentication(userPassword.getDomain(), userPassword.getUsername(), userPassword.getPassword()) ;
-				SmbFile smbFile = new SmbFile(this.getUri(), userAuthenticator);
-				if (smbFile.exists()) {
-					root = smbFile;
+		super.open(userParameters);
+		
+		if(!this.isOpened()) {
+			// we set the jcifs properties given in the bean for the drive
+			if (this.jcifsConfigProperties != null && !this.jcifsConfigProperties.isEmpty()) {
+				Config.setProperties(jcifsConfigProperties);
+			}
+		
+			try {
+				if(userAuthenticatorService != null) {
+					UserPassword userPassword = userAuthenticatorService.getUserPassword(userParameters);
+					userAuthenticator = new NtlmPasswordAuthentication(userPassword.getDomain(), userPassword.getUsername(), userPassword.getPassword()) ;
+					SmbFile smbFile = new SmbFile(this.getUri(), userAuthenticator);
+					if (smbFile.exists()) {
+						root = smbFile;
+					}
 				}
+			} catch (MalformedURLException me) {
+				log.error(me, me.getCause());
+				throw new EsupStockException(me);
+			} catch (SmbAuthException e) {
+				if (e.getNtStatus() == NtStatus.NT_STATUS_WRONG_PASSWORD) {
+					log.error("connect"+" :: bad password ");
+					throw new EsupStockException(e);
+				} else if (e.getNtStatus() == NtStatus.NT_STATUS_LOGON_FAILURE) {
+					log.error("connect"+" :: bad login ");
+					throw new EsupStockException(e);
+				} else {
+					log.error("connect"+" :: "+e);
+					throw new EsupStockException(e);
+				}
+			} catch (SmbException se) {
+				log.error("connect"+" :: "+se);
+				throw new EsupStockException(se);
 			}
-		} catch (MalformedURLException me) {
-			log.error(me, me.getCause());
-			throw new EsupStockException(me);
-		} catch (SmbAuthException e) {
-			if (e.getNtStatus() == NtStatus.NT_STATUS_WRONG_PASSWORD) {
-				log.error("connect"+" :: bad password ");
-				throw new EsupStockException(e);
-			} else if (e.getNtStatus() == NtStatus.NT_STATUS_LOGON_FAILURE) {
-				log.error("connect"+" :: bad login ");
-				throw new EsupStockException(e);
-			} else {
-				log.error("connect"+" :: "+e);
-				throw new EsupStockException(e);
-			}
-		} catch (SmbException se) {
-			log.error("connect"+" :: "+se);
-			throw new EsupStockException(se);
 		}
 	}
 

@@ -30,7 +30,7 @@ import org.esupportail.portlet.stockage.beans.UserPassword;
 
 public interface UserAuthenticatorService {
 
-	public abstract void initialize(Map userInfos, SharedUserPortletParameters userParameters);
+	public abstract void initialize(SharedUserPortletParameters userParameters);
 	
 	public abstract UserPassword getUserPassword(SharedUserPortletParameters userParameters);
 

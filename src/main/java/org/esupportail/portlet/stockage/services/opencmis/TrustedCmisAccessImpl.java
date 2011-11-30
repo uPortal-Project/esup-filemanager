@@ -60,7 +60,7 @@ public class TrustedCmisAccessImpl extends CmisAccessImpl {
 	}
 
 
-	public void initializeService(Map userInfos, SharedUserPortletParameters userParameters) {
+	public void manipulateUri(Map userInfos) {
 		
 		// useful to test in servlet mode : in userinfosHttpheadersValues we set directly shib attributes values
 		if(staticHttpheadersMap!=null) {
@@ -79,7 +79,7 @@ public class TrustedCmisAccessImpl extends CmisAccessImpl {
 			}
 		}
 			
-		super.initializeService(userInfos, userParameters);
+		super.manipulateUri(userInfos);
 	}
 
 	
