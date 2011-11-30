@@ -182,8 +182,10 @@ public abstract class FsAccess {
 
 	public boolean formAuthenticationRequired(SharedUserPortletParameters userParameters) {
 		if(this.userAuthenticatorService instanceof FormUserPasswordAuthenticatorService) {
-			if(this.userAuthenticatorService.getUserPassword(userParameters).getPassword() == null || this.userAuthenticatorService.getUserPassword(userParameters).getPassword().length() == 0)
+			if(this.userAuthenticatorService.getUserPassword(userParameters).getPassword() == null || this.userAuthenticatorService.getUserPassword(userParameters).getPassword().length() == 0) {
+				this.userAuthenticatorService.initialize(userParameters);
 				return true;
+			}
 		}
 		return false;
 	}

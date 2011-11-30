@@ -60,7 +60,10 @@ public class UserPasswordAuthenticatorService implements UserAuthenticatorServic
 
 	public void initialize(SharedUserPortletParameters userParameters) {
 		Map userInfos = userParameters.getUserInfos();
-		if(userInfo4Username != null && userInfos != null && userInfos.containsKey(userInfo4Username)) {
+		if(this.getUserPassword(userParameters).getUsername() == null && 
+				userInfo4Username != null && 
+				userInfos != null && 
+				userInfos.containsKey(userInfo4Username)) {
 			this.setUsername((String)userInfos.get(userInfo4Username));
 		}
 	}
