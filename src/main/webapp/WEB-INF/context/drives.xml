@@ -131,6 +131,9 @@
  <!-- Stock2 uses a form authentication 
       uri contains a token @uid@ : it will be replaced with the value of uid attribute that will be gived by portal
       (so we should modify portlet.xml to ask portal to give this "uid" attribute user)
+      you can use all attributes user provided by portal here like this
+      you can also use the special token @form_username@ which is replaced with the value of the form username 
+      that can be gived by the user (when the access requires a form user authentication)
   -->
   <bean class="org.esupportail.portlet.stockage.services.vfs.VfsAccessImpl" scope="session">
     <property name="driveName" value="Stock2"/>

@@ -43,7 +43,9 @@ public abstract class FsAccess {
 	protected static final Log log = LogFactory.getLog(FsAccess.class);
 	
 	protected static String TOKEN_SPECIAL_CHAR =  "@";
-
+	
+	protected static String TOKEN_FORM_USERNAME =  "@form_username@";
+	
     protected String datePattern = "dd/MM/yyyy hh:mm";
 
 	private List<String> memberOfAny;
@@ -114,7 +116,7 @@ public abstract class FsAccess {
 		this.uriManipulateService = uriManipulateService;
 	}
 	
-	protected void manipulateUri(Map userInfos) {
+	protected void manipulateUri(Map userInfos, String formUsername) {
 		if(userInfos != null) {
 			for(String userInfoKey : (Set<String>)userInfos.keySet()) {
 				String userInfo = (String)userInfos.get(userInfoKey);
@@ -122,13 +124,16 @@ public abstract class FsAccess {
 				this.uri = this.uri.replaceAll(userInfoKeyToken, userInfo);
 			}
 		}
+		if(formUsername != null) {
+			this.uri = this.uri.replaceAll(TOKEN_FORM_USERNAME, formUsername);
+		}
 		if(this.uriManipulateService != null)
 			this.uri = this.uriManipulateService.manipulate(uri);
 	}
 
 	protected void open(SharedUserPortletParameters userParameters) {
 		if(!this.isOpened()) {
-			manipulateUri(userParameters.getUserInfos());
+			manipulateUri(userParameters.getUserInfos(), null);
 			if(this.userAuthenticatorService != null)
 				this.userAuthenticatorService.initialize(userParameters);
 		}
@@ -180,6 +185,8 @@ public abstract class FsAccess {
 	public boolean authenticate(String username, String password, SharedUserPortletParameters userParameters) {
 		this.userAuthenticatorService.getUserPassword(userParameters).setUsername(username);
 		this.userAuthenticatorService.getUserPassword(userParameters).setPassword(password);
+		Map userInfos = userParameters.getUserInfos();
+		this.manipulateUri(userInfos, username);
 		try {
 			this.get("", userParameters, false, false);
 		} catch(Exception e) {
