@@ -40,15 +40,21 @@
 						<span class="toolbar-item"> <a href="#"
 							title="<spring:message code='toolbar.refresh.title'/>"
 							class="disabled" id="toolbar-refresh" onclick="return false;">
-								<spring:message code="toolbar.refresh" /> </a> </span> <span
-							class="toolbar-item"> <a href="#" id="toolbar-thumbnail"
+								<spring:message code="toolbar.refresh" /> </a> 
+						</span>
+						<%-- 		
+						<span class="toolbar-item"> <a href="#" id="toolbar-thumbnail"
 							class="disabled" onclick="return false;" style="display: none"
 							title="<spring:message code='toolbar.thumbnail.title'/>"> <spring:message
-									code="toolbar.thumbnail" /> </a> </span> <span class="toolbar-item">
+									code="toolbar.thumbnail" /> </a>
+						</span> 
+						 --%>
+						<span class="toolbar-item">
 							<a href="#" id="toolbar-list" class="disabled"
 							onclick="return false;" style="display: none"
 							title="<spring:message code='toolbar.list.title'/>"> <spring:message
-									code="toolbar.list" /> </a> </span>
+									code="toolbar.list" /> </a> 
+						</span>
 
 					</div>
 					<div class="separator fl-col">

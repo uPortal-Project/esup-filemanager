@@ -43,11 +43,13 @@ import javax.portlet.PortletRequest;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.esupportail.commons.exceptions.EsupException;
 import org.esupportail.portlet.stockage.beans.DownloadFile;
 import org.esupportail.portlet.stockage.beans.DrivesCategory;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.stockage.beans.UserPassword;
+import org.esupportail.portlet.stockage.exceptions.EsupStockException;
 import org.esupportail.portlet.stockage.exceptions.EsupStockLostSessionException;
 import org.esupportail.portlet.stockage.utils.PathEncodingUtils;
 import org.springframework.beans.factory.DisposableBean;
@@ -274,11 +276,21 @@ public class ServersAccessService implements DisposableBean {
 	}
 
 	public String createFile(String parentDir, String title, String type, SharedUserPortletParameters userParameters) {
-		return this.getFsAccess(getDrive(parentDir), userParameters).createFile(getLocalDir(parentDir), title, type, userParameters);
+		String drive = getDrive(parentDir);
+		if(drive == null) {
+			log.error("Can't create file/folder because we can't retrieve associated drive on this dir : " + parentDir);
+			return null;
+		}
+		return this.getFsAccess(drive, userParameters).createFile(getLocalDir(parentDir), title, type, userParameters);
 	}
 
 	public boolean renameFile(String dir, String title, SharedUserPortletParameters userParameters) {
-		return this.getFsAccess(getDrive(dir), userParameters).renameFile(getLocalDir(dir), title, userParameters);
+		String drive = getDrive(dir);
+		if(drive == null) {
+			log.error("Can't rename file/folder because we can't retrieve associated drive on this dir : " + dir);
+			return false;
+		}
+		return this.getFsAccess(drive, userParameters).renameFile(getLocalDir(dir), title, userParameters);
 	}
 
 	private boolean interMoveCopyFile(String newDir, String refDir, boolean copy, SharedUserPortletParameters userParameters) {
@@ -406,18 +418,22 @@ public class ServersAccessService implements DisposableBean {
 	}
 	
 	private String getDriveCategory(String dir) {
+		if(dir == null || dir.length() <= JsTreeFile.ROOT_DRIVE.length()) 
+			return null;
 		dir = dir.substring(JsTreeFile.ROOT_DRIVE.length());
 		String[] driveAndDir = dir.split(JsTreeFile.DRIVE_PATH_SEPARATOR, 3);
 		return driveAndDir[0];
 	}
 	
 	public String getDrive(String dir) {
-		dir = dir.substring(JsTreeFile.ROOT_DRIVE.length());
-		String[] driveAndDir = dir.split(JsTreeFile.DRIVE_PATH_SEPARATOR, 3);
-		if(driveAndDir.length > 1)
-			return driveAndDir[1];
-		else 
-			return null;
+		String drive = null;
+		if(dir != null && dir.length() > JsTreeFile.ROOT_DRIVE.length()) {
+			dir = dir.substring(JsTreeFile.ROOT_DRIVE.length());
+			String[] driveAndDir = dir.split(JsTreeFile.DRIVE_PATH_SEPARATOR, 3);
+			if(driveAndDir.length > 1)
+				drive = driveAndDir[1];
+		}
+		return drive;
 	}
 	
 	private String getLocalDir(String dir) {
