@@ -191,8 +191,8 @@ public class PortletController implements InitializingBean {
 		}
 		
 		ModelMap model;
-		if( !(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE)) ) {
-			if(this.serverAccess.formAuthenticationRequired(dir, userParameters)) {
+		if( !(dir == null || dir.length() == 0 || decodedDir.equals(JsTreeFile.ROOT_DRIVE)) ) {
+			if(this.serverAccess.formAuthenticationRequired(decodedDir, userParameters)) {
 				ListOrderedMap parentPathes = pathEncodingUtils.getParentsEncPathes(decodedDir, null, null);
 				// we want to get the (last-1) key of sortedmap "parentPathes"
 				String parentDir = (String)parentPathes.get(parentPathes.size()-2);				model = new ModelMap("currentDir", dir);
