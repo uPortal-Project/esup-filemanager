@@ -132,9 +132,9 @@
 				<entry key="gif" value="2"/>
 				<entry key="bmp" value="2"/>
 				<entry key="png" value="2"/>
-				<entry key="mp3" value="2"/>
-				<entry key="ogg" value="2"/>
-				<entry key="wma" value="2"/>
+				<entry key="mp3" value="7"/>
+				<entry key="ogg" value="7"/>
+				<entry key="wma" value="7"/>
 			</map>
 		</property>
 	</bean>
