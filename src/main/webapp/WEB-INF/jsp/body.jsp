@@ -36,7 +36,7 @@
 			<div class="portlet-section-body">
 
 				<div id="toolbar" class="fl-fix">
-					<div class="separator fl-col">
+					<div class="separator">
 						<span class="toolbar-item"> <a href="#"
 							title="<spring:message code='toolbar.refresh.title'/>"
 							class="disabled" id="toolbar-refresh" onclick="return false;">
@@ -57,7 +57,7 @@
 						</span>
 
 					</div>
-					<div class="separator fl-col">
+					<div class="separator">
 						<span class="toolbar-item" id="file-uploader"
 							title="<spring:message code='toolbar.upload.title'/>"> </span> <span
 							class="toolbar-item"> <a href="#" class="disabled"
@@ -68,7 +68,7 @@
 							title="<spring:message code='toolbar.create.file.title'/>"> <spring:message
 									code="toolbar.create.file" /> </a> </span>
 					</div>
-					<div class="separator fl-col">
+					<div class="separator">
 						<span class="toolbar-item"> <a href="#" class="disabled"
 							id="toolbar-download"
 							title="<spring:message code='toolbar.download.title'/>"> <spring:message
@@ -77,7 +77,7 @@
 							title="<spring:message code='toolbar.zip.title'/>"> <spring:message
 									code="toolbar.zip" /> </a> </span>
 					</div>
-					<div class="fl-col">
+					<div>
 						<span class="toolbar-item"> <a href="#" class="disabled"
 							id="toolbar-copy" onclick="return false;"
 							title="<spring:message code='toolbar.copy.title'/>"> <spring:message
