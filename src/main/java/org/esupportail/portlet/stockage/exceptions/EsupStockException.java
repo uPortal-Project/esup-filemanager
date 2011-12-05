@@ -39,6 +39,14 @@ public class EsupStockException extends EsupException {
 		super(message, e);
 	}
 
+	public String getRootCause() {
+	    Throwable t = this;
+	    while(t.getCause() != null)
+		t = t.getCause();
+	    return t.getMessage();
+	}
+
+
 	private static final long serialVersionUID = 1L;
 	
 }

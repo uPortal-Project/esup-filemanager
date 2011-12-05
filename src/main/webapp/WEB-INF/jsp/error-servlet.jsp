@@ -51,6 +51,8 @@
 
 					<hr/>
 					${exception.message}
+					<br/>
+					${exception.rootCause}
 
 				</div>
 
