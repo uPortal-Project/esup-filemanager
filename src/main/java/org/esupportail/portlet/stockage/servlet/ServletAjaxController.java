@@ -251,7 +251,10 @@ public class ServletAjaxController implements InitializingBean {
 		if(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE) ) {
 			files = this.serverAccess.getJsTreeFileRoots(userParameters);		
 		} else if("all".equals(hierarchy)) {
-			files =  this.serverAccess.getJsTreeFileRoots(dir, userParameters);
+		    if(this.serverAccess.formAuthenticationRequired(dir, userParameters) && this.serverAccess.getUserPassword(dir, userParameters).getPassword() == null) {
+			dir = JsTreeFile.ROOT_DRIVE.concat(this.serverAccess.getDriveCategory(dir));
+		    } 
+		    files =  this.serverAccess.getJsTreeFileRoots(dir, userParameters);
 		} else {
 			files = this.serverAccess.getFolderChildren(dir, userParameters);
 		}

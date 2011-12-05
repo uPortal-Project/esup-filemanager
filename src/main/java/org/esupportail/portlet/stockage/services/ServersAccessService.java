@@ -417,7 +417,7 @@ public class ServersAccessService implements DisposableBean {
 		return rootAndDrivesAndCategories;
 	}
 	
-	private String getDriveCategory(String dir) {
+	public String getDriveCategory(String dir) {
 		if(dir == null || dir.length() <= JsTreeFile.ROOT_DRIVE.length()) 
 			return null;
 		dir = dir.substring(JsTreeFile.ROOT_DRIVE.length());
