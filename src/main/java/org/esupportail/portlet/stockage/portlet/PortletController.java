@@ -117,14 +117,21 @@ public class PortletController implements InitializingBean {
 
         final PortletPreferences prefs = request.getPreferences();
     	String defaultPortletView = prefs.getValue(PREF_PORTLET_VIEW, STANDARD_VIEW);
-    	String defaultPath = prefs.getValue(PREF_DEFAULT_PATH, null);
-    	defaultPath = pathEncodingUtils.encodeDir(defaultPath);
+    	String[] prefsDefaultPathes = prefs.getValues(PREF_DEFAULT_PATH, null);
+    	if(log.isDebugEnabled()) {
+    		log.debug(PREF_DEFAULT_PATH + " preference : ");
+    		for(String prefDefaultPath: prefsDefaultPathes)
+    			log.debug("- " + prefDefaultPath);
+    	}
     	
     	boolean showHiddenFiles = "true".equals(prefs.getValue(PREF_SHOW_HIDDEN_FILES, "false")); 	
     	userParameters.setShowHiddenFiles(showHiddenFiles);
     	
-    	// note that we call serverAccess.initializeServices just for mobile and wai mode (here in portlet view)
     	serverAccess.initializeServices(userParameters);
+    	
+    	String defaultPath = serverAccess.getFirstAvailablePath(userParameters, prefsDefaultPathes);
+    	log.info("defaultPath will be : " + defaultPath);
+    	defaultPath = pathEncodingUtils.encodeDir(defaultPath);
     	
 	    if(userAgentInspector.isMobile(request)) {
 			return this.browseMobile(request, response, defaultPath);

@@ -531,4 +531,18 @@ public class ServersAccessService implements DisposableBean {
 		return authenticateSuccess;
 	}
 
+
+	public String getFirstAvailablePath(SharedUserPortletParameters userParameters, String[] prefsDefaultPathes) {
+		String defaultPath = JsTreeFile.ROOT_DRIVE;
+		Map<String, FsAccess> rServers = this.restrictedServers.get(userParameters.getSharedSessionId());
+		for(String prefDefaultPath: prefsDefaultPathes) {
+			String drive = getDrive(prefDefaultPath);
+			if(rServers.get(drive) != null) {
+				defaultPath = prefDefaultPath;
+				break;
+			}
+		}
+		return defaultPath;
+	}
+
 }
