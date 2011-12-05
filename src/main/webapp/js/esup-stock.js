@@ -547,7 +547,11 @@ function initJstree() {
 
                     bindDragDropInLeftTree();
 
-                }
+                },
+		error: function (response) {
+		    console.log("filechildren failed");
+		    showDialogError(response.responseText);
+		}
             }
         },
 
