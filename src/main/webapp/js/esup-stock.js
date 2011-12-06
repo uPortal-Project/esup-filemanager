@@ -544,14 +544,14 @@ function initJstree() {
                 },
                 "success": function (data, textStatus, jqXHR) {
                     console.log("JSTree ajax data loaded");
-
                     bindDragDropInLeftTree();
-
                 },
-		error: function (response) {
-		    console.log("filechildren failed");
-		    showDialogError(response.responseText);
-		}
+                "error": function (response) {
+                	if(response.responseText != "[]") {
+                		console.log("filechildren failed");
+                		showDialogError(response.responseText);
+                	}
+                }
             }
         },
 
