@@ -1470,12 +1470,7 @@ function deleteFiles(dirsDataStruct) {
 
 
 
-}  function disableEnterKey(e) {
-      var key;
-      if (window.event) key = window.event.keyCode; //IE
-      else key = e.which; //firefox
-      return (key != 13);
-  }
+} 
 
   /**
    * Gets the container object.  In the thumbnail view, it is a div,
@@ -2131,3 +2126,11 @@ function authenticate(dir, username, password) {
 $.authenticate = function(dir, username, password) { authenticate(dir, username, password); };
 
 })(jQuery);
+
+
+function disableEnterKey(e) {
+    var key;
+    if (window.event) key = window.event.keyCode; //IE
+    else key = e.which; //firefox
+    return (key != 13);
+}
