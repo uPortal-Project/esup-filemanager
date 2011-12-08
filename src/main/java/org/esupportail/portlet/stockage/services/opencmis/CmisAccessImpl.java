@@ -27,8 +27,10 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -60,6 +62,8 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
 import org.esupportail.portlet.stockage.beans.DownloadFile;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
@@ -159,10 +163,50 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		}
 		
 		JsTreeFile file = new JsTreeFile(title, lid, type);
-		if(fileDetails && "file".equals(type)) {
-			String icon = resourceUtils.getIcon(title);
-			file.setIcon(icon);
+		if(fileDetails) {
+			
+			if("file".equals(type)) {
+				String icon = resourceUtils.getIcon(title);
+				file.setIcon(icon);
+				
+				Document document = (Document) cmisObject;
+				BigInteger size = (BigInteger)document.getProperty("cmis:contentStreamLength").getValues().get(0);
+				file.setSize(size.longValue());
+				file.setOverSizeLimit(file.getSize() > resourceUtils
+						.getSizeLimit(title));
+			}
+			
+			Date date = cmisObject.getLastModificationDate().getTime();
+			file.setLastModifiedTime(new SimpleDateFormat(this.datePattern)
+			.format(date));
+			
 		}
+		
+		if(folderDetails && ("folder".equals(type) || "drive".equals(type))) {
+			Folder folder =  (Folder) cmisObject;
+			ItemIterable<CmisObject> pl = folder.getChildren();
+			long totalSize = 0;
+			long fileCount = 0;
+			long folderCount = 0;
+			fileCount = pl.getTotalNumItems();
+
+			for (CmisObject child : pl) {
+				String childType = DOCUMENT_BASETYPE_IDS.contains(child.getType().getId()) ? "file" : "folder";
+				if("folder".equals(childType)) {
+					folderCount++;
+				}
+				if("file".equals(childType)) {
+					fileCount++;			
+					Document document = (Document) child;
+					BigInteger size = (BigInteger)document.getProperty("cmis:contentStreamLength").getValues().get(0);
+					totalSize += size.longValue();
+				}
+			}
+			file.setTotalSize(totalSize);
+			file.setFileCount(fileCount);
+			file.setFolderCount(folderCount);
+		}
+		
 		return file;
 	}
 
