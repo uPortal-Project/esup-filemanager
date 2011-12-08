@@ -60,7 +60,8 @@ public class TrustedCmisAccessImpl extends CmisAccessImpl {
 	}
 
 
-	public void manipulateUri(Map userInfos) {
+	@Override
+	protected void manipulateUri(Map userInfos, String username) {
 		
 		// useful to test in servlet mode : in userinfosHttpheadersValues we set directly shib attributes values
 		if(staticHttpheadersMap!=null) {
@@ -79,41 +80,48 @@ public class TrustedCmisAccessImpl extends CmisAccessImpl {
 			}
 		}
 			
-		super.manipulateUri(userInfos);
+		super.manipulateUri(userInfos, username);
 	}
 
 	
 	@Override
 	public void open(SharedUserPortletParameters userParameters) {
-		Map<String, String> parameters = new HashMap<String, String>();
-
-		parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB
-				.value());
-
-		parameters.put(SessionParameter.ATOMPUB_URL, uri);
-		parameters.put(SessionParameter.REPOSITORY_ID, respositoryId);
-
-		if(userAuthenticatorService != null) {
-			UserPassword userPassword = userAuthenticatorService.getUserPassword(userParameters);
-			parameters.put(SessionParameter.USER, userPassword.getUsername());
-			parameters.put(SessionParameter.PASSWORD, userPassword.getPassword());
-			
-		}
 		
-		if(userinfosHttpheadersValues != null) {
-			parameters.put(SessionParameter.AUTHENTICATION_PROVIDER_CLASS,  "org.esupportail.portlet.stockage.services.opencmis.TrustedHttpheadersCmisAuthenticationProvider");
-			Map<String, List<String>> httpHeaders = new HashMap<String, List<String>>();
-			for(String key: userinfosHttpheadersValues.keySet()) {
-					List<String> values = new Vector<String>();
-					values.add((String)userinfosHttpheadersValues.get(key));
-					httpHeaders.put(key, values);
+		if(!this.isOpened()) {
+			manipulateUri(userParameters.getUserInfos(), null);
+			if(this.userAuthenticatorService != null)
+				this.userAuthenticatorService.initialize(userParameters);
+
+			Map<String, String> parameters = new HashMap<String, String>();
+
+			parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB
+					.value());
+	
+			parameters.put(SessionParameter.ATOMPUB_URL, uri);
+			parameters.put(SessionParameter.REPOSITORY_ID, respositoryId);
+	
+			if(userAuthenticatorService != null) {
+				UserPassword userPassword = userAuthenticatorService.getUserPassword(userParameters);
+				parameters.put(SessionParameter.USER, userPassword.getUsername());
+				parameters.put(SessionParameter.PASSWORD, userPassword.getPassword());
+				
 			}
-			ContextUtils.setSessionAttribute(TrustedHttpheadersCmisAuthenticationProvider.ESUP_HEADER_SHIB_HTTP_HEADERS, httpHeaders);
-		}	
-		try {
-			cmisSession = SessionFactoryImpl.newInstance().createSession(parameters);	
-		} catch(CmisConnectionException ce) {
-			log.warn("failed to retriev cmisSession : " + uri + " , repository is not accessible or simply not started ?", ce);
+			
+			if(userinfosHttpheadersValues != null) {
+				parameters.put(SessionParameter.AUTHENTICATION_PROVIDER_CLASS,  "org.esupportail.portlet.stockage.services.opencmis.TrustedHttpheadersCmisAuthenticationProvider");
+				Map<String, List<String>> httpHeaders = new HashMap<String, List<String>>();
+				for(String key: userinfosHttpheadersValues.keySet()) {
+						List<String> values = new Vector<String>();
+						values.add((String)userinfosHttpheadersValues.get(key));
+						httpHeaders.put(key, values);
+				}
+				ContextUtils.setSessionAttribute(TrustedHttpheadersCmisAuthenticationProvider.ESUP_HEADER_SHIB_HTTP_HEADERS, httpHeaders);
+			}	
+			try {
+				cmisSession = SessionFactoryImpl.newInstance().createSession(parameters);	
+			} catch(CmisConnectionException ce) {
+				log.warn("failed to retriev cmisSession : " + uri + " , repository is not accessible or simply not started ?", ce);
+			}
 		}
 	}
 	

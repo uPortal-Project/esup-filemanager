@@ -112,7 +112,8 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		this.rootPath = rootPath;
 	}
 
-	protected void manipulateUri(Map userInfos) {
+	@Override
+	protected void manipulateUri(Map userInfos, String formUsername) {
 		if(rootPath != null & userInfos != null) {
 			for(String userInfoKey : (Set<String>)userInfos.keySet()) { 
 					String userInfo = (String)userInfos.get(userInfoKey);
@@ -122,8 +123,11 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 					this.rootPath = this.rootPath.replaceAll(userInfoKeyToken, userInfo);
 			}
 		}	
+		if(formUsername != null) {
+			this.rootPath = this.rootPath.replaceAll(TOKEN_FORM_USERNAME, formUsername);
+		}
 		if(this.uriManipulateService != null)
-			this.uri = this.uriManipulateService.manipulate(uri);
+			this.uri = this.uriManipulateService.manipulate(rootPath);
 	}
 	
 	/**
