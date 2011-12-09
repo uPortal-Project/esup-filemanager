@@ -118,9 +118,11 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 	@Override
 	public void close() {
 		FileSystem fs = null;
-	    fs = this.root.getFileSystem();
-	    this.fsManager.closeFileSystem(fs);
-		this.root = null;
+		if(this.root != null) {
+			fs = this.root.getFileSystem();
+			this.fsManager.closeFileSystem(fs);
+			this.root = null;
+		}
 	}
 
 	public void destroy() throws Exception {
