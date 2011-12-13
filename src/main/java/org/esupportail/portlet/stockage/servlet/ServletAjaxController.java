@@ -255,10 +255,10 @@ public class ServletAjaxController implements InitializingBean {
 	    	
 	    	// we can't get children of (sub)children of a drive because authentication is required 
 	    	// -> we return empty list   
-	    	if(dir.length() > driveDir.length()) {
-	    		files = new Vector<JsTreeFile>();
-	    	} else if("all".equals(hierarchy)) {
+	    	if("all".equals(hierarchy)) {
 			    files =  this.serverAccess.getJsTreeFileRoots(driveDir, userParameters);
+	    	} else if(dir.length() > driveDir.length()) {
+	    		files = new Vector<JsTreeFile>();
 	    	} else {
 	    		files = this.serverAccess.getFolderChildren(driveDir, userParameters);
 	    	}
