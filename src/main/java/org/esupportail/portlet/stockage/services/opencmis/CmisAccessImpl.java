@@ -194,8 +194,7 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 				String childType = DOCUMENT_BASETYPE_IDS.contains(child.getType().getId()) ? "file" : "folder";
 				if("folder".equals(childType)) {
 					folderCount++;
-				}
-				if("file".equals(childType)) {
+				} else if("file".equals(childType)) {
 					fileCount++;			
 					Document document = (Document) child;
 					BigInteger size = (BigInteger)document.getProperty("cmis:contentStreamLength").getValues().get(0);
