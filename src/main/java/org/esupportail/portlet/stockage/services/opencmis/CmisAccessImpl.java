@@ -24,9 +24,7 @@
 package org.esupportail.portlet.stockage.services.opencmis;
 
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,18 +55,13 @@ import org.apache.chemistry.opencmis.commons.enums.Updatability;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisBaseException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConnectionException;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
 import org.esupportail.portlet.stockage.beans.DownloadFile;
 import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.stockage.beans.UserPassword;
-import org.esupportail.portlet.stockage.exceptions.EsupStockNotImplementedException;
 import org.esupportail.portlet.stockage.services.FsAccess;
 import org.esupportail.portlet.stockage.services.ResourceUtils;
 import org.springframework.beans.factory.DisposableBean;
@@ -193,9 +186,9 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 			for (CmisObject child : pl) {
 				String childType = DOCUMENT_BASETYPE_IDS.contains(child.getType().getId()) ? "file" : "folder";
 				if("folder".equals(childType)) {
-					folderCount++;
+					++folderCount;
 				} else if("file".equals(childType)) {
-					fileCount++;			
+					++fileCount;			
 					Document document = (Document) child;
 					BigInteger size = (BigInteger)document.getProperty("cmis:contentStreamLength").getValues().get(0);
 					totalSize += size.longValue();

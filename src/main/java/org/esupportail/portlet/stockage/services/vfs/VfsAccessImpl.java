@@ -52,6 +52,7 @@ import org.esupportail.portlet.stockage.beans.JsTreeFile;
 import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.stockage.beans.UserPassword;
 import org.esupportail.portlet.stockage.exceptions.EsupStockException;
+import org.esupportail.portlet.stockage.exceptions.EsupStockLostSessionException;
 import org.esupportail.portlet.stockage.exceptions.EsupStockPermissionDeniedException;
 import org.esupportail.portlet.stockage.services.FsAccess;
 import org.esupportail.portlet.stockage.services.ResourceUtils;
@@ -59,6 +60,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.FileCopyUtils;
 
 import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 
 public class VfsAccessImpl extends FsAccess implements DisposableBean {
@@ -182,6 +184,12 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 				SftpException sfe = (SftpException)cause;
 				if(sfe.id == ChannelSftp.SSH_FX_PERMISSION_DENIED)
 					throw new EsupStockPermissionDeniedException(sfe);
+			}
+			if(cause != null && cause.getClass().equals(JSchException.class)) {
+				if("session is down".equals(cause.getMessage())) {
+					log.info("Session is down, we close all so that we can try to reopen a connection");
+					throw new EsupStockLostSessionException((JSchException)cause);
+				}
 			}
 			throw new EsupStockException(fse);
 		}
