@@ -2118,6 +2118,7 @@ function authenticate(dir, username, password) {
         success: function (data) {
             showInfoToolBar(data.msg);
             if (data.status) getFile(null, dir);
+            refreshCurrentDirectory();
         },
         complete: cursor_clear
     });

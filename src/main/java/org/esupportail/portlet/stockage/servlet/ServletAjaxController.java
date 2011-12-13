@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -248,16 +249,28 @@ public class ServletAjaxController implements InitializingBean {
     public @ResponseBody List<JsTreeFile> fileChildren(String dir, @RequestParam(required=false) String hierarchy, HttpServletRequest request) {
 		dir = pathEncodingUtils.decodeDir(dir);
 		List<JsTreeFile> files;
-		if(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE) ) {
-			files = this.serverAccess.getJsTreeFileRoots(userParameters);		
-		} else if("all".equals(hierarchy)) {
-		    if(this.serverAccess.formAuthenticationRequired(dir, userParameters) && this.serverAccess.getUserPassword(dir, userParameters).getPassword() == null) {
-			dir = JsTreeFile.ROOT_DRIVE.concat(this.serverAccess.getDriveCategory(dir));
-		    } 
-		    files =  this.serverAccess.getJsTreeFileRoots(dir, userParameters);
-		} else {
-			files = this.serverAccess.getFolderChildren(dir, userParameters);
-		}
+		if(this.serverAccess.formAuthenticationRequired(dir, userParameters) && this.serverAccess.getUserPassword(dir, userParameters).getPassword() == null) {
+	    	String driveDir = JsTreeFile.ROOT_DRIVE
+	    		.concat(this.serverAccess.getDriveCategory(dir));
+	    	
+	    	// we can't get children of (sub)children of a drive because authentication is required 
+	    	// -> we return empty list   
+	    	if(dir.length() > driveDir.length()) {
+	    		files = new Vector<JsTreeFile>();
+	    	} else if("all".equals(hierarchy)) {
+			    files =  this.serverAccess.getJsTreeFileRoots(driveDir, userParameters);
+	    	} else {
+	    		files = this.serverAccess.getFolderChildren(driveDir, userParameters);
+	    	}
+	    } else {
+	    	if(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE) ) {
+	    		files = this.serverAccess.getJsTreeFileRoots(userParameters);		
+	    	} else if("all".equals(hierarchy)) {
+	    		files =  this.serverAccess.getJsTreeFileRoots(dir, userParameters);
+	    	} else {
+				files = this.serverAccess.getFolderChildren(dir, userParameters);
+	    	}
+	    }
 		pathEncodingUtils.encodeDir(files);
 		return files;
 	}
