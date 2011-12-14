@@ -131,8 +131,6 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 	private SmbFile cd(String path, SharedUserPortletParameters userParameters) {
 		try {
 			this.open(userParameters);
-			if (!path.endsWith("/"))
-				path = path.concat("/");
 			if (path == null || path.length() == 0)
 				return root;
 			return new SmbFile(this.getUri() + path, userAuthenticator);
