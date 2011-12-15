@@ -1688,61 +1688,63 @@ function deleteFiles(dirsDataStruct) {
       handleFolderDoubleClick(jqElem, e);
     }
   }
+  
+  function handleItemDblOrOneClick(e) {
 
-  function handleItemClick(e) {
+	    /*Because of limitations with jQuerys double click, we are
+	      obliged to get a bit fancy in order to have a distinct
+	      action on both the click and double click events*/
 
-    /*Because of limitations with jQuerys double click, we are
-      obliged to get a bit fancy in order to have a distinct
-      action on both the click and double click events*/
+	    var jqElem = $(this);
 
-    var jqElem = $(this);
+	    //Retrieve how many times this element has been clicked
+	    var clicks = 1 + (jqElem.data("clicks") ? jqElem.data("clicks") : 0);
 
-    //Retrieve how many times this element has been clicked
-    var clicks = 1 + (jqElem.data("clicks") ? jqElem.data("clicks") : 0);
+	    //Store after incrementing
+	    jqElem.data("clicks", clicks);
 
-    //Store after incrementing
-    jqElem.data("clicks", clicks);
+	    console.log("Item clicked " + jqElem.html() + " clicks : " + clicks);
 
-    console.log("Item clicked " + jqElem.html() + " clicks : " + clicks);
+	    if (clicks == 1) {
+	      //Start a timeout function.  If we get another click in time, it will
+	      //be canceled
+	    	var func = function() {
+	    		console.log("Executing single click, should be later");
+	    		handleItemClick;
+	    	};
 
-    if(useDoubleClick == "false") {
-      handleItemDblClick(e, jqElem);
-      return false;
-    }
+	      console.log("Starting timer for single click.");
+	      var singleClickFuncId = setTimeout(func, 300);
 
-    if (clicks == 1) {
-      //Start a timeout function.  If we get another click in time, it will
-      //be canceled
-      var func = function() {
-        console.log("Executing single click, should be later");
+	      //Store timeout function id in case we need to cancel it
+	      jqElem.data("singleClickFuncId", singleClickFuncId);
+	    } else if (clicks == 2) {
+	      console.log("Executing double click");
+	      handleItemDblClick(e, jqElem);
+	    }
 
-        //Reset click counter
-        jqElem.data("clicks", 0);
-        jqElem.data("singleClickFuncId", null);
+	      return false;
+	  }
+  
 
-        console.log("Browser area click");
-          handleItemSelection(jqElem, e);
+  function handleItemClick() {
 
-          //hide the context menu
-          $(".contextMenu").hide();
-      };
+	  console.log("Executing single click, should be later");
 
-      if ($.browser.msie) {
-        console.log("Calling single click function immediately for IE");
-        func();
-      } else {
-        console.log("Starting timer for single click.");
-        var singleClickFuncId = setTimeout(func, 300);
-      }
+	  if(useDoubleClick == "false") {
+		  handleItemDblClick(e, jqElem);
+		  return false;
+	  }
 
-      //Store timeout function id in case we need to cancel it
-      jqElem.data("singleClickFuncId", singleClickFuncId);
-    } else if (clicks == 2) {
-      console.log("Executing double click");
-      handleItemDblClick(e, jqElem);
-    }
+	  //Reset click counter
+	  jqElem.data("clicks", 0);
+	  jqElem.data("singleClickFuncId", null);
 
-      return false;
+	  console.log("Browser area click");
+	  handleItemSelection(jqElem, e);
+
+	  //hide the context menu
+	  $(".contextMenu").hide();
   }
 
   function handleFolderDoubleClick(elemClicked, event) {
@@ -1861,12 +1863,13 @@ function deleteFiles(dirsDataStruct) {
 
       var elems = $(selector);
 
-      elems.bind('click', handleItemClick);
-
       //Other browsers will use single click for both actions
       if ($.browser.msie) {
+    	elems.bind('click', handleItemClick);
         console.log("Binding double click");
         elems.bind('dblclick', handleItemDblClick);
+      } else {
+    	  elems.bind('click', handleItemDblOrOneClick);
       }
 
       $("#jqueryFileTreeBody").selectable({
