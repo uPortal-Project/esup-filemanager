@@ -1729,8 +1729,6 @@ function deleteFiles(dirsDataStruct) {
 
   function handleItemClick(e,jqElem) {
 
-	  console.log("Executing single click, should be later");
-
 	  if(useDoubleClick == "false") {
 		  handleItemDblClick(e, jqElem);
 		  return false;
