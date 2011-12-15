@@ -816,9 +816,9 @@ function getLiIdFromPath(path) {
  * Given a path, returns its parent path.
  */
 function getParentPath(path) {
-	
+
 	var parentPath = '';
-	
+
     $.ajax({
         async: false,
         type: 'POST',
@@ -843,7 +843,7 @@ function getParentPath(path) {
 /*
  * getStockageArea("FS:Shared~bob2~images/galerie/htdhtd") ==
  *   "FS:Shared~bob2"
- *   
+ *
  *   TODO ...
  */
 function getStockageArea(path) {
@@ -1063,7 +1063,7 @@ function updateDetailsArea(dataObj) {
 function showDialogError(error) {
 	 console.log("showDialogError");
 	 console.log("error : " + error);
-	 
+
      var dialogElem = $("#errorDialog");
 
      if (dialogElem.dialog("isOpen")) {
@@ -1470,7 +1470,7 @@ function deleteFiles(dirsDataStruct) {
 
 
 
-} 
+}
 
   /**
    * Gets the container object.  In the thumbnail view, it is a div,
@@ -1688,7 +1688,7 @@ function deleteFiles(dirsDataStruct) {
       handleFolderDoubleClick(jqElem, e);
     }
   }
-  
+
   function handleItemDblOrOneClick(e) {
 
 	    /*Because of limitations with jQuerys double click, we are
@@ -1710,7 +1710,7 @@ function deleteFiles(dirsDataStruct) {
 	      //be canceled
 	    	var func = function() {
 	    		console.log("Executing single click, should be later");
-	    		handleItemClick;
+	    		handleItemClick(e,jqElem);
 	    	};
 
 	      console.log("Starting timer for single click.");
@@ -1725,9 +1725,9 @@ function deleteFiles(dirsDataStruct) {
 
 	      return false;
 	  }
-  
 
-  function handleItemClick() {
+
+  function handleItemClick(e,jqElem) {
 
 	  console.log("Executing single click, should be later");
 
@@ -2025,12 +2025,12 @@ function getBrowserAreaCheckedSelectionData() {
 
     var readable = true;
     var writeable = true;
-    
+
     var parentTds = getParentRow(checkedItems);
 
     parentTds.each(function (idx, elem) {
     	var parentTd = $(elem);
-        
+
         readable = readable && parentTd.find("div.readable").html() === "true";
         writeable = writeable && parentTd.find("div.writeable").html() === "true";
 
