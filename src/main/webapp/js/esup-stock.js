@@ -1729,6 +1729,10 @@ function deleteFiles(dirsDataStruct) {
 
   function handleItemClick(e,jqElem) {
 
+	  if (!jqElem) {
+	       jqElem =  $(this);
+	  }
+	    
 	  if(useDoubleClick == "false") {
 		  handleItemDblClick(e, jqElem);
 		  return false;
