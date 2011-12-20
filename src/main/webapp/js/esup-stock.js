@@ -1671,7 +1671,7 @@ function deleteFiles(dirsDataStruct) {
 
     console.log("Item Double clicked " + jqElem.html() );
 
-  //Cancel singe click action
+    //Cancel singe click action
     var singleClickFuncId = jqElem.data("singleClickFuncId");
     if (singleClickFuncId) {
       clearTimeout(singleClickFuncId);
@@ -1696,7 +1696,7 @@ function deleteFiles(dirsDataStruct) {
 	      action on both the click and double click events*/
 
 	    var jqElem = $(this);
-
+		  
 	    //Retrieve how many times this element has been clicked
 	    var clicks = 1 + (jqElem.data("clicks") ? jqElem.data("clicks") : 0);
 
@@ -1718,12 +1718,9 @@ function deleteFiles(dirsDataStruct) {
 
 	      //Store timeout function id in case we need to cancel it
 	      jqElem.data("singleClickFuncId", singleClickFuncId);
-	    } else if (clicks == 2) {
-	      console.log("Executing double click");
-	      handleItemDblClick(e, jqElem);
-	    }
+	    } 
 
-	      return false;
+	    return false;
 	  }
 
 
@@ -1731,11 +1728,6 @@ function deleteFiles(dirsDataStruct) {
 
 	  if (!jqElem) {
 	       jqElem =  $(this);
-	  }
-	    
-	  if(useDoubleClick == "false") {
-		  handleItemDblClick(e, jqElem);
-		  return false;
 	  }
 
 	  //Reset click counter
@@ -1865,14 +1857,17 @@ function deleteFiles(dirsDataStruct) {
 
       var elems = $(selector);
 
-      //Other browsers will use single click for both actions
-      if ($.browser.msie) {
-    	elems.bind('click', handleItemClick);
-        console.log("Binding double click");
-        elems.bind('dblclick', handleItemDblClick);
-      } else {
-    	  elems.bind('click', handleItemDblOrOneClick);
-      }
+
+	    
+	  if(useDoubleClick == "false") {
+		  console.log("Binding single click like dbleClick");
+		  elems.bind('click', handleItemDblClick);	  
+	  } else {
+		  console.log("Binding single click");
+		  elems.bind('click', handleItemDblOrOneClick);
+		  console.log("Binding double click");
+		  elems.bind('dblclick', handleItemDblClick);
+  	  }
 
       $("#jqueryFileTreeBody").selectable({
           cancel: 'a,span,#newFileOrFolderInput',
