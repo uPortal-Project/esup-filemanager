@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-package org.esupportail.portlet.stockage.portlet;
+package org.esupportail.portlet.filemanager.portlet;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;

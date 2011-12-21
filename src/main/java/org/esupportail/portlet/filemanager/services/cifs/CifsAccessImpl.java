@@ -24,7 +24,7 @@
 /**
  *
  */
-package org.esupportail.portlet.stockage.services.cifs;
+package org.esupportail.portlet.filemanager.services.cifs;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,14 +45,14 @@ import jcifs.smb.SmbFile;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.esupportail.portlet.stockage.beans.DownloadFile;
-import org.esupportail.portlet.stockage.beans.JsTreeFile;
-import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
-import org.esupportail.portlet.stockage.beans.UserPassword;
-import org.esupportail.portlet.stockage.exceptions.EsupStockException;
-import org.esupportail.portlet.stockage.exceptions.EsupStockPermissionDeniedException;
-import org.esupportail.portlet.stockage.services.FsAccess;
-import org.esupportail.portlet.stockage.services.ResourceUtils;
+import org.esupportail.portlet.filemanager.beans.DownloadFile;
+import org.esupportail.portlet.filemanager.beans.JsTreeFile;
+import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UserPassword;
+import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
+import org.esupportail.portlet.filemanager.exceptions.EsupStockPermissionDeniedException;
+import org.esupportail.portlet.filemanager.services.FsAccess;
+import org.esupportail.portlet.filemanager.services.ResourceUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.FileCopyUtils;
 

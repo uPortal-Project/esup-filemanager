@@ -39,7 +39,7 @@
   -->
   <util:map id="drivesCategories">
     <entry key="Shared">
-      <bean class="org.esupportail.portlet.stockage.beans.DrivesCategory">
+      <bean class="org.esupportail.portlet.filemanager.beans.DrivesCategory">
 	<property name="icon" value="/esup-filemanager/img/drives/house.png" />
 	<property name="drives">
 	  <list>
@@ -50,7 +50,7 @@
       </bean>
     </entry>
     <entry key="Homedir">
-      <bean class="org.esupportail.portlet.stockage.beans.DrivesCategory">
+      <bean class="org.esupportail.portlet.filemanager.beans.DrivesCategory">
 	<property name="icon" value="/esup-filemanager/img/drives/drive_user.png" />
 	<property name="drives">
 	  <list>
@@ -63,7 +63,7 @@
       </bean>
     </entry>
     <entry key="ECM">
-      <bean class="org.esupportail.portlet.stockage.beans.DrivesCategory">
+      <bean class="org.esupportail.portlet.filemanager.beans.DrivesCategory">
 	<property name="icon" value="/esup-filemanager/img/drives/group.png" />
 	<property name="drives">
 	  <list>
@@ -96,7 +96,7 @@
        
        This drive is displayed only for people who belong to the group "pags.mon-univ" 
    -->
-  <bean class="org.esupportail.portlet.stockage.services.vfs.VfsAccessImpl" lazy-init="true">
+  <bean class="org.esupportail.portlet.filemanager.services.vfs.VfsAccessImpl" lazy-init="true">
     <property name="driveName" value="Toto"/>
     <property name="icon" value="/esup-filemanager/img/drives/tux.png" />
     <property name="uri" value="sftp://stock-2.mon-univ.fr/"/>
@@ -109,7 +109,7 @@
     <property name="resourceUtils" ref="resourceUtils"/>
   </bean>
 
-  <bean name="simpleUserAuthenticationService" class="org.esupportail.portlet.stockage.services.auth.UserPasswordAuthenticatorService">
+  <bean name="simpleUserAuthenticationService" class="org.esupportail.portlet.filemanager.services.auth.UserPasswordAuthenticatorService">
     <property name="username" value="bonamvin"/>
     <property name="password" value="toto"/>
   </bean>
@@ -121,7 +121,7 @@
   bob has a contextToken property : if we set up a contextToken parameter with value justbob when publishing the portlet in the portal,
   only drives with a contextToken equals to justbob (like ebob for example here) will be displayed.
   -->
-  <bean  class="org.esupportail.portlet.stockage.services.vfs.VfsAccessImpl" lazy-init="true">
+  <bean  class="org.esupportail.portlet.filemanager.services.vfs.VfsAccessImpl" lazy-init="true">
     <property name="driveName" value="bob"/>
     <property name="icon" value="/esup-filemanager/img/drives/root.png" />
     <property name="uri" value="file:///"/>
@@ -137,7 +137,7 @@
       you can also use the special token @form_username@ which is replaced with the value of the form username 
       that can be gived by the user (when the access requires a form user authentication)
   -->
-  <bean class="org.esupportail.portlet.stockage.services.vfs.VfsAccessImpl" scope="session" lazy-init="true">
+  <bean class="org.esupportail.portlet.filemanager.services.vfs.VfsAccessImpl" scope="session" lazy-init="true">
     <property name="driveName" value="Stock2"/>
     <property name="icon" value="/esup-filemanager/img/drives/root.png" />
     <property name="uri" value="sftp://stock-2.mon-univ.fr/home/@uid@/"/>
@@ -151,13 +151,13 @@
   </bean>
 
   <!-- here we will set by default the username in the form with the value of uid attribute (gived by the portal) -->
-  <bean name="formUserAuthenticationService" class="org.esupportail.portlet.stockage.services.auth.FormUserPasswordAuthenticatorService"
+  <bean name="formUserAuthenticationService" class="org.esupportail.portlet.filemanager.services.auth.FormUserPasswordAuthenticatorService"
 	scope="session">
     <property name="userInfo4Username" value="uid"/>
   </bean>
   
   <!-- here a trusted authentication (password is the same for all) - note that we don't use it in drives examples -->
-  <bean name="trustedUserAuthenticationService" class="org.esupportail.portlet.stockage.services.auth.UserPasswordAuthenticatorService"
+  <bean name="trustedUserAuthenticationService" class="org.esupportail.portlet.filemanager.services.auth.UserPasswordAuthenticatorService"
 	scope="session">
     <property name="userInfo4Username" value="uid"/>
     <property name="password" value="commonTrustedPassword4All"/>
@@ -170,7 +170,7 @@
        attribute affiliation matches (regex) (.*)student(.*) 
        and compsante = unecomposante ...
   -->
-  <bean class="org.esupportail.portlet.stockage.services.vfs.VfsAccessImpl" scope="session" lazy-init="true">
+  <bean class="org.esupportail.portlet.filemanager.services.vfs.VfsAccessImpl" scope="session" lazy-init="true">
     <property name="driveName" value="Stock2Cas"/>
     <property name="icon" value="/esup-filemanager/img/drives/root.png" />
     <property name="uri" value="sftp://stock-2.mon-univ.fr/"/>
@@ -186,7 +186,7 @@
   </bean>
 
   <!-- you have to define one casUserAuthenticationService per drive -->
-  <bean name="casUserAuthenticationService" class="org.esupportail.portlet.stockage.services.auth.cas.UserCasAuthenticatorService">
+  <bean name="casUserAuthenticationService" class="org.esupportail.portlet.filemanager.services.auth.cas.UserCasAuthenticatorService">
     <property name="proxyTicketService" ref="casService"/>
     <property name="userCasAuthenticatorServiceRoot" ref="casUserAuthenticationServiceRoot"/>
     <property name="target" value="sftp://stock-2.mon-univ.fr"/>
@@ -195,12 +195,12 @@
 
   <!-- note casUserAuthenticationServiceRoot and casService are sufficient for more than one drive-->
 
-  <bean name="casUserAuthenticationServiceRoot" class="org.esupportail.portlet.stockage.services.auth.cas.UserCasAuthenticatorServiceRoot">
+  <bean name="casUserAuthenticationServiceRoot" class="org.esupportail.portlet.filemanager.services.auth.cas.UserCasAuthenticatorServiceRoot">
     <property name="proxyTicketService" ref="casService"/>
     <property name="userInfoTicketProperty" value="casProxyTicket"/>
   </bean>
 
-  <bean id="casService" class="org.esupportail.portlet.stockage.services.auth.cas.ProxyTicketService">
+  <bean id="casService" class="org.esupportail.portlet.filemanager.services.auth.cas.ProxyTicketService">
     <property name="casValidateUrl" value="https://cas.mon-univ.fr/cas/proxyValidate"/>
     <property name="serviceUrl" value="https://ent.mon-univ.fr/esup-filemanager"/>
     <property name="urlOfProxyCallbackServlet" value="https://ent.mon-univ.fr/esup-filemanager/CasProxyServlet"/>
@@ -208,7 +208,7 @@
 
 
  <!-- Definition of a FSAccess bean : here we have a 'SardineAccessImpl' to use a webdav shared folder -->                          
-  <bean class="org.esupportail.portlet.stockage.services.sardine.SardineAccessImpl" scope="session" lazy-init="true">
+  <bean class="org.esupportail.portlet.filemanager.services.sardine.SardineAccessImpl" scope="session" lazy-init="true">
     <property name="driveName" value="DAV Ex"/>
     <property name="icon" value="/esup-filemanager/img/drives/drive_network.png" />
     <property name="uri" value="http://dav.mon-univ.fr"/>
@@ -216,12 +216,12 @@
     <property name="resourceUtils" ref="resourceUtils"/>
   </bean>
 
-  <bean name="davFormUserAuthenticationService" class="org.esupportail.portlet.stockage.services.auth.FormUserPasswordAuthenticatorService"
+  <bean name="davFormUserAuthenticationService" class="org.esupportail.portlet.filemanager.services.auth.FormUserPasswordAuthenticatorService"
         scope="session"/>
 
 
  <!-- Definition of a FSAccess bean : here we have a 'CifsAccessImpl' to use a cifs shared folder -->                          
-  <bean class="org.esupportail.portlet.stockage.services.cifs.CifsAccessImpl" scope="session" lazy-init="true">
+  <bean class="org.esupportail.portlet.filemanager.services.cifs.CifsAccessImpl" scope="session" lazy-init="true">
     <property name="driveName" value="CIFS Ex"/>
     <property name="icon" value="/esup-filemanager/img/drives/drive_network.png" />
     <property name="uri" value="smb://cifs.mon-univ.fr/shared/"/>
@@ -237,7 +237,7 @@
     <prop key="jcifs.smb.client.responseTimeout">40000</prop>
   </util:properties>
   
-  <bean id="formUAS4" class="org.esupportail.portlet.stockage.services.auth.FormUserPasswordAuthenticatorService"
+  <bean id="formUAS4" class="org.esupportail.portlet.filemanager.services.auth.FormUserPasswordAuthenticatorService"
 	scope="session">
     <property name="userInfo4Username" value="ENTPersonLogin"/>
     <property name="domain" value="mon-univ.fr"/>
@@ -258,7 +258,7 @@
        so that the Nuxeo "nuxeo-platform-login-shibboleth" plugin (for nuxeo) authenticates esup-filemanager 
        trusting http headers.
   -->
-  <bean class="org.esupportail.portlet.stockage.services.opencmis.TrustedCmisAccessImpl" scope="session" lazy-init="true">
+  <bean class="org.esupportail.portlet.filemanager.services.opencmis.TrustedCmisAccessImpl" scope="session" lazy-init="true">
     <property name="driveName" value="Cmis"/>
     <property name="icon" value="/esup-filemanager/img/drives/group.png" />
     <property name="uri" value="http://localhost:6081/nuxeo/atom/cmis"/>
@@ -294,13 +294,13 @@
   </bean>
 
   <!-- by default, we don't use it here : no reference is made on Cmis drive : it's commented -->  
-  <bean name="cmisSimpleUserAuthenticationService" class="org.esupportail.portlet.stockage.services.auth.UserPasswordAuthenticatorService">
+  <bean name="cmisSimpleUserAuthenticationService" class="org.esupportail.portlet.filemanager.services.auth.UserPasswordAuthenticatorService">
     <property name="username" value="Administrator"/>
     <property name="password" value="Administrator"/>
   </bean>
 
   <!-- by default, we don't use it here : no reference is made on Cmis drive : it's commented -->  
-  <bean name="cmisFormUserAuthenticationService" class="org.esupportail.portlet.stockage.services.auth.FormUserPasswordAuthenticatorService"
+  <bean name="cmisFormUserAuthenticationService" class="org.esupportail.portlet.filemanager.services.auth.FormUserPasswordAuthenticatorService"
 	scope="session">
     <property name="userInfo4Username" value="eppn"/>
   </bean>

@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-package org.esupportail.portlet.stockage.utils;
+package org.esupportail.portlet.filemanager.utils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,7 +32,7 @@ import java.util.Vector;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.esupportail.portlet.stockage.beans.JsTreeFile;
+import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 
 /**
  * This Class provides encode/decode methods for path string

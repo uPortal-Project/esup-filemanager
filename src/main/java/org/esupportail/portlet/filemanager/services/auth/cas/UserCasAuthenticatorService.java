@@ -44,7 +44,7 @@ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWIS
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.esupportail.portlet.stockage.services.auth.cas;
+package org.esupportail.portlet.filemanager.services.auth.cas;
 
 import java.util.Map;
 
@@ -53,10 +53,10 @@ import javax.portlet.PortletSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.esupportail.commons.utils.ContextUtils;
-import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
-import org.esupportail.portlet.stockage.beans.UserPassword;
-import org.esupportail.portlet.stockage.exceptions.EsupStockException;
-import org.esupportail.portlet.stockage.services.auth.UserAuthenticatorService;
+import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UserPassword;
+import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
+import org.esupportail.portlet.filemanager.services.auth.UserAuthenticatorService;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 

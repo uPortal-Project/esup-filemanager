@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-package org.esupportail.portlet.stockage.exceptions;
+package org.esupportail.portlet.filemanager.exceptions;
 
 public class EsupStockPermissionDeniedException extends EsupStockException {
 	

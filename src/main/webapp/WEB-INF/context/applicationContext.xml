@@ -58,7 +58,7 @@
     <bean id="requiredAnnotationBeanPostProcessor" class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor" />
 	
 	
-	<bean id="userAgentInspector" class="org.esupportail.portlet.stockage.services.UserAgentInspector">
+	<bean id="userAgentInspector" class="org.esupportail.portlet.filemanager.services.UserAgentInspector">
         <property name="userAgentMobile">
 		    <!-- Regexes of mobile device user agents -->
 		    <list>
@@ -71,16 +71,16 @@
     </bean>
 	
 	
-	<!-- there is two implementations for org.esupportail.portlet.stockage.utils.PathEncodingUtils 
+	<!-- there is two implementations for org.esupportail.portlet.filemanager.utils.PathEncodingUtils 
 		Base64PathEncodingUtils need more cpu, MemoryMapPathEncodingUtils need more ram 
 		MemoryMapPathEncodingUtils gives id shorter than Base64PathEncodingUtils
 		Base64PathEncodingUtils seems faster than MemoryMapPathEncodingUtils (...)
 		We choose by default Base64PathEncodingUtils -->
-	<bean id="pathEncodingUtils" class="org.esupportail.portlet.stockage.utils.Base64PathEncodingUtils"/>
-	<!-- bean id="pathEncodingUtils" class="org.esupportail.portlet.stockage.utils.MemoryMapPathEncodingUtils"/-->
+	<bean id="pathEncodingUtils" class="org.esupportail.portlet.filemanager.utils.Base64PathEncodingUtils"/>
+	<!-- bean id="pathEncodingUtils" class="org.esupportail.portlet.filemanager.utils.MemoryMapPathEncodingUtils"/-->
 	
 	
-	<bean id="resourceUtils" class="org.esupportail.portlet.stockage.services.ResourceUtils">
+	<bean id="resourceUtils" class="org.esupportail.portlet.filemanager.services.ResourceUtils">
 		<property name="iconsMap">
 			<map>
 				<entry key="jpg" value="image"/>

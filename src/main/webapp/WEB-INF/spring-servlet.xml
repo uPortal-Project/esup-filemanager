@@ -36,10 +36,10 @@
       
     <context:annotation-config/>
 
-    <context:component-scan base-package="org.esupportail.portlet.stockage.servlet"/>
-    <context:component-scan base-package="org.esupportail.portlet.stockage.services"/>
-    <context:component-scan base-package="org.esupportail.portlet.stockage.utils"/>
-    <context:component-scan base-package="org.esupportail.portlet.stockage.beans"/>
+    <context:component-scan base-package="org.esupportail.portlet.filemanager.servlet"/>
+    <context:component-scan base-package="org.esupportail.portlet.filemanager.services"/>
+    <context:component-scan base-package="org.esupportail.portlet.filemanager.utils"/>
+    <context:component-scan base-package="org.esupportail.portlet.filemanager.beans"/>
     
     <!-- Configures the @Controller programming model 
     -> enable json-> pojo with jackson-mapper-asl-->

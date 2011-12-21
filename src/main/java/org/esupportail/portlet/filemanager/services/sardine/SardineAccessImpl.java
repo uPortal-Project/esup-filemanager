@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-package org.esupportail.portlet.stockage.services.sardine;
+package org.esupportail.portlet.filemanager.services.sardine;
 
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -33,15 +33,15 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.FileObject;
-import org.esupportail.portlet.stockage.beans.DownloadFile;
-import org.esupportail.portlet.stockage.beans.JsTreeFile;
-import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
-import org.esupportail.portlet.stockage.beans.UserPassword;
-import org.esupportail.portlet.stockage.exceptions.EsupStockException;
-import org.esupportail.portlet.stockage.exceptions.EsupStockLostSessionException;
-import org.esupportail.portlet.stockage.exceptions.EsupStockPermissionDeniedException;
-import org.esupportail.portlet.stockage.services.FsAccess;
-import org.esupportail.portlet.stockage.services.ResourceUtils;
+import org.esupportail.portlet.filemanager.beans.DownloadFile;
+import org.esupportail.portlet.filemanager.beans.JsTreeFile;
+import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UserPassword;
+import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
+import org.esupportail.portlet.filemanager.exceptions.EsupStockLostSessionException;
+import org.esupportail.portlet.filemanager.exceptions.EsupStockPermissionDeniedException;
+import org.esupportail.portlet.filemanager.services.FsAccess;
+import org.esupportail.portlet.filemanager.services.ResourceUtils;
 import org.springframework.beans.factory.DisposableBean;
 
 import com.googlecode.sardine.DavResource;

@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-package org.esupportail.portlet.stockage.services.uri;
+package org.esupportail.portlet.filemanager.services.uri;
 
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;

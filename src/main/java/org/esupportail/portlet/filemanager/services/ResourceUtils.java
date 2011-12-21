@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-package org.esupportail.portlet.stockage.services;
+package org.esupportail.portlet.filemanager.services;
 
 import java.io.File;
 import java.io.FileFilter;

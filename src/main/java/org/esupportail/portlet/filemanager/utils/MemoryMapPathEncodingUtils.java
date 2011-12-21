@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-package org.esupportail.portlet.stockage.utils;
+package org.esupportail.portlet.filemanager.utils;
 
 import java.util.HashMap;
 import java.util.Map;

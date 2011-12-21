@@ -36,7 +36,7 @@
     
     <context:annotation-config/>
     
-    <context:component-scan base-package="org.esupportail.portlet.stockage"/>
+    <context:component-scan base-package="org.esupportail.portlet.filemanager"/>
     
     <!-- used only for wai portlet mode, for others we use multipartResolver (in applicationContext.xml) -->
     <bean id="portletMultipartResolver"

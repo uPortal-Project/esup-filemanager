@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-package org.esupportail.portlet.stockage.beans;
+package org.esupportail.portlet.filemanager.beans;
 
 import org.springframework.web.multipart.MultipartFile;
 

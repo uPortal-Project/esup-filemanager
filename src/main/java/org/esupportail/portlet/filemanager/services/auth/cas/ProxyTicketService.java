@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-package org.esupportail.portlet.stockage.services.auth.cas;
+package org.esupportail.portlet.filemanager.services.auth.cas;
 
 import edu.yale.its.tp.cas.client.CASReceipt;
 import edu.yale.its.tp.cas.client.ProxyTicketValidator;

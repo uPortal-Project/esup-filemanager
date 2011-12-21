@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-package org.esupportail.portlet.stockage.services;
+package org.esupportail.portlet.filemanager.services;
 
 import java.io.InputStream;
 import java.util.List;
@@ -30,13 +30,13 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.esupportail.portlet.stockage.beans.DownloadFile;
-import org.esupportail.portlet.stockage.beans.JsTreeFile;
-import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
-import org.esupportail.portlet.stockage.beans.UserPassword;
-import org.esupportail.portlet.stockage.services.auth.FormUserPasswordAuthenticatorService;
-import org.esupportail.portlet.stockage.services.auth.UserAuthenticatorService;
-import org.esupportail.portlet.stockage.services.uri.UriManipulateService;
+import org.esupportail.portlet.filemanager.beans.DownloadFile;
+import org.esupportail.portlet.filemanager.beans.JsTreeFile;
+import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UserPassword;
+import org.esupportail.portlet.filemanager.services.auth.FormUserPasswordAuthenticatorService;
+import org.esupportail.portlet.filemanager.services.auth.UserAuthenticatorService;
+import org.esupportail.portlet.filemanager.services.uri.UriManipulateService;
 
 public abstract class FsAccess {
 

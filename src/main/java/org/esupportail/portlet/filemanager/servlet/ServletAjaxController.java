@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-package org.esupportail.portlet.stockage.servlet;
+package org.esupportail.portlet.filemanager.servlet;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,20 +40,20 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.log4j.Logger;
-import org.esupportail.portlet.stockage.beans.BasketSession;
-import org.esupportail.portlet.stockage.beans.DownloadFile;
-import org.esupportail.portlet.stockage.beans.FileUpload;
-import org.esupportail.portlet.stockage.beans.FormCommand;
-import org.esupportail.portlet.stockage.beans.JsTreeFile;
-import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
-import org.esupportail.portlet.stockage.beans.UploadBean;
-import org.esupportail.portlet.stockage.exceptions.EsupStockException;
-import org.esupportail.portlet.stockage.exceptions.EsupStockLostSessionException;
-import org.esupportail.portlet.stockage.exceptions.EsupStockPermissionDeniedException;
-import org.esupportail.portlet.stockage.services.ResourceUtils;
-import org.esupportail.portlet.stockage.services.ResourceUtils.Type;
-import org.esupportail.portlet.stockage.services.ServersAccessService;
-import org.esupportail.portlet.stockage.utils.PathEncodingUtils;
+import org.esupportail.portlet.filemanager.beans.BasketSession;
+import org.esupportail.portlet.filemanager.beans.DownloadFile;
+import org.esupportail.portlet.filemanager.beans.FileUpload;
+import org.esupportail.portlet.filemanager.beans.FormCommand;
+import org.esupportail.portlet.filemanager.beans.JsTreeFile;
+import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UploadBean;
+import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
+import org.esupportail.portlet.filemanager.exceptions.EsupStockLostSessionException;
+import org.esupportail.portlet.filemanager.exceptions.EsupStockPermissionDeniedException;
+import org.esupportail.portlet.filemanager.services.ResourceUtils;
+import org.esupportail.portlet.filemanager.services.ResourceUtils.Type;
+import org.esupportail.portlet.filemanager.services.ServersAccessService;
+import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -550,7 +550,7 @@ public class ServletAjaxController implements InitializingBean {
 
 			for (String filePath : pathEncodingUtils.decodeDirs(command.getDirs())) {
 				JsTreeFile resource = this.serverAccess.get(filePath, userParameters, false, true);
-				org.esupportail.portlet.stockage.services.ResourceUtils.Type fileType = resourceUtils.getType(resource.getTitle());
+				org.esupportail.portlet.filemanager.services.ResourceUtils.Type fileType = resourceUtils.getType(resource.getTitle());
 				if (fileType == Type.IMAGE && !resource.isOverSizeLimit()) {
 					image_paths.add(pathEncodingUtils.encodeDir(filePath));
 				}

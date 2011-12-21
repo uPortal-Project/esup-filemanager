@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-package org.esupportail.portlet.stockage.services.auth;
+package org.esupportail.portlet.filemanager.services.auth;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

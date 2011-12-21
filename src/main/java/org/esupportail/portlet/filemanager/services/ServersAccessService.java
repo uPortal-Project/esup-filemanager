@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-package org.esupportail.portlet.stockage.services;
+package org.esupportail.portlet.filemanager.services;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -44,14 +44,14 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.esupportail.commons.exceptions.EsupException;
-import org.esupportail.portlet.stockage.beans.DownloadFile;
-import org.esupportail.portlet.stockage.beans.DrivesCategory;
-import org.esupportail.portlet.stockage.beans.JsTreeFile;
-import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
-import org.esupportail.portlet.stockage.beans.UserPassword;
-import org.esupportail.portlet.stockage.exceptions.EsupStockException;
-import org.esupportail.portlet.stockage.exceptions.EsupStockLostSessionException;
-import org.esupportail.portlet.stockage.utils.PathEncodingUtils;
+import org.esupportail.portlet.filemanager.beans.DownloadFile;
+import org.esupportail.portlet.filemanager.beans.DrivesCategory;
+import org.esupportail.portlet.filemanager.beans.JsTreeFile;
+import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UserPassword;
+import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
+import org.esupportail.portlet.filemanager.exceptions.EsupStockLostSessionException;
+import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;

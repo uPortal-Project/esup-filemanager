@@ -44,7 +44,7 @@ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWIS
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.esupportail.portlet.stockage.services.auth.cas;
+package org.esupportail.portlet.filemanager.services.auth.cas;
 
 import java.io.IOException;
 import java.util.Map;
@@ -53,7 +53,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.xml.sax.SAXException;
 
 import edu.yale.its.tp.cas.client.CASReceipt;

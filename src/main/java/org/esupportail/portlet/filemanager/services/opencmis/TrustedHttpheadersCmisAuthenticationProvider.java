@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-package org.esupportail.portlet.stockage.services.opencmis;
+package org.esupportail.portlet.filemanager.services.opencmis;
 
 import java.util.HashMap;
 import java.util.List;

@@ -21,14 +21,14 @@
  * limitations under the License.
  */
 
-package org.esupportail.portlet.stockage.services.auth;
+package org.esupportail.portlet.filemanager.services.auth;
 
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
-import org.esupportail.portlet.stockage.beans.UserPassword;
+import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UserPassword;
 
 public class UserPasswordAuthenticatorService implements UserAuthenticatorService {
 

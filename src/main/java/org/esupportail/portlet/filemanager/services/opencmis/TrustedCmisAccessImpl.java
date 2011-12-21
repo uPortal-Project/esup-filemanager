@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-package org.esupportail.portlet.stockage.services.opencmis;
+package org.esupportail.portlet.filemanager.services.opencmis;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,8 +35,8 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisConnectionException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.esupportail.commons.utils.ContextUtils;
-import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
-import org.esupportail.portlet.stockage.beans.UserPassword;
+import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UserPassword;
 
 public class TrustedCmisAccessImpl extends CmisAccessImpl {
 
@@ -108,7 +108,7 @@ public class TrustedCmisAccessImpl extends CmisAccessImpl {
 			}
 			
 			if(userinfosHttpheadersValues != null) {
-				parameters.put(SessionParameter.AUTHENTICATION_PROVIDER_CLASS,  "org.esupportail.portlet.stockage.services.opencmis.TrustedHttpheadersCmisAuthenticationProvider");
+				parameters.put(SessionParameter.AUTHENTICATION_PROVIDER_CLASS,  "org.esupportail.portlet.filemanager.services.opencmis.TrustedHttpheadersCmisAuthenticationProvider");
 				Map<String, List<String>> httpHeaders = new HashMap<String, List<String>>();
 				for(String key: userinfosHttpheadersValues.keySet()) {
 						List<String> values = new Vector<String>();

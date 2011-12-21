@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-package org.esupportail.portlet.stockage.portlet;
+package org.esupportail.portlet.filemanager.portlet;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,14 +37,14 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.apache.log4j.Logger;
-import org.esupportail.portlet.stockage.beans.BasketSession;
-import org.esupportail.portlet.stockage.beans.FileUpload;
-import org.esupportail.portlet.stockage.beans.FormCommand;
-import org.esupportail.portlet.stockage.beans.JsTreeFile;
-import org.esupportail.portlet.stockage.beans.SharedUserPortletParameters;
-import org.esupportail.portlet.stockage.beans.UserPassword;
-import org.esupportail.portlet.stockage.services.ServersAccessService;
-import org.esupportail.portlet.stockage.utils.PathEncodingUtils;
+import org.esupportail.portlet.filemanager.beans.BasketSession;
+import org.esupportail.portlet.filemanager.beans.FileUpload;
+import org.esupportail.portlet.filemanager.beans.FormCommand;
+import org.esupportail.portlet.filemanager.beans.JsTreeFile;
+import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UserPassword;
+import org.esupportail.portlet.filemanager.services.ServersAccessService;
+import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
