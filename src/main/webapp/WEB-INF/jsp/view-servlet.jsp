@@ -30,7 +30,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>
-      esup-servlet-stockage
+      esup-filemanager
     </title>
 
     <!-- Framework CSS  GIP Recia  For a bug in Chrome, important to load css

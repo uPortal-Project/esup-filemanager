@@ -29,7 +29,7 @@
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>esup-servlet-stockage</title>
+<title>esup-filemanager</title>
 
 <link rel="stylesheet" href="/esup-filemanager/css/esup-stock.css"
 	type="text/css" media="screen, projection">
