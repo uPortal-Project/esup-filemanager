@@ -76,36 +76,36 @@ margin: 0px 10px;
 }
 
 .esupstock #toolbar-create {
-background: url(/esup-portlet-stockage/img/new_folder_24px.gif) no-repeat center top;
+background: url(/esup-filemanager/img/new_folder_24px.gif) no-repeat center top;
 }
 
 .esupstock #toolbar-refresh {
-background: url(/esup-portlet-stockage/img/refresh_24px.gif) no-repeat center top;
+background: url(/esup-filemanager/img/refresh_24px.gif) no-repeat center top;
 }
 
 .esupstock #toolbar-copy {
-background: url(/esup-portlet-stockage/img/copy_24px.gif) no-repeat center top;
+background: url(/esup-filemanager/img/copy_24px.gif) no-repeat center top;
 }
 
 .esupstock #toolbar-cut {
-background: url(/esup-portlet-stockage/img/cut_24px.gif) no-repeat center top;
+background: url(/esup-filemanager/img/cut_24px.gif) no-repeat center top;
 }
 
 .esupstock #toolbar-past {
-background: url(/esup-portlet-stockage/img/paste_24px.gif) no-repeat center top;
+background: url(/esup-filemanager/img/paste_24px.gif) no-repeat center top;
 }
 
 .esupstock #toolbar-rename {
-background: url(/esup-portlet-stockage/img/rename_24px.gif) no-repeat center top;
+background: url(/esup-filemanager/img/rename_24px.gif) no-repeat center top;
 }
 
 .esupstock #toolbar-delete {
-background: url(/esup-portlet-stockage/img/delete_24px.gif) no-repeat center top;
+background: url(/esup-filemanager/img/delete_24px.gif) no-repeat center top;
 }
 
 .esupstock #toolbar-zip {
 padding-top: 30px;
-background: url(/esup-portlet-stockage/img/package-x-generic.png) no-repeat center top;
+background: url(/esup-filemanager/img/package-x-generic.png) no-repeat center top;
 }
 
 .esupstock #info-toolbar span {
@@ -129,7 +129,7 @@ display: none;
 display: block;
 padding: 24px 5px 0px 10px;
 margin-top: -23px;
-background: url(/esup-portlet-stockage/img/upload_24px.gif) no-repeat top;
+background: url(/esup-filemanager/img/upload_24px.gif) no-repeat top;
 color: #5a95cf!important;
 text-decoration: none;
 width: 60px;
@@ -232,104 +232,104 @@ border: 0;
 
 
 .esupstock #toolbar-refresh.enabled {  
-    background: url(/esup-portlet-stockage/img/refresh_24px.png) no-repeat center top; 
+    background: url(/esup-filemanager/img/refresh_24px.png) no-repeat center top; 
 }
 
 .esupstock #toolbar-refresh.disabled {  
-    background: url(/esup-portlet-stockage/img/disabled/refresh_24px.png) no-repeat center top; 
+    background: url(/esup-filemanager/img/disabled/refresh_24px.png) no-repeat center top; 
 }
 
 .esupstock #toolbar-thumbnail.enabled {  
-    background: url(/esup-portlet-stockage/img/thumbnail_24px.png) no-repeat center top; 
+    background: url(/esup-filemanager/img/thumbnail_24px.png) no-repeat center top; 
 }
 
 .esupstock #toolbar-thumbnail.disabled {  
-    background: url(/esup-portlet-stockage/img/disabled/thumbnail_24px.png) no-repeat center top; 
+    background: url(/esup-filemanager/img/disabled/thumbnail_24px.png) no-repeat center top; 
 }
 
 .esupstock #toolbar-list.enabled {  
-    background: url(/esup-portlet-stockage/img/list_24px.png) no-repeat center top; 
+    background: url(/esup-filemanager/img/list_24px.png) no-repeat center top; 
 }
 
 .esupstock #toolbar-list.disabled {  
-    background: url(/esup-portlet-stockage/img/disabled/list_24px.png) no-repeat center top; 
+    background: url(/esup-filemanager/img/disabled/list_24px.png) no-repeat center top; 
 }
 
 .esupstock #toolbar-new_folder.enabled {
-	background: url(/esup-portlet-stockage/img/new_folder_24px.gif) no-repeat center top;
+	background: url(/esup-filemanager/img/new_folder_24px.gif) no-repeat center top;
 }
 
 .esupstock #toolbar-new_folder.disabled {
-	background: url(/esup-portlet-stockage/img/disabled/new_folder_24px.gif) no-repeat center top;
+	background: url(/esup-filemanager/img/disabled/new_folder_24px.gif) no-repeat center top;
 }
 
 .esupstock #toolbar-new_file.enabled {
-	background: url(/esup-portlet-stockage/img/new_file_24px.png) no-repeat center top;
+	background: url(/esup-filemanager/img/new_file_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-new_file.disabled {
-	background: url(/esup-portlet-stockage/img/disabled/new_file_24px.png) no-repeat center top;
+	background: url(/esup-filemanager/img/disabled/new_file_24px.png) no-repeat center top;
 }
 
 
 .esupstock #toolbar-download.enabled {  
-    background: url(/esup-portlet-stockage/img/download_24px.gif) no-repeat center top; 
+    background: url(/esup-filemanager/img/download_24px.gif) no-repeat center top; 
 }
 
 .esupstock #toolbar-download.disabled {  
-    background: url(/esup-portlet-stockage/img/disabled/download_24px.gif) no-repeat center top; 
+    background: url(/esup-filemanager/img/disabled/download_24px.gif) no-repeat center top; 
 }
 
 .esupstock #toolbar-zip.enabled {  
-    background: url(/esup-portlet-stockage/img/package-x-generic.png) no-repeat center top; 
+    background: url(/esup-filemanager/img/package-x-generic.png) no-repeat center top; 
 }
 
 .esupstock #toolbar-zip.disabled {  
-    background: url(/esup-portlet-stockage/img/disabled/package-x-generic.png) no-repeat center top; 
+    background: url(/esup-filemanager/img/disabled/package-x-generic.png) no-repeat center top; 
 }
 
 .esupstock #toolbar-copy.enabled {  
-    background: url(/esup-portlet-stockage/img/copy_24px.gif) no-repeat center top; 
+    background: url(/esup-filemanager/img/copy_24px.gif) no-repeat center top; 
 }
 
 .esupstock #toolbar-copy.disabled {  
-    background: url(/esup-portlet-stockage/img/disabled/copy_24px.gif) no-repeat center top; 
+    background: url(/esup-filemanager/img/disabled/copy_24px.gif) no-repeat center top; 
 }
 
 .esupstock #toolbar-cut.enabled {  
-    background: url(/esup-portlet-stockage/img/cut_24px.gif) no-repeat center top; 
+    background: url(/esup-filemanager/img/cut_24px.gif) no-repeat center top; 
 }
 
 .esupstock #toolbar-cut.disabled {  
-    background: url(/esup-portlet-stockage/img/disabled/cut_24px.gif) no-repeat center top; 
+    background: url(/esup-filemanager/img/disabled/cut_24px.gif) no-repeat center top; 
 }
 
 .esupstock #toolbar-paste.enabled {  
-    background: url(/esup-portlet-stockage/img/paste_24px.gif) no-repeat center top; 
+    background: url(/esup-filemanager/img/paste_24px.gif) no-repeat center top; 
 }
 
 .esupstock #toolbar-paste.disabled {  
-    background: url(/esup-portlet-stockage/img/disabled/paste_24px.gif) no-repeat center top; 
+    background: url(/esup-filemanager/img/disabled/paste_24px.gif) no-repeat center top; 
 }
 
 .esupstock #toolbar-rename.enabled {  
-    background: url(/esup-portlet-stockage/img/rename_24px.gif) no-repeat center top; 
+    background: url(/esup-filemanager/img/rename_24px.gif) no-repeat center top; 
 }
 
 .esupstock #toolbar-rename.disabled {  
-    background: url(/esup-portlet-stockage/img/disabled/rename_24px.gif) no-repeat center top; 
+    background: url(/esup-filemanager/img/disabled/rename_24px.gif) no-repeat center top; 
 }
 
 .esupstock #toolbar-delete.enabled {  
-    background: url(/esup-portlet-stockage/img/delete_24px.gif) no-repeat center top; 
+    background: url(/esup-filemanager/img/delete_24px.gif) no-repeat center top; 
 }
 
 .esupstock #toolbar-delete.disabled {  
-    background: url(/esup-portlet-stockage/img/disabled/delete_24px.gif) no-repeat center top; 
+    background: url(/esup-filemanager/img/disabled/delete_24px.gif) no-repeat center top; 
 }
 
 .esupstock #toolbar-list.enabled {  
-    background: url(/esup-portlet-stockage/img/list_24px.png) no-repeat center top; 
+    background: url(/esup-filemanager/img/list_24px.png) no-repeat center top; 
 }
 
 
@@ -354,11 +354,11 @@ background-color: #f8f8f8 !important;
 }
 
 .esupstock .enabled_upload {
-	background: url(/esup-portlet-stockage/img/upload2_24px.png) no-repeat top;    
+	background: url(/esup-filemanager/img/upload2_24px.png) no-repeat top;    
 }
 
 .esupstock .disabled_upload {
-	background: url(/esup-portlet-stockage/img/disabled/upload2_24px.png) no-repeat top;
+	background: url(/esup-filemanager/img/disabled/upload2_24px.png) no-repeat top;
 }
 
 /* Common */
@@ -456,7 +456,7 @@ margin-left: 5px;
 }
 
 .esupstock #detail-download {
-	background-image: url(/esup-portlet-stockage/img/download_24px.gif);
+	background-image: url(/esup-filemanager/img/download_24px.gif);
 	background-position: left center;
 	background-repeat: no-repeat;
 	padding:2px 0px 2px 37px;	
@@ -466,7 +466,7 @@ margin-left: 5px;
 }
 
 .esupstock #detail-view-image {
-	background-image: url(/esup-portlet-stockage/img/picture-8.png);
+	background-image: url(/esup-filemanager/img/picture-8.png);
 	background-position: left center;
 	background-repeat: no-repeat;
 	padding:4px 0px 4px 37px;	
@@ -477,7 +477,7 @@ margin-left: 5px;
 }
 
 .esupstock #detail-view-images {
-	background-image: url(/esup-portlet-stockage/img/picture-8.png);
+	background-image: url(/esup-filemanager/img/picture-8.png);
 	background-position: left center;
 	background-repeat: no-repeat;
 	padding:4px 0px 4px 37px;	
@@ -487,7 +487,7 @@ margin-left: 5px;
 }
 
 .esupstock #detail-zip-download {
-	background-image: url(/esup-portlet-stockage/img/package-x-generic.png);
+	background-image: url(/esup-filemanager/img/package-x-generic.png);
 	background-position: left center;
 	background-repeat: no-repeat;
 	padding:4px 0px 4px 37px;	

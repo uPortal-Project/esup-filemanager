@@ -54,10 +54,10 @@
     classes to the respective LI element(s)
 */
 
-.contextMenu LI.download A { background-image: url(/esup-portlet-stockage/img/download_16px.gif); }
-.contextMenu LI.zip A { background-image: url(/esup-portlet-stockage/img/zip_16px.png); }
-.contextMenu LI.cut A { background-image: url(/esup-portlet-stockage/img/cut_16px.gif); }
-.contextMenu LI.copy A { background-image: url(/esup-portlet-stockage/img/copy_16px.gif); }
-.contextMenu LI.paste A { background-image: url(/esup-portlet-stockage/img/paste_16px.gif);  }
-.contextMenu LI.delete A { background-image: url(/esup-portlet-stockage/img/delete_16px.gif);  }
-.contextMenu LI.rename A { background-image: url(/esup-portlet-stockage/img/rename_16px.gif); }
+.contextMenu LI.download A { background-image: url(/esup-filemanager/img/download_16px.gif); }
+.contextMenu LI.zip A { background-image: url(/esup-filemanager/img/zip_16px.png); }
+.contextMenu LI.cut A { background-image: url(/esup-filemanager/img/cut_16px.gif); }
+.contextMenu LI.copy A { background-image: url(/esup-filemanager/img/copy_16px.gif); }
+.contextMenu LI.paste A { background-image: url(/esup-filemanager/img/paste_16px.gif);  }
+.contextMenu LI.delete A { background-image: url(/esup-filemanager/img/delete_16px.gif);  }
+.contextMenu LI.rename A { background-image: url(/esup-filemanager/img/rename_16px.gif); }

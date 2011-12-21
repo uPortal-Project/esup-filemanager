@@ -39,12 +39,12 @@ color: green;
 }
 
 .esupstock .folder {  
-background: url(/esup-portlet-stockage/img/folder.png) no-repeat; 
+background: url(/esup-filemanager/img/folder.png) no-repeat; 
 padding-left: 20px;
 }
 
 .esupstock .drive {  
-background: url(/esup-portlet-stockage/img/root.png) no-repeat; 
+background: url(/esup-filemanager/img/root.png) no-repeat; 
 padding-left: 20px;
 }
 

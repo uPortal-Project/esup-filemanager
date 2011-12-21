@@ -51,7 +51,7 @@
 	    <ul class="diaporama1">
 	        <c:forEach var="path" items="${image_paths}">
 	            <li><img
-	                src="/esup-portlet-stockage/servlet-ajax/fetchImage?path=${path}&sharedSessionId=${sharedSessionId}"
+	                src="/esup-filemanager/servlet-ajax/fetchImage?path=${path}&sharedSessionId=${sharedSessionId}"
 	                alt="Image" title="${path}" />
 	            </li>
 	        </c:forEach>

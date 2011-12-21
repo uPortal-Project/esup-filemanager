@@ -38,7 +38,7 @@
     
     <link 
         rel="stylesheet"
-        href="/esup-portlet-stockage/css/esup-stock-mobile.css"
+        href="/esup-filemanager/css/esup-stock-mobile.css"
         type="text/css"
         media="screen, projection"/>
 

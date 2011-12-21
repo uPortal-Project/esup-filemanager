@@ -32,8 +32,8 @@
                         http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd">
 
     <portlet>
-        <portlet-name>esup-portlet-stockage</portlet-name>
-        <display-name xml:lang="fr">esup-portlet-stockage</display-name>
+        <portlet-name>esup-filemanager</portlet-name>
+        <display-name xml:lang="fr">esup-filemanager</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
         <init-param>
             <name>contextConfigLocation</name>
@@ -50,9 +50,9 @@
         <supported-locale>fr</supported-locale>
         <supported-locale>en</supported-locale>
         <portlet-info>
-            <title>esup-portlet-stockage</title>
-            <short-title>esup-portlet-stockage</short-title>
-            <keywords>esup-portlet-stockage</keywords>
+            <title>esup-filemanager</title>
+            <short-title>esup-filemanager</short-title>
+            <keywords>esup-filemanager</keywords>
         </portlet-info>  
         <portlet-preferences>
         	<preference>

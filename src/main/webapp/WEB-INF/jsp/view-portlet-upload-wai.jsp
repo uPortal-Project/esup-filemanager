@@ -37,7 +37,7 @@
 </c:set>
 
 
-<link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock-wai.css" type="text/css" media="screen, projection">
+<link rel="stylesheet" href="/esup-filemanager/css/esup-stock-wai.css" type="text/css" media="screen, projection">
 
 
 <portlet:actionURL var="formUploadWai">

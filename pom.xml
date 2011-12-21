@@ -3,9 +3,9 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.esupportail.portlet.stockage</groupId>
-  <artifactId>esup-portlet-stockage</artifactId>
+  <artifactId>esup-filemanager</artifactId>
   <packaging>war</packaging>
-  <name>esup-portlet-stockage</name>
+  <name>esup-filemanager</name>
   <version>1.2.0-RC1</version>
 
 
@@ -251,7 +251,7 @@
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-war-plugin</artifactId>
 	<configuration>
-		<warName>esup-portlet-stockage</warName>
+		<warName>esup-filemanager</warName>
 	</configuration>
 	<version>2.0.2</version>
       </plugin>
@@ -261,7 +261,7 @@
 	<version>7.1.6.v20100715</version>
 	<configuration>
 	  <webAppConfig>
-	    <contextPath>/esup-portlet-stockage</contextPath>
+	    <contextPath>/esup-filemanager</contextPath>
 	  </webAppConfig>
 	</configuration>
         <dependencies>

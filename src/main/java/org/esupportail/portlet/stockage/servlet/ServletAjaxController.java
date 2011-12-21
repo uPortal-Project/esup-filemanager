@@ -138,7 +138,7 @@ public class ServletAjaxController implements InitializingBean {
 			userParameters.setDriveNames(driveNames);
 			session.setAttribute(sharedSessionId, userParameters);
 		} else if(userParameters == null) {
-			String message = "When isPortlet = true you can't use esup-portlet-stockage with mode servlet " +
+			String message = "When isPortlet = true you can't use esup-filemanager with mode servlet " +
 			"without use it first in portlet mode (for security reasons).\n" +
 			"But if you're in portlet mode and you get this Exception, " +
 			"that sounds like a bug because userParameters is not retrieved from portlet in the servlet-ajax !";

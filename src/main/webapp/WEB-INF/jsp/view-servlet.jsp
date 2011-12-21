@@ -38,14 +38,14 @@
     See http://api.jquery.com/ready/ for further explanation
     -->
 
-    <link rel="stylesheet" href="/esup-portlet-stockage/css/fss-framework-1.1.2.css" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="/esup-filemanager/css/fss-framework-1.1.2.css" type="text/css" media="screen, projection">
 
-    <link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock.css" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="/esup-filemanager/css/esup-stock.css" type="text/css" media="screen, projection">
 
-    <link rel="stylesheet" href="/esup-portlet-stockage/css/jquery-ui-1.8.15.custom.css" type="text/css"  media="screen, projection">
-    <link rel="stylesheet" href="/esup-portlet-stockage/css/jquery.contextMenu.css" type="text/css"  media="screen, projection">
-    <link rel="stylesheet" href="/esup-portlet-stockage/css/jquery.diaporama.css" type="text/css"  media="screen, projection">
-    <link type="text/css" href="/esup-portlet-stockage/css/jplayer.blue.monday.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/esup-filemanager/css/jquery-ui-1.8.15.custom.css" type="text/css"  media="screen, projection">
+    <link rel="stylesheet" href="/esup-filemanager/css/jquery.contextMenu.css" type="text/css"  media="screen, projection">
+    <link rel="stylesheet" href="/esup-filemanager/css/jquery.diaporama.css" type="text/css"  media="screen, projection">
+    <link type="text/css" href="/esup-filemanager/css/jplayer.blue.monday.css" rel="stylesheet" />
 
 
     <script type="text/javascript">
@@ -57,28 +57,28 @@
       var defaultPath = '${defaultPath}';
     </script>
 
-    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery-1.4.2.min.js">
+    <script type="text/javascript" src="/esup-filemanager/js/jquery-1.4.2.min.js">
     </script>
     <script type="text/javascript">
     var jQuery = $.noConflict(true);
     </script>
-    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.cookie.js">
+    <script type="text/javascript" src="/esup-filemanager/js/jquery.cookie.js">
     </script>
-    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery-ui-1.8.15.custom.min.js">
+    <script type="text/javascript" src="/esup-filemanager/js/jquery-ui-1.8.15.custom.min.js">
     </script>
-    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.hotkeys.js">
+    <script type="text/javascript" src="/esup-filemanager/js/jquery.hotkeys.js">
     </script>
-    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.jstree.js">
+    <script type="text/javascript" src="/esup-filemanager/js/jquery.jstree.js">
     </script>
-    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.jplayer.min.js">
+    <script type="text/javascript" src="/esup-filemanager/js/jquery.jplayer.min.js">
     </script>
-    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.contextMenu.js">
+    <script type="text/javascript" src="/esup-filemanager/js/jquery.contextMenu.js">
     </script>
-    <script type="text/javascript" src="/esup-portlet-stockage/js/jquery.jDiaporama.js">
+    <script type="text/javascript" src="/esup-filemanager/js/jquery.jDiaporama.js">
     </script>
-    <script type="text/javascript" src="/esup-portlet-stockage/js/fileuploader.js">
+    <script type="text/javascript" src="/esup-filemanager/js/fileuploader.js">
     </script>
-    <script type="text/javascript" src="/esup-portlet-stockage/js/esup-stock.js">
+    <script type="text/javascript" src="/esup-filemanager/js/esup-stock.js">
     </script>
 
   </head>

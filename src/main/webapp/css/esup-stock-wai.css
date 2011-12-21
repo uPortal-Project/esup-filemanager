@@ -70,40 +70,40 @@ border: none;
 }
 
 .esupstock #toolbar-create-wai {  
-background: url(/esup-portlet-stockage/img/new_folder_24px.gif) no-repeat center top; 
+background: url(/esup-filemanager/img/new_folder_24px.gif) no-repeat center top; 
 }
 
 .esupstock #toolbar-refresh-wai {  
-background: url(/esup-portlet-stockage/img/refresh_24px.gif) no-repeat center top; 
+background: url(/esup-filemanager/img/refresh_24px.gif) no-repeat center top; 
 }
 
 .esupstock #toolbar-copy-wai {  
-background: url(/esup-portlet-stockage/img/copy_24px.gif) no-repeat center top; 
+background: url(/esup-filemanager/img/copy_24px.gif) no-repeat center top; 
 }
 
 .esupstock #toolbar-cut-wai {  
-background: url(/esup-portlet-stockage/img/cut_24px.gif) no-repeat center top; 
+background: url(/esup-filemanager/img/cut_24px.gif) no-repeat center top; 
 }
 
 .esupstock #toolbar-past-wai {  
-background: url(/esup-portlet-stockage/img/paste_24px.gif) no-repeat center top; 
+background: url(/esup-filemanager/img/paste_24px.gif) no-repeat center top; 
 }
 
 .esupstock #toolbar-rename-wai {  
-background: url(/esup-portlet-stockage/img/rename_24px.gif) no-repeat center top; 
+background: url(/esup-filemanager/img/rename_24px.gif) no-repeat center top; 
 }
 
 .esupstock #toolbar-delete-wai {  
-background: url(/esup-portlet-stockage/img/delete_24px.gif) no-repeat center top; 
+background: url(/esup-filemanager/img/delete_24px.gif) no-repeat center top; 
 }
 
 .esupstock #toolbar-zip-wai {  
 padding-top: 30px;
-background: url(/esup-portlet-stockage/img/package-x-generic.png) no-repeat center top; 
+background: url(/esup-filemanager/img/package-x-generic.png) no-repeat center top; 
 }
 
 .esupstock #toolbar-upload-wai {  
-background: url(/esup-portlet-stockage/img/upload_24px.gif) no-repeat center top; 
+background: url(/esup-filemanager/img/upload_24px.gif) no-repeat center top; 
 }
 
 .esupstock #info-toolbar span {

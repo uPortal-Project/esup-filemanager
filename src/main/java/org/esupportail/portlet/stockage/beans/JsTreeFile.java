@@ -48,9 +48,9 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 
 	public static String ROOT_DRIVE_NAME = "";
 
-	public static String FOLDER_ICON_PATH = "/esup-portlet-stockage/img/folder.png";
+	public static String FOLDER_ICON_PATH = "/esup-filemanager/img/folder.png";
 
-	public static String ROOT_ICON_PATH = "/esup-portlet-stockage/img/drives/drive_network.png";
+	public static String ROOT_ICON_PATH = "/esup-filemanager/img/drives/drive_network.png";
 
 	public static String PATH_SPLIT = "/";
 

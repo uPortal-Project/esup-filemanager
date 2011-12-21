@@ -35,7 +35,7 @@
 
 
   <img
-    src="/esup-portlet-stockage/servlet-ajax/fetchImage?path=${file.encPath}&sharedSessionId=${sharedSessionId}"
+    src="/esup-filemanager/servlet-ajax/fetchImage?path=${file.encPath}&sharedSessionId=${sharedSessionId}"
     class="detailsImage"
     alt="image" />
 
@@ -191,7 +191,7 @@
 		  });
 
 		  $('#detail-download').bind('click', function () {
-		    $("#detailsFileForm").attr("action", '/esup-portlet-stockage/servlet-ajax/downloadFile');
+		    $("#detailsFileForm").attr("action", '/esup-filemanager/servlet-ajax/downloadFile');
 		    $("#detailsFileForm").submit();
 		    return true;
 		  });

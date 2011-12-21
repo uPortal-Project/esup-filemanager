@@ -122,10 +122,10 @@ $(document).ready(function () {
           ready: function () {
               console.log("ready js player div");
             $(this).jPlayer("setMedia", {
-              mp3: "/esup-portlet-stockage/servlet-ajax/fetchSound?path=${file.encPath}&sharedSessionId=${sharedSessionId}"
+              mp3: "/esup-filemanager/servlet-ajax/fetchSound?path=${file.encPath}&sharedSessionId=${sharedSessionId}"
             });
           },
-          swfPath: "/esup-portlet-stockage/js",
+          swfPath: "/esup-filemanager/js",
           supplied: "mp3"
         });
 
@@ -137,7 +137,7 @@ $(document).ready(function () {
     $('#detail-download').bind('click', function () {
 
 
-        $("#detailsFileForm").attr("action", '/esup-portlet-stockage/servlet-ajax/downloadFile');
+        $("#detailsFileForm").attr("action", '/esup-filemanager/servlet-ajax/downloadFile');
 
         //Set the sharedSessionId in the hiddeninputfield
         $("#detailsFileForm.sharedSessionId").val(sharedSessionId);

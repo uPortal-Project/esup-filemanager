@@ -49,7 +49,7 @@
 </c:if>
 <div class="details-spacer"></div>
 <form:form method="post" id="detailsFileForm"
-  action="/esup-portlet-stockage/servlet-ajax/downloadFile">
+  action="/esup-filemanager/servlet-ajax/downloadFile">
 
   <input name="sharedSessionId" type="hidden" value="${sharedSessionId}" />
 

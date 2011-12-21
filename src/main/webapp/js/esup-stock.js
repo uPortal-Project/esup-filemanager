@@ -131,7 +131,7 @@ $.ajaxSetup({
             template: fileuploadTemplate,
             fileTemplate: fileTemplate,
             element: document.getElementById('file-uploader'),
-            action: '/esup-portlet-stockage/servlet-ajax/uploadFile',
+            action: '/esup-filemanager/servlet-ajax/uploadFile',
             onSubmit: function (id, fileName) {
                 uploader.setParams({
                     dir: $("#bigdirectory").attr("rel"),
@@ -347,7 +347,7 @@ function doCutCopyPaste(isCopy, sourcePath, targetPath) {
 
     console.log("doCutCopyPaste");
 
-    var prepareFilesUrl = '/esup-portlet-stockage/servlet-ajax/' + (isCopy ? 'prepareCopyFiles' : 'prepareCutFiles');
+    var prepareFilesUrl = '/esup-filemanager/servlet-ajax/' + (isCopy ? 'prepareCopyFiles' : 'prepareCutFiles');
 
     $.post(prepareFilesUrl, "dirs=" + encodeURIComponent(sourcePath) + "&sharedSessionId=" + sharedSessionId, function (data) {
       console.log("prepareCopyFiles Ajax call completed.  Starting paste operation");
@@ -361,7 +361,7 @@ function doCutCopyPaste(isCopy, sourcePath, targetPath) {
 
 function doCutOrCopy(isCopy) {
 
-  var prepareFilesUrl = '/esup-portlet-stockage/servlet-ajax/' + (isCopy ? 'prepareCopyFiles' : 'prepareCutFiles');
+  var prepareFilesUrl = '/esup-filemanager/servlet-ajax/' + (isCopy ? 'prepareCopyFiles' : 'prepareCutFiles');
 
   cursor_wait();
     var dirs = getCheckedDirs();
@@ -443,7 +443,7 @@ function pasteToPath(path) {
   console.log("Entering pasteToPath.  Path: " + path);
     cursor_wait();
 
-    var pastFilesUrl = '/esup-portlet-stockage/servlet-ajax/pastFiles';
+    var pastFilesUrl = '/esup-filemanager/servlet-ajax/pastFiles';
     $.ajax({
       url: pastFilesUrl,
       data: "dir=" + encodeURIComponent(path) + "&sharedSessionId=" + sharedSessionId,
@@ -525,7 +525,7 @@ function initJstree() {
             // All the options are the same as jQuery's except for `data` which CAN (not should) be a function
             "ajax": {
                 // the URL to fetch the data
-                "url": '/esup-portlet-stockage/servlet-ajax/fileChildren',
+                "url": '/esup-filemanager/servlet-ajax/fileChildren',
                 "type": 'POST',
                 // this function is executed in the instance's scope (this refers to the tree instance)
                 // the parameter is the node being loaded (may be -1, 0, or undefined when loading the root nodes)
@@ -628,7 +628,7 @@ function customMenu(node) {
             "separator_before": false,
             "separator_after": true,
             // false or string - if does not contain `/` - used as classname
-            "icon": "/esup-portlet-stockage/img/refresh_24px.png"
+            "icon": "/esup-filemanager/img/refresh_24px.png"
         },
         "upload": {
             // The item label
@@ -648,7 +648,7 @@ function customMenu(node) {
             // class is applied to the item LI node
             "separator_before": false,
             "separator_after": false,
-            "icon": "/esup-portlet-stockage/img/upload_24px.gif"
+            "icon": "/esup-filemanager/img/upload_24px.gif"
         },
 
         "newfolder": {
@@ -662,7 +662,7 @@ function customMenu(node) {
             "_disabled": false,
             "separator_before": false,
             "separator_after": false,
-            "icon": "/esup-portlet-stockage/img/new_folder_24px.gif"
+            "icon": "/esup-filemanager/img/new_folder_24px.gif"
         },
         "newfile": {
             // The item label
@@ -675,7 +675,7 @@ function customMenu(node) {
             "_disabled": false,
             "separator_before": false,
             "separator_after": false,
-            "icon": "/esup-portlet-stockage/img/new_file_24px.png"
+            "icon": "/esup-filemanager/img/new_file_24px.png"
         },
         "pasteItem": {
             // The item label
@@ -688,7 +688,7 @@ function customMenu(node) {
             "_disabled": false,
             "separator_before": false,
             "separator_after": false,
-            "icon": "/esup-portlet-stockage/img/paste_24px.gif"
+            "icon": "/esup-filemanager/img/paste_24px.gif"
         }
         /*,
         "downloadItem": {
@@ -702,7 +702,7 @@ function customMenu(node) {
             "_disabled": false,
             "separator_before": true,
             "separator_after": false,
-            "icon": "/esup-portlet-stockage/img/download_24px.gif"
+            "icon": "/esup-filemanager/img/download_24px.gif"
         },
         "zipItem": {
             // The item label
@@ -714,7 +714,7 @@ function customMenu(node) {
             "_disabled": false,
             "separator_before": false,
             "separator_after": false,
-            "icon": "/esup-portlet-stockage/img/delete_24px.gif"
+            "icon": "/esup-filemanager/img/delete_24px.gif"
         },
         "copyItem": {
             // The item label
@@ -727,7 +727,7 @@ function customMenu(node) {
             "_disabled": false,
             "separator_before": false,
             "separator_after": false,
-            "icon": "/esup-portlet-stockage/img/copy_24px.gif"
+            "icon": "/esup-filemanager/img/copy_24px.gif"
         },
         "cutItem": {
             // The item label
@@ -743,7 +743,7 @@ function customMenu(node) {
             "_disabled": false,
             "separator_before": false,
             "separator_after": false,
-            "icon": "/esup-portlet-stockage/img/cut_24px.gif"
+            "icon": "/esup-filemanager/img/cut_24px.gif"
         },
 
         "renameItem": {
@@ -756,7 +756,7 @@ function customMenu(node) {
             "_disabled": false,
             "separator_before": false,
             "separator_after": false,
-            "icon": "/esup-portlet-stockage/img/rename_16px.gif"
+            "icon": "/esup-filemanager/img/rename_16px.gif"
         },
         "deleteItem": {
             // The item label
@@ -772,7 +772,7 @@ function customMenu(node) {
             "_disabled": false,
             "separator_before": false,
             "separator_after": false,
-            "icon": "/esup-portlet-stockage/img/delete_24px.gif"
+            "icon": "/esup-filemanager/img/delete_24px.gif"
         }*/
     };
 
@@ -822,7 +822,7 @@ function getParentPath(path) {
     $.ajax({
         async: false,
         type: 'POST',
-        url: '/esup-portlet-stockage/servlet-ajax/getParentPath',
+        url: '/esup-filemanager/servlet-ajax/getParentPath',
         data:  {
             "dir": path,
             "sharedSessionId": sharedSessionId
@@ -973,7 +973,7 @@ function handleLeftTreeSelection(treeNode) {
     $.ajax({
         async: true,
         type: 'POST',
-        url: '/esup-portlet-stockage/servlet-ajax/htmlFileTree',
+        url: '/esup-filemanager/servlet-ajax/htmlFileTree',
         data: {
             "dir": path,
             "sharedSessionId": sharedSessionId
@@ -1041,7 +1041,7 @@ function updateDetailsArea(dataObj) {
     $.ajax({
         async: true,
         type: 'POST',
-        url: '/esup-portlet-stockage/servlet-ajax/detailsArea',
+        url: '/esup-filemanager/servlet-ajax/detailsArea',
         data: dataObj,
         success: function (response) {
             $("#detailArea").html(response);
@@ -1244,7 +1244,7 @@ function newFileOrFolder(parentDir, name, fileOrFolder) {
     $.ajax({
         async: true,
         type: 'POST',
-        url: '/esup-portlet-stockage/servlet-ajax/createFile',
+        url: '/esup-filemanager/servlet-ajax/createFile',
         data: {
             "parentDir": parentDir,
             "title": name,
@@ -1319,7 +1319,7 @@ function handleThumbnailMode() {
     $.ajax({
         async: true,
         type: 'POST',
-        url: '/esup-portlet-stockage/servlet-ajax/toggleThumbnailMode',
+        url: '/esup-filemanager/servlet-ajax/toggleThumbnailMode',
         data: {
             "sharedSessionId" : sharedSessionId,
             "thumbnailMode" : thumbnailMode
@@ -1376,7 +1376,7 @@ function rename(parentDir, dir, title) {
     $.ajax({
         async: true,
         type: 'POST',
-        url: '/esup-portlet-stockage/servlet-ajax/renameFile',
+        url: '/esup-filemanager/servlet-ajax/renameFile',
         data: {
             "parentDir": parentDir,
             "dir": dir,
@@ -1406,7 +1406,7 @@ function downloadFile(fileName) {
 
     console.log("downloadFile. Path: " + fileName);
 
-    var url = '/esup-portlet-stockage/servlet-ajax/downloadFile?dir=' + encodeURIComponent(fileName) + '&sharedSessionId=' + sharedSessionId;
+    var url = '/esup-filemanager/servlet-ajax/downloadFile?dir=' + encodeURIComponent(fileName) + '&sharedSessionId=' + sharedSessionId;
 
     console.log(url);
     //window.open(url);
@@ -1417,7 +1417,7 @@ function downloadZip() {
     console.log("downloadZip");
     var dirs = getCheckedDirs();
     if (dirs.length > 0) {
-        var downloadZipUrl = '/esup-portlet-stockage/servlet-ajax/downloadZip';
+        var downloadZipUrl = '/esup-filemanager/servlet-ajax/downloadZip';
         $("#filesForm").attr("action", downloadZipUrl);
         $("#filesForm").submit();
     }
@@ -1444,7 +1444,7 @@ function deleteFiles(dirsDataStruct) {
         $(this).dialog("close");
         console.log("deleteFiles : " + stringifyJSON(dirsDataStruct));
         cursor_wait();
-        var removeFilesUrl = '/esup-portlet-stockage/servlet-ajax/removeFiles';
+        var removeFilesUrl = '/esup-filemanager/servlet-ajax/removeFiles';
         $.post(removeFilesUrl, dirsDataStruct, function (data) {
             cursor_clear();
             if (data.status) {
@@ -2108,7 +2108,7 @@ function authenticate(dir, username, password) {
     $.ajax({
         async: true,
         type: 'POST',
-        url: '/esup-portlet-stockage/servlet-ajax/authenticate',
+        url: '/esup-filemanager/servlet-ajax/authenticate',
         data: {
             "dir": dir,
             "username": username,

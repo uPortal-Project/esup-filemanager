@@ -31,7 +31,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>esup-servlet-stockage</title>
 
-<link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock.css"
+<link rel="stylesheet" href="/esup-filemanager/css/esup-stock.css"
 	type="text/css" media="screen, projection">
 
 </head>

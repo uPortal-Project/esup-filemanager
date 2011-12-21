@@ -30,7 +30,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 			   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
   
-  <!-- isPortlet must be True if you deploy esup-portlet-stockage in Portal like uPortal/EsupPortail -->
+  <!-- isPortlet must be True if you deploy esup-filemanager in Portal like uPortal/EsupPortail -->
   <util:constant id="isPortlet" static-field="java.lang.Boolean.FALSE"/>
 
   <!-- drivesCategories lets you organize the tree of your drives .
@@ -40,7 +40,7 @@
   <util:map id="drivesCategories">
     <entry key="Shared">
       <bean class="org.esupportail.portlet.stockage.beans.DrivesCategory">
-	<property name="icon" value="/esup-portlet-stockage/img/drives/house.png" />
+	<property name="icon" value="/esup-filemanager/img/drives/house.png" />
 	<property name="drives">
 	  <list>
 	    <value>Toto</value>
@@ -51,7 +51,7 @@
     </entry>
     <entry key="Homedir">
       <bean class="org.esupportail.portlet.stockage.beans.DrivesCategory">
-	<property name="icon" value="/esup-portlet-stockage/img/drives/drive_user.png" />
+	<property name="icon" value="/esup-filemanager/img/drives/drive_user.png" />
 	<property name="drives">
 	  <list>
 	    <value>Stock2</value>
@@ -64,7 +64,7 @@
     </entry>
     <entry key="ECM">
       <bean class="org.esupportail.portlet.stockage.beans.DrivesCategory">
-	<property name="icon" value="/esup-portlet-stockage/img/drives/group.png" />
+	<property name="icon" value="/esup-filemanager/img/drives/group.png" />
 	<property name="drives">
 	  <list>
 	    <value>Cmis</value>
@@ -80,7 +80,7 @@
        http://commons.apache.org/vfs/filesystems.html
        Take care, by default 'mvn package' doesn't provide cifs or webdav support.
        If you want to use cifs or webdav, 
-          * (*deprecated* : before esup-portlet-stockage 1.1.0 you should use the maven profil named vfs-sandbox :
+          * (*deprecated* : before esup-filemanager 1.1.0 you should use the maven profil named vfs-sandbox :
        'mvn package -P vfs-sandbox' / 'mvn jetty:run -P vfs-sandbox')
           * you  should now use instead SardineAccessImpl (webdav) or CifsAccessImpl (cifs) - see examples below
       
@@ -98,7 +98,7 @@
    -->
   <bean class="org.esupportail.portlet.stockage.services.vfs.VfsAccessImpl" lazy-init="true">
     <property name="driveName" value="Toto"/>
-    <property name="icon" value="/esup-portlet-stockage/img/drives/tux.png" />
+    <property name="icon" value="/esup-filemanager/img/drives/tux.png" />
     <property name="uri" value="sftp://stock-2.mon-univ.fr/"/>
     <property name="memberOfAny">
       <list>
@@ -123,7 +123,7 @@
   -->
   <bean  class="org.esupportail.portlet.stockage.services.vfs.VfsAccessImpl" lazy-init="true">
     <property name="driveName" value="bob"/>
-    <property name="icon" value="/esup-portlet-stockage/img/drives/root.png" />
+    <property name="icon" value="/esup-filemanager/img/drives/root.png" />
     <property name="uri" value="file:///"/>
     <property name="contextToken" value="justbob"/>
     <property name="resourceUtils" ref="resourceUtils"/>
@@ -139,7 +139,7 @@
   -->
   <bean class="org.esupportail.portlet.stockage.services.vfs.VfsAccessImpl" scope="session" lazy-init="true">
     <property name="driveName" value="Stock2"/>
-    <property name="icon" value="/esup-portlet-stockage/img/drives/root.png" />
+    <property name="icon" value="/esup-filemanager/img/drives/root.png" />
     <property name="uri" value="sftp://stock-2.mon-univ.fr/home/@uid@/"/>
     <property name="memberOfAny">
       <list>
@@ -172,7 +172,7 @@
   -->
   <bean class="org.esupportail.portlet.stockage.services.vfs.VfsAccessImpl" scope="session" lazy-init="true">
     <property name="driveName" value="Stock2Cas"/>
-    <property name="icon" value="/esup-portlet-stockage/img/drives/root.png" />
+    <property name="icon" value="/esup-filemanager/img/drives/root.png" />
     <property name="uri" value="sftp://stock-2.mon-univ.fr/"/>
     <property name="sftpSetUserDirIsRoot" value="true"/>
     <property name="hasAttributs">
@@ -202,15 +202,15 @@
 
   <bean id="casService" class="org.esupportail.portlet.stockage.services.auth.cas.ProxyTicketService">
     <property name="casValidateUrl" value="https://cas.mon-univ.fr/cas/proxyValidate"/>
-    <property name="serviceUrl" value="https://ent.mon-univ.fr/esup-portlet-stockage"/>
-    <property name="urlOfProxyCallbackServlet" value="https://ent.mon-univ.fr/esup-portlet-stockage/CasProxyServlet"/>
+    <property name="serviceUrl" value="https://ent.mon-univ.fr/esup-filemanager"/>
+    <property name="urlOfProxyCallbackServlet" value="https://ent.mon-univ.fr/esup-filemanager/CasProxyServlet"/>
   </bean>
 
 
  <!-- Definition of a FSAccess bean : here we have a 'SardineAccessImpl' to use a webdav shared folder -->                          
   <bean class="org.esupportail.portlet.stockage.services.sardine.SardineAccessImpl" scope="session" lazy-init="true">
     <property name="driveName" value="DAV Ex"/>
-    <property name="icon" value="/esup-portlet-stockage/img/drives/drive_network.png" />
+    <property name="icon" value="/esup-filemanager/img/drives/drive_network.png" />
     <property name="uri" value="http://dav.mon-univ.fr"/>
     <property name="userAuthenticatorService" ref="davFormUserAuthenticationService"/>
     <property name="resourceUtils" ref="resourceUtils"/>
@@ -223,7 +223,7 @@
  <!-- Definition of a FSAccess bean : here we have a 'CifsAccessImpl' to use a cifs shared folder -->                          
   <bean class="org.esupportail.portlet.stockage.services.cifs.CifsAccessImpl" scope="session" lazy-init="true">
     <property name="driveName" value="CIFS Ex"/>
-    <property name="icon" value="/esup-portlet-stockage/img/drives/drive_network.png" />
+    <property name="icon" value="/esup-filemanager/img/drives/drive_network.png" />
     <property name="uri" value="smb://cifs.mon-univ.fr/shared/"/>
     <property name="jcifsConfigProperties" ref="cifsProperties" />
     <property name="userAuthenticatorService" ref="formUAS4"/>
@@ -254,13 +254,13 @@
        * form authentication : we will ask username/password to the user when accessing this drive
        * cas authentication : we're using proxy cas 
        You can also use a "shibboleth like" authentication : 
-       esup-portlet-stockage send request with specific http headers 
-       so that the Nuxeo "nuxeo-platform-login-shibboleth" plugin (for nuxeo) authenticates esup-portlet-stockage 
+       esup-filemanager send request with specific http headers 
+       so that the Nuxeo "nuxeo-platform-login-shibboleth" plugin (for nuxeo) authenticates esup-filemanager 
        trusting http headers.
   -->
   <bean class="org.esupportail.portlet.stockage.services.opencmis.TrustedCmisAccessImpl" scope="session" lazy-init="true">
     <property name="driveName" value="Cmis"/>
-    <property name="icon" value="/esup-portlet-stockage/img/drives/group.png" />
+    <property name="icon" value="/esup-filemanager/img/drives/group.png" />
     <property name="uri" value="http://localhost:6081/nuxeo/atom/cmis"/>
     <property name="respositoryId" value="default"/>
     <!-- UserWorkspaces cmis browsing seams to not work -->

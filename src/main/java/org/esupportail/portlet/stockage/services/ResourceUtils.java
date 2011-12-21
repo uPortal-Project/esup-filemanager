@@ -85,7 +85,7 @@ public class ResourceUtils implements InitializingBean, ResourceLoaderAware {
 			List<File> files = Arrays.asList(iconsFolder.getFile().listFiles(fileFilter));
 			for(File icon: files) {
 				String iconName = icon.getName();
-				icons.put(iconName.substring(0, iconName.length()-4), "/esup-portlet-stockage/img/icons/".concat(iconName));
+				icons.put(iconName.substring(0, iconName.length()-4), "/esup-filemanager/img/icons/".concat(iconName));
 			}
 			
 			log.debug("mimetypes incons retrieved : " + icons.toString());
@@ -146,7 +146,7 @@ public class ResourceUtils implements InitializingBean, ResourceLoaderAware {
 		if(icons.containsKey(mime)) 
 			return icons.get(mime);
 		else
-			return "/esup-portlet-stockage/img/icons/unknown.png";
+			return "/esup-filemanager/img/icons/unknown.png";
 	}
 	
 	public String getIcon(String filename) {

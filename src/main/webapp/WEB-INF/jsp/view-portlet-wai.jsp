@@ -37,7 +37,7 @@
 </c:set>
 
 
-<link rel="stylesheet" href="/esup-portlet-stockage/css/esup-stock-wai.css" type="text/css" media="screen, projection">
+<link rel="stylesheet" href="/esup-filemanager/css/esup-stock-wai.css" type="text/css" media="screen, projection">
 
 
 <portlet:actionURL var="formProcessWai">
@@ -94,7 +94,7 @@
             <c:choose>
               <c:when test="${'file' == file.type}">
                 <img src="${file.icon}" alt="" />
-                <a class="file" href="/esup-portlet-stockage/servlet-ajax/downloadFile?dir=${file.encPath}&sharedSessionId=${sharedSessionId}">
+                <a class="file" href="/esup-filemanager/servlet-ajax/downloadFile?dir=${file.encPath}&sharedSessionId=${sharedSessionId}">
                   ${file.title}
                 </a>
               </c:when>

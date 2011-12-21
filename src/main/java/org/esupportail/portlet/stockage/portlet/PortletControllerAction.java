@@ -99,7 +99,7 @@ public class PortletControllerAction  implements InitializingBean {
 		String msg = null;
 
 		if (zip != null) {
-			String url = "/esup-portlet-stockage/servlet-ajax/downloadZip?";
+			String url = "/esup-filemanager/servlet-ajax/downloadZip?";
 			for(String commandDir: pathEncodingUtils.decodeDirs(command.getDirs())) {
 				url = url + "dirs=" + URLEncoder.encode(pathEncodingUtils.encodeDir(commandDir), "utf8") + "&";
 				url = url + "sharedSessionId=" + URLEncoder.encode(sharedSessionId, "utf8") + "&";

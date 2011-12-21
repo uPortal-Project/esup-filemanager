@@ -36,7 +36,7 @@
 
     <link 
         rel="stylesheet"
-        href="/esup-portlet-stockage/css/esup-stock-mobile.css"
+        href="/esup-filemanager/css/esup-stock-mobile.css"
         type="text/css"
         media="screen, projection"/>
 
@@ -77,7 +77,7 @@
           <c:choose>
             <c:when test="${'file' == file.type}">
               <img src="${file.icon}" alt="icon" />
-              <a class="file" href="/esup-portlet-stockage/servlet-ajax/downloadFile?dir=${file.encPath}&sharedSessionId=${sharedSessionId}">
+              <a class="file" href="/esup-filemanager/servlet-ajax/downloadFile?dir=${file.encPath}&sharedSessionId=${sharedSessionId}">
                 ${file.title}
               </a>
             </c:when>
