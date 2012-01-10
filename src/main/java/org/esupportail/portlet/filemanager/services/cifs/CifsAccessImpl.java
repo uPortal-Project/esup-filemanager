@@ -33,7 +33,6 @@ import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import jcifs.Config;
@@ -76,13 +75,13 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 	@Override
 	public void open(SharedUserPortletParameters userParameters) {
 		super.open(userParameters);
-		
+
 		if(!this.isOpened()) {
 			// we set the jcifs properties given in the bean for the drive
 			if (this.jcifsConfigProperties != null && !this.jcifsConfigProperties.isEmpty()) {
 				Config.setProperties(jcifsConfigProperties);
 			}
-		
+
 			try {
 				if(userAuthenticatorService != null) {
 					UserPassword userPassword = userAuthenticatorService.getUserPassword(userParameters);
