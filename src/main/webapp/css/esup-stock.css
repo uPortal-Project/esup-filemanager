@@ -128,11 +128,12 @@ display: none;
 .esupstock .qq-upload-button {
 display: block;
 padding: 24px 5px 0px 10px;
-margin-top: -23px;
+margin-top: -24px;
 background: url(/esup-filemanager/img/upload_24px.gif) no-repeat top;
 color: #5a95cf!important;
-text-decoration: none;
-width: 60px;
+text-decoration: underline;
+/*text-decoration: none;
+width: 60px;*/
 font-weight:bold;
 }
 
@@ -201,7 +202,7 @@ display: block;
 
 
 .esupstock .container #fileTree,
-.esupstock .container #browserMain { 
+.esupstock .container #browserMain {
 width: 100%;
 border: 0;
 }
@@ -227,32 +228,32 @@ border: 0;
 }
 
 .image-dialog .ui-dialog-titlebar-close {
-    
+
 }
 
 
-.esupstock #toolbar-refresh.enabled {  
-    background: url(/esup-filemanager/img/refresh_24px.png) no-repeat center top; 
+.esupstock #toolbar-refresh.enabled {
+    background: url(/esup-filemanager/img/refresh_24px.png) no-repeat center top;
 }
 
-.esupstock #toolbar-refresh.disabled {  
-    background: url(/esup-filemanager/img/disabled/refresh_24px.png) no-repeat center top; 
+.esupstock #toolbar-refresh.disabled {
+    background: url(/esup-filemanager/img/disabled/refresh_24px.png) no-repeat center top;
 }
 
-.esupstock #toolbar-thumbnail.enabled {  
-    background: url(/esup-filemanager/img/thumbnail_24px.png) no-repeat center top; 
+.esupstock #toolbar-thumbnail.enabled {
+    background: url(/esup-filemanager/img/thumbnail_24px.png) no-repeat center top;
 }
 
-.esupstock #toolbar-thumbnail.disabled {  
-    background: url(/esup-filemanager/img/disabled/thumbnail_24px.png) no-repeat center top; 
+.esupstock #toolbar-thumbnail.disabled {
+    background: url(/esup-filemanager/img/disabled/thumbnail_24px.png) no-repeat center top;
 }
 
-.esupstock #toolbar-list.enabled {  
-    background: url(/esup-filemanager/img/list_24px.png) no-repeat center top; 
+.esupstock #toolbar-list.enabled {
+    background: url(/esup-filemanager/img/list_24px.png) no-repeat center top;
 }
 
-.esupstock #toolbar-list.disabled {  
-    background: url(/esup-filemanager/img/disabled/list_24px.png) no-repeat center top; 
+.esupstock #toolbar-list.disabled {
+    background: url(/esup-filemanager/img/disabled/list_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-new_folder.enabled {
@@ -272,80 +273,80 @@ border: 0;
 }
 
 
-.esupstock #toolbar-download.enabled {  
-    background: url(/esup-filemanager/img/download_24px.gif) no-repeat center top; 
+.esupstock #toolbar-download.enabled {
+    background: url(/esup-filemanager/img/download_24px.gif) no-repeat center top;
 }
 
-.esupstock #toolbar-download.disabled {  
-    background: url(/esup-filemanager/img/disabled/download_24px.gif) no-repeat center top; 
+.esupstock #toolbar-download.disabled {
+    background: url(/esup-filemanager/img/disabled/download_24px.gif) no-repeat center top;
 }
 
-.esupstock #toolbar-zip.enabled {  
-    background: url(/esup-filemanager/img/package-x-generic.png) no-repeat center top; 
+.esupstock #toolbar-zip.enabled {
+    background: url(/esup-filemanager/img/package-x-generic.png) no-repeat center top;
 }
 
-.esupstock #toolbar-zip.disabled {  
-    background: url(/esup-filemanager/img/disabled/package-x-generic.png) no-repeat center top; 
+.esupstock #toolbar-zip.disabled {
+    background: url(/esup-filemanager/img/disabled/package-x-generic.png) no-repeat center top;
 }
 
-.esupstock #toolbar-copy.enabled {  
-    background: url(/esup-filemanager/img/copy_24px.gif) no-repeat center top; 
+.esupstock #toolbar-copy.enabled {
+    background: url(/esup-filemanager/img/copy_24px.gif) no-repeat center top;
 }
 
-.esupstock #toolbar-copy.disabled {  
-    background: url(/esup-filemanager/img/disabled/copy_24px.gif) no-repeat center top; 
+.esupstock #toolbar-copy.disabled {
+    background: url(/esup-filemanager/img/disabled/copy_24px.gif) no-repeat center top;
 }
 
-.esupstock #toolbar-cut.enabled {  
-    background: url(/esup-filemanager/img/cut_24px.gif) no-repeat center top; 
+.esupstock #toolbar-cut.enabled {
+    background: url(/esup-filemanager/img/cut_24px.gif) no-repeat center top;
 }
 
-.esupstock #toolbar-cut.disabled {  
-    background: url(/esup-filemanager/img/disabled/cut_24px.gif) no-repeat center top; 
+.esupstock #toolbar-cut.disabled {
+    background: url(/esup-filemanager/img/disabled/cut_24px.gif) no-repeat center top;
 }
 
-.esupstock #toolbar-paste.enabled {  
-    background: url(/esup-filemanager/img/paste_24px.gif) no-repeat center top; 
+.esupstock #toolbar-paste.enabled {
+    background: url(/esup-filemanager/img/paste_24px.gif) no-repeat center top;
 }
 
-.esupstock #toolbar-paste.disabled {  
-    background: url(/esup-filemanager/img/disabled/paste_24px.gif) no-repeat center top; 
+.esupstock #toolbar-paste.disabled {
+    background: url(/esup-filemanager/img/disabled/paste_24px.gif) no-repeat center top;
 }
 
-.esupstock #toolbar-rename.enabled {  
-    background: url(/esup-filemanager/img/rename_24px.gif) no-repeat center top; 
+.esupstock #toolbar-rename.enabled {
+    background: url(/esup-filemanager/img/rename_24px.gif) no-repeat center top;
 }
 
-.esupstock #toolbar-rename.disabled {  
-    background: url(/esup-filemanager/img/disabled/rename_24px.gif) no-repeat center top; 
+.esupstock #toolbar-rename.disabled {
+    background: url(/esup-filemanager/img/disabled/rename_24px.gif) no-repeat center top;
 }
 
-.esupstock #toolbar-delete.enabled {  
-    background: url(/esup-filemanager/img/delete_24px.gif) no-repeat center top; 
+.esupstock #toolbar-delete.enabled {
+    background: url(/esup-filemanager/img/delete_24px.gif) no-repeat center top;
 }
 
-.esupstock #toolbar-delete.disabled {  
-    background: url(/esup-filemanager/img/disabled/delete_24px.gif) no-repeat center top; 
+.esupstock #toolbar-delete.disabled {
+    background: url(/esup-filemanager/img/disabled/delete_24px.gif) no-repeat center top;
 }
 
-.esupstock #toolbar-list.enabled {  
-    background: url(/esup-filemanager/img/list_24px.png) no-repeat center top; 
+.esupstock #toolbar-list.enabled {
+    background: url(/esup-filemanager/img/list_24px.png) no-repeat center top;
 }
 
 
 
-.esupstock .toolbar-item a { 
+.esupstock .toolbar-item a {
 padding: 24px 5px 0px 10px;
-margin: 0px; 
+margin: 0px;
 }
 
-.esupstock a.enabled:hover { 
+.esupstock a.enabled:hover {
 color: #11d;
 background-color: #f8f8f8 !important;
 }
 
 .esupstock .separator {
-    border-right:1px solid #e5e5e5;   
+    border-right:1px solid #e5e5e5;
     padding-right:10px;
 }
 
@@ -353,8 +354,13 @@ background-color: #f8f8f8 !important;
 	/*background: none;*/
 }
 
+.esupstock .qq-upload-button-hover {
+	color: #11d;
+	background-color: #f8f8f8 !important;
+}
+
 .esupstock .enabled_upload {
-	background: url(/esup-filemanager/img/upload2_24px.png) no-repeat top;    
+	background: url(/esup-filemanager/img/upload2_24px.png) no-repeat top;
 }
 
 .esupstock .disabled_upload {
@@ -369,7 +375,7 @@ background-color: #f8f8f8 !important;
 
 .esupstock #delete-confirm span {
 	display: none;
-	float: left; 
+	float: left;
 	margin: 0 7px 20px 0;
 }
 
@@ -389,7 +395,7 @@ background-color: #f8f8f8 !important;
 }
 
 .esupstock #arborescentArea {
-	background: none repeat scroll 0 0 #FFFFEE;	
+	background: none repeat scroll 0 0 #FFFFEE;
 	height:320px;
 }
 
@@ -407,7 +413,7 @@ background-color: #f8f8f8 !important;
 .esupstock #browserArea {
 	width: 67%;
 	float: left;
-	height:420px; 
+	height:420px;
 }
 
 .esupstock .container #browserArea #browserMain {
@@ -432,7 +438,7 @@ background-color: #f8f8f8 !important;
 }
 
 .esupstock #detailArea {
-	background:#FFFFEE none repeat scroll 0 0; 	
+	background:#FFFFEE none repeat scroll 0 0;
 	overflow: hidden;
 }
 
@@ -440,18 +446,18 @@ background-color: #f8f8f8 !important;
 	margin: 0;
 }
 
-.esupstock .details { 
-margin-left: 5px;         
-} 
+.esupstock .details {
+margin-left: 5px;
+}
 
 .esupstock #detailsFileForm,
 .esupstock .details-attribute-header {
 	font-weight: bold;
-	float: left;	
+	float: left;
 }
 
 .esupstock .detailsImage {
-	width: 200px; 
+	width: 200px;
 	height: auto;
 }
 
@@ -459,9 +465,9 @@ margin-left: 5px;
 	background-image: url(/esup-filemanager/img/download_24px.gif);
 	background-position: left center;
 	background-repeat: no-repeat;
-	padding:2px 0px 2px 37px;	
+	padding:2px 0px 2px 37px;
 	color: #555555;
-	font-weight: bold; 
+	font-weight: bold;
 	cursor: pointer;
 }
 
@@ -469,9 +475,9 @@ margin-left: 5px;
 	background-image: url(/esup-filemanager/img/picture-8.png);
 	background-position: left center;
 	background-repeat: no-repeat;
-	padding:4px 0px 4px 37px;	
+	padding:4px 0px 4px 37px;
 	color: #555555;
-	font-weight: bold; 
+	font-weight: bold;
 	cursor: pointer;
 	display: none;
 }
@@ -480,9 +486,9 @@ margin-left: 5px;
 	background-image: url(/esup-filemanager/img/picture-8.png);
 	background-position: left center;
 	background-repeat: no-repeat;
-	padding:4px 0px 4px 37px;	
+	padding:4px 0px 4px 37px;
 	color: #555555;
-	font-weight: bold; 
+	font-weight: bold;
 	cursor: pointer;
 }
 
@@ -490,9 +496,9 @@ margin-left: 5px;
 	background-image: url(/esup-filemanager/img/package-x-generic.png);
 	background-position: left center;
 	background-repeat: no-repeat;
-	padding:4px 0px 4px 37px;	
+	padding:4px 0px 4px 37px;
 	color: #555555;
-	font-weight: bold; 
+	font-weight: bold;
 	cursor: pointer;
 }
 
@@ -513,16 +519,16 @@ margin-left: 5px;
 	margin: 0px;
 	left: 12px;
 	top: 12px;
-	border: 1px solid #D4D4D4;	
+	border: 1px solid #D4D4D4;
 }
 
 .esupstock .thumbnail .inner_thumbnail > a {
 	position: absolute;
-	margin: none;	
+	margin: none;
 	display: inline-block;
 	width: 100%;
 	height: 100%;
-	overflow: hidden;	
+	overflow: hidden;
 }
 
 .esupstock .thumbnail a img {
@@ -530,7 +536,7 @@ margin-left: 5px;
     margin-left: auto;
     margin-right: auto;
     display: block;
-    width: 32px; 
+    width: 32px;
     height: 32px;
 }
 
@@ -542,7 +548,7 @@ margin-left: 5px;
 
 .esupstock .thumbnail span.renameSpan input {
 	width: 100%;
-	display: inline-block;	
+	display: inline-block;
 }
 
 .esupstock #newFileOrFolderInput {
@@ -576,3 +582,10 @@ http://code.google.com/p/jstree/issues/detail?id=922&q=IE%20expand&colspec=ID%20
 */
 /*.esupstock li.jstree-closed ul {display:none;}*/
 
+.esupstock .selectable {
+	outline : none;
+}
+
+.esupstock .selectable a {
+    text-decoration: none;
+}
