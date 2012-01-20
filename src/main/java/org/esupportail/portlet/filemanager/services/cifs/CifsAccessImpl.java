@@ -147,8 +147,6 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 	public JsTreeFile get(String path, SharedUserPortletParameters userParameters, boolean folderDetails, boolean fileDetails) {
 		try {
 			this.open(userParameters);
-			if (!path.endsWith("/"))
-				path = path.concat("/");
 			SmbFile resource = cd(path, userParameters);
 			return resourceAsJsTreeFile(resource, userParameters, folderDetails, fileDetails);
 		} catch (SmbAuthException sae) {
