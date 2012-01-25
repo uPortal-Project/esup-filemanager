@@ -41,15 +41,15 @@ import org.esupportail.portlet.filemanager.services.uri.UriManipulateService;
 public abstract class FsAccess {
 
 	protected static final Log log = LogFactory.getLog(FsAccess.class);
-	
+
 	protected static String TOKEN_SPECIAL_CHAR =  "@";
-	
+
 	protected static String TOKEN_FORM_USERNAME =  "@form_username@";
-	
-    protected String datePattern = "dd/MM/yyyy hh:mm";
+
+    protected String datePattern = "dd/MM/yyyy HH:mm";
 
 	private List<String> memberOfAny;
-	
+
 	private Map<String, String> hasAttributs;
 
 	private String contextToken;
@@ -125,7 +125,7 @@ public abstract class FsAccess {
 			UriManipulateService uriManipulateService) {
 		this.uriManipulateService = uriManipulateService;
 	}
-	
+
 	protected void manipulateUri(Map userInfos, String formUsername) {
 		if(userInfos != null) {
 			for(String userInfoKey : (Set<String>)userInfos.keySet()) {
@@ -202,7 +202,7 @@ public abstract class FsAccess {
 		try {
 			this.get("", userParameters, false, false);
 		} catch(Exception e) {
-			// TODO : catch Exception corresponding to an authentication failure ...	
+			// TODO : catch Exception corresponding to an authentication failure ...
 			log.warn("Authentication failed : " + e.getMessage());
 			log.info("Full stack of exception occured during authentication which failed ...", e);
 			this.userAuthenticatorService.getUserPassword(userParameters).setPassword(null);
