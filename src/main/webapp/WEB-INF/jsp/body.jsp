@@ -40,22 +40,19 @@
 						<span class="toolbar-item"> <a href="#"
 							title="<spring:message code='toolbar.refresh.title'/>"
 							class="disabled" id="toolbar-refresh" onclick="return false;">
-								<spring:message code="toolbar.refresh" /> </a> 
+								<spring:message code="toolbar.refresh" /> </a>
 						</span>
-						<%-- 		
 						<span class="toolbar-item"> <a href="#" id="toolbar-thumbnail"
 							class="disabled" onclick="return false;" style="display: none"
 							title="<spring:message code='toolbar.thumbnail.title'/>"> <spring:message
 									code="toolbar.thumbnail" /> </a>
-						</span> 
-						 --%>
+						</span>
 						<span class="toolbar-item">
 							<a href="#" id="toolbar-list" class="disabled"
 							onclick="return false;" style="display: none"
 							title="<spring:message code='toolbar.list.title'/>"> <spring:message
-									code="toolbar.list" /> </a> 
+									code="toolbar.list" /> </a>
 						</span>
-
 					</div>
 					<div class="separator">
 						<span class="toolbar-item" id="file-uploader"
@@ -153,7 +150,7 @@
 			title="<spring:message code="ajax.overlay.title"/>">
 			<spring:message code="ajax.overlay.body" />
 		</div>
-		
+
 		<div id="errorDialog"
 			title="<spring:message code="ajax.error.title"/>">
 			...

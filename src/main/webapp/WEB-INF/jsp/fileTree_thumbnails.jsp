@@ -32,11 +32,11 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <div class="breadcrumbs">
-  <c:forEach var="parent" items="${resource.parentsPathes}" varStatus="item">
+  <c:forEach var="parent" items="${parentsEncPathes}" varStatus="item">
     <c:choose>
       <c:when test="${item.last}">
         <img src="${resource.icon}" alt="icon" />
-        <span id="bigdirectory" rel="${resource.path}"> ${resource.title} </span>
+        <span id="bigdirectory" rel="${resource.encPath}"> ${resource.title} </span>
       </c:when>
       <c:otherwise>
         <a class="fileTreeRefCrumbs" href="#" rel="${parent.key}">
@@ -68,17 +68,17 @@
           class="${ (file.type == 'folder' || file.type == 'file') ? 'draggable' : ''} inner_thumbnail">
 
           <c:if test="${file.type == 'folder' || file.type == 'file'}">
-            <form:checkbox path="dirs" cssClass="browsercheck" value="${file.path}" />
+            <form:checkbox path="dirs" cssClass="browsercheck" value="${file.encPath}" />
           </c:if>
 
           <a
             class="${ (file.type == 'drive' || file.type == 'category') ? 'fileCatRef' :
                (file.type == 'folder') ? 'fileTreeRef' : 'file'}"
-            href="" rel="${file.path}" title="${file.title}" onclick="return false;">
+            href="" rel="${file.encPath}" title="${file.title}" onclick="return false;">
             <img src="${file.icon}" alt="icon" />
             <span
               class="thumbnailLinkText ${ (file.type == 'folder' || file.type == 'file') ? 'selectable' : ''}">${file.truncatedTitle}</span>
-          
+
           </a>
 
 
