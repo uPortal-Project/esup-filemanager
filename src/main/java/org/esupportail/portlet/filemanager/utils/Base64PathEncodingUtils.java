@@ -23,8 +23,6 @@
 
 package org.esupportail.portlet.filemanager.utils;
 
-import java.io.UnsupportedEncodingException;
-
 import org.esupportail.commons.utils.Base64;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +38,7 @@ public class Base64PathEncodingUtils extends PathEncodingUtils {
 		encodedPath = encodedPath.replaceAll("=", "");
 		return PREFIX_CODE + encodedPath;
 	}
-
+	
 	public String decodeDir(String dir) {
 		if(dir == null || "".equals(dir))
 			return null;
@@ -52,18 +50,5 @@ public class Base64PathEncodingUtils extends PathEncodingUtils {
 			dir = dir + "==";
 		dir = new String(Base64.decode(dir, Base64.URL_SAFE));
 		return dir;
-	}
-
-	@Override
-	public String decodeFileName(String filename) throws UnsupportedEncodingException {
-		if(filename == null || "".equals(filename))
-			return null;
-		int nb_equals_to_add = 4 - filename.length() % 4;
-		if(nb_equals_to_add == 1)
-			filename = filename + "=";
-		if(nb_equals_to_add == 2)
-			filename = filename + "==";
-		filename = new String(Base64.decode(filename, Base64.URL_SAFE), "UTF-8");
-		return filename;
 	}
 }

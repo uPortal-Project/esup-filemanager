@@ -23,7 +23,6 @@
 
 package org.esupportail.portlet.filemanager.utils;
 
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,14 +33,14 @@ import org.springframework.util.Assert;
 public class MemoryMapPathEncodingUtils extends PathEncodingUtils {
 
 	Map<String, String> idsPathes = new HashMap<String, String>();
-
+	
 	public String encodeDir(String path) {
 		String encPath = PREFIX_CODE + path.hashCode();
 		if(!idsPathes.containsKey(encPath))
 			idsPathes.put(encPath, path);
 		return encPath;
 	}
-
+	
 	public String decodeDir(String encPath) {
 		if(encPath == null || "".equals(encPath))
 			return null;
@@ -49,5 +48,4 @@ public class MemoryMapPathEncodingUtils extends PathEncodingUtils {
 		Assert.notNull(path);
 		return path;
 	}
-
 }

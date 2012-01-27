@@ -74,15 +74,13 @@
     </script>
     <script type="text/javascript" src="/esup-filemanager/js/jquery.jDiaporama.js">
     </script>
-    <script type="text/javascript" src="/esup-filemanager/js/base64.js">
-    </script>
     <script type="text/javascript" src="/esup-filemanager/js/fileuploader.js">
     </script>
     <script type="text/javascript" src="/esup-filemanager/js/esup-stock.js">
     </script>
 
 
-<%--
+<%-- 
 <div id="accessible-version">
   <a href="<portlet:renderURL> <portlet:param name="action" value="browseWai"/></portlet:renderURL>">
       <spring:message code="version.accessible"/>
