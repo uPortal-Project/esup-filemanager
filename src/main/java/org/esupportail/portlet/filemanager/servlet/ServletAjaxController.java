@@ -77,59 +77,59 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 public class ServletAjaxController implements InitializingBean {
 
 	protected Logger log = Logger.getLogger(ServletAjaxController.class);
-	
+
 	@Autowired
 	protected ServersAccessService serverAccess;
-	
+
 	@Autowired
 	protected BasketSession basketSession;
-	
+
 	@Autowired
 	protected ApplicationContext context;
-	
+
 	@Autowired
 	protected HttpServletRequest request;
-	
+
 	@Autowired
 	@Qualifier("isPortlet")
 	protected Boolean isPortlet;
-	
+
 	@Autowired(required=false)
 	@Qualifier("useDoubleClickModeServlet")
 	protected Boolean useDoubleClick = true;
-	
+
 	@Autowired(required=false)
 	@Qualifier("useCursorWaitDialogModeServlet")
 	protected Boolean useCursorWaitDialog = false;
-	
+
 	@Autowired(required=false)
 	@Qualifier("showHiddenFilesModeServlet")
 	protected Boolean showHiddenFilesModeServlet = false;
-	
-	
+
+
 	//GP Added in order to detect file type (image / sound / etc)
 	@Autowired
 	protected ResourceUtils resourceUtils;
-	
+
 	@Autowired
 	protected PathEncodingUtils pathEncodingUtils;
-	
+
 	protected SharedUserPortletParameters userParameters;
 
 	protected Locale locale;
-	
+
 	public void afterPropertiesSet() throws Exception {
 
 		request.setCharacterEncoding("UTF-8");
-		
+
 		locale = RequestContextUtils.getLocale(request);
-		
+
 		HttpSession session = request.getSession();
-		
+
 		String sharedSessionId = request.getParameter("sharedSessionId");
 		if(sharedSessionId != null)
 			userParameters = (SharedUserPortletParameters)session.getAttribute(sharedSessionId);
-		
+
 		if(!this.isPortlet && userParameters == null) {
 			log.debug("Servlet Access (no portlet mode : isPortlet property = false): init SharedUserPortletParameters");
 			userParameters = new SharedUserPortletParameters(sharedSessionId);
@@ -145,13 +145,13 @@ public class ServletAjaxController implements InitializingBean {
 			log.error(message);
 			throw new EsupStockException(message);
 		}
-		
+
 		if(userParameters != null && !serverAccess.isInitialized(userParameters)) {
 			serverAccess.initializeServices(this.userParameters);
 		}
 	}
-	
-	
+
+
 	@RequestMapping("/")
     public ModelAndView renderView() {
 		ModelMap model = new ModelMap();
@@ -163,7 +163,7 @@ public class ServletAjaxController implements InitializingBean {
 		model.put("defaultPath", defaultPath);
         return new ModelAndView("view-servlet", model);
     }
-	
+
 	/**
 	 * Data for the browser area.
 	 * @param dir
@@ -194,9 +194,9 @@ public class ServletAjaxController implements InitializingBean {
 			List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
 			Collections.sort(files);
 			pathEncodingUtils.encodeDir(files);
-			model.put("files", files); 
+			model.put("files", files);
 			ListOrderedMap parentsEncPathes = pathEncodingUtils.getParentsEncPathes(resource);
-			model.put("parentsEncPathes", parentsEncPathes); 
+			model.put("parentsEncPathes", parentsEncPathes);
 		} catch (Exception ex) {
 			//Added for GIP Recia : Error handling
 			log.warn("Error retrieving file", ex);
@@ -209,15 +209,15 @@ public class ServletAjaxController implements InitializingBean {
 		model.put("sharedSessionId", userParameters.getSharedSessionId());
 		FormCommand command = new FormCommand();
 	    model.put("command", command);
-	    
-	    /* GIP RECIA : Construct the view in terms of environment */ 
+
+	    /* GIP RECIA : Construct the view in terms of environment */
 	    final String view = getThumbnailMode() ? "fileTree_thumbnails" : "fileTree";
-	    
+
 	    return new ModelAndView(view, model);
 	 }
 
 	private static final String THUMBNAIL_MODE_KEY = "thumbnail_mode";
-	
+
 	private boolean getThumbnailMode() {
 		Object thumbnailMode = request.getSession().getAttribute(THUMBNAIL_MODE_KEY);
 		if (thumbnailMode == null || !(thumbnailMode instanceof Boolean)) {
@@ -225,20 +225,20 @@ public class ServletAjaxController implements InitializingBean {
 		}
 		return (Boolean) thumbnailMode;
 	}
-	
+
 	private void putThumbnailMode(boolean thumbnailMode) {
 		request.getSession().setAttribute(THUMBNAIL_MODE_KEY, thumbnailMode);
 	}
-	
+
 	@RequestMapping("/toggleThumbnailMode")
     public @ResponseBody Map<String, String> toggleThumbnailMode(boolean thumbnailMode) {
 		putThumbnailMode(thumbnailMode);
-		
+
 		Map<String, String> jsonMsg = new HashMap<String, String>();
 		jsonMsg.put("thumbnail_mode", new Boolean(thumbnailMode).toString());
 		return jsonMsg;
     }
-	
+
 	/**
 	 * Data for the left tree area
 	 * @param dir
@@ -252,9 +252,9 @@ public class ServletAjaxController implements InitializingBean {
 		if(this.serverAccess.formAuthenticationRequired(dir, userParameters) && this.serverAccess.getUserPassword(dir, userParameters).getPassword() == null) {
 	    	String driveDir = JsTreeFile.ROOT_DRIVE
 	    		.concat(this.serverAccess.getDriveCategory(dir));
-	    	
-	    	// we can't get children of (sub)children of a drive because authentication is required 
-	    	// -> we return empty list   
+
+	    	// we can't get children of (sub)children of a drive because authentication is required
+	    	// -> we return empty list
 	    	if("all".equals(hierarchy)) {
 			    files =  this.serverAccess.getJsTreeFileRoots(driveDir, userParameters);
 	    	} else if(dir.length() > driveDir.length()) {
@@ -264,7 +264,7 @@ public class ServletAjaxController implements InitializingBean {
 	    	}
 	    } else {
 	    	if(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE) ) {
-	    		files = this.serverAccess.getJsTreeFileRoots(userParameters);		
+	    		files = this.serverAccess.getJsTreeFileRoots(userParameters);
 	    	} else if("all".equals(hierarchy)) {
 	    		files =  this.serverAccess.getJsTreeFileRoots(dir, userParameters);
 	    	} else {
@@ -279,11 +279,11 @@ public class ServletAjaxController implements InitializingBean {
 	@RequestMapping("/removeFiles")
     public @ResponseBody Map removeFiles(FormCommand command) {
 		long allOk = 1;
-		String msg = context.getMessage("ajax.remove.ok", null, locale); 
-		Map jsonMsg = new HashMap(); 
+		String msg = context.getMessage("ajax.remove.ok", null, locale);
+		Map jsonMsg = new HashMap();
 		for(String dir: pathEncodingUtils.decodeDirs(command.getDirs())) {
 			if(!this.serverAccess.remove(dir, userParameters)) {
-				msg = context.getMessage("ajax.remove.failed", null, locale); 
+				msg = context.getMessage("ajax.remove.failed", null, locale);
 				allOk = 0;
 			}
 		}
@@ -291,16 +291,16 @@ public class ServletAjaxController implements InitializingBean {
 		jsonMsg.put("msg", msg);
     	return jsonMsg;
     }
-	
+
 	@RequestMapping("/createFile")
     public ModelAndView createFile(String parentDir, String title, String type, HttpServletRequest request, HttpServletResponse response) {
 		String parentDirDecoded = pathEncodingUtils.decodeDir(parentDir);
 		String fileDir = this.serverAccess.createFile(parentDirDecoded, title, type, userParameters);
 		if(fileDir != null) {
 			return this.fileTree(parentDir, request, response);
-		} 
-		 
-		//Added for GIP Recia : Error handling 
+		}
+
+		//Added for GIP Recia : Error handling
 		//Usually a duplicate name problem.  Tell the ajax handler that
 		//there is a problem and send the translated error message
 		response.setStatus(403);
@@ -308,87 +308,87 @@ public class ServletAjaxController implements InitializingBean {
 		modelMap.put("errorText", context.getMessage("ajax.fileOrFolderCreate.failed", null, locale));
 		return new ModelAndView("ajax_error", modelMap);
     }
-	
+
 	@RequestMapping("/renameFile")
     public ModelAndView renameFile(String parentDir, String dir, String title, HttpServletRequest request, HttpServletResponse response) {
 		parentDir = pathEncodingUtils.decodeDir(parentDir);
 		dir = pathEncodingUtils.decodeDir(dir);
 		if(this.serverAccess.renameFile(dir, title, userParameters)) {
-			return this.fileTree(pathEncodingUtils.encodeDir(parentDir), request, response);	
+			return this.fileTree(pathEncodingUtils.encodeDir(parentDir), request, response);
 		}
-		
+
 		//Usually means file does not exist
 		response.setStatus(403);
 		ModelMap modelMap = new ModelMap();
 		modelMap.put("errorText", context.getMessage("ajax.rename.failed", null, locale));
 		return new ModelAndView("ajax_error", modelMap);
     }
-    
+
 	@RequestMapping("/prepareCopyFiles")
     public @ResponseBody Map prepareCopyFiles(FormCommand command) {
 		basketSession.setDirsToCopy(pathEncodingUtils.decodeDirs(command.getDirs()));
 		basketSession.setGoal("copy");
-		Map jsonMsg = new HashMap(); 
+		Map jsonMsg = new HashMap();
 		jsonMsg.put("status", new Long(1));
-		String msg = context.getMessage("ajax.copy.ok", null, locale); 
+		String msg = context.getMessage("ajax.copy.ok", null, locale);
 		jsonMsg.put("msg", msg);
 		return jsonMsg;
     }
-	
+
 	@RequestMapping("/prepareCutFiles")
     public @ResponseBody Map prepareCutFiles(FormCommand command) {
 		basketSession.setDirsToCopy(pathEncodingUtils.decodeDirs(command.getDirs()));
 		basketSession.setGoal("cut");
-		Map jsonMsg = new HashMap(); 
+		Map jsonMsg = new HashMap();
 		jsonMsg.put("status", new Long(1));
-		String msg = context.getMessage("ajax.cut.ok", null, locale); 
+		String msg = context.getMessage("ajax.cut.ok", null, locale);
 		jsonMsg.put("msg", msg);
 		return jsonMsg;
     }
-	
+
 	@RequestMapping("/pastFiles")
     public @ResponseBody Map pastFiles(String dir) {
 		dir = pathEncodingUtils.decodeDir(dir);
-		Map jsonMsg = new HashMap(); 
+		Map jsonMsg = new HashMap();
 		if(this.serverAccess.moveCopyFilesIntoDirectory(dir, basketSession.getDirsToCopy(), "copy".equals(basketSession.getGoal()), userParameters)) {
 			jsonMsg.put("status", new Long(1));
-			String msg = context.getMessage("ajax.paste.ok", null, locale); 
+			String msg = context.getMessage("ajax.paste.ok", null, locale);
 			jsonMsg.put("msg", msg);
 		}
 		else {
 			jsonMsg.put("status", new Long(0));
-			String msg = context.getMessage("ajax.paste.failed", null, locale); 
+			String msg = context.getMessage("ajax.paste.failed", null, locale);
 			jsonMsg.put("msg", msg);
 		}
 		return jsonMsg;
 	}
-	
+
 	@RequestMapping("/authenticate")
     public @ResponseBody Map authenticate(String dir, String username, String password) {
 		dir = pathEncodingUtils.decodeDir(dir);
-		Map jsonMsg = new HashMap(); 
+		Map jsonMsg = new HashMap();
 		if(this.serverAccess.authenticate(dir, username, password, userParameters)) {
 			jsonMsg.put("status", new Long(1));
-			String msg = context.getMessage("auth.ok", null, locale); 
+			String msg = context.getMessage("auth.ok", null, locale);
 			jsonMsg.put("msg", msg);
 		}
 		else {
 			jsonMsg.put("status", new Long(0));
-			String msg = context.getMessage("auth.bad", null, locale); 
+			String msg = context.getMessage("auth.bad", null, locale);
 			jsonMsg.put("msg", msg);
 		}
 		return jsonMsg;
 	}
-	
+
 	/**
-	 * Added for GIP Recia : Return an image.  
+	 * Added for GIP Recia : Return an image.
 	 * @param path
 	 * @param request
 	 * @param response
 	 * @throws IOException
 	 */
 	@RequestMapping("/fetchImage")
-	public void fetchImage(String path, 
+	public void fetchImage(String path,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
 		path = pathEncodingUtils.decodeDir(path);
 		this.serverAccess.updateUserParameters(path, userParameters);
@@ -397,7 +397,7 @@ public class ServletAjaxController implements InitializingBean {
 		response.setContentLength(file.getSize());
 		FileCopyUtils.copy(file.getInputStream(), response.getOutputStream());
 	}
-	
+
 	/**
 	 * Added for GIP Recia : Return a sound
 	 * @param path
@@ -406,7 +406,7 @@ public class ServletAjaxController implements InitializingBean {
 	 * @throws IOException
 	 */
 	@RequestMapping("/fetchSound")
-	public void fetchSound(String path, 
+	public void fetchSound(String path,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
 		path = pathEncodingUtils.decodeDir(path);
 		this.serverAccess.updateUserParameters(path, userParameters);
@@ -416,12 +416,12 @@ public class ServletAjaxController implements InitializingBean {
 		response.setContentLength(file.getSize());
 		FileCopyUtils.copy(file.getInputStream(), response.getOutputStream());
 	}
-	
+
 	/**
 	 * it is used also in portlet mode mobile and wai
 	 */
 	@RequestMapping("/downloadFile")
-    public void downloadFile(String dir, 
+    public void downloadFile(String dir,
     								 HttpServletRequest request, HttpServletResponse response) throws IOException {
 		dir = pathEncodingUtils.decodeDir(dir);
 		this.serverAccess.updateUserParameters(dir, userParameters);
@@ -431,12 +431,12 @@ public class ServletAjaxController implements InitializingBean {
 		response.setHeader("Content-Disposition","attachment; filename=\"" + file.getBaseName() +"\"");
 		FileCopyUtils.copy(file.getInputStream(), response.getOutputStream());
 	}
-	
+
 	/**
 	 * it is used also in portlet mode mobile and wai
 	 */
 	@RequestMapping("/downloadZip")
-    public void downloadZip(FormCommand command, 
+    public void downloadZip(FormCommand command,
     								HttpServletRequest request, HttpServletResponse response) throws IOException {
 		List<String> dirs = pathEncodingUtils.decodeDirs(command.getDirs());
 		this.serverAccess.updateUserParameters(dirs.get(0), userParameters);
@@ -447,31 +447,31 @@ public class ServletAjaxController implements InitializingBean {
 		response.setHeader("Content-Disposition","attachment; filename=\"" + file.getBaseName() +"\"");
 		FileCopyUtils.copy(file.getInputStream(), response.getOutputStream());
 	}
-	
+
 
 	// thanks to use BindingResult if FileUpload failed because of XHR request (and not multipart)
 	// this method is called anyway
 	@RequestMapping("/uploadFile")
-	public  ModelAndView uploadFile(String dir, FileUpload file, BindingResult result, HttpServletRequest request) throws IOException {		
-		
+	public  ModelAndView uploadFile(String dir, FileUpload file, BindingResult result, HttpServletRequest request) throws IOException {
+
 		dir = pathEncodingUtils.decodeDir(dir);
-		
+
 		String filename;
-		InputStream inputStream;	
-		
+		InputStream inputStream;
+
 		if(file.getQqfile() != null) {
 			// standard multipart form upload
 			filename = file.getQqfile().getOriginalFilename();
 			inputStream = file.getQqfile().getInputStream();
 		} else {
 			// XHR upload
-			filename = request.getParameter("qqfile");
+			filename = pathEncodingUtils.decodeFileName(request.getParameter("qqfile"));
 			inputStream = request.getInputStream();
 		}
 		return upload(dir, filename, inputStream);
 	}
 
-	
+
 	// take care : we don't send json like application/json but like text/html !
 	// goal is that the json is written in a frame
 	public  ModelAndView upload(String dir, String filename, InputStream inputStream) {
@@ -479,9 +479,9 @@ public class ServletAjaxController implements InitializingBean {
 		String text = "";
 		try {
 			if(this.serverAccess.putFile(dir, filename, inputStream, userParameters)) {
-				String msg = context.getMessage("ajax.upload.ok", null, locale); 
+				String msg = context.getMessage("ajax.upload.ok", null, locale);
 				text = "{'success':'true', 'msg':'".concat(msg).concat("'}");
-				log.info("upload file in " + dir + " ok");
+				log.info("upload file " + filename + " in " + dir + " ok");
 			} else {
 				success = false;
 			}
@@ -491,14 +491,14 @@ public class ServletAjaxController implements InitializingBean {
 		}
 		if(!success) {
 			log.info("Error uploading file in " + dir);
-			String msg = context.getMessage("ajax.upload.failed", null, locale); 
+			String msg = context.getMessage("ajax.upload.failed", null, locale);
 			text = "{'success':'false', 'msg':'".concat(msg).concat("'}");
 		}
 		ModelMap model = new ModelMap("text", text);
 		return new ModelAndView("text", model);
 	}
-	
-	
+
+
 	/**
 	 * Return the correct details view based on the requested file(s)
 	 */
@@ -522,7 +522,7 @@ public class ServletAjaxController implements InitializingBean {
 			// get resource with folder details (if it's a folder ...)
 			JsTreeFile resource = this.serverAccess.get(path, userParameters, true, true);
 			pathEncodingUtils.encodeDir(resource);
-			
+
 			// Based on the resource type, direct to appropriate details view
 			if ("folder".equals(resource.getType()) || "drive".equals(resource.getType())) {
 				model.put("file", resource);
@@ -563,53 +563,53 @@ public class ServletAjaxController implements InitializingBean {
 		return new ModelAndView("details_empty", model);
 
 	}
-	
+
 	@RequestMapping("/getParentPath")
 	public @ResponseBody String getParentPath(String dir,
 			HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
 
 		dir = pathEncodingUtils.decodeDir(dir);
 		String parentDir;
-		
-		ListOrderedMap parentsPathesMap = pathEncodingUtils.getParentsPathes(dir, null, null);		
+
+		ListOrderedMap parentsPathesMap = pathEncodingUtils.getParentsPathes(dir, null, null);
 		List<String> parentsPathes = (List<String>)(parentsPathesMap.keyList());
 		if(parentsPathes.size()<2)
 			parentDir = this.serverAccess.getJsTreeFileRoot().getPath();
 		else
 			parentDir = parentsPathes.get(parentsPathes.size()-2);
-		
+
 		return pathEncodingUtils.encodeDir(parentDir);
 	}
-	
-	
+
+
 	@ExceptionHandler(EsupStockPermissionDeniedException.class)
-	public ModelAndView handlePermissionDeniedException(EsupStockPermissionDeniedException ex, 
+	public ModelAndView handlePermissionDeniedException(EsupStockPermissionDeniedException ex,
 										HttpServletRequest request, HttpServletResponse response) throws IOException {
 		log.error("EsupStockPermissionDeniedException caught on ServletAjaxController ..." ,ex);
-		String msg = context.getMessage("ajax.error.permissionDenied", null, locale); 
+		String msg = context.getMessage("ajax.error.permissionDenied", null, locale);
 		response.sendError(403, msg);
 		return null;
 	}
-	
+
 	@ExceptionHandler(EsupStockLostSessionException.class)
-	public ModelAndView handleLostSessionException(EsupStockLostSessionException ex, 
+	public ModelAndView handleLostSessionException(EsupStockLostSessionException ex,
 										HttpServletRequest request, HttpServletResponse response) throws IOException {
 		log.error("EsupStockLostSessionException caught on ServletAjaxController ..." ,ex);
 		response.sendError(500, "reload");
 		return null;
 	}
-	
+
 
 	@ExceptionHandler(EsupStockException.class)
-	public ModelAndView handleException(EsupStockException ex, 
+	public ModelAndView handleException(EsupStockException ex,
 										HttpServletRequest request, HttpServletResponse response) throws IOException {
 		log.error("EsupStockException caught on ServletAjaxController ..." ,ex);
 		//response.sendError(500, ex.getMessage());
 		response.setStatus(500);
-		
+
 		ModelMap model = new ModelMap();
 		model.put("exception", ex);
-		
+
 		return new ModelAndView("error-servlet", model);
 	}
 

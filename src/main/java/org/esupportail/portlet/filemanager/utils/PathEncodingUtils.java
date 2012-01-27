@@ -23,6 +23,7 @@
 
 package org.esupportail.portlet.filemanager.utils;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.SortedMap;
@@ -39,7 +40,7 @@ import org.esupportail.portlet.filemanager.beans.JsTreeFile;
  * so that we have a two-way converter between a path and a string/id
  * using only alphanumeric char, '_' char and '-' char.
  * This id can be used with jquery, like id of html tag, etc.
- * Moreover this id desn't need specific encoding characters for accents 
+ * Moreover this id desn't need specific encoding characters for accents
  * (because we don't use accents).
  */
 public abstract class PathEncodingUtils {
@@ -47,10 +48,14 @@ public abstract class PathEncodingUtils {
 	protected static final Log log = LogFactory.getLog(PathEncodingUtils.class);
 
 	protected static final String PREFIX_CODE = "path_";
-	
+
 	public abstract String encodeDir(String path);
-	
+
 	public abstract String decodeDir(String dir);
+
+	public String decodeFileName(String filename) throws UnsupportedEncodingException {
+		return filename;
+	}
 
 	public List<String> decodeDirs(List<String> dirs) {
 		if(dirs == null)
@@ -60,7 +65,7 @@ public abstract class PathEncodingUtils {
 			decodedDirs.add(decodeDir(dir));
 		return decodedDirs;
 	}
-	
+
 	public List<String> encodeDirs(List<String> dirs) {
 		if(dirs == null)
 			return null;
@@ -80,11 +85,11 @@ public abstract class PathEncodingUtils {
 			for(JsTreeFile file: files)
 				encodeDir(file);
 	}
-	
+
 	public ListOrderedMap getParentsPathes(JsTreeFile file) {
 		return getParentsPathes(file.getPath(), file.getCategoryIcon(), file.getDriveIcon());
 	}
-	
+
 	// Map<path, List<title, icon>>
 	public ListOrderedMap getParentsPathes(String path, String categoryIcon, String driveIcon) {
 		ListOrderedMap parentsPathes = new ListOrderedMap();
@@ -122,8 +127,8 @@ public abstract class PathEncodingUtils {
 	public ListOrderedMap getParentsEncPathes(JsTreeFile file) {
 		return getParentsEncPathes(file.getPath(), file.getCategoryIcon(), file.getDriveIcon());
 	}
-	
-	// Map<path, List<title, icon>>                                                                                                                     
+
+	// Map<path, List<title, icon>>
 	public ListOrderedMap getParentsEncPathes(String path, String categoryIcon, String driveIcon) {
 		ListOrderedMap parentPathes = getParentsPathes(path, categoryIcon, driveIcon);
 		ListOrderedMap encodedParentPathes = new  ListOrderedMap();

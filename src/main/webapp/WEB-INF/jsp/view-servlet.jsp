@@ -76,6 +76,8 @@
     </script>
     <script type="text/javascript" src="/esup-filemanager/js/jquery.jDiaporama.js">
     </script>
+    <script type="text/javascript" src="/esup-filemanager/js/base64.js">
+    </script>
     <script type="text/javascript" src="/esup-filemanager/js/fileuploader.js">
     </script>
     <script type="text/javascript" src="/esup-filemanager/js/esup-stock.js">

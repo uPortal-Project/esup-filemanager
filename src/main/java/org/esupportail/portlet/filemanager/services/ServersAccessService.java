@@ -27,20 +27,20 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import javax.annotation.Resource;
 import javax.portlet.PortletRequest;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -457,7 +457,11 @@ public class ServersAccessService implements DisposableBean {
 	public DownloadFile getZip(List<String> dirs, SharedUserPortletParameters userParameters) throws IOException {
 		File tmpFile = File.createTempFile("esup-stock-zip.", ".tmp");
 		FileOutputStream output = new FileOutputStream(tmpFile);
-		ZipOutputStream out = new ZipOutputStream(output);
+		ZipArchiveOutputStream out =new ZipArchiveOutputStream(output);
+		out.setEncoding("UTF-8");
+		out.setFallbackToUTF8(true);
+		out.setUseLanguageEncodingFlag(true);
+		out.setCreateUnicodeExtraFields(ZipArchiveOutputStream.UnicodeExtraFieldPolicy.ALWAYS);
 		for(String dir: dirs) {
 			this.addChildrensTozip(out, dir, "", userParameters);
 		}
@@ -473,13 +477,7 @@ public class ServersAccessService implements DisposableBean {
 		return new DownloadFile(contentType, size, baseName, inputStream);
 	}
 
-	private static String unAccent(String s) {
-		String temp = Normalizer.normalize(s, Normalizer.Form.NFD);
-	    Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-	    return pattern.matcher(temp).replaceAll("");
-	}
-
-	private void addChildrensTozip(ZipOutputStream out, String dir, String folder, SharedUserPortletParameters userParameters) throws IOException {
+	private void addChildrensTozip(ZipArchiveOutputStream out, String dir, String folder, SharedUserPortletParameters userParameters) throws IOException {
 		JsTreeFile tFile = get(dir, userParameters, false, false);
 		if("file".equals(tFile.getType())) {
 			DownloadFile dFile = getFile(dir, userParameters);
@@ -490,22 +488,19 @@ public class ServersAccessService implements DisposableBean {
 				log.warn("Download file is null!  " + dir);
 				return;
 			}
-			String fileName =  unAccent(folder.concat(dFile.getBaseName()));
-
-			//With java 7, encoding should be added to support special characters in the file names
-			//http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4244499
-			out.putNextEntry(new ZipEntry(fileName));
+			String fileName =  folder.concat(dFile.getBaseName());
+			ZipArchiveEntry arEntry = new ZipArchiveEntry(fileName);
+			arEntry.setSize(dFile.getSize());
+			out.putArchiveEntry(arEntry);
 			out.write(IOUtils.toByteArray(dFile.getInputStream()));
-			out.closeEntry();
+			out.closeArchiveEntry();
 		} else {
-			folder = unAccent(folder.concat(tFile.getTitle()).concat("/"));
-			//Added for GIP Recia : This creates an empty file with the same name as the directory but it allows
-			//for zipping empty directories
-			out.putNextEntry(new ZipEntry(folder));
-			out.closeEntry();
+			String mfolder = folder.concat(tFile.getTitle()).concat("/");
+			out.putArchiveEntry(new ZipArchiveEntry(mfolder));
+			out.closeArchiveEntry();
 			List<JsTreeFile> childrens = this.getChildren(dir, userParameters);
 			for(JsTreeFile child: childrens) {
-				this.addChildrensTozip(out, child.getPath(), folder, userParameters);
+				this.addChildrensTozip(out, child.getPath(), mfolder, userParameters);
 			}
 		}
 	}
