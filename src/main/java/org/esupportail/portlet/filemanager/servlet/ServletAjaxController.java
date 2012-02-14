@@ -50,9 +50,9 @@ import org.esupportail.portlet.filemanager.beans.UploadBean;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockLostSessionException;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockPermissionDeniedException;
+import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.esupportail.portlet.filemanager.services.ResourceUtils;
 import org.esupportail.portlet.filemanager.services.ResourceUtils.Type;
-import org.esupportail.portlet.filemanager.services.ServersAccessService;
 import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,7 +79,7 @@ public class ServletAjaxController implements InitializingBean {
 	protected Logger log = Logger.getLogger(ServletAjaxController.class);
 	
 	@Autowired
-	protected ServersAccessService serverAccess;
+	protected IServersAccessService serverAccess;
 	
 	@Autowired
 	protected BasketSession basketSession;
@@ -580,6 +580,23 @@ public class ServletAjaxController implements InitializingBean {
 		
 		return pathEncodingUtils.encodeDir(parentDir);
 	}
+	
+	/**
+	 * For developpement/test in servlet only ...
+	 */
+	@RequestMapping("/logout")
+	public String logout(String dir,
+			HttpServletRequest request, HttpServletResponse response) {
+
+		try {
+			this.serverAccess.destroy();
+		} catch (Exception e) {
+			log.error("Error when trying to logout user from servers ...", e);
+		}
+
+		return "redirect:/";
+	}
+	
 	
 	
 	@ExceptionHandler(EsupStockPermissionDeniedException.class)

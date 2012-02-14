@@ -43,7 +43,7 @@ import org.esupportail.portlet.filemanager.beans.FormCommand;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
-import org.esupportail.portlet.filemanager.services.ServersAccessService;
+import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +63,7 @@ public class PortletControllerAction  implements InitializingBean {
 	protected Logger log = Logger.getLogger(PortletControllerAction.class);
 	
 	@Autowired
-	protected ServersAccessService serverAccess;
+	protected IServersAccessService serverAccess;
 	
 	@Autowired
 	protected BasketSession basketSession;

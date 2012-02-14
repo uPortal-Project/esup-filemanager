@@ -38,7 +38,7 @@ import org.apache.log4j.Logger;
 import org.esupportail.portlet.filemanager.beans.FormCommand;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
-import org.esupportail.portlet.filemanager.services.ServersAccessService;
+import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.esupportail.portlet.filemanager.services.UserAgentInspector;
 import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -71,7 +71,7 @@ public class PortletController implements InitializingBean {
 	public static final String WAI_VIEW = "wai";
 	
 	@Autowired
-	protected ServersAccessService serverAccess;
+	protected IServersAccessService serverAccess;
 	
 	@Autowired
 	protected UserAgentInspector userAgentInspector;

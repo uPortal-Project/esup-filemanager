@@ -44,25 +44,25 @@ import javax.portlet.PortletRequest;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.esupportail.commons.exceptions.EsupException;
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.DrivesCategory;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
-import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
+import org.esupportail.portlet.filemanager.crudlog.CrudLoggable;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockLostSessionException;
 import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 
 @Service("serversAccess")
-@Scope("session")
-public class ServersAccessService implements DisposableBean {
+@Scope(value="session", proxyMode=ScopedProxyMode.INTERFACES)
+public class ServersAccessService implements DisposableBean, IServersAccessService {
 
 	protected static final Log log = LogFactory.getLog(ServersAccessService.class);
 
@@ -202,7 +202,7 @@ public class ServersAccessService implements DisposableBean {
 		return drives;
 	}
 
-
+	@CrudLoggable
 	public JsTreeFile get(String dir, SharedUserPortletParameters userParameters, boolean folderDetails, boolean fileDetails) {
 		String category = getDriveCategory(dir);
 		String driveName = getDrive(dir);
@@ -231,6 +231,7 @@ public class ServersAccessService implements DisposableBean {
 		}
 	}
 
+	@CrudLoggable
 	public List<JsTreeFile> getChildren(String dir, SharedUserPortletParameters userParameters) {
 		String category = getDriveCategory(dir);
 		String driveName = getDrive(dir);
@@ -260,7 +261,7 @@ public class ServersAccessService implements DisposableBean {
 		}
 	}
 
-
+	@CrudLoggable
 	public List<JsTreeFile> getFolderChildren(String dir,
 			SharedUserPortletParameters userParameters) {
 		List<JsTreeFile> files = this.getChildren(dir, userParameters);
@@ -273,10 +274,12 @@ public class ServersAccessService implements DisposableBean {
 		return folders;
 	}
 
+	@CrudLoggable
 	public boolean remove(String dir, SharedUserPortletParameters userParameters) {
 		return this.getFsAccess(getDrive(dir), userParameters).remove(getLocalDir(dir), userParameters);
 	}
 
+	@CrudLoggable
 	public String createFile(String parentDir, String title, String type, SharedUserPortletParameters userParameters) {
 		String drive = getDrive(parentDir);
 		if(drive == null) {
@@ -286,6 +289,7 @@ public class ServersAccessService implements DisposableBean {
 		return this.getFsAccess(drive, userParameters).createFile(getLocalDir(parentDir), title, type, userParameters);
 	}
 
+	@CrudLoggable
 	public boolean renameFile(String dir, String title, SharedUserPortletParameters userParameters) {
 		String drive = getDrive(dir);
 		if(drive == null) {
@@ -314,6 +318,7 @@ public class ServersAccessService implements DisposableBean {
 		return allIsOk;
 	}
 
+	@CrudLoggable
 	public boolean moveCopyFilesIntoDirectory(String dir, List<String> filesToCopy, boolean copy, SharedUserPortletParameters userParameters) {
 		String driveName = getDrive(dir);
 		if(driveName.equals(getDrive(filesToCopy.get(0))) &&
@@ -331,11 +336,12 @@ public class ServersAccessService implements DisposableBean {
 		}
 	}
 
+	@CrudLoggable
 	public DownloadFile getFile(String dir, SharedUserPortletParameters userParameters) {
 		return this.getFsAccess(getDrive(dir), userParameters).getFile(getLocalDir(dir), userParameters);
 	}
 
-
+	@CrudLoggable
 	public boolean  putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters) {
 		return this.getFsAccess(getDrive(dir), userParameters).putFile(getLocalDir(dir), filename, inputStream, userParameters);
 	}
@@ -454,6 +460,7 @@ public class ServersAccessService implements DisposableBean {
 		return localDirs;
 	}
 
+	@CrudLoggable
 	public DownloadFile getZip(List<String> dirs, SharedUserPortletParameters userParameters) throws IOException {
 		File tmpFile = File.createTempFile("esup-stock-zip.", ".tmp");
 		FileOutputStream output = new FileOutputStream(tmpFile);
@@ -525,6 +532,7 @@ public class ServersAccessService implements DisposableBean {
 	}
 
 
+	@CrudLoggable
 	public boolean authenticate(String dir, String username, String password, SharedUserPortletParameters userParameters) {
 
 		boolean authenticateSuccess = this.getFsAccess(getDrive(dir), userParameters).authenticate(username, password, userParameters);
