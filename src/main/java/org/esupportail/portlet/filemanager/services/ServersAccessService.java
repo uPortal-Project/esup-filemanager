@@ -184,7 +184,7 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 		}
 	}
 
-	protected FsAccess getFsAccess(String driveName, SharedUserPortletParameters userParameters) {
+	public FsAccess getFsAccess(String driveName, SharedUserPortletParameters userParameters) {
 		if(this.restrictedServers.get(userParameters.getSharedSessionId()).containsKey(driveName)) {
 			return this.restrictedServers.get(userParameters.getSharedSessionId()).get(driveName);
 		}

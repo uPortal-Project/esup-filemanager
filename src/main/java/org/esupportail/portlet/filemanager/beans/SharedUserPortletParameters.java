@@ -108,7 +108,7 @@ public class SharedUserPortletParameters implements Serializable {
 
 	@Override
 	public String toString() {
-		return username;
+		return "userParameters ["+ sharedSessionId + "]";
 	}
 	
 }

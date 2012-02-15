@@ -191,7 +191,10 @@ public abstract class FsAccess {
 	}
 
 	public UserPassword getUserPassword(SharedUserPortletParameters userParameters) {
-		return this.userAuthenticatorService.getUserPassword(userParameters);
+		if(this.userAuthenticatorService != null)
+			return this.userAuthenticatorService.getUserPassword(userParameters);
+		else 
+			return null;
 	}
 
 	public boolean authenticate(String username, String password, SharedUserPortletParameters userParameters) {
