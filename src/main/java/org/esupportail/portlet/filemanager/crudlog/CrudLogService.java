@@ -30,7 +30,7 @@ public class CrudLogService {
 	protected static final Log log = LogFactory.getLog(CrudLogService.class);
 	
 	
-	@Before(value = "@annotation(trace)", argNames = "joinPoint, trace")
+	@Before(value = "@annotation(loggable)", argNames = "joinPoint, loggable")
 	public void before(JoinPoint joinPoint, CrudLoggable loggable) {
 
 		Class<? extends Object> clazz = joinPoint.getTarget().getClass();
@@ -46,9 +46,9 @@ public class CrudLogService {
 	}
 
 
-	@AfterThrowing(value = "@annotation(org.esupportail.portlet.filemanager.crudlog.CrudLoggable)",
-			throwing = "throwable", argNames = "joinPoint, throwable")
-	public void afterThrowing(JoinPoint joinPoint, Throwable throwable) {
+	@AfterThrowing(value = "@annotation(loggable)",
+			throwing = "throwable", argNames = "joinPoint, loggable, throwable")
+	public void afterThrowing(JoinPoint joinPoint, CrudLoggable loggable, Throwable throwable) {
 
 		Class<? extends Object> clazz = joinPoint.getTarget().getClass();
 		String name = joinPoint.getSignature().getName();
@@ -57,8 +57,8 @@ public class CrudLogService {
 						joinPoint.getArgs()));
 	}
 
-	@AfterReturning(value = "@annotation(trace)", returning = "returnValue",
-			argNames = "joinPoint, trace, returnValue")
+	@AfterReturning(value = "@annotation(loggable)", returning = "returnValue",
+			argNames = "joinPoint, loggable, returnValue")
 	public void afterReturning(JoinPoint joinPoint, CrudLoggable loggable,
 			Object returnValue) {
 
