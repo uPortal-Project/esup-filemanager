@@ -97,11 +97,15 @@
 									code="toolbar.delete" /> </a> </span>
 					</div>
 					
-					
-					<div>
-						<a href="/esup-filemanager/logout">Logout</a>
+					<%--
+					<div class="toolbar-logout-div"> 
+						<span class="toolbar-item"> 
+							<a id="toolbar-logout" href="/esup-filemanager/servlet-ajax/logout">
+								<spring:message	code="toolbar.logout" />
+							</a>
+						</span>
 					</div>
-					
+					 --%>
 				</div>
 
 				<div id="info-toolbar" class="fl-col-flex1">

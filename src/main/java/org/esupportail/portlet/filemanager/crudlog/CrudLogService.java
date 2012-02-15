@@ -130,9 +130,11 @@ public class CrudLogService {
 					ServersAccessService serverAccess = (ServersAccessService) target;
 					String driveName = serverAccess.getDrive(dir);
 					FsAccess fsAccess = serverAccess.getFsAccess(driveName, userParameters);
-					UserPassword userPassword = fsAccess.getUserPassword(userParameters);
-					if(userPassword != null)
-						username = userPassword.getUsername();
+					if(fsAccess != null) { 
+						UserPassword userPassword = fsAccess.getUserPassword(userParameters);
+						if(userPassword != null)
+							username = userPassword.getUsername();
+					}
 				}
 			}
 		}

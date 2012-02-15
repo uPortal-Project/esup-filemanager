@@ -589,12 +589,12 @@ public class ServletAjaxController implements InitializingBean {
 			HttpServletRequest request, HttpServletResponse response) {
 
 		try {
-			this.serverAccess.destroy();
+			request.getSession().invalidate();
 		} catch (Exception e) {
 			log.error("Error when trying to logout user from servers ...", e);
 		}
 
-		return "redirect:/";
+		return "redirect:/servlet-ajax/";
 	}
 	
 	

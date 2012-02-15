@@ -333,7 +333,21 @@ border: 0;
     background: url(/esup-filemanager/img/list_24px.png) no-repeat center top;
 }
 
+.esupstock .toolbar-logout-div {
+float: right;
+margin: 5px 15px;
+}
 
+.esupstock .toolbar-logout-div .toolbar-item {
+padding: 0;
+}
+
+.esupstock #toolbar-logout {
+    background: url(/esup-filemanager/img/disconnect.png) no-repeat;
+    padding: 0 0 0 20px;
+    color: red;
+    font-weight: bold;
+}
 
 .esupstock .toolbar-item a {
 padding: 24px 5px 0px 10px;
