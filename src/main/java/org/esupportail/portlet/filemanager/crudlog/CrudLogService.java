@@ -47,23 +47,29 @@ public class CrudLogService {
 	public void afterReturning(JoinPoint joinPoint, CrudLoggable loggable,
 			Object returnValue) {
 
-		Class<? extends Object> clazz = joinPoint.getTarget().getClass();
-		String name = joinPoint.getSignature().getName();
+		CrudLogLevel logLevel = loggable.value();
 
-		if (joinPoint.getSignature() instanceof MethodSignature) {
-			MethodSignature signature = (MethodSignature) joinPoint
-					.getSignature();
-			Class<?> returnType = signature.getReturnType();
-			if (returnType.getName().compareTo("void") == 0) {
-				this.log(clazz, null, AFTER_RETURNING_VOID,
-						name, constructArgumentsString(clazz, joinPoint.getArgs()), constructArgumentsString(clazz, returnValue));
+		if( CrudLogLevel.DEBUG.equals(logLevel) && log.isDebugEnabled() || 
+				CrudLogLevel.INFO.equals(logLevel) && log.isInfoEnabled() ) {
 
-				return;
+			Class<? extends Object> clazz = joinPoint.getTarget().getClass();
+			String name = joinPoint.getSignature().getName();
+
+			if (joinPoint.getSignature() instanceof MethodSignature) {
+				MethodSignature signature = (MethodSignature) joinPoint
+						.getSignature();
+				Class<?> returnType = signature.getReturnType();
+				if (returnType.getName().compareTo("void") == 0) {
+					this.log(logLevel, clazz, null, AFTER_RETURNING_VOID,
+							name, constructArgumentsString(clazz, joinPoint.getArgs()), constructArgumentsString(clazz, returnValue));
+
+					return;
+				}
 			}
-		}
 
-		this.log(clazz, null, AFTER_RETURNING, name, constructArgumentsString(clazz, joinPoint.getArgs()),
-				constructArgumentsString(clazz, returnValue));
+			this.log(logLevel, clazz, null, AFTER_RETURNING, name, constructArgumentsString(clazz, joinPoint.getArgs()),
+					constructArgumentsString(clazz, returnValue));
+		}
 	}
 	
 
@@ -77,11 +83,14 @@ public class CrudLogService {
 		return buffer.toString();
 	}
 	
-	private void log(Class<?> clazz,
+	private void log(CrudLogLevel logLevel, Class<?> clazz,
 			 Throwable throwable,  String pattern,
 			 Object... arguments) {	
 		String message = MessageFormat.format(pattern, arguments);		
-		log.info(message, throwable);	
+		if(CrudLogLevel.DEBUG.equals(logLevel))
+			log.debug(message, throwable);	
+		if(CrudLogLevel.INFO.equals(logLevel))
+			log.info(message, throwable);	
 	}
 	
 	private void logError(Class<?> clazz,

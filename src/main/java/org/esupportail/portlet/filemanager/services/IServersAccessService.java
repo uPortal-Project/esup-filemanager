@@ -33,41 +33,32 @@ public interface IServersAccessService {
 	public abstract void updateUserParameters(String dir,
 			SharedUserPortletParameters userParameters);
 
-	@CrudLoggable
 	public abstract JsTreeFile get(String dir,
 			SharedUserPortletParameters userParameters, boolean folderDetails,
 			boolean fileDetails);
 
-	@CrudLoggable
 	public abstract List<JsTreeFile> getChildren(String dir,
 			SharedUserPortletParameters userParameters);
 
-	@CrudLoggable
 	public abstract List<JsTreeFile> getFolderChildren(String dir,
 			SharedUserPortletParameters userParameters);
 
-	@CrudLoggable
 	public abstract boolean remove(String dir,
 			SharedUserPortletParameters userParameters);
 
-	@CrudLoggable
 	public abstract String createFile(String parentDir, String title,
 			String type, SharedUserPortletParameters userParameters);
 
-	@CrudLoggable
 	public abstract boolean renameFile(String dir, String title,
 			SharedUserPortletParameters userParameters);
 
-	@CrudLoggable
 	public abstract boolean moveCopyFilesIntoDirectory(String dir,
 			List<String> filesToCopy, boolean copy,
 			SharedUserPortletParameters userParameters);
 
-	@CrudLoggable
 	public abstract DownloadFile getFile(String dir,
 			SharedUserPortletParameters userParameters);
 
-	@CrudLoggable
 	public abstract boolean putFile(String dir, String filename,
 			InputStream inputStream, SharedUserPortletParameters userParameters);
 
@@ -83,7 +74,6 @@ public interface IServersAccessService {
 
 	public abstract String getDrive(String dir);
 
-	@CrudLoggable
 	public abstract DownloadFile getZip(List<String> dirs,
 			SharedUserPortletParameters userParameters) throws IOException;
 
@@ -93,7 +83,6 @@ public interface IServersAccessService {
 	public abstract UserPassword getUserPassword(String dir,
 			SharedUserPortletParameters userParameters);
 
-	@CrudLoggable
 	public abstract boolean authenticate(String dir, String username,
 			String password, SharedUserPortletParameters userParameters);
 
