@@ -105,5 +105,10 @@ public class SharedUserPortletParameters implements Serializable {
 	public void setShowHiddenFiles(boolean showHiddenFiles) {
 		this.showHiddenFiles = showHiddenFiles;
 	}
+
+	@Override
+	public String toString() {
+		return username;
+	}
 	
 }

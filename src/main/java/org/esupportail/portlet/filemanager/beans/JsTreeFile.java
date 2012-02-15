@@ -437,5 +437,9 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		return this.getTitle().compareToIgnoreCase(o.getTitle());
 	}
 
+	@Override
+	public String toString() {
+		return "JFile: " + getPath();
+	}
 
 }
