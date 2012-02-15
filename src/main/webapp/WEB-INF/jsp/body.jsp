@@ -96,6 +96,12 @@
 							title="<spring:message code='toolbar.delete.title'/>"> <spring:message
 									code="toolbar.delete" /> </a> </span>
 					</div>
+					
+					
+					<div>
+						<a href="/esup-filemanager/logout">Logout</a>
+					</div>
+					
 				</div>
 
 				<div id="info-toolbar" class="fl-col-flex1">

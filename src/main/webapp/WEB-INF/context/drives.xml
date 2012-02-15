@@ -140,7 +140,7 @@
   <bean class="org.esupportail.portlet.filemanager.services.vfs.VfsAccessImpl" scope="session" lazy-init="true">
     <property name="driveName" value="Stock2"/>
     <property name="icon" value="/esup-filemanager/img/drives/root.png" />
-    <property name="uri" value="sftp://stock-2.mon-univ.fr/home/@uid@/"/>
+    <property name="uri" value="sftp://stock-2.mon-univ.fr/home/@form_username@/"/>
     <property name="memberOfAny">
       <list>
 		<value>pags.mon-univ</value>
