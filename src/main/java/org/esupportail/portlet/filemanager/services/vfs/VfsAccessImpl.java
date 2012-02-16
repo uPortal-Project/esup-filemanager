@@ -46,6 +46,7 @@ import org.apache.commons.vfs.UserAuthenticator;
 import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.auth.StaticUserAuthenticator;
 import org.apache.commons.vfs.impl.DefaultFileSystemConfigBuilder;
+import org.apache.commons.vfs.provider.local.LocalFile;
 import org.apache.commons.vfs.provider.sftp.SftpFileSystemConfigBuilder;
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
@@ -175,7 +176,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 			FileObject[] children = resource.getChildren();
 			if(children != null)
 			    for(FileObject child: children)
-				if(userParameters.isShowHiddenFiles() || !child.isHidden())
+				if(userParameters.isShowHiddenFiles() || !this.isFileHidden(child))
 					files.add(resourceAsJsTreeFile(child, false, true, userParameters.isShowHiddenFiles()));
 			return files;
 		} catch(FileSystemException fse) {
@@ -197,6 +198,23 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 
 	
 	
+	private boolean isFileHidden(FileObject file) {
+		boolean isHidden = false;
+		// file.isHidden() works in current version of VFS (1.0) only for local file object :(
+		if(file instanceof LocalFile) {
+			try {
+				isHidden = file.isHidden();
+			} catch (FileSystemException e) {
+				log.warn("Error on file.isHidden() method ...", e);
+			}
+		} else {
+			// at the moment here we just check if the file begins with a dot 
+			// ... so it works just for unix files ...
+			isHidden = file.getName().getBaseName().startsWith(".");
+		}
+		return isHidden;
+	}
+
 	private JsTreeFile resourceAsJsTreeFile(FileObject resource, boolean folderDetails, boolean fileDetails, boolean showHiddenFiles) throws FileSystemException {
 		String lid = resource.getName().getPath();
 		String rootPath = this.root.getName().getPath();
@@ -214,7 +232,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		}
 		JsTreeFile file = new JsTreeFile(title, lid, type);
 
-		file.setHidden(resource.isHidden());
+		file.setHidden(this.isFileHidden(resource));
 
 		if ("file".equals(type)) {
 			String icon = resourceUtils.getIcon(title);
@@ -231,7 +249,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 					long fileCount = 0;
 					long folderCount = 0;
 					for (FileObject child : resource.getChildren()) {
-						if (showHiddenFiles || !child.isHidden()) {
+						if (showHiddenFiles || !this.isFileHidden(child)) {
 							if ("folder".equals(child.getType().getName())) {
 								++folderCount;
 							} else if ("file".equals(child.getType().getName())) {
