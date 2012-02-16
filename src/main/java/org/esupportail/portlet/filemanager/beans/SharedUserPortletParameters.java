@@ -49,8 +49,11 @@ public class SharedUserPortletParameters implements Serializable {
     
     protected boolean showHiddenFiles;
     
-	public SharedUserPortletParameters(String sharedSessionId) {
+    protected String clientIpAdress;
+    
+	public SharedUserPortletParameters(String sharedSessionId, String clientIpAdress) {
 		this.sharedSessionId = sharedSessionId;
+		this.clientIpAdress = clientIpAdress;
 	}
 
 	public List<String> getDriveNames() {
@@ -104,6 +107,10 @@ public class SharedUserPortletParameters implements Serializable {
 
 	public void setShowHiddenFiles(boolean showHiddenFiles) {
 		this.showHiddenFiles = showHiddenFiles;
+	}
+
+	public String getClientIpAdress() {
+		return clientIpAdress;
 	}
 
 	@Override

@@ -132,7 +132,7 @@ public class ServletAjaxController implements InitializingBean {
 		
 		if(!this.isPortlet && userParameters == null) {
 			log.debug("Servlet Access (no portlet mode : isPortlet property = false): init SharedUserPortletParameters");
-			userParameters = new SharedUserPortletParameters(sharedSessionId);
+			userParameters = new SharedUserPortletParameters(sharedSessionId, request.getRemoteAddr());
 			userParameters.setShowHiddenFiles(showHiddenFilesModeServlet);
 			List<String> driveNames = serverAccess.getRestrictedDrivesGroupsContext(null, null, null);
 			userParameters.setDriveNames(driveNames);

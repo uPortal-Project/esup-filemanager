@@ -1,7 +1,9 @@
 package org.esupportail.portlet.filemanager.crudlog;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -20,11 +22,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class CrudLogService {
 
-	private static String AFTER_THROWING = "{0} - {1} - params [ {2}] - exception {3}";
+	private static String AFTER_THROWING = "{0} - {1} - {2} - params [ {3}] - exception {4}";
 
-	private static String AFTER_RETURNING = "{0} - {1} - params [ {2}] - returning {3}";
+	private static String AFTER_RETURNING = "{0} - {1} - {2} - params [ {3}] - returning {4}";
 
-	private static String AFTER_RETURNING_VOID = "{0} - {1} - params [ {2}]";
+	private static String AFTER_RETURNING_VOID = "{0} - {1} - {2} - params [ {3}]";
 
 	protected static final Log log = LogFactory.getLog(CrudLogService.class);
 	
@@ -42,9 +44,13 @@ public class CrudLogService {
 
 		Class<? extends Object> clazz = joinPoint.getTarget().getClass();
 		String name = joinPoint.getSignature().getName();
-		String username = this.getUsername(joinPoint);
+		
+		Map<String, String> userInfos = this.getUserInfos(joinPoint);
+		String username = userInfos.get("username");
+		String clientIpAdress = userInfos.get("clientIpAdress");
+		
 		this.logError(clazz, throwable, AFTER_THROWING, name,
-				constructArgumentsString(clazz, name, username, joinPoint.getArgs()), throwable.getMessage());
+				constructArgumentsString(clazz, name, clientIpAdress, username, joinPoint.getArgs()), throwable.getMessage());
 	}
 
 	@AfterReturning(value = "@annotation(loggable)", returning = "returnValue",
@@ -60,7 +66,9 @@ public class CrudLogService {
 			Class<? extends Object> clazz = joinPoint.getTarget().getClass();
 			String name = joinPoint.getSignature().getName();
 			
-			String username = this.getUsername(joinPoint);
+			Map<String, String> userInfos = this.getUserInfos(joinPoint);
+			String username = userInfos.get("username");
+			String clientIpAdress = userInfos.get("clientIpAdress");
 
 			if (joinPoint.getSignature() instanceof MethodSignature) {
 				MethodSignature signature = (MethodSignature) joinPoint
@@ -68,13 +76,13 @@ public class CrudLogService {
 				Class<?> returnType = signature.getReturnType();
 				if (returnType.getName().compareTo("void") == 0) {
 					this.log(logLevel, clazz, AFTER_RETURNING_VOID,
-							name, username, constructArgumentsString(clazz, joinPoint.getArgs()), constructArgumentsString(clazz, returnValue));
+							name, clientIpAdress, username, constructArgumentsString(clazz, joinPoint.getArgs()), constructArgumentsString(clazz, returnValue));
 
 					return;
 				}
 			}
 
-			this.log(logLevel, clazz, AFTER_RETURNING, name, username, constructArgumentsString(clazz, joinPoint.getArgs()),
+			this.log(logLevel, clazz, AFTER_RETURNING, name, clientIpAdress, username, constructArgumentsString(clazz, joinPoint.getArgs()),
 					constructArgumentsString(clazz, returnValue));
 		}
 	}
@@ -107,10 +115,13 @@ public class CrudLogService {
 		log.error(message, throwable);	
 	}
 	
-	private String getUsername(JoinPoint joinPoint) {
+	private Map<String, String> getUserInfos(JoinPoint joinPoint) {
+		
 		Object[] args = joinPoint.getArgs();
 		Object target = joinPoint.getTarget();
 		String username = "undefined";
+		String clientIpAdress = "undefined";
+		
 		if(args.length > 0) {
 			String dir = null;
 			if(args[0] instanceof String)
@@ -123,8 +134,10 @@ public class CrudLogService {
 			if(dir != null) {
 				SharedUserPortletParameters userParameters = null;
 				for(Object arg: args) {
-					if(arg instanceof SharedUserPortletParameters)
+					if(arg instanceof SharedUserPortletParameters) {
 						userParameters = (SharedUserPortletParameters) arg;
+						clientIpAdress = userParameters.getClientIpAdress();
+					}
 				}
 				if(userParameters != null) {
 					ServersAccessService serverAccess = (ServersAccessService) target;
@@ -138,7 +151,12 @@ public class CrudLogService {
 				}
 			}
 		}
-		return username;
+		
+		Map<String, String> userInfos = new HashMap<String, String>();
+		userInfos.put("username", username);
+		userInfos.put("clientIpAdress", clientIpAdress);
+		
+		return userInfos;
 	}
 	
 }

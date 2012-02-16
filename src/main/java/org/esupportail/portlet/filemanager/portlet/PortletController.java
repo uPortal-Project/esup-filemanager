@@ -35,6 +35,7 @@ import javax.portlet.RenderResponse;
 
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.log4j.Logger;
+import org.esupportail.commons.services.portal.PortalUtils;
 import org.esupportail.portlet.filemanager.beans.FormCommand;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
@@ -93,7 +94,8 @@ public class PortletController implements InitializingBean {
 		userParameters = (SharedUserPortletParameters)PortletUtils.getSessionAttribute(request, sharedSessionId, PortletSession.APPLICATION_SCOPE);
 		
 		if(userParameters == null) {
-	    	userParameters = new SharedUserPortletParameters(sharedSessionId);
+			String clientIpAdress = request.getProperty("REMOTE_ADDR");
+	    	userParameters = new SharedUserPortletParameters(sharedSessionId, clientIpAdress);
 			
 	        
 	    	final PortletPreferences prefs = request.getPreferences();
