@@ -39,6 +39,7 @@ import org.esupportail.commons.services.portal.PortalUtils;
 import org.esupportail.portlet.filemanager.beans.FormCommand;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
 import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.esupportail.portlet.filemanager.services.UserAgentInspector;
 import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
@@ -56,7 +57,7 @@ import org.springframework.web.portlet.util.PortletUtils;
 
 @Controller
 @Scope("request")
-public class PortletController implements InitializingBean {
+public class PortletController {
 
 	protected Logger log = Logger.getLogger(PortletController.class);
 	
@@ -84,11 +85,7 @@ public class PortletController implements InitializingBean {
 	@Autowired
 	protected PathEncodingUtils pathEncodingUtils;
 	
-	public void afterPropertiesSet() throws Exception {		
-		
-		PortletRequestAttributes requestAttributes = (PortletRequestAttributes)RequestContextHolder.currentRequestAttributes();
-		PortletRequest request = requestAttributes.getRequest();	
-		RenderResponse response = (RenderResponse)request.getAttribute("javax.portlet.response");		
+	protected void init(RenderRequest request, RenderResponse response) {		
 		
 		sharedSessionId = response.getNamespace();
 		userParameters = (SharedUserPortletParameters)PortletUtils.getSessionAttribute(request, sharedSessionId, PortletSession.APPLICATION_SCOPE);
@@ -116,7 +113,7 @@ public class PortletController implements InitializingBean {
 		
     @RequestMapping("VIEW")
     protected ModelAndView renderView(RenderRequest request, RenderResponse response) throws Exception {
-
+    	this.init(request, response);
         final PortletPreferences prefs = request.getPreferences();
     	String defaultPortletView = prefs.getValue(PREF_PORTLET_VIEW, STANDARD_VIEW);
     	String[] prefsDefaultPathes = prefs.getValues(PREF_DEFAULT_PATH, null);
@@ -149,6 +146,7 @@ public class PortletController implements InitializingBean {
     
 	@RequestMapping(value = {"VIEW"}, params = {"action=browseStandard"})
     public ModelAndView browseStandard(RenderRequest request, RenderResponse response, String dir) {	
+    	this.init(request, response);
         final PortletPreferences prefs = request.getPreferences();
 		boolean useDoubleClick = "true".equals(prefs.getValue(PREF_USE_DOUBLE_CLICK, "true")); 
     	boolean useCursorWaitDialog = "true".equals(prefs.getValue(PREF_USE_CURSOR_WAIT_DIALOG, "false"));
@@ -166,7 +164,8 @@ public class PortletController implements InitializingBean {
 	@RequestMapping(value = {"VIEW"}, params = {"action=browseMobile"})
     public ModelAndView browseMobile(RenderRequest request, RenderResponse response,
     								@RequestParam String dir) {
-		
+    	this.init(request, response);
+    	
 		String decodedDir = pathEncodingUtils.decodeDir(dir);
 		
 		ModelMap model;
@@ -192,6 +191,7 @@ public class PortletController implements InitializingBean {
     public ModelAndView browseWai(RenderRequest request, RenderResponse response,
     								@RequestParam(required=false) String dir,
     								@RequestParam(required=false) String msg) {
+		this.init(request, response);
 		
 		String decodedDir = pathEncodingUtils.decodeDir(dir);
 		
@@ -242,12 +242,14 @@ public class PortletController implements InitializingBean {
 	
     @RequestMapping("ABOUT")
 	public ModelAndView renderAboutView(RenderRequest request, RenderResponse response) throws Exception {
+		this.init(request, response);
 		ModelMap model = new ModelMap();
 		return new ModelAndView("about-portlet", model);
 	}
     
     @RequestMapping("HELP")
 	public ModelAndView renderHelpView(RenderRequest request, RenderResponse response) throws Exception {
+		this.init(request, response);
 		ModelMap model = new ModelMap();
 		return new ModelAndView("help-portlet", model);
 	}
