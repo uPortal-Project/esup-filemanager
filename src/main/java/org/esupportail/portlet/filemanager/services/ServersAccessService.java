@@ -462,8 +462,12 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 	}
 
 	@CrudLoggable(CrudLogLevel.DEBUG)
-	public DownloadFile getZip(List<String> dirs, SharedUserPortletParameters userParameters) throws IOException {
+	public DownloadFile getZip(List<String> dirs, SharedUserPortletParameters userParameters) throws IOException {	
 		File tmpFile = File.createTempFile("esup-stock-zip.", ".tmp");
+		// we call tmpFile.deleteOnExit so that ths tmp file will be deleted when jvm stops ...
+		// see also DownloadFile.finalize
+		tmpFile.deleteOnExit();
+		
 		FileOutputStream output = new FileOutputStream(tmpFile);
 		ZipOutputStream out = new ZipOutputStream(output);
 		for(String dir: dirs) {
@@ -478,7 +482,7 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 		InputStream inputStream =  new FileInputStream(tmpFile);
 		output.close();
 
-		return new DownloadFile(contentType, size, baseName, inputStream);
+		return new DownloadFile(contentType, size, baseName, inputStream, tmpFile);
 	}
 
 	private static String unAccent(String s) {

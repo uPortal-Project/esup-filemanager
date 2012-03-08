@@ -23,12 +23,18 @@
 
 package org.esupportail.portlet.filemanager.beans;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class DownloadFile implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+	protected static final Log log = LogFactory.getLog(DownloadFile.class);
 
 	private int size;
 	
@@ -38,11 +44,29 @@ public class DownloadFile implements Serializable {
 	
 	private String baseName;
 	
+	private File tmpFile;
+	
 	public DownloadFile(String contentType, int size, String baseName, InputStream inputStream) {
 		this.contentType = contentType;
 		this.size = size;
 		this.baseName = baseName;
 		this.inputStream = inputStream;
+		this.tmpFile = null;
+	}
+	
+	/**
+	 * @param contentType
+	 * @param size
+	 * @param baseName
+	 * @param inputStream
+	 * @param tmpFile a tmp file to delete when this downloadFile is garbage collected
+	 */
+	public DownloadFile(String contentType, int size, String baseName, InputStream inputStream, File tmpFile) {
+		this.contentType = contentType;
+		this.size = size;
+		this.baseName = baseName;
+		this.inputStream = inputStream;
+		this.tmpFile = tmpFile;
 	}
 
 	public int getSize() {
@@ -77,4 +101,19 @@ public class DownloadFile implements Serializable {
 		this.inputStream = inputStream;
 	}
 
+	/* 
+	 * Even if we call tmpFile.deleteOnExit on ServerAccessService.getZip
+	 * We're trying here to delete tmpfile via garbage collector 
+	 * @see java.lang.Object#finalize()
+	 */
+	@Override
+	protected void finalize() throws Throwable {
+		super.finalize();
+		if(tmpFile != null) {
+			if(tmpFile.delete()) {
+				log.debug("tmpFile " + tmpFile + " has been deleted vi GC call to DownloadFile.finalize method");
+			}
+		}
+	}
+	
 }
