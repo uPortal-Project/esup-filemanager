@@ -44,6 +44,7 @@ import jcifs.smb.SmbFile;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.vfs.FileObject;
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
@@ -369,23 +370,38 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 	@Override
 	public boolean putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters) {
 
+		boolean success = false;
+		SmbFile newFile = null;
+		
 		try {
 			SmbFile folder = cd(dir, userParameters);
-			SmbFile newFile = new SmbFile(folder.getCanonicalPath() + filename, this.userAuthenticator);
+			newFile = new SmbFile(folder.getCanonicalPath() + filename, this.userAuthenticator);
 			newFile.createNewFile();
 
 			OutputStream outstr = newFile.getOutputStream();
 
 			FileCopyUtils.copy(inputStream, outstr);
 
-			return true;
+			success = true;
 
 		} catch (SmbException e) {
 			log.info("can't upload file : " + e.getMessage(), e);
 		} catch (IOException e) {
 			log.warn("can't upload file : " + e.getMessage(), e);
 		}
-		return false;
+		
+		if(!success && newFile != null) {
+			// problem when uploading the file -> the file uploaded is corrupted
+			// best is to delete it
+			try {
+				newFile.delete();
+				log.debug("delete corrupted file after bad upload ok ...");
+			} catch(Exception e) {
+				log.debug("can't delete corrupted file after bad upload " + e.getMessage());
+			}
+		}
+		
+		return success;
 	}
 
 	public void destroy() throws Exception {

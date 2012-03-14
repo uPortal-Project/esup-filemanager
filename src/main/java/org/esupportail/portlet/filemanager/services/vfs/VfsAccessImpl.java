@@ -382,23 +382,37 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 	@Override
 	public boolean putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters) {
 
+		boolean success = false;
+		FileObject newFile = null;
+				
 		try {
 			FileObject folder = cd(dir, userParameters);
-			FileObject newFile = folder.resolveFile(filename);
+			newFile = folder.resolveFile(filename);
 			newFile.createFile();
 
 			OutputStream outstr = newFile.getContent().getOutputStream();
 
 			FileCopyUtils.copy(inputStream, outstr);
 
-			return true;
-
+			success = true;
 		} catch (FileSystemException e) {
 			log.info("can't upload file : " + e.getMessage(), e);
 		} catch (IOException e) {
 			log.warn("can't upload file : " + e.getMessage(), e);
 		}
-		return false;
+		
+		if(!success && newFile != null) {
+			// problem when uploading the file -> the file uploaded is corrupted
+			// best is to delete it
+			try {
+				newFile.delete();
+				log.debug("delete corrupted file after bad upload ok ...");
+			} catch(Exception e) {
+				log.debug("can't delete corrupted file after bad upload " + e.getMessage());
+			}
+		}
+		
+		return success;
 	}
 
 }
