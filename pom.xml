@@ -19,10 +19,24 @@
       <id>esup-third</id>
       <url>https://mvn.esup-portail.org/content/repositories/thirdparty</url>
     </repository>
-
+    <repository>
+      <id>jlehtinen.net</id>
+      <url>http://repo.jlehtinen.net/maven2/</url>
+    </repository>
  
   </repositories>
   
+
+  <pluginRepositories>
+
+    <pluginRepository>
+      <id>jlehtinen.net</id>
+      <url>http://repo.jlehtinen.net/maven2/</url>
+    </pluginRepository>
+
+  </pluginRepositories>
+
+
 
   <dependencies>
 
@@ -346,6 +360,37 @@
 	  </includes>
 	</configuration>
       </plugin>
+
+
+              <plugin>
+            <groupId>net.jlehtinen.portlet</groupId>
+            <artifactId>portlet-prototyping-maven-plugin</artifactId>
+            <version>0.6</version>
+            <configuration>
+
+                <!-- Comma-separated list of portlets to be prototyped -->
+                <portletNames>esup-filemanager</portletNames>
+
+                <!-- To use custom CSS in the portal -->
+                <!--                                                                                                                                        
+                <cssUrls>                                                                                                                                   
+                  <url>http://my.server/custom.css</url>                                                                                                    
+                  <url>http://my.server/another.css</url>                                                                                                   
+                </cssUrls>                                                                                                                                  
+                -->
+
+                <!-- To use custom Javascript in the portal -->
+		<!--                                                                                                                                        
+                <jsUrls>                                                                                                                                    
+                  <url>http://my.server/custom.js</url>                                                                                                     
+                  <url>http://my.server/another.js</url>                                                                                                    
+                </jsUrls>                                                                                                                                   
+                -->
+
+            </configuration>
+	      
+	 </plugin>
+
     </plugins>
   </build>
 
