@@ -69,9 +69,9 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 
 	protected Map<String, FsAccess> servers = new HashMap<String, FsAccess>();
 
-	protected Map<String, Map<String, FsAccess>> restrictedServers = new HashMap<String,  Map<String, FsAccess>>();
+	protected Map<String, FsAccess> restrictedServers = new HashMap<String, FsAccess>();
 
-	protected Map<String, Boolean> isInitializedMap = new HashMap<String, Boolean>();
+	protected boolean isInitialized = false;
 
 	@Autowired
 	public void setServers(List<FsAccess> servers) {
@@ -144,28 +144,23 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 
 	public void initializeServices(SharedUserPortletParameters userParameters) {
 
-		this.restrictedServers.put(userParameters.getSharedSessionId(), new HashMap<String, FsAccess>());
-		Map<String, FsAccess> rServers = this.restrictedServers.get(userParameters.getSharedSessionId());
+		Map<String, FsAccess> rServers = this.restrictedServers;
 
 		if(userParameters.getDriveNames() != null) {
 			for(String driveName : userParameters.getDriveNames()) {
 				rServers.put(driveName, this.servers.get(driveName));
 			}
 		}
-		isInitializedMap.put(userParameters.getSharedSessionId(), true);
+		isInitialized = true;
 	}
 
 	public boolean isInitialized(SharedUserPortletParameters userParameters) {
-		if(isInitializedMap.containsKey(userParameters.getSharedSessionId()))
-			return isInitializedMap.get(userParameters.getSharedSessionId());
-		return false;
+		return isInitialized;
 	}
 
 	public void destroy() throws Exception {
-		for(Map<String, FsAccess> rServers : this.restrictedServers.values()) {
-			for(FsAccess server: rServers.values()) {
-				server.close();
-			}
+		for(FsAccess server: this.restrictedServers.values()) {
+			server.close();
 		}
 	}
 
@@ -185,8 +180,8 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 	}
 
 	public FsAccess getFsAccess(String driveName, SharedUserPortletParameters userParameters) {
-		if(this.restrictedServers.get(userParameters.getSharedSessionId()).containsKey(driveName)) {
-			return this.restrictedServers.get(userParameters.getSharedSessionId()).get(driveName);
+		if(this.restrictedServers.containsKey(driveName)) {
+			return this.restrictedServers.get(driveName);
 		}
 		else {
 			log.error("pb : restrictedServers does not contain this required drive ?? : " + driveName);
@@ -198,8 +193,8 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 	protected List<FsAccess> getCategoryFsAccess(DrivesCategory dCategory, SharedUserPortletParameters userParameters) {
 		List<FsAccess> drives = new ArrayList<FsAccess>();
 		for(String driveName: dCategory.getDrives())
-			if(this.restrictedServers.get(userParameters.getSharedSessionId()).containsKey(driveName))
-				drives.add(this.restrictedServers.get(userParameters.getSharedSessionId()).get(driveName));
+			if(this.restrictedServers.containsKey(driveName))
+				drives.add(this.restrictedServers.get(driveName));
 		return drives;
 	}
 
@@ -553,7 +548,7 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 
 	public String getFirstAvailablePath(SharedUserPortletParameters userParameters, String[] prefsDefaultPathes) {
 		String defaultPath = JsTreeFile.ROOT_DRIVE;
-		Map<String, FsAccess> rServers = this.restrictedServers.get(userParameters.getSharedSessionId());
+		Map<String, FsAccess> rServers = this.restrictedServers;
 		for(String prefDefaultPath: prefsDefaultPathes) {
 			String drive = getDrive(prefDefaultPath);
 			if(rServers.get(drive) != null) {

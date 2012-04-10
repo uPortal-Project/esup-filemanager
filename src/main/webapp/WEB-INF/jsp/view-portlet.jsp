@@ -25,7 +25,7 @@
 
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix='portlet' uri="http://java.sun.com/portlet"%>
+<%@ taglib prefix='portlet' uri="http://java.sun.com/portlet_2_0"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <portlet:defineObjects />
@@ -46,6 +46,8 @@
     <link rel="stylesheet" href="/esup-filemanager/css/jquery.diaporama.css" type="text/css"  media="screen, projection">
     <link type="text/css" href="/esup-filemanager/css/jplayer.blue.monday.css" rel="stylesheet" />
 
+    <portlet:resourceURL id="htmlFileTree" var="htmlFileTreeURL" />
+
     <script type="text/javascript">
       var fileuploadTemplate = '<spring:message code="fileupload.template"/>';
       var fileTemplate = '<spring:message code="fileupload.fileTemplate"/>';
@@ -53,6 +55,8 @@
       var useDoubleClick = '${useDoubleClick}';
       var useCursorWaitDialog = '${useCursorWaitDialog}';
       var defaultPath = '${defaultPath}';
+      
+      var htmlFileTreeURL = '${htmlFileTreeURL}';
     </script>
 
     <script type="text/javascript" src="/esup-filemanager/js/jquery-1.4.2.min.js">

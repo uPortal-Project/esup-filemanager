@@ -31,8 +31,6 @@ import java.util.List;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -52,13 +50,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.portlet.ModelAndView;
-import org.springframework.web.portlet.context.PortletRequestAttributes;
 
 @Controller
 @Scope("request")
-public class PortletControllerAction  implements InitializingBean {
+public class PortletControllerAction {
 
 	protected Logger log = Logger.getLogger(PortletControllerAction.class);
 	
@@ -71,17 +67,9 @@ public class PortletControllerAction  implements InitializingBean {
 	@Autowired
 	protected PathEncodingUtils pathEncodingUtils;
 	
+	@Autowired
 	protected SharedUserPortletParameters userParameters;
-		
-	
-	public void afterPropertiesSet() throws Exception {		
-		PortletRequestAttributes requestAttributes = (PortletRequestAttributes)RequestContextHolder.currentRequestAttributes();
-		PortletRequest request = requestAttributes.getRequest();
-		PortletSession session = request.getPortletSession();
 
-		String sharedSessionId = (String)request.getParameter("sharedSessionId");
-		userParameters = (SharedUserPortletParameters) session.getAttribute(sharedSessionId, PortletSession.APPLICATION_SCOPE);
-	}
 	
 	@RequestMapping(value = { "VIEW" }, params = { "action=formProcessWai" })
 	public void formProcessWai(FormCommand command, @RequestParam String dir, @RequestParam String sharedSessionId,

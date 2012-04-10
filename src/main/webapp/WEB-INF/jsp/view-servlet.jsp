@@ -55,6 +55,8 @@
       var useDoubleClick = '${useDoubleClick}';
       var useCursorWaitDialog = '${useCursorWaitDialog}';
       var defaultPath = '${defaultPath}';
+      
+      var htmlFileTreeURL = '/esup-filemanager/servlet-ajax/htmlFileTree';
     </script>
 
     <script type="text/javascript" src="/esup-filemanager/js/jquery-1.4.2.min.js">

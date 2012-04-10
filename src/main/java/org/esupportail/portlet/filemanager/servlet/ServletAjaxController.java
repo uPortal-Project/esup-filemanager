@@ -74,7 +74,7 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 @Controller
 @Scope("request")
 @Lazy(true)
-public class ServletAjaxController implements InitializingBean {
+public class ServletAjaxController {
 
 	protected Logger log = Logger.getLogger(ServletAjaxController.class);
 	
@@ -118,45 +118,11 @@ public class ServletAjaxController implements InitializingBean {
 
 	protected Locale locale;
 	
-	public void afterPropertiesSet() throws Exception {
-
-		request.setCharacterEncoding("UTF-8");
-		
-		locale = RequestContextUtils.getLocale(request);
-		
-		HttpSession session = request.getSession();
-		
-		String sharedSessionId = request.getParameter("sharedSessionId");
-		if(sharedSessionId != null)
-			userParameters = (SharedUserPortletParameters)session.getAttribute(sharedSessionId);
-		
-		if(!this.isPortlet && userParameters == null) {
-			log.debug("Servlet Access (no portlet mode : isPortlet property = false): init SharedUserPortletParameters");
-			userParameters = new SharedUserPortletParameters(sharedSessionId, request.getRemoteAddr());
-			userParameters.setShowHiddenFiles(showHiddenFilesModeServlet);
-			List<String> driveNames = serverAccess.getRestrictedDrivesGroupsContext(null, null, null);
-			userParameters.setDriveNames(driveNames);
-			session.setAttribute(sharedSessionId, userParameters);
-		} else if(userParameters == null) {
-			String message = "When isPortlet = true you can't use esup-filemanager with mode servlet " +
-			"without use it first in portlet mode (for security reasons).\n" +
-			"But if you're in portlet mode and you get this Exception, " +
-			"that sounds like a bug because userParameters is not retrieved from portlet in the servlet-ajax !";
-			log.error(message);
-			throw new EsupStockException(message);
-		}
-		
-		if(userParameters != null && !serverAccess.isInitialized(userParameters)) {
-			serverAccess.initializeServices(this.userParameters);
-		}
-	}
-	
 	
 	@RequestMapping("/")
     public ModelAndView renderView() {
 		ModelMap model = new ModelMap();
 		model.put("command", new UploadBean());
-		model.put("sharedSessionId", userParameters.getSharedSessionId());
 		model.put("useDoubleClick", useDoubleClick);
 		model.put("useCursorWaitDialog", useCursorWaitDialog);
 		String defaultPath = pathEncodingUtils.encodeDir(JsTreeFile.ROOT_DRIVE);
@@ -182,7 +148,6 @@ public class ServletAjaxController implements InitializingBean {
 		ModelMap model = new ModelMap();
 		if(this.serverAccess.formAuthenticationRequired(dir, userParameters)) {
 			model = new ModelMap("currentDir", pathEncodingUtils.encodeDir(dir));
-			model.put("sharedSessionId", userParameters.getSharedSessionId());
 			model.put("username", this.serverAccess.getUserPassword(dir, userParameters).getUsername());
 			model.put("password", this.serverAccess.getUserPassword(dir, userParameters).getPassword());
 			return new ModelAndView("authenticationForm", model);
@@ -206,7 +171,6 @@ public class ServletAjaxController implements InitializingBean {
 			model.put("errorText", context.getMessage("ajax.browserArea.failed", null, locale) + "<br/><i>" + ex.getMessage() + "</i>");
 			return new ModelAndView("ajax_error", model);
 		}
-		model.put("sharedSessionId", userParameters.getSharedSessionId());
 		FormCommand command = new FormCommand();
 	    model.put("command", command);
 	    

@@ -35,24 +35,19 @@ import javax.portlet.RenderResponse;
 
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.log4j.Logger;
-import org.esupportail.commons.services.portal.PortalUtils;
 import org.esupportail.portlet.filemanager.beans.FormCommand;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
-import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
 import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.esupportail.portlet.filemanager.services.UserAgentInspector;
 import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.portlet.ModelAndView;
-import org.springframework.web.portlet.context.PortletRequestAttributes;
 import org.springframework.web.portlet.util.PortletUtils;
 
 @Controller
@@ -78,22 +73,17 @@ public class PortletController {
 	@Autowired
 	protected UserAgentInspector userAgentInspector;
 	
+	@Autowired
 	protected SharedUserPortletParameters userParameters;
-	
-	protected String sharedSessionId;
-	
+
 	@Autowired
 	protected PathEncodingUtils pathEncodingUtils;
 	
 	protected void init(RenderRequest request, RenderResponse response) {		
-		
-		sharedSessionId = response.getNamespace();
-		userParameters = (SharedUserPortletParameters)PortletUtils.getSessionAttribute(request, sharedSessionId, PortletSession.APPLICATION_SCOPE);
-		
-		if(userParameters == null) {
-			String clientIpAdress = request.getProperty("REMOTE_ADDR");
-	    	userParameters = new SharedUserPortletParameters(sharedSessionId, clientIpAdress);
 			
+		if(!userParameters.isInitialized()) {
+			String clientIpAdress = request.getProperty("REMOTE_ADDR");
+	    	userParameters.init(clientIpAdress);			
 	        
 	    	final PortletPreferences prefs = request.getPreferences();
 	    	String contextToken = prefs.getValue(PREF_ESUPSTOCK_CONTEXTTOKEN, null);
@@ -104,9 +94,7 @@ public class PortletController {
 			List<String> driveNames = serverAccess.getRestrictedDrivesGroupsContext(request, contextToken, userInfos);
 			userParameters.setDriveNames(driveNames);
 						
-	   		log.info("set SharedUserPortletParameters in application session");
-	   		
-	   		PortletUtils.setSessionAttribute(request, sharedSessionId, userParameters, PortletSession.APPLICATION_SCOPE);
+	   		log.info("set SharedUserPortletParameters in application session");   		
 		}
 
 	}
@@ -152,7 +140,6 @@ public class PortletController {
     	boolean useCursorWaitDialog = "true".equals(prefs.getValue(PREF_USE_CURSOR_WAIT_DIALOG, "false"));
     	
 		ModelMap model = new ModelMap();     
-    	model.put("sharedSessionId", sharedSessionId);
 		model.put("useDoubleClick", useDoubleClick);
 		model.put("useCursorWaitDialog", useCursorWaitDialog);
 		if(dir == null)
@@ -178,12 +165,10 @@ public class PortletController {
 				model.put("parentDir", parentDir);
 				model.put("username", this.serverAccess.getUserPassword(decodedDir, userParameters).getUsername());
 				model.put("password", this.serverAccess.getUserPassword(decodedDir, userParameters).getPassword());
-				model.put("sharedSessionId", sharedSessionId);
 				return new ModelAndView("authenticationForm-portlet-mobile", model);
 			}
 		}
 		model = browse(dir);
-		model.put("sharedSessionId", sharedSessionId);
         return new ModelAndView("view-portlet-mobile", model);
     }
 	
@@ -210,7 +195,6 @@ public class PortletController {
 				model.put("password", this.serverAccess.getUserPassword(decodedDir, userParameters).getPassword());
 				if(msg != null) 
 					model.put("msg",msg);
-				model.put("sharedSessionId", sharedSessionId);
 				return new ModelAndView("authenticationForm-portlet-wai", model);
 			}
 		}
@@ -220,7 +204,6 @@ public class PortletController {
 	    model.put("command", command);
 	    if(msg != null)
 	    	model.put("msg", msg);
-	    model.put("sharedSessionId", sharedSessionId);
         return new ModelAndView("view-portlet-wai", model);
     }
 

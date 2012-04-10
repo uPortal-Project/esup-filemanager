@@ -28,14 +28,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
 import edu.yale.its.tp.cas.client.CASReceipt;
 
+@Service("userParameters")
+@Scope("session")
 public class SharedUserPortletParameters implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
-	// use it as id
-	protected String sharedSessionId;
 		
     protected List<String> driveNames;
     
@@ -51,8 +53,14 @@ public class SharedUserPortletParameters implements Serializable {
     
     protected String clientIpAdress;
     
-	public SharedUserPortletParameters(String sharedSessionId, String clientIpAdress) {
-		this.sharedSessionId = sharedSessionId;
+	public SharedUserPortletParameters() {
+	}
+	
+	public boolean isInitialized() {
+		return this.clientIpAdress != null;
+	}
+	
+	public void init(String clientIpAdress) {
 		this.clientIpAdress = clientIpAdress;
 	}
 
@@ -97,10 +105,6 @@ public class SharedUserPortletParameters implements Serializable {
 		this.userPassword4AuthenticatedFormDrives = userPassword4AuthenticatedFormDrives;
 	}
 
-	public String getSharedSessionId() {
-		return sharedSessionId;
-	}
-
 	public boolean isShowHiddenFiles() {
 		return showHiddenFiles;
 	}
@@ -111,11 +115,6 @@ public class SharedUserPortletParameters implements Serializable {
 
 	public String getClientIpAdress() {
 		return clientIpAdress;
-	}
-
-	@Override
-	public String toString() {
-		return "userParameters ["+ sharedSessionId + "]";
 	}
 	
 }

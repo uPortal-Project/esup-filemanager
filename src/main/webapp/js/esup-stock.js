@@ -973,10 +973,9 @@ function handleLeftTreeSelection(treeNode) {
     $.ajax({
         async: true,
         type: 'POST',
-        url: '/esup-filemanager/servlet-ajax/htmlFileTree',
+        url: htmlFileTreeURL,
         data: {
-            "dir": path,
-            "sharedSessionId": sharedSessionId
+            "dir": path        
         },
         success: function (r) {
             console.log("handleLeftTreeSelection: htmlFileTree ajax call succeeded");
