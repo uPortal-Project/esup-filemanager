@@ -63,29 +63,6 @@
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
- 
-    
-    <!-- Enforce UTF-8 Character Encoding -->
-    <filter>
-        <filter-name>charEncodingFilter</filter-name>
-        <filter-class>
-            org.springframework.web.filter.CharacterEncodingFilter
-        </filter-class>
-        <init-param>
-            <param-name>encoding</param-name>
-            <param-value>UTF-8</param-value>
-        </init-param>
-        <init-param>
-            <param-name>forceEncoding</param-name>
-            <param-value>true</param-value>
-        </init-param>
-    </filter>
-
-    <filter-mapping>
-        <filter-name>charEncodingFilter</filter-name>
-        <url-pattern>/servlet-ajax/*</url-pattern>
-    </filter-mapping>
-
     
     
     <!-- 
@@ -95,12 +72,6 @@
         <servlet-name>ViewRendererServlet</servlet-name>
         <servlet-class>org.springframework.web.servlet.ViewRendererServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
-    </servlet>
-    
-    <servlet>
-        <servlet-name>spring</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-        <load-on-startup>2</load-on-startup>
     </servlet>
 
 	<!-- CAS -->
@@ -121,11 +92,7 @@
         <url-pattern>/WEB-INF/servlet/view</url-pattern>
     </servlet-mapping>
  
-    <servlet-mapping>
-        <servlet-name>spring</servlet-name>
-        <url-pattern>/servlet-ajax/*</url-pattern>
-    </servlet-mapping>
-    
+
     <servlet-mapping>
         <servlet-name>CasProxyCallback</servlet-name>
         <url-pattern>/CasProxyServlet</url-pattern>

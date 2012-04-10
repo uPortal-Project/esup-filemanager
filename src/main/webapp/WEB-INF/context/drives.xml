@@ -29,9 +29,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 			   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
-  
-  <!-- isPortlet must be True if you deploy esup-filemanager in Portal like uPortal/EsupPortail -->
-  <util:constant id="isPortlet" static-field="java.lang.Boolean.FALSE"/>
+
 
   <!-- drivesCategories lets you organize the tree of your drives .
        On the root you can have categories and on each categories you can have drives.

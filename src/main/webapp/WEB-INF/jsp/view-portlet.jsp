@@ -83,13 +83,4 @@
     <script type="text/javascript" src="/esup-filemanager/js/esup-stock.js">
     </script>
 
-
-<%-- 
-<div id="accessible-version">
-  <a href="<portlet:renderURL> <portlet:param name="action" value="browseWai"/></portlet:renderURL>">
-      <spring:message code="version.accessible"/>
-  </a>
-</div>
---%>
-
     <jsp:include page="body.jsp" />
