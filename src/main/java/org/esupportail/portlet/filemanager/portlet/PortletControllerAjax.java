@@ -343,7 +343,7 @@ public class PortletControllerAjax {
 	 * it is used also in portlet mode mobile and wai
 	 */
 	@ResourceMapping("downloadFile")
-    public void downloadFile(String dir, 
+    public void downloadFile(@RequestParam String dir, 
     								 ResourceRequest request, ResourceResponse response) throws IOException {
 		dir = pathEncodingUtils.decodeDir(dir);
 		this.serverAccess.updateUserParameters(dir, userParameters);

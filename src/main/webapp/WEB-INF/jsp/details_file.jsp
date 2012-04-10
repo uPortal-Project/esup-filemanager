@@ -26,8 +26,11 @@
 
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
+<portlet:resourceURL id="downloadFile" var="downloadFileURL" />
 
 <h3 class="ui-widget-header ui-corner-all"><spring:message code="details.header"/></h3>
 
@@ -49,12 +52,9 @@
 </c:if>
 <div class="details-spacer"></div>
 <form:form method="post" id="detailsFileForm"
-  action="/esup-filemanager/servlet-ajax/downloadFile">
-
-  <input name="sharedSessionId" type="hidden" value="${sharedSessionId}" />
+  action="${downloadFileURL}">
 
   <input name="dir" type="hidden" value="${file.encPath}" />
-
 
   <div id="detail-download">
       <spring:message code="details.download" />

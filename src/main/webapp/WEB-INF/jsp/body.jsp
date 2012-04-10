@@ -97,21 +97,11 @@
 									code="toolbar.delete" /> </a> </span>
 					</div>
 					
-					<%--
-					<div class="toolbar-logout-div"> 
-						<span class="toolbar-item"> 
-							<a id="toolbar-logout" href="/esup-filemanager/servlet-ajax/logout">
-								<spring:message	code="toolbar.logout" />
-							</a>
-						</span>
-					</div>
-					 --%>
 				</div>
 
 				<div id="info-toolbar" class="fl-col-flex1">
 					<span>...</span>
 				</div>
-				<!--  GIP RECIA add id="resizable" and the css class ui-widget-content-->
 
 				<div class="fl-col-flex2">
 
@@ -138,7 +128,7 @@
 
 		</div>
 
-		<!--  GIP RECIA : The context menu of the browser area ; this isn't the toolbar -->
+		<!--  The context menu of the browser area ; this isn't the toolbar -->
 		<ul id="myMenu" class="contextMenu">
 			<li class="download"><a href="#download"> <spring:message
 						code="browserarea.menu.download" /> </a></li>

@@ -87,6 +87,7 @@ public class PortletControllerAction {
 		String msg = null;
 
 		if (zip != null) {
+			/*
 			String url = "/esup-filemanager/servlet-ajax/downloadZip?";
 			for(String commandDir: pathEncodingUtils.decodeDirs(command.getDirs())) {
 				url = url + "dirs=" + URLEncoder.encode(pathEncodingUtils.encodeDir(commandDir), "utf8") + "&";
@@ -94,6 +95,8 @@ public class PortletControllerAction {
 			}
 			url = url.substring(0, url.length()-1);
 			response.sendRedirect(url);
+			*/
+			log.warn("TODO !");
 			
 		} else  if (rename != null) {
 			response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));

@@ -25,8 +25,8 @@
 
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix='portlet' uri="http://java.sun.com/portlet" %>
 
 <portlet:defineObjects />
 
@@ -77,7 +77,10 @@
           <c:choose>
             <c:when test="${'file' == file.type}">
               <img src="${file.icon}" alt="icon" />
-              <a class="file" href="/esup-filemanager/servlet-ajax/downloadFile?dir=${file.encPath}&sharedSessionId=${sharedSessionId}">
+              <portlet:resourceURL id="downloadFile" var="downloadFileURL">
+				 <portlet:param name="dir" value="${file.encPath}"/>
+			  </portlet:resourceURL>
+              <a class="file" href="${downloadFileURL}">
                 ${file.title}
               </a>
             </c:when>

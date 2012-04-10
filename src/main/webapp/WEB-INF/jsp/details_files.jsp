@@ -25,6 +25,7 @@
 
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
@@ -49,9 +50,12 @@
 
     <div id="diaporamaSource" style="display:none" >
 	    <ul class="diaporama1">
-	        <c:forEach var="path" items="${image_paths}">
+	        <c:forEach var="path" items="${image_paths}">        	
+				<portlet:resourceURL id="fetchImage" var="fetchImageURL">
+					<portlet:param name="dir" value="${path}"/>
+				</portlet:resourceURL>
 	            <li><img
-	                src="/esup-filemanager/servlet-ajax/fetchImage?path=${path}&sharedSessionId=${sharedSessionId}"
+	                src="${fetchImageURL}"
 	                alt="Image" title="${path}" />
 	            </li>
 	        </c:forEach>

@@ -26,16 +26,22 @@
 
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
+<portlet:resourceURL id="fetchImage" var="fetchImageURL">
+	<portlet:param name="dir" value="${file.encPath}"/>
+</portlet:resourceURL>
 
+<portlet:resourceURL id="downloadFile" var="downloadFileURL" />
+				
   <h3 class="ui-widget-header ui-corner-all">
     <spring:message code="details.header" />
   </h3>
 
 
   <img
-    src="/esup-filemanager/servlet-ajax/fetchImage?path=${file.encPath}&sharedSessionId=${sharedSessionId}"
+    src="${fetchImageURL}"
     class="detailsImage"
     alt="image" />
 
@@ -191,7 +197,7 @@
 		  });
 
 		  $('#detail-download').bind('click', function () {
-		    $("#detailsFileForm").attr("action", '/esup-filemanager/servlet-ajax/downloadFile');
+		    $("#detailsFileForm").attr("action", '${downloadFileURL}');
 		    $("#detailsFileForm").submit();
 		    return true;
 		  });

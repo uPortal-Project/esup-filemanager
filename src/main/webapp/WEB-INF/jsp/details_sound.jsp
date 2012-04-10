@@ -26,6 +26,7 @@
 
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
@@ -105,6 +106,11 @@
     </form:form>
 
 
+<portlet:resourceURL id="fetchSound" var="fetchSoundURL">
+	<portlet:param name="path" value="${file.encPath}"/>
+</portlet:resourceURL>
+
+<portlet:resourceURL id="downloadFile" var="downloadFileURL" />
 
 
 <script type="text/javascript">
@@ -122,7 +128,7 @@ $(document).ready(function () {
           ready: function () {
               console.log("ready js player div");
             $(this).jPlayer("setMedia", {
-              mp3: "/esup-filemanager/servlet-ajax/fetchSound?path=${file.encPath}&sharedSessionId=${sharedSessionId}"
+              mp3: "${fetchSoundURL}"
             });
           },
           swfPath: "/esup-filemanager/js",
@@ -137,7 +143,7 @@ $(document).ready(function () {
     $('#detail-download').bind('click', function () {
 
 
-        $("#detailsFileForm").attr("action", '/esup-filemanager/servlet-ajax/downloadFile');
+        $("#detailsFileForm").attr("action", '${downloadFileURL}');
 
         //Set the sharedSessionId in the hiddeninputfield
         $("#detailsFileForm.sharedSessionId").val(sharedSessionId);
