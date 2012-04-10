@@ -131,7 +131,7 @@ $.ajaxSetup({
             template: fileuploadTemplate,
             fileTemplate: fileTemplate,
             element: document.getElementById('file-uploader'),
-            action: '/esup-filemanager/servlet-ajax/uploadFile',
+            action: uploadFileURL,
             onSubmit: function (id, fileName) {
                 uploader.setParams({
                     dir: $("#bigdirectory").attr("rel"),
@@ -347,7 +347,7 @@ function doCutCopyPaste(isCopy, sourcePath, targetPath) {
 
     console.log("doCutCopyPaste");
 
-    var prepareFilesUrl = '/esup-filemanager/servlet-ajax/' + (isCopy ? 'prepareCopyFiles' : 'prepareCutFiles');
+    var prepareFilesUrl = (isCopy ? prepareCopyFilesURL : prepareCutFilesURL);
 
     $.post(prepareFilesUrl, "dirs=" + encodeURIComponent(sourcePath) + "&sharedSessionId=" + sharedSessionId, function (data) {
       console.log("prepareCopyFiles Ajax call completed.  Starting paste operation");
@@ -361,7 +361,7 @@ function doCutCopyPaste(isCopy, sourcePath, targetPath) {
 
 function doCutOrCopy(isCopy) {
 
-  var prepareFilesUrl = '/esup-filemanager/servlet-ajax/' + (isCopy ? 'prepareCopyFiles' : 'prepareCutFiles');
+  var prepareFilesUrl = (isCopy ? prepareCopyFilesURL : prepareCutFilesURL);
 
   cursor_wait();
     var dirs = getCheckedDirs();
@@ -443,7 +443,7 @@ function pasteToPath(path) {
   console.log("Entering pasteToPath.  Path: " + path);
     cursor_wait();
 
-    var pastFilesUrl = '/esup-filemanager/servlet-ajax/pastFiles';
+    var pastFilesUrl = pastFilesURL;
     $.ajax({
       url: pastFilesUrl,
       data: "dir=" + encodeURIComponent(path) + "&sharedSessionId=" + sharedSessionId,
@@ -525,7 +525,7 @@ function initJstree() {
             // All the options are the same as jQuery's except for `data` which CAN (not should) be a function
             "ajax": {
                 // the URL to fetch the data
-                "url": '/esup-filemanager/servlet-ajax/fileChildren',
+                "url": fileChildrenURL,
                 "type": 'POST',
                 // this function is executed in the instance's scope (this refers to the tree instance)
                 // the parameter is the node being loaded (may be -1, 0, or undefined when loading the root nodes)
@@ -822,7 +822,7 @@ function getParentPath(path) {
     $.ajax({
         async: false,
         type: 'POST',
-        url: '/esup-filemanager/servlet-ajax/getParentPath',
+        url: getParentPathURL,
         data:  {
             "dir": path,
             "sharedSessionId": sharedSessionId
@@ -1040,7 +1040,7 @@ function updateDetailsArea(dataObj) {
     $.ajax({
         async: true,
         type: 'POST',
-        url: '/esup-filemanager/servlet-ajax/detailsArea',
+        url: detailsAreaURL,
         data: dataObj,
         success: function (response) {
             $("#detailArea").html(response);
@@ -1243,7 +1243,7 @@ function newFileOrFolder(parentDir, name, fileOrFolder) {
     $.ajax({
         async: true,
         type: 'POST',
-        url: '/esup-filemanager/servlet-ajax/createFile',
+        url: createFileURL,
         data: {
             "parentDir": parentDir,
             "title": name,
@@ -1318,7 +1318,7 @@ function handleThumbnailMode() {
     $.ajax({
         async: true,
         type: 'POST',
-        url: '/esup-filemanager/servlet-ajax/toggleThumbnailMode',
+        url: toggleThumbnailModeURL,
         data: {
             "sharedSessionId" : sharedSessionId,
             "thumbnailMode" : thumbnailMode
@@ -1375,7 +1375,7 @@ function rename(parentDir, dir, title) {
     $.ajax({
         async: true,
         type: 'POST',
-        url: '/esup-filemanager/servlet-ajax/renameFile',
+        url: renameFileURL,
         data: {
             "parentDir": parentDir,
             "dir": dir,
@@ -1405,7 +1405,7 @@ function downloadFile(fileName) {
 
     console.log("downloadFile. Path: " + fileName);
 
-    var url = '/esup-filemanager/servlet-ajax/downloadFile?dir=' + encodeURIComponent(fileName) + '&sharedSessionId=' + sharedSessionId;
+    var url = downloadFileURL + '?dir=' + encodeURIComponent(fileName) + '&sharedSessionId=' + sharedSessionId;
 
     console.log(url);
     //window.open(url);
@@ -1416,7 +1416,7 @@ function downloadZip() {
     console.log("downloadZip");
     var dirs = getCheckedDirs();
     if (dirs.length > 0) {
-        var downloadZipUrl = '/esup-filemanager/servlet-ajax/downloadZip';
+        var downloadZipUrl = downloadZipURL;
         $("#filesForm").attr("action", downloadZipUrl);
         $("#filesForm").submit();
     }
@@ -1443,7 +1443,7 @@ function deleteFiles(dirsDataStruct) {
         $(this).dialog("close");
         console.log("deleteFiles : " + stringifyJSON(dirsDataStruct));
         cursor_wait();
-        var removeFilesUrl = '/esup-filemanager/servlet-ajax/removeFiles';
+        var removeFilesUrl = removeFilesURL;
         $.post(removeFilesUrl, dirsDataStruct, function (data) {
             cursor_clear();
             if (data.status) {
@@ -2107,7 +2107,7 @@ function authenticate(dir, username, password) {
     $.ajax({
         async: true,
         type: 'POST',
-        url: '/esup-filemanager/servlet-ajax/authenticate',
+        url: authenticateURL,
         data: {
             "dir": dir,
             "username": username,

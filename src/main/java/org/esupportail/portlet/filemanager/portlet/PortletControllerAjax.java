@@ -45,7 +45,6 @@ import org.esupportail.portlet.filemanager.beans.FileUpload;
 import org.esupportail.portlet.filemanager.beans.FormCommand;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
-import org.esupportail.portlet.filemanager.exceptions.EsupStockLostSessionException;
 import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.esupportail.portlet.filemanager.services.ResourceUtils;
 import org.esupportail.portlet.filemanager.services.ResourceUtils.Type;
@@ -60,9 +59,9 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
+import org.springframework.web.servlet.view.json.MappingJacksonJsonView;
 
 @Controller
 @Scope("request")
@@ -104,6 +103,20 @@ public class PortletControllerAjax {
 	protected SharedUserPortletParameters userParameters;
 
 	
+	/**
+	 * @See https://jira.springsource.org/browse/SPR-7344
+	 * At the moment, we can't use simply @ResponseBody in portlet mode
+	 * So we create MappingJacksonJsonView with some code when we need a @ResponseBody stuff.
+	 * @param object
+	 * @return
+	 */
+	protected ModelAndView getJacksonView(Object object) {
+		MappingJacksonJsonView v = new MappingJacksonJsonView();
+		v.setExtractValueFromSingleKeyModel(true);
+		ModelAndView modelAndView = new ModelAndView(v);
+		modelAndView.addObject(object);
+		return modelAndView;
+	}
 
 	/**
 	 * Data for the browser area.
@@ -148,7 +161,7 @@ public class PortletControllerAjax {
 	 * @return
 	 */
 	@ResourceMapping("fileChildren")
-    public @ResponseBody List<JsTreeFile> fileChildren(@RequestParam String dir, @RequestParam(required=false) String hierarchy, ResourceRequest request) {
+    public ModelAndView fileChildren(@RequestParam String dir, @RequestParam(required=false) String hierarchy, ResourceRequest request) {
 		dir = pathEncodingUtils.decodeDir(dir);
 		List<JsTreeFile> files;
 		if(this.serverAccess.formAuthenticationRequired(dir, userParameters) && this.serverAccess.getUserPassword(dir, userParameters).getPassword() == null) {
@@ -174,12 +187,13 @@ public class PortletControllerAjax {
 	    	}
 	    }
 		pathEncodingUtils.encodeDir(files);
-		return files;
+		
+		return getJacksonView(files);
 	}
 
 
 	@ResourceMapping("removeFiles")
-    public @ResponseBody Map removeFiles(FormCommand command, ResourceRequest request) {
+    public ModelAndView removeFiles(FormCommand command, ResourceRequest request) {
 		Locale locale = request.getLocale();
 		long allOk = 1;
 		String msg = context.getMessage("ajax.remove.ok", null, locale); 
@@ -192,7 +206,8 @@ public class PortletControllerAjax {
 		}
 		jsonMsg.put("status", new Long(allOk));
 		jsonMsg.put("msg", msg);
-    	return jsonMsg;
+		
+    	return getJacksonView(jsonMsg);
     }
 	
 	@ResourceMapping("createFile")
@@ -228,7 +243,7 @@ public class PortletControllerAjax {
     }
     
 	@ResourceMapping("prepareCopyFiles")
-    public @ResponseBody Map prepareCopyFiles(FormCommand command, ResourceRequest request) {
+    public ModelAndView prepareCopyFiles(FormCommand command, ResourceRequest request) {
 		Locale locale = request.getLocale();
 		basketSession.setDirsToCopy(pathEncodingUtils.decodeDirs(command.getDirs()));
 		basketSession.setGoal("copy");
@@ -236,11 +251,11 @@ public class PortletControllerAjax {
 		jsonMsg.put("status", new Long(1));
 		String msg = context.getMessage("ajax.copy.ok", null, locale); 
 		jsonMsg.put("msg", msg);
-		return jsonMsg;
+		return getJacksonView(jsonMsg);
     }
 	
 	@ResourceMapping("prepareCutFiles")
-    public @ResponseBody Map prepareCutFiles(FormCommand command, ResourceRequest request) {
+    public ModelAndView prepareCutFiles(FormCommand command, ResourceRequest request) {
 		Locale locale = request.getLocale();
 		basketSession.setDirsToCopy(pathEncodingUtils.decodeDirs(command.getDirs()));
 		basketSession.setGoal("cut");
@@ -248,11 +263,11 @@ public class PortletControllerAjax {
 		jsonMsg.put("status", new Long(1));
 		String msg = context.getMessage("ajax.cut.ok", null, locale); 
 		jsonMsg.put("msg", msg);
-		return jsonMsg;
+		return getJacksonView(jsonMsg);
     }
 	
 	@ResourceMapping("pastFiles")
-    public @ResponseBody Map pastFiles(String dir, ResourceRequest request) {
+    public ModelAndView pastFiles(String dir, ResourceRequest request) {
 		Locale locale = request.getLocale();
 		dir = pathEncodingUtils.decodeDir(dir);
 		Map jsonMsg = new HashMap(); 
@@ -266,11 +281,11 @@ public class PortletControllerAjax {
 			String msg = context.getMessage("ajax.paste.failed", null, locale); 
 			jsonMsg.put("msg", msg);
 		}
-		return jsonMsg;
+		return getJacksonView(jsonMsg);
 	}
 	
 	@ResourceMapping("authenticate")
-    public @ResponseBody Map authenticate(String dir, String username, String password, ResourceRequest request) {
+    public ModelAndView authenticate(String dir, String username, String password, ResourceRequest request) {
 		Locale locale = request.getLocale();
 		dir = pathEncodingUtils.decodeDir(dir);
 		Map jsonMsg = new HashMap(); 
@@ -284,7 +299,7 @@ public class PortletControllerAjax {
 			String msg = context.getMessage("auth.bad", null, locale); 
 			jsonMsg.put("msg", msg);
 		}
-		return jsonMsg;
+		return getJacksonView(jsonMsg);
 	}
 	
 	/**
@@ -472,7 +487,7 @@ public class PortletControllerAjax {
 	}
 	
 	@ResourceMapping("getParentPath")
-	public @ResponseBody String getParentPath(String dir,
+	public ModelAndView getParentPath(String dir,
 			ResourceRequest request, ResourceResponse response) throws UnsupportedEncodingException {
 
 		dir = pathEncodingUtils.decodeDir(dir);
@@ -485,7 +500,9 @@ public class PortletControllerAjax {
 		else
 			parentDir = parentsPathes.get(parentsPathes.size()-2);
 		
-		return pathEncodingUtils.encodeDir(parentDir);
+		String parentDirEnc = pathEncodingUtils.encodeDir(parentDir);
+		
+		return getJacksonView(parentDirEnc);
 	}
 
 

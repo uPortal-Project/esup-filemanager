@@ -47,6 +47,20 @@
     <link type="text/css" href="/esup-filemanager/css/jplayer.blue.monday.css" rel="stylesheet" />
 
     <portlet:resourceURL id="htmlFileTree" var="htmlFileTreeURL" />
+    <portlet:resourceURL id="uploadFile" var="uploadFileURL" />
+    <portlet:resourceURL id="prepareCopyFiles" var="prepareCopyFilesURL" />
+    <portlet:resourceURL id="prepareCutFiles" var="prepareCutFilesURL" />
+    <portlet:resourceURL id="pastFiles" var="pastFilesURL" />
+    <portlet:resourceURL id="fileChildren" var="fileChildrenURL" />
+    <portlet:resourceURL id="getParentPath" var="getParentPathURL" />
+    <portlet:resourceURL id="detailsArea" var="detailsAreaURL" />
+    <portlet:resourceURL id="createFile" var="createFileURL" />              
+    <portlet:resourceURL id="toggleThumbnailMode" var="toggleThumbnailModeURL" />
+    <portlet:resourceURL id="renameFile" var="renameFileURL" />
+    <portlet:resourceURL id="downloadFile" var="downloadFileURL" />
+    <portlet:resourceURL id="downloadZip" var="downloadZipURL" />
+    <portlet:resourceURL id="removeFiles" var="removeFilesURL" />
+    <portlet:resourceURL id="authenticate" var="authenticateURL" />
 
     <script type="text/javascript">
       var fileuploadTemplate = '<spring:message code="fileupload.template"/>';
@@ -57,6 +71,21 @@
       var defaultPath = '${defaultPath}';
       
       var htmlFileTreeURL = '${htmlFileTreeURL}';
+      var uploadFileURL = '${uploadFileURL}';
+      var prepareCopyFilesURL = '${prepareCopyFilesURL}';
+      var prepareCutFilesURL = '${prepareCutFilesURL}';
+      var pastFilesURL = '${pastFilesURL}';
+      var fileChildrenURL = '${fileChildrenURL}';
+      var getParentPathURL = '${getParentPathURL}';
+      var detailsAreaURL = '${detailsAreaURL}';
+      var createFileURL = '${createFileURL}';
+      var toggleThumbnailModeURL = '${toggleThumbnailModeURL}';
+      var renameFileURL = '${renameFileURL}';
+      var downloadFileURL = '${downloadFileURL}';
+      var downloadZipURL = '${downloadZipURL}';
+      var removeFilesURL = '${removeFilesURL}';
+      var authenticateURL = '${authenticateURL}';
+      
     </script>
 
     <script type="text/javascript" src="/esup-filemanager/js/jquery-1.4.2.min.js">
