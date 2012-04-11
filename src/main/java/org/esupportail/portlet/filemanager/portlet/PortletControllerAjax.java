@@ -429,9 +429,6 @@ public class PortletControllerAjax {
 			ResourceRequest request, ResourceResponse response) {
 		ModelMap model = new ModelMap();
 
-		String sharedSessionId = request.getParameter("sharedSessionId");
-		model.put("sharedSessionId", sharedSessionId);
-
 		if (command == null || pathEncodingUtils.decodeDirs(command.getDirs()) == null) {
 			return new ModelAndView("details_empty", model);
 		}

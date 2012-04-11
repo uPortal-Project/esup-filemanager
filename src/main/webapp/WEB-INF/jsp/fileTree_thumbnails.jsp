@@ -53,8 +53,6 @@
 <div id="jqueryFileTree" class="selectable">
   <form:form method="post" id="filesForm">
 
-    <input name="sharedSessionId" type="hidden" value="${sharedSessionId}" />
-
     <c:forEach var="file" items="${files}">
 
       <div class="thumbnail ${(file.type == 'folder') ? 'droppable' : ''}">

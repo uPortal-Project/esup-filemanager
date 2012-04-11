@@ -25,7 +25,6 @@ package org.esupportail.portlet.filemanager.portlet;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +42,6 @@ import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
 import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -72,7 +70,7 @@ public class PortletControllerAction {
 
 	
 	@RequestMapping(value = { "VIEW" }, params = { "action=formProcessWai" })
-	public void formProcessWai(FormCommand command, @RequestParam String dir, @RequestParam String sharedSessionId,
+	public void formProcessWai(FormCommand command, @RequestParam String dir,
 			@RequestParam(required = false) String prepareCopy,
 			@RequestParam(required = false) String prepareCut,
 			@RequestParam(required = false) String past,
@@ -100,7 +98,6 @@ public class PortletControllerAction {
 			
 		} else  if (rename != null) {
 			response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
-			response.setRenderParameter("sharedSessionId", sharedSessionId);
 			response.setRenderParameter("dirs", pathEncodingUtils.encodeDirs(pathEncodingUtils.decodeDirs(command.getDirs())).toArray(new String[] {}));
 			response.setRenderParameter("action", "renameWai");
 		} else {
@@ -130,7 +127,6 @@ public class PortletControllerAction {
 			if(msg != null)
 				response.setRenderParameter("msg", msg);
 			response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
-			response.setRenderParameter("sharedSessionId", sharedSessionId);
 			response.setRenderParameter("action", "browseWai");
 		}
 	}
@@ -145,7 +141,7 @@ public class PortletControllerAction {
 	}
 				
 	@RequestMapping(value = { "VIEW" }, params = { "action=formCreateWai" })
-	public void formCreateWai(FormCommand command, @RequestParam String dir, @RequestParam String sharedSessionId,
+	public void formCreateWai(FormCommand command, @RequestParam String dir,
 			@RequestParam String folderName,
 			ActionRequest request, ActionResponse response) throws IOException {
 		
@@ -157,7 +153,6 @@ public class PortletControllerAction {
 		if(msg != null)
 			response.setRenderParameter("msg", msg);
 		response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
-		response.setRenderParameter("sharedSessionId", sharedSessionId);
 		response.setRenderParameter("action", "browseWai");
 	}
 	
@@ -187,7 +182,7 @@ public class PortletControllerAction {
 	}
 	
 	@RequestMapping(value = { "VIEW" }, params = { "action=formRenameWai" })
-	public void formRenameWai(@RequestParam String dir, @RequestParam String sharedSessionId,
+	public void formRenameWai(@RequestParam String dir, 
 			ActionRequest request, ActionResponse response) throws IOException {
 		
 		dir = pathEncodingUtils.decodeDir(dir);
@@ -201,7 +196,6 @@ public class PortletControllerAction {
 		}
 		
 		response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
-		response.setRenderParameter("sharedSessionId", sharedSessionId);
 		response.setRenderParameter("action", "browseWai");
 	}
 	
@@ -217,7 +211,7 @@ public class PortletControllerAction {
 	
 	@RequestMapping(value = {"VIEW"}, params = {"action=formUploadWai"})
     public void formUploadWai(ActionRequest request, ActionResponse response,
-    								@RequestParam String dir, @RequestParam String sharedSessionId, FileUpload command) throws IOException {
+    								@RequestParam String dir, FileUpload command) throws IOException {
 		
 		dir = pathEncodingUtils.decodeDir(dir);
 		
@@ -226,13 +220,12 @@ public class PortletControllerAction {
 		this.serverAccess.putFile(dir, filename, inputStream, userParameters);
 		
 		response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
-		response.setRenderParameter("sharedSessionId", sharedSessionId);
 		response.setRenderParameter("action", "browseWai");
 	}
 	
 	@RequestMapping(value = {"VIEW"}, params = {"action=formAuthenticationWai"})
     public void formAuthenticationWai(ActionRequest request, ActionResponse response,
-    								@RequestParam String dir, @RequestParam String sharedSessionId, @RequestParam String username, @RequestParam String password) throws IOException {
+    								@RequestParam String dir, @RequestParam String username, @RequestParam String password) throws IOException {
 		
 		dir = pathEncodingUtils.decodeDir(dir);
 		
@@ -248,13 +241,12 @@ public class PortletControllerAction {
 			
 		response.setRenderParameter("msg", msg);
 		response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
-		response.setRenderParameter("sharedSessionId", sharedSessionId);
 		response.setRenderParameter("action", "browseWai");
 	}
     
 	@RequestMapping(value = {"VIEW"}, params = {"action=formAuthenticationMobile"})
     public void formAuthenticationMobile(ActionRequest request, ActionResponse response,
-    								@RequestParam String dir, @RequestParam String sharedSessionId, @RequestParam String username, @RequestParam String password) throws IOException {
+    								@RequestParam String dir, @RequestParam String username, @RequestParam String password) throws IOException {
 		
 		dir = pathEncodingUtils.decodeDir(dir);
 		
@@ -270,7 +262,6 @@ public class PortletControllerAction {
 		
 		response.setRenderParameter("msg", msg);
 		response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
-		response.setRenderParameter("sharedSessionId", sharedSessionId);
 		response.setRenderParameter("action", "browseMobile");
 	}
     

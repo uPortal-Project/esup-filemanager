@@ -46,7 +46,6 @@
     <portlet:actionURL var="authenticationFormMobile">
       <portlet:param name="action" value="formAuthenticationMobile"/>
       <portlet:param name="dir" value="${currentDir}"/>
-      <portlet:param name="sharedSessionId" value="${n}"/>
     </portlet:actionURL>
 
 

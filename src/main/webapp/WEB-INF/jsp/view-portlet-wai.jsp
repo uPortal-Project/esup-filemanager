@@ -43,7 +43,6 @@
 <portlet:actionURL var="formProcessWai">
   <portlet:param name="action" value="formProcessWai"/>
   <portlet:param name="dir" value="${currentDir}"/>
-  <portlet:param name="sharedSessionId" value="${n}"/>
 </portlet:actionURL>
 
 
@@ -155,13 +154,13 @@
 </li>
 <li class="toolbar-item">
 <a  id="toolbar-create-wai" 
-	href="<portlet:renderURL><portlet:param name="action" value="createFolderWai"/><portlet:param name="dir" value="${currentDir}"/><portlet:param name="sharedSessionId" value="${n}"/></portlet:renderURL>">
+	href="<portlet:renderURL><portlet:param name="action" value="createFolderWai"/><portlet:param name="dir" value="${currentDir}"/></portlet:renderURL>">
 	<spring:message code="toolbar.create"/>
 </a>
 </li>
 <li class="toolbar-item">
 <a  id="toolbar-upload-wai" 
-	href="<portlet:renderURL><portlet:param name="action" value="fileUploadWai"/><portlet:param name="dir" value="${currentDir}"/><portlet:param name="sharedSessionId" value="${n}"/></portlet:renderURL>">
+	href="<portlet:renderURL><portlet:param name="action" value="fileUploadWai"/><portlet:param name="dir" value="${currentDir}"/></portlet:renderURL>">
 	<spring:message code="toolbar.upload"/>
 </a>
 </li>

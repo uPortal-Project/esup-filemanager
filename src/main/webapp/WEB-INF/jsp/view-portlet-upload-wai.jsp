@@ -43,7 +43,6 @@
 <portlet:actionURL var="formUploadWai">
   <portlet:param name="action" value="formUploadWai"/>
   <portlet:param name="dir" value="${currentDir}"/>
-  <portlet:param name="sharedSessionId" value="${n}"/>
 </portlet:actionURL>
 
 

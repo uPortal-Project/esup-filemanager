@@ -93,8 +93,6 @@
 
     <form:form method="post" id="detailsFileForm">
 
-      <input name="sharedSessionId" type="hidden" />
-
       <input name="dir" type="hidden" value="${file.encPath}" />
 
 
@@ -145,8 +143,6 @@ $(document).ready(function () {
 
         $("#detailsFileForm").attr("action", '${downloadFileURL}');
 
-        //Set the sharedSessionId in the hiddeninputfield
-        $("#detailsFileForm.sharedSessionId").val(sharedSessionId);
         $("#detailsFileForm").submit();
         return true;
     });

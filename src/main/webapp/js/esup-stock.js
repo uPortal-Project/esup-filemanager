@@ -134,8 +134,7 @@ $.ajaxSetup({
             action: uploadFileURL,
             onSubmit: function (id, fileName) {
                 uploader.setParams({
-                    dir: $("#bigdirectory").attr("rel"),
-                    sharedSessionId: sharedSessionId
+                    dir: $("#bigdirectory").attr("rel")
                 });
                 cursor_wait();
                 $('.qq-upload-list').show();
@@ -349,7 +348,7 @@ function doCutCopyPaste(isCopy, sourcePath, targetPath) {
 
     var prepareFilesUrl = (isCopy ? prepareCopyFilesURL : prepareCutFilesURL);
 
-    $.post(prepareFilesUrl, "dirs=" + encodeURIComponent(sourcePath) + "&sharedSessionId=" + sharedSessionId, function (data) {
+    $.post(prepareFilesUrl, "dirs=" + encodeURIComponent(sourcePath), function (data) {
       console.log("prepareCopyFiles Ajax call completed.  Starting paste operation");
         cursor_clear();
         showInfoToolBar(data.msg);
@@ -446,7 +445,7 @@ function pasteToPath(path) {
     var pastFilesUrl = pastFilesURL;
     $.ajax({
       url: pastFilesUrl,
-      data: "dir=" + encodeURIComponent(path) + "&sharedSessionId=" + sharedSessionId,
+      data: "dir=" + encodeURIComponent(path),
       async: true,
       success: function (data) {
         console.log("Past ajax call completed.");
@@ -534,7 +533,6 @@ function initJstree() {
                     // the result is fed to the AJAX request `data` option
                     var retData = {
                         "dir": n == -1 ? defaultPath : $.data(n.get(0), "encPath"),
-                        "sharedSessionId": sharedSessionId,
                         "hierarchy": n == -1 ? "all" : ""
                     };
 
@@ -736,8 +734,7 @@ function customMenu(node) {
             "action": function (obj) {
                 console.log("Delete : " + obj);
                 deleteFiles({
-                    "dirs": obj.attr("id"),
-                    "sharedSessionId": sharedSessionId
+                    "dirs": obj.attr("id")
                 });
             },
             "_disabled": false,
@@ -765,8 +762,7 @@ function customMenu(node) {
             "action": function (obj) {
                 console.log("Delete : " + obj);
                 deleteFiles({
-                    "dirs": obj.attr("id"),
-                    "sharedSessionId": sharedSessionId
+                    "dirs": obj.attr("id")
                 });
             },
             "_disabled": false,
@@ -824,8 +820,7 @@ function getParentPath(path) {
         type: 'POST',
         url: getParentPathURL,
         data:  {
-            "dir": path,
-            "sharedSessionId": sharedSessionId
+            "dir": path
         },
         success: function (parentPathResp) {
         	parentPath = parentPathResp;
@@ -988,8 +983,7 @@ function handleLeftTreeSelection(treeNode) {
                 //refresh the details area
                 updateDetailsArea({
                     "dirs": path,
-                    "type": type,
-                    "sharedSessionId": sharedSessionId
+                    "type": type
                 });
 
             } else {
@@ -1247,8 +1241,7 @@ function newFileOrFolder(parentDir, name, fileOrFolder) {
         data: {
             "parentDir": parentDir,
             "title": name,
-            "type": fileOrFolder,
-            "sharedSessionId": sharedSessionId
+            "type": fileOrFolder
         },
         success: function (r) {
             console.log("newFileOrFolder success");
@@ -1320,7 +1313,6 @@ function handleThumbnailMode() {
         type: 'POST',
         url: toggleThumbnailModeURL,
         data: {
-            "sharedSessionId" : sharedSessionId,
             "thumbnailMode" : thumbnailMode
         },
         success: function (r) {
@@ -1379,8 +1371,7 @@ function rename(parentDir, dir, title) {
         data: {
             "parentDir": parentDir,
             "dir": dir,
-            "title": title,
-            "sharedSessionId": sharedSessionId
+            "title": title
         },
         success: function (r) {
             initializeBrowserMain(r);
@@ -2112,8 +2103,7 @@ function authenticate(dir, username, password) {
         data: {
             "dir": dir,
             "username": username,
-            "password": password,
-            "sharedSessionId": sharedSessionId
+            "password": password
         },
         success: function (data) {
             showInfoToolBar(data.msg);

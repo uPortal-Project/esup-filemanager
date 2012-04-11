@@ -67,8 +67,6 @@
 
   <form:form method="post" id="detailsFileForm">
 
-    <input name="sharedSessionId" type="hidden" value="${sharedSessionId}" />
-
     <input name="dir" type="hidden" value="${file.encPath}" />
 
 

@@ -53,8 +53,6 @@
 <div id="jqueryFileTree" >
   <form:form method="post" id="filesForm">
 
-    <input name="sharedSessionId" type="hidden" value="${sharedSessionId}" />
-
     <table>
       <thead>
         <tr>

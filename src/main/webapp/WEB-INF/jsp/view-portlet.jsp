@@ -65,7 +65,6 @@
     <script type="text/javascript">
       var fileuploadTemplate = '<spring:message code="fileupload.template"/>';
       var fileTemplate = '<spring:message code="fileupload.fileTemplate"/>';
-      var sharedSessionId = '${sharedSessionId}';
       var useDoubleClick = '${useDoubleClick}';
       var useCursorWaitDialog = '${useCursorWaitDialog}';
       var defaultPath = '${defaultPath}';
