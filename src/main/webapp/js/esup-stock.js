@@ -1405,7 +1405,8 @@ function downloadFile(fileName) {
 
     console.log("downloadFile. Path: " + fileName);
 
-    var url = downloadFileURL + '?dir=' + encodeURIComponent(fileName) + '&sharedSessionId=' + sharedSessionId;
+    var url = /\?/.test(downloadFileURL) ? downloadFileURL + '&' : downloadFileURL + '?'; 
+    url = url + 'dir=' + encodeURIComponent(fileName); 
 
     console.log(url);
     //window.open(url);
