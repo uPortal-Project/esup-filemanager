@@ -245,7 +245,7 @@
     </dependency>
  
      <dependency>
-    	<groupId>jstl</groupId>
+    	<groupId>javax.servlet</groupId>
     	<artifactId>jstl</artifactId>
     	<version>1.1.2</version>
     </dependency>
@@ -372,12 +372,12 @@
                 <portletNames>esup-filemanager</portletNames>
 
                 <!-- To use custom CSS in the portal -->
-                <!--                                                                                                                                        
-                <cssUrls>                                                                                                                                   
-                  <url>http://my.server/custom.css</url>                                                                                                    
-                  <url>http://my.server/another.css</url>                                                                                                   
-                </cssUrls>                                                                                                                                  
-                -->
+                <cssUrls>
+                  <url>/pluto/pluto.css</url>
+                  <url>/pluto/portlet-spec-1.0.css</url>
+                  <url>/pluto/portlet-spec-2.0.css</url>
+                  <url>/esup-filemanager/css/misc/fss-framework-1.4.0.min.css</url>
+                </cssUrls>
 
                 <!-- To use custom Javascript in the portal -->
 		<!--                                                                                                                                        
