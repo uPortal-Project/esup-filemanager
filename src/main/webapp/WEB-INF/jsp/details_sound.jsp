@@ -105,7 +105,7 @@
 
 
 <portlet:resourceURL id="fetchSound" var="fetchSoundURL">
-	<portlet:param name="path" value="${file.encPath}"/>
+	<portlet:param name="dir" value="${file.encPath}"/>
 </portlet:resourceURL>
 
 <portlet:resourceURL id="downloadFile" var="downloadFileURL" />

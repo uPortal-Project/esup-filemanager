@@ -310,11 +310,11 @@ public class PortletControllerAjax {
 	 * @throws IOException
 	 */
 	@ResourceMapping("fetchImage")
-	public void fetchImage(String path, 
+	public void fetchImage(String dir, 
 			ResourceRequest request, ResourceResponse response) throws IOException {
-		path = pathEncodingUtils.decodeDir(path);
-		this.serverAccess.updateUserParameters(path, userParameters);
-		DownloadFile file = this.serverAccess.getFile(path, userParameters);
+		dir = pathEncodingUtils.decodeDir(dir);
+		this.serverAccess.updateUserParameters(dir, userParameters);
+		DownloadFile file = this.serverAccess.getFile(dir, userParameters);
 		response.setContentType(file.getContentType());
 		response.setContentLength(file.getSize());
 		FileCopyUtils.copy(file.getInputStream(), response.getPortletOutputStream());
@@ -328,11 +328,11 @@ public class PortletControllerAjax {
 	 * @throws IOException
 	 */
 	@ResourceMapping("fetchSound")
-	public void fetchSound(String path, 
+	public void fetchSound(String dir, 
 			ResourceRequest request, ResourceResponse response) throws IOException {
-		path = pathEncodingUtils.decodeDir(path);
-		this.serverAccess.updateUserParameters(path, userParameters);
-		DownloadFile file = this.serverAccess.getFile(path, userParameters);
+		dir = pathEncodingUtils.decodeDir(dir);
+		this.serverAccess.updateUserParameters(dir, userParameters);
+		DownloadFile file = this.serverAccess.getFile(dir, userParameters);
 		final String contentType = "audio/mpeg3";
 		response.setContentType(contentType);
 		response.setContentLength(file.getSize());
