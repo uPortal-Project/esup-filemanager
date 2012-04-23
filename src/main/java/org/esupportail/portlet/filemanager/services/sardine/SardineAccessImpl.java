@@ -201,6 +201,10 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 		// In order to have a readable date
 		file.setLastModifiedTime(new SimpleDateFormat(this.datePattern)
 				.format(date.getTime()));
+		
+		// TODO
+		//file.setReadable(resource.isReadable());
+		//file.setWriteable(resource.isWriteable());
 
 		return file;
 	}
