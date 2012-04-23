@@ -73,15 +73,15 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 
 	private boolean contentOpen;
 
-	private boolean hidden;
+	private boolean hidden = false;
 
-	private boolean readable;
+	private boolean readable = true;
 
-	private boolean writeable;
+	private boolean writeable = true;
 
 	private String lastModifiedTime;
 
-	private long size;
+	private long size = 0;
 
 	// The cumulative size of a directory
 	private long totalSize;
