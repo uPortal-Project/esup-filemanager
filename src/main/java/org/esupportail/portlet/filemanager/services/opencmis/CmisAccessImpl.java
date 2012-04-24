@@ -163,7 +163,10 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 				file.setIcon(icon);
 				
 				Document document = (Document) cmisObject;
-				BigInteger size = (BigInteger)document.getProperty("cmis:contentStreamLength").getValues().get(0);
+				BigInteger size = BigInteger.ZERO;
+				List<Object> contentStreamLength = document.getProperty("cmis:contentStreamLength").getValues();
+				if(!contentStreamLength.isEmpty())
+					size = (BigInteger)contentStreamLength.get(0);
 				file.setSize(size.longValue());
 				file.setOverSizeLimit(file.getSize() > resourceUtils
 						.getSizeLimit(title));
@@ -190,7 +193,10 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 				} else if("file".equals(childType)) {
 					++fileCount;			
 					Document document = (Document) child;
-					BigInteger size = (BigInteger)document.getProperty("cmis:contentStreamLength").getValues().get(0);
+					BigInteger size = BigInteger.ZERO;
+					List<Object> contentStreamLength = document.getProperty("cmis:contentStreamLength").getValues();
+					if(!contentStreamLength.isEmpty())
+						size = (BigInteger)contentStreamLength.get(0);
 					totalSize += size.longValue();
 				}
 			}
