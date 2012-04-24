@@ -19,7 +19,6 @@
       <id>esup-third</id>
       <url>https://mvn.esup-portail.org/content/repositories/thirdparty</url>
     </repository>
-
  
   </repositories>
   
@@ -176,8 +175,20 @@
     <dependency>
         <groupId>com.googlecode.sardine</groupId>
         <artifactId>sardine</artifactId>
-        <version>146</version>
+        <version>343</version>
     </dependency>
+    
+    <dependency>
+  		<groupId>org.apache.httpcomponents</groupId>
+  		<artifactId>httpclient</artifactId>
+  		<version>4.1.2</version>
+	</dependency>
+	
+	<dependency>
+  		<groupId>org.slf4j</groupId>
+ 		<artifactId>slf4j-api</artifactId>
+  	    <version>1.6.2</version>
+	</dependency>
 
     <dependency>
     	<groupId>org.aspectj</groupId>
