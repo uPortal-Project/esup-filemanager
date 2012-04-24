@@ -373,7 +373,9 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		String mimeType = new MimetypesFileTypeMap().getContentType(filename);
 		ContentStream stream = new ContentStreamImpl(filename, null, mimeType, inputStream);
 		Document document = targetFolder.createDocument(prop, stream, VersioningState.NONE, null, null, null, cmisSession.getDefaultContext());
-		document.setName(filename);
+		HashMap m = new HashMap();
+        m.put("cmis:name",filename);
+        document.updateProperties(m); 
 		return true;
 	}
 
@@ -384,13 +386,12 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		return true;
 	}
 
-	/* 
-	 * Doesn't work ??
-	 */
 	@Override
 	public boolean renameFile(String path, String title, SharedUserPortletParameters userParameters) {
 		CmisObject cmisObject = getCmisObject(path, userParameters);
-		cmisObject.setName(title);
+		HashMap m = new HashMap();
+        m.put("cmis:name",title);
+        cmisObject.updateProperties(m); 
 		return true;
 	}
 
