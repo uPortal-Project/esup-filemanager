@@ -1,13 +1,15 @@
 /**
- * Copyright (C) 2011 Esup Portail http://www.esup-portail.org
- * Copyright (C) 2011 UNR RUNN http://www.unr-runn.fr
- * Copyright (C) 2011 RECIA http://www.recia.fr
- * @Author (C) 2011 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
- * @Contributor (C) 2011 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
- * @Contributor (C) 2011 Julien Marchal <Julien.Marchal@univ-nancy2.fr>
- * @Contributor (C) 2011 Julien Gribonvald <Julien.Gribonvald@recia.fr>
- * @Contributor (C) 2011 David Clarke <david.clarke@anu.edu.au>
- * @Contributor (C) 2011 BULL http://www.bull.fr
+ * Copyright (C) 2012 Esup Portail http://www.esup-portail.org
+ * Copyright (C) 2012 UNR RUNN http://www.unr-runn.fr
+ * Copyright (C) 2012 RECIA http://www.recia.fr
+ * @Author (C) 2012 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
+ * @Contributor (C) 2012 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+ * @Contributor (C) 2012 Julien Marchal <Julien.Marchal@univ-nancy2.fr>
+ * @Contributor (C) 2012 Julien Gribonvald <Julien.Gribonvald@recia.fr>
+ * @Contributor (C) 2012 David Clarke <david.clarke@anu.edu.au>
+ * @Contributor (C) 2012 BULL http://www.bull.fr
+ * @Contributor (C) 2012 Pierre Bouvret <pierre.bouvret@u-bordeaux4.fr>
+ * @Contributor (C) 2012 Franck Bordinat <franck.bordinat@univ-jfc.fr>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,7 +118,8 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 					String userInfo = (String)userInfos.get(userInfoKey);
 					String userInfoKeyToken = TOKEN_SPECIAL_CHAR.concat(userInfoKey).concat(TOKEN_SPECIAL_CHAR);
 					// in nuxeo @ is replaced by - in path
-					userInfo = userInfo.replaceFirst("@", "-");
+					userInfo = userInfo.replaceAll("@", "-");
+					userInfo = userInfo.replaceAll(".", "-");
 					this.rootPath = this.rootPath.replaceAll(userInfoKeyToken, userInfo);
 			}
 		}	
@@ -163,7 +166,10 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 				file.setIcon(icon);
 				
 				Document document = (Document) cmisObject;
-				BigInteger size = (BigInteger)document.getProperty("cmis:contentStreamLength").getValues().get(0);
+				BigInteger size = BigInteger.ZERO;
+				List<Object> contentStreamLength = document.getProperty("cmis:contentStreamLength").getValues();
+				if(!contentStreamLength.isEmpty())
+					size = (BigInteger)contentStreamLength.get(0);
 				file.setSize(size.longValue());
 				file.setOverSizeLimit(file.getSize() > resourceUtils
 						.getSizeLimit(title));
@@ -190,7 +196,10 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 				} else if("file".equals(childType)) {
 					++fileCount;			
 					Document document = (Document) child;
-					BigInteger size = (BigInteger)document.getProperty("cmis:contentStreamLength").getValues().get(0);
+					BigInteger size = BigInteger.ZERO;
+					List<Object> contentStreamLength = document.getProperty("cmis:contentStreamLength").getValues();
+					if(!contentStreamLength.isEmpty())
+						size = (BigInteger)contentStreamLength.get(0);
 					totalSize += size.longValue();
 				}
 			}
@@ -367,7 +376,9 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		String mimeType = new MimetypesFileTypeMap().getContentType(filename);
 		ContentStream stream = new ContentStreamImpl(filename, null, mimeType, inputStream);
 		Document document = targetFolder.createDocument(prop, stream, VersioningState.NONE, null, null, null, cmisSession.getDefaultContext());
-		document.setName(filename);
+		HashMap m = new HashMap();
+        m.put("cmis:name",filename);
+        document.updateProperties(m); 
 		return true;
 	}
 
@@ -378,13 +389,12 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		return true;
 	}
 
-	/* 
-	 * Doesn't work ??
-	 */
 	@Override
 	public boolean renameFile(String path, String title, SharedUserPortletParameters userParameters) {
 		CmisObject cmisObject = getCmisObject(path, userParameters);
-		cmisObject.setName(title);
+		HashMap m = new HashMap();
+        m.put("cmis:name",title);
+        cmisObject.updateProperties(m); 
 		return true;
 	}
 
