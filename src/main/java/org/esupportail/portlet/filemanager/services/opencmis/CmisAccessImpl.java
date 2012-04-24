@@ -116,7 +116,8 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 					String userInfo = (String)userInfos.get(userInfoKey);
 					String userInfoKeyToken = TOKEN_SPECIAL_CHAR.concat(userInfoKey).concat(TOKEN_SPECIAL_CHAR);
 					// in nuxeo @ is replaced by - in path
-					userInfo = userInfo.replaceFirst("@", "-");
+					userInfo = userInfo.replaceAll("@", "-");
+					userInfo = userInfo.replaceAll(".", "-");
 					this.rootPath = this.rootPath.replaceAll(userInfoKeyToken, userInfo);
 			}
 		}	

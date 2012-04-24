@@ -263,9 +263,8 @@
     <property name="icon" value="/esup-filemanager/img/drives/group.png" />
     <property name="uri" value="http://localhost:6081/nuxeo/atom/cmis"/>
     <property name="respositoryId" value="default"/>
-    <!-- UserWorkspaces cmis browsing seams to not work -->
     <!-- property name="rootPath" value="/default-domain/UserWorkspaces/@uid@"/-->
-    <!-- property name="rootPath" value="/default-domain/userworkspaces/bernard-mon-univ-fr"/-->
+    <!-- property name="rootPath" value="/default-domain/UserWorkspaces/bernard-mon-univ-fr"/-->
     <!-- workspaces works for example -->
     <property name="rootPath" value="/default-domain/workspaces"/>
     <!--property name="userAuthenticatorService" ref="cmisSimpleUserAuthenticationService"/-->
