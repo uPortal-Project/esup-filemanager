@@ -202,58 +202,13 @@
         <version>1.6.1</version>
     </dependency>
   	
+  	<dependency>
+	  <groupId>org.apache.commons</groupId>
+	  <artifactId>commons-vfs2</artifactId>
+	  <version>2.0</version>
+	</dependency>
   	
   </dependencies>
-
-
-
-  <profiles>
-
-    <profile>
-      <id>vfs-default</id>
-      <activation>
-	<activeByDefault>true</activeByDefault>
-      </activation>
-      <dependencies>
-	<dependency>
-	  <groupId>commons-vfs</groupId>
-	  <artifactId>commons-vfs</artifactId>
-	  <version>1.0</version>
-	</dependency>
-      </dependencies>
-    </profile>
-
-    <profile>
-      <id>vfs-sandbox</id>
-      <dependencies>
-	<dependency>
-	  <groupId>org.apache.commons</groupId>
-	  <artifactId>commons-vfs-sandbox</artifactId>
-	  <version>svn-tag-vfs-1.0</version>
-	</dependency>
-
-	<dependency>
-	  <groupId>slide</groupId>
-	  <artifactId>jakarta-slide-webdavlib</artifactId>
-	  <version>20050629.161100</version>
-	</dependency>
-	<dependency>
-	  <groupId>jcifs</groupId>
-	  <artifactId>jcifs</artifactId>
-	  <version>0.8.3</version>
-	</dependency>
-	<dependency>
-	  <groupId>javax.mail</groupId>
-	  <artifactId>mail</artifactId>
-	  <version>1.4</version>
-	</dependency>
-
-      </dependencies>
-    </profile>
-
-  </profiles>
-
-
 
   
   <build>
