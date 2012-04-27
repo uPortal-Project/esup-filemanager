@@ -27,6 +27,8 @@ package org.esupportail.portlet.filemanager.services.sardine;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,8 +57,9 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 	protected static final Log log = LogFactory.getLog(SardineAccessImpl.class);
 
 	protected Sardine root;
+	
 	protected String rootPath = null;
-
+	
 	protected ResourceUtils resourceUtils;
 
 	public void setResourceUtils(ResourceUtils resourceUtils) {
@@ -77,10 +80,15 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 				} else {
 					root = SardineFactory.begin();
 				}
-				this.rootPath = uri + "/";
+				if(!uri.endsWith("/")) 
+					uri = uri + "/";
+				
+				// rootPath is the path without the http(s)://host string
+				URI uriObject = new URI(uri);
+				this.rootPath = uriObject.getRawPath();
 				
 				// to be sure that webdav access is ok, we try to retrieve root resources
-				root.list(this.rootPath);
+				root.list(this.uri);
 			}
 		} catch (SardineException se) {
 			root = null;
@@ -91,6 +99,9 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 		} catch (IOException ioe) {
 			log.error("IOException retrieving this file or directory  : " + this.rootPath);
 			throw new EsupStockException(ioe);
+		} catch (URISyntaxException use) {
+			log.error("URISyntaxException on  : " + this.uri);
+			throw new EsupStockException(use);
 		}
 	}
 
@@ -112,7 +123,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 	public JsTreeFile get(String path, SharedUserPortletParameters userParameters, boolean folderDetails, boolean fileDetails) {
 		try {
 			this.open(userParameters);
-			List<DavResource> resources = root.list(this.rootPath
+			List<DavResource> resources = root.list(this.uri
 					+ path);
 			if (resources != null && !resources.isEmpty())
 				return resourceAsJsTreeFile(resources.get(0), folderDetails, fileDetails);
@@ -120,7 +131,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 			log.error("SardineException retrieving this file  : " + path);
 			throw new EsupStockException(se);
 		} catch (IOException ioe) {
-			log.error("IOException retrieving this file or directory  : " + this.rootPath);
+			log.error("IOException retrieving this file or directory  : " + this.uri);
 			throw new EsupStockException(ioe);
 		}
 		return null; 
@@ -133,7 +144,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 			this.open(userParameters);
 			List<JsTreeFile> files = new ArrayList<JsTreeFile>();
 			
-			List<DavResource> resources = root.list(this.rootPath
+			List<DavResource> resources = root.list(this.uri
 					+ path);
 			// .list returns "List of resources for this URI including the parent resource itself" 
 			// so we remove the parent
@@ -155,7 +166,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 			log.error("Sardine Exception", se);
 			throw new EsupStockException(se);
 		} catch (IOException ioe) {
-			log.error("IOException retrieving this file or directory  : " + this.rootPath);
+			log.error("IOException retrieving this file or directory  : " + this.uri + path);
 			throw new EsupStockException(ioe);
 		}
 	}
@@ -163,8 +174,8 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 	private JsTreeFile resourceAsJsTreeFile(DavResource resource, boolean folderDetails, boolean fileDetails) {
 		
 		// lid must be a relative path from rootPath
-		String lid = resource.getPath();
-
+		String lid = resource.getHref().getRawPath();
+		
 		if (lid.startsWith(this.rootPath))
 			lid = lid.substring(rootPath.length());
 		if (lid.startsWith("/"))
@@ -189,7 +200,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 		try {
 			if (folderDetails && resource.isDirectory()) {
 				List<DavResource> children;
-					children = root.list(this.rootPath + lid);
+					children = root.list(this.uri + lid);
 				long totalSize = 0;
 				long fileCount = 0;
 				long folderCount = -1; // Don't count the parent folder
@@ -206,9 +217,9 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 				}
 			}
 		} catch (SardineException ex) {
-			log.warn("Error retrying children of this resource : " + this.rootPath + lid, ex);
+			log.warn("Error retrying children of this resource : " + this.uri + lid, ex);
 		} catch (IOException ioe) {
-			log.error("IOException retrieving children  : " + this.rootPath + lid, ioe);
+			log.error("IOException retrieving children  : " + this.uri + lid, ioe);
 		}
 
 		if (resource.getModified()!=null) {
@@ -226,13 +237,13 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 	public boolean remove(String path, SharedUserPortletParameters userParameters) {
 		try {
 			this.open(userParameters);
-			String candidate = this.rootPath + path;
+			String candidate = this.uri + path;
 			root.delete(candidate);
 			return true;
 		} catch (SardineException se) {
 			log.error("can't delete file because of FileSystemException", se);
 		} catch (IOException ioe) {
-			log.error("IOException deleting this resource  : " + this.rootPath + path, ioe);
+			log.error("IOException deleting this resource  : " + this.uri + path, ioe);
 		}
 		return false;
 	}
@@ -245,11 +256,11 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 			if ("folder".equals(type)) {
 				if (!parentPath.endsWith("/"))
 					parentPath=parentPath + "/";
-				root.createDirectory(this.rootPath + parentPath + URLEncoder.encode(title, "UTF-8"));
+				root.createDirectory(this.uri + parentPath + URLEncoder.encode(title, "UTF-8"));
 			} else {
 				log.warn("Can't create files");
 			}
-			return this.rootPath + parentPath + title;
+			return this.uri + parentPath + title;
 		} catch (SardineException se) {
 			log.error("Error creating '" + title + "', error : "
 					+ se.getResponsePhrase(), se);
@@ -263,15 +274,15 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 	public boolean renameFile(String path, String title, SharedUserPortletParameters userParameters) {
 		try {
 			this.open(userParameters);
-			String oldname = this.rootPath + path;
+			String oldname = this.uri + path;
 
 			DavResource resource = null;
-			List<DavResource> resources = root.list(this.rootPath
+			List<DavResource> resources = root.list(this.uri
 					+ path);
 			resource = resources.get(0);
 
 			int index = path.lastIndexOf("/") + 1;
-			String newname = this.rootPath + path.substring(0, index) + URLEncoder.encode(title, "UTF-8");
+			String newname = this.uri + path.substring(0, index) + URLEncoder.encode(title, "UTF-8");
 			if (resource.isDirectory()) {
 				oldname = oldname.substring(0, oldname.length() - 1);
 				newname = oldname.replaceAll("/[^/]*$", "/" + title);
@@ -285,7 +296,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 		} catch (SardineException se) {
 			log.error("Can't rename to '" + title, se);
 		} catch (IOException ioe) {
-			log.error("IOException retrieving this file  : " + this.rootPath + path, ioe);
+			log.error("IOException retrieving this file  : " + this.uri + path, ioe);
 		}
 		return false;
 	}
@@ -299,27 +310,27 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 				dir=dir + "/";
 			// Before we do anything, make sure we won't overwrite a file
 			for (String file : filesToCopy) {
-				List<DavResource> resources = root.list(this.rootPath
+				List<DavResource> resources = root.list(this.uri
 						+ file);
 
-				if (root.exists(this.rootPath + dir
+				if (root.exists(this.uri + dir
 						+ URLEncoder.encode(resources.get(0).getName(), "UTF-8"))) {
-					log.info("Won't overwrite file '" + this.rootPath + dir
+					log.info("Won't overwrite file '" + this.uri + dir
 							+ URLEncoder.encode(resources.get(0).getName(), "UTF-8") + "'");
 					return false;
 				}
 			}
 
 			for (String file : filesToCopy) {
-				List<DavResource> resources = root.list(this.rootPath
+				List<DavResource> resources = root.list(this.uri
 						+ file);
-				log.debug("start=" + this.rootPath + file + " end=" + this.rootPath + dir
+				log.debug("start=" + this.uri + file + " end=" + this.uri + dir
 						+ URLEncoder.encode(resources.get(0).getName(), "UTF-8"));
 				if (copy)
-					root.copy(this.rootPath + file, this.rootPath + dir
+					root.copy(this.uri + file, this.uri + dir
 							+ URLEncoder.encode(resources.get(0).getName(), "UTF-8"));
 				else
-					root.move(this.rootPath + file, this.rootPath + dir
+					root.move(this.uri + file, this.uri + dir
 							+ URLEncoder.encode(resources.get(0).getName(), "UTF-8"));
 			}
 			return true;
@@ -327,7 +338,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 		} catch (SardineException se) {
 			log.error("Copy failed : " + se.getResponsePhrase(), se);
 		} catch (IOException ioe) {
-			log.error("IOException retrieving this resource  : " + this.rootPath, ioe);
+			log.error("IOException retrieving this resource  : " + this.uri, ioe);
 		}
 		return false;
 	}
@@ -338,20 +349,20 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 			this.open(userParameters);
 
 			DavResource resource = null;
-			List<DavResource> resources = root.list(this.rootPath + path);
+			List<DavResource> resources = root.list(this.uri + path);
 			resource = resources.get(0);
 
 			String contentType = resource.getContentType();
 			Long size = resource.getContentLength();
 			String baseName = resource.getName();
-			InputStream inputStream = root.get(this.rootPath + path);
+			InputStream inputStream = root.get(this.uri + path);
 
 			return new DownloadFile(contentType, size.intValue(), baseName, inputStream);
 		}
 		catch (SardineException se) {
-			log.error("Error in download of " + this.rootPath + path, se);
+			log.error("Error in download of " + this.uri + path, se);
 		} catch (IOException ioe) {
-			log.error("IOException downloading this file  : " + this.rootPath + path, ioe);
+			log.error("IOException downloading this file  : " + this.uri + path, ioe);
 		}
 		return null;
 	}
@@ -363,7 +374,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 			if (!dir.endsWith("/"))
 				dir=dir + "/";
 			
-			String file = this.rootPath + dir + URLEncoder.encode(filename, "UTF-8");
+			String file = this.uri + dir + URLEncoder.encode(filename, "UTF-8");
 			if (root.exists(file)) {
 				log.error("Can't overwrite file '" + file + "'");
 				return false;
@@ -373,7 +384,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 		} catch (SardineException se) {
 			log.error("Error on file upload", se);
 		} catch (IOException ioe) {
-			log.error("IOException retrieving this file or directory  : " + this.rootPath + dir + filename, ioe);
+			log.error("IOException retrieving this file or directory  : " + this.uri + dir + filename, ioe);
 		}
 		return false;
 	}
