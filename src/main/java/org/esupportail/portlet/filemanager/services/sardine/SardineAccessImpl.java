@@ -151,14 +151,6 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 			resources.remove(0);
 			
 			for (DavResource resource : resources) {
-				// take care : 
-				String[] names;
-				if ("".equals(path))
-					names = rootPath.split("/");
-				else 
-					names = path.split("/");
-				String title = names[names.length - 1];
-				//log.trace("getname=" + resource.getName() + " title=" + title);
 				files.add(resourceAsJsTreeFile(resource, false, true));
 			}
 			return files;
