@@ -269,6 +269,11 @@
     <property name="rootPath" value="/default-domain/workspaces"/>
     <!--property name="userAuthenticatorService" ref="cmisSimpleUserAuthenticationService"/-->
     <!--property name="userAuthenticatorService" ref="cmisFormUserAuthenticationService"/-->
+   
+   	<!-- You can use Nuxeo PORTAL_AUTH setting nuxeoPortalSsoSecretKey and nuxeoPortalSsoUsernameAttribute -->
+    <!--property name="nuxeoPortalSsoSecretKey" value="nuxeo5secretkey"/>
+    <property name="nuxeoPortalSsoUsernameAttribute" value="uid"/-->
+    
     <!--  userinfosHttpheadersMap : it is used only in portlet mode beacause setinfos must be available -->
     <property name="userinfosHttpheadersMap">
       <map>
