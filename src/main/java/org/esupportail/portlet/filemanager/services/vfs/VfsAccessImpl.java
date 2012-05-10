@@ -47,6 +47,7 @@ import org.apache.commons.vfs2.UserAuthenticator;
 import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.auth.StaticUserAuthenticator;
 import org.apache.commons.vfs2.impl.DefaultFileSystemConfigBuilder;
+import org.apache.commons.vfs2.provider.ftp.FtpFileSystemConfigBuilder;
 import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
@@ -97,8 +98,11 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		try {
 			if(!isOpened()) {
 				FileSystemOptions fsOptions = new FileSystemOptions();
+				FtpFileSystemConfigBuilder.getInstance().setControlEncoding(fsOptions, "UTF-8");
+
 				if(sftpSetUserDirIsRoot) {
 					SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fsOptions, true);
+					FtpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fsOptions, true);
 				}
 
 				if(!strictHostKeyChecking) {
