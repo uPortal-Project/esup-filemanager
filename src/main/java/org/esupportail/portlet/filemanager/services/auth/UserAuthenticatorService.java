@@ -25,8 +25,6 @@
 
 package org.esupportail.portlet.filemanager.services.auth;
 
-import java.util.Map;
-
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
 

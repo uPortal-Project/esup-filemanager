@@ -79,7 +79,7 @@ public class PortletController {
 	@Autowired
 	protected PathEncodingUtils pathEncodingUtils;
 	
-	protected void init(RenderRequest request, RenderResponse response) {		
+	protected void init(PortletRequest request) {		
 			
 		if(!userParameters.isInitialized()) {
 			String clientIpAdress = request.getProperty("REMOTE_ADDR");
@@ -101,7 +101,7 @@ public class PortletController {
 		
     @RequestMapping("VIEW")
     protected ModelAndView renderView(RenderRequest request, RenderResponse response) throws Exception {
-    	this.init(request, response);
+    	this.init(request);
         final PortletPreferences prefs = request.getPreferences();
     	String defaultPortletView = prefs.getValue(PREF_PORTLET_VIEW, STANDARD_VIEW);
     	String[] prefsDefaultPathes = prefs.getValues(PREF_DEFAULT_PATH, null);
@@ -134,7 +134,7 @@ public class PortletController {
     
 	@RequestMapping(value = {"VIEW"}, params = {"action=browseStandard"})
     public ModelAndView browseStandard(RenderRequest request, RenderResponse response, String dir) {	
-    	this.init(request, response);
+    	this.init(request);
         final PortletPreferences prefs = request.getPreferences();
 		boolean useDoubleClick = "true".equals(prefs.getValue(PREF_USE_DOUBLE_CLICK, "true")); 
     	boolean useCursorWaitDialog = "true".equals(prefs.getValue(PREF_USE_CURSOR_WAIT_DIALOG, "false"));
@@ -151,7 +151,7 @@ public class PortletController {
 	@RequestMapping(value = {"VIEW"}, params = {"action=browseMobile"})
     public ModelAndView browseMobile(RenderRequest request, RenderResponse response,
     								@RequestParam String dir) {
-    	this.init(request, response);
+    	this.init(request);
     	
 		String decodedDir = pathEncodingUtils.decodeDir(dir);
 		
@@ -176,7 +176,7 @@ public class PortletController {
     public ModelAndView browseWai(RenderRequest request, RenderResponse response,
     								@RequestParam(required=false) String dir,
     								@RequestParam(required=false) String msg) {
-		this.init(request, response);
+		this.init(request);
 		
 		String decodedDir = pathEncodingUtils.decodeDir(dir);
 		
@@ -225,14 +225,14 @@ public class PortletController {
 	
     @RequestMapping("ABOUT")
 	public ModelAndView renderAboutView(RenderRequest request, RenderResponse response) throws Exception {
-		this.init(request, response);
+		this.init(request);
 		ModelMap model = new ModelMap();
 		return new ModelAndView("about-portlet", model);
 	}
     
     @RequestMapping("HELP")
 	public ModelAndView renderHelpView(RenderRequest request, RenderResponse response) throws Exception {
-		this.init(request, response);
+		this.init(request);
 		ModelMap model = new ModelMap();
 		return new ModelAndView("help-portlet", model);
 	}

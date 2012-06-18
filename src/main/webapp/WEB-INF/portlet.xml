@@ -27,11 +27,11 @@
 -->
 
 <portlet-app
-    xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd"
+    xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd"
     version="1.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd
-                        http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd">
+    xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd
+                        http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd">
 
     <portlet>
         <portlet-name>esup-filemanager</portlet-name>
@@ -79,6 +79,14 @@
         		<value>false</value>
         	</preference> 	
         </portlet-preferences>
+
+	<supported-processing-event>
+		<qname xmlns:x="https://source.jasig.org/schemas/uportal/search">x:SearchRequest</qname>
+	</supported-processing-event>
+	<supported-publishing-event>
+		<qname xmlns:x="https://source.jasig.org/schemas/uportal/search">x:SearchResults</qname>
+	</supported-publishing-event>
+        
     </portlet>
     
     <user-attribute>
@@ -102,4 +110,13 @@
         <name>composante</name>
     </user-attribute>
 
+    <event-definition>
+        <qname xmlns:x="https://source.jasig.org/schemas/uportal/search">x:SearchRequest</qname>
+        <value-type>org.jasig.portal.search.SearchRequest</value-type>
+    </event-definition>
+    <event-definition>
+        <qname xmlns:x="https://source.jasig.org/schemas/uportal/search">x:SearchResults</qname>
+        <value-type>org.jasig.portal.search.SearchResults</value-type>
+    </event-definition>
+    
 </portlet-app>

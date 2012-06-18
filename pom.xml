@@ -278,7 +278,13 @@
       <artifactId>jackrabbit-webdav</artifactId>
       <version>1.5.2</version>
     </dependency>
-  	
+
+	<dependency>
+		<groupId>org.jasig.portal</groupId>
+		<artifactId>uportal-search-api</artifactId>
+		<version>4.0.1</version>
+	</dependency>
+            
   </dependencies>
 
   
