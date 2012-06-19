@@ -74,6 +74,8 @@ public class PortletControllerSearchContent implements PortletConfigAware {
     @EventMapping(SearchConstants.SEARCH_REQUEST_QNAME_STRING)
     public void searchContent(EventRequest request, EventResponse response) {
     	
+    	log.info("PortletControllerSearchContent.searchContent from EsupFilemanager is called");
+    	
     	final Event event = request.getEvent();
         final SearchRequest searchQuery = (SearchRequest)event.getValue();
         

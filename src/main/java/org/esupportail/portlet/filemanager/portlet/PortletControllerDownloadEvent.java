@@ -78,6 +78,7 @@ public class PortletControllerDownloadEvent implements PortletConfigAware {
     @EventMapping(EsupFileManagerConstants.DOWNLOAD_REQUEST_QNAME_STRING)
     public void downloadEvent(EventRequest request, EventResponse response) {
     	
+    	log.info("PortletControllerDownloadEvent.downloadEvent from EsupFilemanager is called");
     	
     	// INIT  	
     	portletController.init(request);
