@@ -109,13 +109,10 @@ public class PortletControllerDownloadEvent implements PortletConfigAware {
 
         	FileObject file = fsManager.resolveFile(fileUrl, fsOptions);
         	FileContent fc = file.getContent();
-        	String contentType = fc.getContentInfo().getContentType();
-        	int size = new Long(fc.getSize()).intValue();
         	String baseName = fc.getFile().getName().getBaseName();
         	InputStream inputStream = fc.getInputStream();
-        	DownloadFile dlFile = new DownloadFile(contentType, size, baseName, inputStream);
 
-        	success = serverAccess.putFile(defaultPath, dlFile.getBaseName(), dlFile.getInputStream(), userParameters);
+        	success = serverAccess.putFile(defaultPath, baseName, inputStream, userParameters);
         } catch (FileSystemException e) {
         	log.error("putFile failed for this downloadEvent", e);
         }	
