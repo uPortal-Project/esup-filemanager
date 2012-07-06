@@ -40,6 +40,8 @@ public class UserPasswordAuthenticatorService implements UserAuthenticatorServic
 
 	protected String userInfo4Username;
 	
+	protected String userInfo4Password;
+	
 	public void setUsername(String username) {
 		userPassword.setUsername(username);
 	}
@@ -59,6 +61,14 @@ public class UserPasswordAuthenticatorService implements UserAuthenticatorServic
 	public void setUserInfo4Username(String userInfo4Username) {
 		this.userInfo4Username = userInfo4Username;
 	}
+	
+	/**
+	 * To set a default password retrieving from user uPortal attributes
+	 * @param userInfo4Password
+	 */
+	public void setUserInfo4Password(String userInfo4Password) {
+		this.userInfo4Password = userInfo4Password;
+	}
 
 	public void initialize(SharedUserPortletParameters userParameters) {
 		Map userInfos = userParameters.getUserInfos();
@@ -67,6 +77,12 @@ public class UserPasswordAuthenticatorService implements UserAuthenticatorServic
 				userInfos != null && 
 				userInfos.containsKey(userInfo4Username)) {
 			this.setUsername((String)userInfos.get(userInfo4Username));
+		}
+		if(this.getUserPassword(userParameters).getPassword() == null && 
+				userInfo4Password != null && 
+				userInfos != null && 
+				userInfos.containsKey(userInfo4Password)) {
+			this.setPassword((String)userInfos.get(userInfo4Password));
 		}
 	}
 	
