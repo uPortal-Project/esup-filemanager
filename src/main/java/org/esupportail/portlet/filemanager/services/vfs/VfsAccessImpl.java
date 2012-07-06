@@ -79,6 +79,9 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 	protected boolean sftpSetUserDirIsRoot = false;
 
     protected boolean strictHostKeyChecking = true;
+    
+    // we setup ftpPassiveMode to true by default ...
+    protected boolean ftpPassiveMode = true;
 
 	public void setResourceUtils(ResourceUtils resourceUtils) {
 		this.resourceUtils = resourceUtils;
@@ -90,6 +93,10 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 
     public void setStrictHostKeyChecking(boolean strictHostKeyChecking) {
 		this.strictHostKeyChecking = strictHostKeyChecking;
+	}
+
+	public void setFtpPassiveMode(boolean ftpPassiveMode) {
+		this.ftpPassiveMode = ftpPassiveMode;
 	}
 
 	@Override
@@ -108,7 +115,9 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 				if(!strictHostKeyChecking) {
 					SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(fsOptions, "no");
 				}
-
+				
+				FtpFileSystemConfigBuilder.getInstance().setPassiveMode(fsOptions, ftpPassiveMode);
+				
 				if(userAuthenticatorService != null) {
 					UserPassword userPassword = userAuthenticatorService.getUserPassword(userParameters);
 					UserAuthenticator userAuthenticator = new StaticUserAuthenticator(userPassword.getDomain(), userPassword.getUsername(), userPassword.getPassword());
