@@ -33,6 +33,18 @@
 
   <h3 class="ui-widget-header ui-corner-all" ><spring:message code="details.header"/></h3>
 
+
+<portlet:resourceURL id="fetchSound" var="fetchSoundURL">
+	<portlet:param name="dir" value="${file.encPath}"/>
+</portlet:resourceURL>
+
+<portlet:resourceURL id="downloadFile" var="downloadFileURL" />
+
+
+<audio controls style="display:none">
+  <source src="${fetchSoundURL}" class="audioSource"></source>
+</audio>
+
   <div id="jquery_jplayer_1" class="jp-jplayer"></div>
   <div class="jp-audio">
     <div class="jp-type-single">
@@ -73,6 +85,7 @@
     </div>
   </div>
 
+
   <div class="details-spacer"></div>
 <div class="details-attribute-header"><spring:message code="details.title" /> : </div>
 <div class="details-attribute"><img src="${file.icon}" alt="icon" /> ${file.title}</div>
@@ -105,11 +118,7 @@
     </form:form>
 
 
-<portlet:resourceURL id="fetchSound" var="fetchSoundURL">
-	<portlet:param name="dir" value="${file.encPath}"/>
-</portlet:resourceURL>
 
-<portlet:resourceURL id="downloadFile" var="downloadFileURL" />
 
 
 <script type="text/javascript">
@@ -122,12 +131,17 @@ $(document).ready(function () {
 
   console.log("Doc ready details sound");
 
+  var audioSource_element = $("source.audioSource")[0];
+  var soundUrl = audioSource_element.src;
+
+  console.log("soundUrl: " + soundUrl);
+
    $("#jquery_jplayer_1").jPlayer({
      solution:"flash" , //, html",
           ready: function () {
               console.log("ready js player div");
             $(this).jPlayer("setMedia", {
-              mp3: "${fetchSoundURL}"
+              mp3: soundUrl
             });
           },
           swfPath: "/esup-filemanager/js",
