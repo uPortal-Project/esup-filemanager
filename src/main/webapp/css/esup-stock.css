@@ -185,7 +185,7 @@ display: inline;
 
 .esupstock .qq-upload-button input {
 height: 60px;
-width: 60px;
+width: auto;
 margin: 0px;
 padding: 0px;
 }
