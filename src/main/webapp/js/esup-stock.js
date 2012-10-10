@@ -132,7 +132,7 @@ $.ajaxSetup({
             multiple: true,
             template: fileuploadTemplate,
             fileTemplate: fileTemplate,
-            element: document.getElementById('file-uploader'),
+            element: $("#file-uploader")[0],
             action: '/esup-filemanager/servlet-ajax/uploadFile',
             onSubmit: function (id, fileName) {
                 uploader.setParams({
