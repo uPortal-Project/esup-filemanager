@@ -2150,6 +2150,17 @@ $.authenticate = function(dir, username, password) { authenticate(dir, username,
       return;
     }
     
+
+    if (e.which == 9) {
+		console.log("Tab key pressed");
+		e.preventDefault();
+		clearSelections();
+		var selector = "#browserArea .file, #browserArea .fileTreeRef";
+		var selectableItems = $(selector);
+		selectObject(getJqueryObj(selectableItems[0]), true);
+		return;
+	}
+    
     var dirs = getCheckedDirs();
     if (dirs == null || dirs.length == 0) {
       return;
@@ -2171,15 +2182,11 @@ $.authenticate = function(dir, username, password) { authenticate(dir, username,
       handleRename();
       break; 
     case 13:
-        if(dirs.length==1) {
-        	var baSelData = getBrowserAreaCheckedSelectionData();
-        	if(baSelData.singleFileSelected) {
-        		downloadFile(baSelData.path);
-        	} else if (baSelData.singleFolderSelected) {
-        		openAndSelectLiNode(baSelData.path);
-			}
-        } else if (dirs.length>1) {
-			downloadZip();
+        var baSelData = getBrowserAreaCheckedSelectionData();
+        if(baSelData.singleFileSelected) {
+        	downloadFile(baSelData.path);
+        } else if (baSelData.singleFolderSelected) {
+        	openAndSelectLiNode(baSelData.path);
 		}
         break;  
     case 38:
@@ -2219,7 +2226,9 @@ $.authenticate = function(dir, username, password) { authenticate(dir, username,
         handleBrowserAreaSelection();
     	break;
     }
-
+    
+    return;
+    
   });
 
 
