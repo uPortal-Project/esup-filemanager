@@ -31,8 +31,9 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
-  <h3 class="ui-widget-header ui-corner-all" ><spring:message code="details.header"/></h3>
-
+<h3 class="ui-widget-header ui-corner-all">
+	<spring:message code="details.header" />
+</h3>
 
 <portlet:resourceURL id="fetchSound" var="fetchSoundURL">
 	<portlet:param name="dir" value="${file.encPath}"/>
@@ -45,59 +46,72 @@
   <source src="${fetchSoundURL}" class="audioSource"></source>
 </audio>
 
-  <div id="jquery_jplayer_1" class="jp-jplayer"></div>
-  <div class="jp-audio">
-    <div class="jp-type-single">
-      <div id="jp_interface_1" class="jp-interface">
-        <ul class="jp-controls">
-          <li>
-            <a href="#" class="jp-play" tabindex="1">play</a>
-          </li>
-          <li>
-            <a href="#" class="jp-pause" tabindex="1">pause</a>
-          </li>
-          <li>
-            <a href="#" class="jp-stop" tabindex="1">stop</a>
-          </li>
-          <li>
-            <a href="#" class="jp-mute" tabindex="1">mute</a>
-          </li>
-          <li>
-            <a href="#" class="jp-unmute" tabindex="1">unmute</a>
-          </li>
-        </ul>
-        <div class="jp-progress">
-          <div class="jp-seek-bar">
-            <div class="jp-play-bar"></div>
-          </div>
-        </div>
-        <div class="jp-volume-bar">
-          <div class="jp-volume-bar-value"></div>
-        </div>
-        <div class="jp-current-time"></div>
-        <div class="jp-duration"></div>
-      </div>
-      <div id="jp_playlist_1" class="jp-playlist">
-        <ul>
-          <li>${file.title}</li>
-        </ul>
-      </div>
-    </div>
-  </div>
+<div id="jquery_jplayer_1" class="jp-jplayer"></div>
 
-
-  <div class="details-spacer"></div>
-<div class="details-attribute-header"><spring:message code="details.title" /> : </div>
-<div class="details-attribute"><img src="${file.icon}" alt="icon" /> ${file.title}</div>
-
-<div class="details-attribute-header"><spring:message code="details.size" /> : </div>
-<div class="details-attribute">
-  ${file.formattedSize.size}
-  <spring:message code="details.${file.formattedSize.unit}" />
+<div id="jp_container_1" class="jp-audio">
+	<div class="jp-type-single">
+		<div id="jp_interface_1" class="jp-gui jp-interface">
+			<ul class="jp-controls">
+				<li><a href="javascript:;" class="jp-play" tabindex="1">play</a>
+				</li>
+				<li><a href="javascript:;" class="jp-pause" tabindex="1">pause</a>
+				</li>
+				<li><a href="javascript:;" class="jp-stop" tabindex="1">stop</a>
+				</li>
+				<li><a href="javascript:;" class="jp-mute" tabindex="1">mute</a>
+				</li>
+				<li><a href="javascript:;" class="jp-unmute" tabindex="1">unmute</a>
+				</li>
+			</ul>
+			<div class="jp-progress">
+				<div class="jp-seek-bar">
+					<div class="jp-play-bar"></div>
+				</div>
+			</div>
+			<div class="jp-volume-bar">
+				<div class="jp-volume-bar-value"></div>
+			</div>
+			<div class="jp-time-holder">
+				<div class="jp-current-time"></div>
+				<div class="jp-duration"></div>
+			</div>
+		</div>
+		<div class="jp-no-solution">
+			<span>Update Required</span> To play the media you will need to
+			either update your browser to a recent version or update your <a
+				href="http://get.adobe.com/flashplayer/" target="_blank">Flash
+				plugin</a>.
+		</div>
+	</div>
 </div>
-<div class="details-attribute-header"><spring:message code="details.type" /> : </div>
+
+<div class="details-spacer"></div>
+<div class="details-attribute-header">
+	<spring:message code="details.title" />
+	:
+</div>
+<div class="details-attribute">
+	<img src="${file.icon}" alt="icon" /> ${file.title}
+</div>
+
+<div class="details-attribute-header">
+	<spring:message code="details.size" />
+	:
+</div>
+
+<div class="details-attribute">
+	${file.formattedSize.size}
+	<spring:message code="details.${file.formattedSize.unit}" />
+</div>
+<div class="details-attribute-header">
+	<spring:message code="details.type" />
+	:
+</div>
 <div class="details-attribute">${file.mimeType}</div>
-<div class="details-attribute-header"><spring:message code="details.lastModifiedTime" /> : </div>
+<div class="details-attribute-header">
+	<spring:message code="details.lastModifiedTime" />
+	:
+</div>
 <div class="details-attribute">${file.lastModifiedTime}</div>
 
 <div class="details-spacer"></div>
@@ -105,17 +119,17 @@
 
 
 
-    <form:form method="post" id="detailsFileForm">
-
-      <input name="dir" type="hidden" value="${file.encPath}" />
+<form:form method="post" id="detailsFileForm">
 
 
-      <div id="detail-download">
-          <spring:message code="details.download" />
-      </div>
+	<input name="dir" type="hidden" value="${file.encPath}" />
+
+	<div id="detail-download">
+		<spring:message code="details.download" />
+	</div>
 
 
-    </form:form>
+</form:form>
 
 
 
@@ -137,7 +151,6 @@ $(document).ready(function () {
   console.log("soundUrl: " + soundUrl);
 
    $("#jquery_jplayer_1").jPlayer({
-     solution:"flash" , //, html",
           ready: function () {
               console.log("ready js player div");
             $(this).jPlayer("setMedia", {
@@ -145,10 +158,9 @@ $(document).ready(function () {
             });
           },
           swfPath: "/esup-filemanager/js",
-          supplied: "mp3"
+          supplied: "mp3",
+  		  wmode : "window"
         });
-
-
 
    </c:if>
 
@@ -168,3 +180,4 @@ $(document).ready(function () {
 })(jQuery);
 
 </script>
+

@@ -132,7 +132,7 @@ $.ajaxSetup({
             multiple: true,
             template: fileuploadTemplate,
             fileTemplate: fileTemplate,
-            element: document.getElementById('file-uploader'),
+            element: $("#file-uploader")[0],
             action: uploadFileURL,
             onSubmit: function (id, fileName) {
                 uploader.setParams({
@@ -2118,7 +2118,55 @@ function authenticate(dir, username, password) {
 
 $.authenticate = function(dir, username, password) { authenticate(dir, username, password); };
 
+
+
+// keyboard events
+
+
+var isCtrl = false; 
+
+$(document).keyup(function(e) { 
+	if(e.which == 17) isCtrl=false; 
+});
+
+$(document).keydown(function(e) {
+
+	if(e.which == 86 && isCtrl) {
+		pasteFiles();
+		return;
+	}
+	
+	var dirs = getCheckedDirs();
+	if (dirs == null || dirs.length == 0) {
+		  return;
+	}
+	   
+    switch (e.which) {
+    	case 17:
+    		isCtrl=true;
+    		break;
+	    case 67:
+	    	if(isCtrl)
+	    		copyFiles();
+	        break;
+	    case 88:
+	    	if(isCtrl)
+	    		cutFiles();
+	        break;
+	    case 46:
+	        deleteFiles();
+	        break;    
+	    case 113:
+	        handleRename();
+	        break;     
+	    default: 
+	    	alert(e.which);
+    }
+});
+
+
 })(jQuery);
+
 
 
 function disableEnterKey(e) {
