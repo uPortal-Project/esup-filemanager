@@ -2133,15 +2133,18 @@ $.authenticate = function(dir, username, password) { authenticate(dir, username,
 // keyboard events
 
   var isCtrl = false; 
+  var isShift = false; 
 
   $(document).keyup(function(e) { 
     if(e.which == 17) isCtrl=false; 
+    if(e.which == 16) isShift=false;   
   });
   
   $(document).keydown(function(e) {
     
     if(e.which == 17) { isCtrl=true; return; }
-    
+    if(e.which == 16) { isShift=true; return; }
+   
     if(e.which == 86 && isCtrl) {
       pasteFiles();
       return;
@@ -2170,15 +2173,53 @@ $.authenticate = function(dir, username, password) { authenticate(dir, username,
     case 13:
         if(dirs.length==1) {
         	var baSelData = getBrowserAreaCheckedSelectionData();
-            console.log("Toolbar download : " + stringifyJSON(baSelData));
-            downloadFile(baSelData.path);
+        	if(baSelData.singleFileSelected) {
+        		downloadFile(baSelData.path);
+        	} else if (baSelData.singleFolderSelected) {
+        		openAndSelectLiNode(baSelData.path);
+			}
         } else if (dirs.length>1) {
 			downloadZip();
 		}
         break;  
-    //default: 
-      //alert(e.which);
+    case 38:
+        console.log("Up key pressed");
+        e.preventDefault();
+        var selector = "#browserArea .file, #browserArea .fileTreeRef";
+        var selectableItems = $(selector);
+
+        var lastItemChecked = $("#browserArea").data("lastItemChecked");
+        if (!lastItemChecked) {
+          lastItemChecked = getJqueryObj(selectableItems[0]);
+        }
+        var i = lastItemChecked.index(selector);
+        if(i > 0) {
+        	if(!isShift)
+        		deselectObject(selectableItems[i], false);
+        	selectObject(selectableItems[i-1], false);
+        }
+        handleBrowserAreaSelection();
+    	break;
+    case 40:
+        console.log("Down key pressed");
+        e.preventDefault();
+        var selector = "#browserArea .file, #browserArea .fileTreeRef";
+        var selectableItems = $(selector);
+
+        var lastItemChecked = $("#browserArea").data("lastItemChecked");
+        if (!lastItemChecked) {
+          lastItemChecked = getJqueryObj(selectableItems[0]);
+        }
+        var i = lastItemChecked.index(selector);
+        if(selectableItems.length > i+1) {
+        	if(!isShift)
+        		deselectObject(selectableItems[i], false);
+        	selectObject(selectableItems[i+1], false);
+        }
+        handleBrowserAreaSelection();
+    	break;
     }
+
   });
 
 
