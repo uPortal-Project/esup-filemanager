@@ -132,7 +132,7 @@ $.ajaxSetup({
             multiple: true,
             template: fileuploadTemplate,
             fileTemplate: fileTemplate,
-            element: document.getElementById('file-uploader'),
+            element: $("#file-uploader")[0],
             action: uploadFileURL,
             onSubmit: function (id, fileName) {
                 uploader.setParams({
@@ -1770,7 +1770,7 @@ function deleteFiles(dirsDataStruct) {
 
     clearSelections();
 
-    for(i=Math.min(start,end);i<=Math.max(start,end);i++) {
+    for(var i=Math.min(start,end);i<=Math.max(start,end);i++) {
           selectObject(selectableItems[i], false);
     }
     $("#browserArea").data("lastItemChecked", getJqueryObj(selectableItems[end]));
@@ -2118,7 +2118,112 @@ function authenticate(dir, username, password) {
 
 $.authenticate = function(dir, username, password) { authenticate(dir, username, password); };
 
+
+
+// keyboard events
+
+  var isCtrl = false; 
+  var isShift = false; 
+
+  $(document).keyup(function(e) { 
+    if(e.which == 17) isCtrl=false; 
+    if(e.which == 16) isShift=false;   
+  });
+  
+  $(document).keydown(function(e) {
+    
+    if(e.which == 17) { isCtrl=true; return; }
+    if(e.which == 16) { isShift=true; return; }
+   
+    if(e.which == 86 && isCtrl) {
+      pasteFiles();
+      return;
+    }
+    
+
+    if (e.which == 9) {
+		console.log("Tab key pressed");
+		e.preventDefault();
+		clearSelections();
+		var selector = "#browserArea .file, #browserArea .fileTreeRef";
+		var selectableItems = $(selector);
+		selectObject(getJqueryObj(selectableItems[0]), true);
+		return;
+	}
+    
+    var dirs = getCheckedDirs();
+    if (dirs == null || dirs.length == 0) {
+      return;
+    }
+    
+    switch (e.which) {
+    case 67:
+      if(isCtrl)
+	copyFiles();
+      break;
+    case 88:
+      if(isCtrl)
+	cutFiles();
+      break;
+    case 46:
+      deleteFiles();
+      break;    
+    case 113:
+      handleRename();
+      break; 
+    case 13:
+        var baSelData = getBrowserAreaCheckedSelectionData();
+        if(baSelData.singleFileSelected) {
+        	downloadFile(baSelData.path);
+        } else if (baSelData.singleFolderSelected) {
+        	openAndSelectLiNode(baSelData.path);
+		}
+        break;  
+    case 38:
+        console.log("Up key pressed");
+        e.preventDefault();
+        var selector = "#browserArea .file, #browserArea .fileTreeRef";
+        var selectableItems = $(selector);
+
+        var lastItemChecked = $("#browserArea").data("lastItemChecked");
+        if (!lastItemChecked) {
+          lastItemChecked = getJqueryObj(selectableItems[0]);
+        }
+        var i = lastItemChecked.index(selector);
+        if(i > 0) {
+        	if(!isShift)
+        		deselectObject(selectableItems[i], false);
+        	selectObject(selectableItems[i-1], false);
+        }
+        handleBrowserAreaSelection();
+    	break;
+    case 40:
+        console.log("Down key pressed");
+        e.preventDefault();
+        var selector = "#browserArea .file, #browserArea .fileTreeRef";
+        var selectableItems = $(selector);
+
+        var lastItemChecked = $("#browserArea").data("lastItemChecked");
+        if (!lastItemChecked) {
+          lastItemChecked = getJqueryObj(selectableItems[0]);
+        }
+        var i = lastItemChecked.index(selector);
+        if(selectableItems.length > i+1) {
+        	if(!isShift)
+        		deselectObject(selectableItems[i], false);
+        	selectObject(selectableItems[i+1], false);
+        }
+        handleBrowserAreaSelection();
+    	break;
+    }
+    
+    return;
+    
+  });
+
+
 })(jQuery);
+
 
 
 function disableEnterKey(e) {
