@@ -88,12 +88,6 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
         CREATE_UPDATABILITY.add(Updatability.ONCREATE);
         CREATE_UPDATABILITY.add(Updatability.READWRITE);
     }
-    
-    private static final Set<String> DOCUMENT_BASETYPE_IDS = new HashSet<String>();
-    static {
-    	DOCUMENT_BASETYPE_IDS.add(ObjectType.DOCUMENT_BASETYPE_ID);
-    	DOCUMENT_BASETYPE_IDS.add("File");
-    }
 	
 	public void setResourceUtils(ResourceUtils resourceUtils) {
 		this.resourceUtils = resourceUtils;
@@ -119,7 +113,8 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 					String userInfoKeyToken = TOKEN_SPECIAL_CHAR.concat(userInfoKey).concat(TOKEN_SPECIAL_CHAR);
 					// in nuxeo @ is replaced by - in path
 					userInfo = userInfo.replaceAll("@", "-");
-					userInfo = userInfo.replaceAll(".", "-");
+					// in nuxeo . is replaced by - in path
+					userInfo = userInfo.replaceAll("\\.", "-");
 					this.rootPath = this.rootPath.replaceAll(userInfoKeyToken, userInfo);
 			}
 		}	
@@ -150,7 +145,7 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		if(lid.startsWith("/"))
 			lid = lid.substring(1);
 
-		String type = DOCUMENT_BASETYPE_IDS.contains(cmisObject.getType().getId()) ? "file" : "folder";
+		String type = (BaseTypeId.CMIS_DOCUMENT.equals(cmisObject.getBaseTypeId())) ? "file" : "folder"; 
 		
 		// root case :
 		if("".equals(path)) {
@@ -190,7 +185,7 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 			fileCount = pl.getTotalNumItems();
 
 			for (CmisObject child : pl) {
-				String childType = DOCUMENT_BASETYPE_IDS.contains(child.getType().getId()) ? "file" : "folder";
+				String childType = (BaseTypeId.CMIS_DOCUMENT.equals(child.getBaseTypeId())) ? "file" : "folder"; 
 				if("folder".equals(childType)) {
 					++folderCount;
 				} else if("file".equals(childType)) {
