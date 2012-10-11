@@ -2132,47 +2132,45 @@ $.authenticate = function(dir, username, password) { authenticate(dir, username,
 
 // keyboard events
 
+  var isCtrl = false; 
 
-var isCtrl = false; 
-
-$(document).keyup(function(e) { 
-	if(e.which == 17) isCtrl=false; 
-});
-
-$(document).keydown(function(e) {
-
-	if(e.which == 86 && isCtrl) {
-		pasteFiles();
-		return
-	}
-	
-	var dirs = getCheckedDirs();
-	if (dirs == null || dirs.length == 0) {
-		  return;
-	}
-	   
-    switch (e.which) {
-    	case 17:
-    		isCtrl=true;
-    		break;
-	    case 67:
-	    	if(isCtrl)
-	    		copyFiles();
-	        break;
-	    case 88:
-	    	if(isCtrl)
-	    		cutFiles();
-	        break;
-	    case 46:
-	        deleteFiles();
-	        break;    
-	    case 113:
-	        handleRename();
-	        break;     
-	    //default: 
-	    //	alert(e.which);
+  $(document).keyup(function(e) { 
+    if(e.which == 17) isCtrl=false; 
+  });
+  
+  $(document).keydown(function(e) {
+    
+    if(e.which == 17) { isCtrl=true; return; }
+    
+    if(e.which == 86 && isCtrl) {
+      pasteFiles();
+      return;
     }
-});
+    
+    var dirs = getCheckedDirs();
+    if (dirs == null || dirs.length == 0) {
+      return;
+    }
+    
+    switch (e.which) {
+    case 67:
+      if(isCtrl)
+	copyFiles();
+      break;
+    case 88:
+      if(isCtrl)
+	cutFiles();
+      break;
+    case 46:
+      deleteFiles();
+      break;    
+    case 113:
+      handleRename();
+      break;     
+      //default: 
+      //	alert(e.which);
+    }
+  });
 
 
 })(jQuery);
