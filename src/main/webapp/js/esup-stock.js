@@ -2166,9 +2166,18 @@ $.authenticate = function(dir, username, password) { authenticate(dir, username,
       break;    
     case 113:
       handleRename();
-      break;     
-      //default: 
-      //	alert(e.which);
+      break; 
+    case 13:
+        if(dirs.length==1) {
+        	var baSelData = getBrowserAreaCheckedSelectionData();
+            console.log("Toolbar download : " + stringifyJSON(baSelData));
+            downloadFile(baSelData.path);
+        } else if (dirs.length>1) {
+			downloadZip();
+		}
+        break;  
+    //default: 
+      //alert(e.which);
     }
   });
 
