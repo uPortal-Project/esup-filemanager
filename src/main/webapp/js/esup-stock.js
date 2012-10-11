@@ -1779,7 +1779,7 @@ function deleteFiles(dirsDataStruct) {
 
     clearSelections();
 
-    for(i=Math.min(start,end);i<=Math.max(start,end);i++) {
+    for(var i=Math.min(start,end);i<=Math.max(start,end);i++) {
           selectObject(selectableItems[i], false);
     }
     $("#browserArea").data("lastItemChecked", getJqueryObj(selectableItems[end]));
