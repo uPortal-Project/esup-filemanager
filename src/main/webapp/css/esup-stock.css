@@ -233,6 +233,9 @@ border: 0;
 
 }
 
+.esupstock .disabled {
+cursor: auto;
+}
 
 .esupstock #toolbar-refresh.enabled {
     background: url(/esup-filemanager/img/refresh_24px.png) no-repeat center top;
