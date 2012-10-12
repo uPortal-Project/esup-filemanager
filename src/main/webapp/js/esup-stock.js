@@ -373,7 +373,7 @@ function doCutOrCopy(isCopy) {
       data: $("#filesForm").serialize(),
       success: function (data) {
         console.log("Cut/copy succeeded");
-        showInfoToolBar(data.msg);
+        showInfoToolBar(data.hashMap.msg);
         $('#toolbar-paste').data("cutCopyFinished", true);
         $('#toolbar-paste').data("dirs", dirs);
       },
