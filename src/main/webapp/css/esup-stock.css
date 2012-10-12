@@ -386,6 +386,10 @@ background-color: #f8f8f8 !important;
 	background: url(/esup-filemanager/img/disabled/upload2_24px.png) no-repeat top;
 }
 
+.esupstock .disabled_upload input {
+cursor: auto !important;                                 
+}
+
 /* Common */
 
 .esupstock #delete-confirm {
