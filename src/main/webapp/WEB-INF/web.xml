@@ -51,6 +51,11 @@
         <param-value>/WEB-INF/context/applicationContext.xml</param-value>
     </context-param>
     
+    <context-param>
+				<param-name>defaultHtmlEscape</param-name>
+				<param-value>false</param-value>
+		</context-param> 
+    
     <!--
      | The order of these listeners is important and should not be changed
      +-->
