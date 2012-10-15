@@ -69,6 +69,13 @@ display: inline;
 padding: 24px 5px 0px 10px;
 margin: 0px 10px;
 border: none;
+color: #008 !important;
+font-weight: bold;
+}
+
+.esupstock .toolbar-item input:hover,
+.esupstock .toolbar-item a:hover { 
+text-decoration: underline;
 }
 
 .esupstock #toolbar-create-wai {  
