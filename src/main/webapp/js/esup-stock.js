@@ -2129,7 +2129,6 @@ function authenticate(dir, username, password) {
 $.authenticate = function(dir, username, password) { authenticate(dir, username, password); };
 
 
-
 // keyboard events
 
   var isCtrl = false; 
@@ -2146,6 +2145,7 @@ $.authenticate = function(dir, username, password) { authenticate(dir, username,
     if(e.which == 16) { isShift=true; return; }
    
     if(e.which == 86 && isCtrl) {
+      console.log("Ctrl-v key pressed");
       pasteFiles();
       return;
     }
@@ -2168,27 +2168,37 @@ $.authenticate = function(dir, username, password) { authenticate(dir, username,
     
     switch (e.which) {
     case 67:
-      if(isCtrl)
+      if(isCtrl) {
+	console.log("Ctrl-c key pressed");
 	copyFiles();
+      }
       break;
     case 88:
-      if(isCtrl)
+      if(isCtrl) {
+	console.log("Ctrl-x key pressed");
 	cutFiles();
+      }
       break;
     case 46:
+      console.log("Suppr key pressed");
       deleteFiles();
       break;    
     case 113:
+      console.log("F2 key pressed");
       handleRename();
       break; 
     case 13:
+      // if e.target.nodeName  != BODY maybe we're on dialog / form, etc ...
+      if(e.target.nodeName == 'BODY') {
+        console.log("Enter key pressed");
         var baSelData = getBrowserAreaCheckedSelectionData();
         if(baSelData.singleFileSelected) {
-        	downloadFile(baSelData.path);
+          downloadFile(baSelData.path);
         } else if (baSelData.singleFolderSelected) {
-        	openAndSelectLiNode(baSelData.path);
-		}
-        break;  
+          openAndSelectLiNode(baSelData.path);
+	}
+      }
+      break;  
     case 38:
         console.log("Up key pressed");
         e.preventDefault();
