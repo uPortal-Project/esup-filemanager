@@ -151,9 +151,11 @@
       id="toolbar-delete-wai"
       name="delete"/>
 </li>
+<%--  
 <li class="toolbar-item">
 <input type="submit" value="<spring:message code="toolbar.zip"/>" id="toolbar-zip-wai" name="zip"/>
 </li>
+ --%>
 <li class="toolbar-item">
 <a  id="toolbar-create-wai" 
 	href="<portlet:renderURL><portlet:param name="action" value="createFolderWai"/><portlet:param name="dir" value="${currentDir}"/></portlet:renderURL>">
