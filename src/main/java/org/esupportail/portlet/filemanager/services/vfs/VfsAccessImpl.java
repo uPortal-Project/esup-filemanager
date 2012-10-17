@@ -256,8 +256,8 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 					.getSizeLimit(title));
 		}
 
-		if(folderDetails && ("folder".equals(type) || "drive".equals(type))) {
-			try {
+		try {
+			if(folderDetails && ("folder".equals(type) || "drive".equals(type))) {
 				if (resource.getChildren() != null) {
 					long totalSize = 0;
 					long fileCount = 0;
@@ -276,21 +276,23 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 					file.setFileCount(fileCount);
 					file.setFolderCount(folderCount);
 				} 
-			} catch(FileSystemException fse) {
-				// we don't want that exception during retrieving details 
-				// of the folder breaks  all this method ...
-				log.error("Exception during retrieveing details on children of " + lid, fse);
 			}
+
+			final Calendar date = Calendar.getInstance();
+			date.setTimeInMillis(resource.getContent().getLastModifiedTime());
+			// In order to have a readable date
+			file.setLastModifiedTime(new SimpleDateFormat(this.datePattern)
+					.format(date.getTime()));
+	
+			file.setReadable(resource.isReadable());
+			file.setWriteable(resource.isWriteable());
+			
+		} catch(FileSystemException fse) {
+			// we don't want that exception during retrieving details 
+			// of the folder breaks  all this method ...
+			log.error("Exception during retrieveing details on " + lid
+					+ " ... maybe broken symbolic links or whatever ...", fse);
 		}
-
-		final Calendar date = Calendar.getInstance();
-		date.setTimeInMillis(resource.getContent().getLastModifiedTime());
-		// In order to have a readable date
-		file.setLastModifiedTime(new SimpleDateFormat(this.datePattern)
-				.format(date.getTime()));
-
-		file.setReadable(resource.isReadable());
-		file.setWriteable(resource.isWriteable());
 
 		return file;
 	}
