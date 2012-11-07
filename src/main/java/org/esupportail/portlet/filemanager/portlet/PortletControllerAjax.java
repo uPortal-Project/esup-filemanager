@@ -47,6 +47,7 @@ import org.esupportail.portlet.filemanager.beans.FileUpload;
 import org.esupportail.portlet.filemanager.beans.FormCommand;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
 import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.esupportail.portlet.filemanager.services.ResourceUtils;
 import org.esupportail.portlet.filemanager.services.ResourceUtils.Type;
@@ -54,11 +55,13 @@ import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.portlet.ModelAndView;
@@ -72,6 +75,9 @@ public class PortletControllerAjax {
 
 	protected Logger log = Logger.getLogger(PortletControllerAjax.class);
 	
+    @Autowired  
+    private MessageSource messageSource;
+    
 	@Autowired
 	protected IServersAccessService serverAccess;
 	
@@ -504,5 +510,12 @@ public class PortletControllerAjax {
 		return getJacksonView(parentDirEnc);
 	}
 
+	
+	@ExceptionHandler
+	public ModelAndView handleException(EsupStockException ex, ResourceRequest resourceRequest, ResourceResponse resourcesResponse, Locale loc) {
+        ModelMap modelMap = new ModelMap();
+        modelMap.put("errorText", messageSource.getMessage(ex.getCodeI18n(), null, loc));
+        return new ModelAndView("ajax_error", modelMap);
+	}
 
 }
