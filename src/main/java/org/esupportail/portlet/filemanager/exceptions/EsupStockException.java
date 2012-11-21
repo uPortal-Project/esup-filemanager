@@ -29,12 +29,19 @@ import org.esupportail.commons.exceptions.EsupException;
 
 public class EsupStockException extends EsupException {
 	
+	protected String codeI18n = "exception.general";
+	
 	public EsupStockException(Exception e) {
 		super(e);
 	}
 
 	public EsupStockException(String message) {
 		super(message);
+	}
+	
+	public EsupStockException(String message, String codeI18n) {
+		super(message);
+		this.codeI18n = codeI18n;
 	}
 	
 	public EsupStockException(String message, Exception e) {
@@ -47,6 +54,11 @@ public class EsupStockException extends EsupException {
 		t = t.getCause();
 	    return t.getMessage();
 	}
+
+	public String getCodeI18n() {
+		return codeI18n;
+	}
+
 
 
 	private static final long serialVersionUID = 1L;

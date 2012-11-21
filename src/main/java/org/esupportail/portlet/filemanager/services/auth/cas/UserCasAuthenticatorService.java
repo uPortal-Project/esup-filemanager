@@ -48,19 +48,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.esupportail.portlet.filemanager.services.auth.cas;
 
-import java.util.Map;
-
-import javax.portlet.PortletSession;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.esupportail.commons.utils.ContextUtils;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
 import org.esupportail.portlet.filemanager.services.auth.UserAuthenticatorService;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 
 import edu.yale.its.tp.cas.client.CASReceipt;
 
@@ -106,7 +99,7 @@ public class UserCasAuthenticatorService implements UserAuthenticatorService {
 
         CASReceipt receipt = userParameters.getReceipt();
         if (receipt == null) {
-            throw new EsupStockException("Cannot find a CAS receipt object in session");
+            throw new EsupStockException("Cannot find a CAS receipt object in session", "exception.sessionIsInvalide");
         }
 
         // get a proxy ticket for the feed's url and append it to the url
