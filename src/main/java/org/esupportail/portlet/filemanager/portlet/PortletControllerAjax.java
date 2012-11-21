@@ -513,9 +513,10 @@ public class PortletControllerAjax {
 	
 	@ExceptionHandler
 	public ModelAndView handleException(EsupStockException ex, ResourceRequest resourceRequest, ResourceResponse resourcesResponse, Locale loc) {
-        ModelMap modelMap = new ModelMap();
-        modelMap.put("errorText", messageSource.getMessage(ex.getCodeI18n(), null, loc));
-        return new ModelAndView("ajax_error", modelMap);
+	    ModelMap modelMap = new ModelMap();
+	    String errorText = messageSource.getMessage(ex.getCodeI18n(), new String[] {ex.getMessage()}, loc);
+	    modelMap.put("errorText", errorText);
+	    return new ModelAndView("ajax_error", modelMap);
 	}
 
 }
