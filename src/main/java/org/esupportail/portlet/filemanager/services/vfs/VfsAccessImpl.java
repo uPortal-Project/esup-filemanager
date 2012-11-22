@@ -69,7 +69,7 @@ import com.jcraft.jsch.SftpException;
 public class VfsAccessImpl extends FsAccess implements DisposableBean {
 
 	protected static final Log log = LogFactory.getLog(VfsAccessImpl.class);
-
+	
 	protected FileSystemManager fsManager;
 
 	protected FileObject root;
@@ -383,9 +383,12 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		try {
 			FileObject file = cd(dir, userParameters);
 			FileContent fc = file.getContent();
-			String contentType = fc.getContentInfo().getContentType();
 			int size = new Long(fc.getSize()).intValue();
 			String baseName = fc.getFile().getName().getBaseName();
+			// fc.getContentInfo().getContentType() use URLConnection.getFileNameMap, 
+			// we prefer here to use our getMimeType : for Excel files and co 
+			// String contentType = fc.getContentInfo().getContentType();
+			String contentType = JsTreeFile.getMimeType(baseName.toLowerCase());
 			InputStream inputStream = fc.getInputStream();
 			DownloadFile dlFile = new DownloadFile(contentType, size, baseName, inputStream);
 			return dlFile;

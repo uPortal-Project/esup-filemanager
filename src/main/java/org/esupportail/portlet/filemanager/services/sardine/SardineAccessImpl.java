@@ -344,9 +344,9 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 			List<DavResource> resources = root.list(this.uri + path);
 			resource = resources.get(0);
 
-			String contentType = resource.getContentType();
 			Long size = resource.getContentLength();
 			String baseName = resource.getName();
+			String contentType = JsTreeFile.getMimeType(baseName.toLowerCase());
 			InputStream inputStream = root.get(this.uri + path);
 
 			return new DownloadFile(contentType, size.intValue(), baseName, inputStream);
