@@ -414,9 +414,12 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		return type;
 	}
 
-	//Added for GIP Recia : Return mime type for display in the details view
 	public String getMimeType() {
-		return mimeMap.getContentType(getTitle().toLowerCase());
+		return getMimeType(getTitle().toLowerCase());
+	}
+	
+	public static String getMimeType(String fileName) {
+		return mimeMap.getContentType(fileName);
 	}
 
 	public List<JsTreeFile> getChildren() {

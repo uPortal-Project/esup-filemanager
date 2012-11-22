@@ -349,9 +349,9 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 	public DownloadFile getFile(String dir, SharedUserPortletParameters userParameters) {
 		try {
 			SmbFile file = cd(dir, userParameters);
-			String contentType = file.getContentType();
 			int size = new Long(file.getContentLength()).intValue();
 			InputStream inputStream = file.getInputStream();
+			String contentType = JsTreeFile.getMimeType(file.getName().toLowerCase());
 			DownloadFile dlFile = new DownloadFile(contentType, size, file.getName(), inputStream);
 			return dlFile;
 		} catch (SmbException e) {
