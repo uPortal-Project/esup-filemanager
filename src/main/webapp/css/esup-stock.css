@@ -595,7 +595,7 @@ margin-left: 5px;
 
 
 /* Hack for uPortal 2.x */
-#portal-page-body .esupstock .container #fileTree ul, li {
+#portal-page-body .esupstock .container #fileTree ul {
 margin: 0px 5px 0px 0px;
 padding: 0px 0px 0px 15px;
 }
