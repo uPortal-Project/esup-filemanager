@@ -387,7 +387,7 @@ background-color: #f8f8f8 !important;
 }
 
 .esupstock .disabled_upload input {
-cursor: auto !important;                                 
+cursor: auto !important;
 }
 
 /* Common */
@@ -552,6 +552,9 @@ margin-left: 5px;
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
+}
+.esupstock .thumbnail .inner_thumbnail > input {
+    position: absolute;
 }
 
 .esupstock .thumbnail a img {
