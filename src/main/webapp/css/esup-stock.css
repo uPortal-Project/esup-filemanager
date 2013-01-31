@@ -553,6 +553,9 @@ margin-left: 5px;
 	height: 100%;
 	overflow: hidden;
 }
+.esupstock .thumbnail .inner_thumbnail > input {
+    position: absolute;
+}
 
 .esupstock .thumbnail a img {
 	margin-top: 16px;

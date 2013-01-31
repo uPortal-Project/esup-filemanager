@@ -1788,6 +1788,7 @@ function deleteFiles(dirsDataStruct) {
     function handleItemSelection(elemClicked, event) {
         console.log("handleItemSelection " + elemClicked);
 
+        var isElemChecked = isChecked(elemClicked);
 
         if (event.ctrlKey) {
             console.log("Ctrl key pressed");
@@ -1801,8 +1802,10 @@ function deleteFiles(dirsDataStruct) {
             clearSelections();
         }
 
-        if (isChecked(elemClicked)) {
+        if (isElemChecked) {
             console.log("Current row selected");
+            // to resolve the bug of selection after the clearSelection we reselect the element to refresh the page with a deselectObject
+            selectObject(elemClicked, false);
             deselectObject(elemClicked, true);
         } else {
             console.log("Current row not selected");
