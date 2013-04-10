@@ -404,23 +404,23 @@ public class PortletControllerAjax {
 	
 	// take care : we don't send json like application/json but like text/html !
 	// goal is that the json is written in a frame
-	public  ModelAndView upload(String dir, String filename, InputStream inputStream, Locale locale) {
+	private ModelAndView upload(String dir, String filename, InputStream inputStream, Locale locale) {
 		boolean success = true;
 		String text = "";
 		try {
 			if(this.serverAccess.putFile(dir, filename, inputStream, userParameters)) {
 				String msg = context.getMessage("ajax.upload.ok", null, locale); 
 				text = "{'success':'true', 'msg':'".concat(msg).concat("'}");
-				log.info("upload file in " + dir + " ok");
+				log.info("upload file " + filename + " in " + dir + " ok");
 			} else {
 				success = false;
 			}
 		} catch (Exception e) {
-			log.error("error uploading file", e);
+			log.error("error uploading file " + filename + " in " + dir, e);
 			success = false;
 		}
 		if(!success) {
-			log.info("Error uploading file in " + dir);
+			log.info("Error uploading file " + filename + " in " + dir);
 			String msg = context.getMessage("ajax.upload.failed", null, locale); 
 			text = "{'success':'false', 'msg':'".concat(msg).concat("'}");
 		}
