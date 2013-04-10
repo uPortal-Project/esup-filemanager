@@ -136,7 +136,8 @@ $.ajaxSetup({
             action: uploadFileURL,
             onSubmit: function (id, fileName) {
                 uploader.setParams({
-                    dir: $("#bigdirectory").attr("rel")
+                    dir: $("#bigdirectory").attr("rel"),
+                    qqfile: fileName
                 });
                 cursor_wait();
                 $('.qq-upload-list').show();
