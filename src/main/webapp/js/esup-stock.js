@@ -137,7 +137,8 @@ $.ajaxSetup({
             onSubmit: function (id, fileName) {
                 uploader.setParams({
                     dir: $("#bigdirectory").attr("rel"),
-                    sharedSessionId: sharedSessionId
+                    sharedSessionId: sharedSessionId,
+                    qqfile: fileName
                 });
                 cursor_wait();
                 $('.qq-upload-list').show();
