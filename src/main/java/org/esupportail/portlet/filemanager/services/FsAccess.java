@@ -66,6 +66,8 @@ public abstract class FsAccess {
 
 	protected UriManipulateService uriManipulateService;
 
+	private boolean uriManipulateDone = false;
+
 	public void setDatePattern(String datePattern) {
 		this.datePattern = datePattern;
 	}
@@ -139,8 +141,11 @@ public abstract class FsAccess {
 		if(formUsername != null) {
 			this.uri = this.uri.replaceAll(TOKEN_FORM_USERNAME, formUsername);
 		}
-		if(this.uriManipulateService != null)
+		// make only one uri manipulation
+		if(this.uriManipulateService != null && this.uriManipulateDone == false) {
+			this.uriManipulateDone = true;
 			this.uri = this.uriManipulateService.manipulate(uri);
+		}
 	}
 
 	protected void open(SharedUserPortletParameters userParameters) {
