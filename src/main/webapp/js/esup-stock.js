@@ -2134,7 +2134,7 @@ $.authenticate = function(dir, username, password) { authenticate(dir, username,
   });
   
   $(document).keydown(function(e) {
-    
+    if ($("#browserArea #authenticationForm").length) {return;}
     if(e.which == 17) { isCtrl=true; return; }
     if(e.which == 16) { isShift=true; return; }
    
