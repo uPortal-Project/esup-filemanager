@@ -993,22 +993,22 @@ function handleLeftTreeSelection(treeNode) {
                 $("#detailArea").html("");
             }
 
+	    var writeable = $("#browserMain div.breadcrumbs > .writeable").html() === "true";
 
             //Disable/Enable toolbar items
             setToolbarActionElementEnabled('refresh', true);
             setToolbarActionElementEnabled('thumbnail', !needsAuthentication);
             setToolbarActionElementEnabled('list', !needsAuthentication);
-            setUploadEnabled(!needsAuthentication);
+            setUploadEnabled(!needsAuthentication && writeable);
 
-
-            setToolbarActionElementEnabled('new_folder', !needsAuthentication);
-            setToolbarActionElementEnabled('new_file', !needsAuthentication);
+            setToolbarActionElementEnabled('new_folder', !needsAuthentication && writeable);
+            setToolbarActionElementEnabled('new_file', !needsAuthentication && writeable);
 
             setToolbarActionElementEnabled("download", false);
             setToolbarActionElementEnabled("zip", false);
             setToolbarActionElementEnabled("copy", false);
             setToolbarActionElementEnabled("cut", false);
-            setToolbarActionElementEnabled("paste", canPaste(path));
+            setToolbarActionElementEnabled("paste", writeable && canPaste(path));
             setToolbarActionElementEnabled("rename", false);
             setToolbarActionElementEnabled("delete", false);
 
