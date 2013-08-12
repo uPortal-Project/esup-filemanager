@@ -34,6 +34,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <div class="breadcrumbs">
+  <div class="writeable">${resource.writeable}</div>
   <c:forEach var="parent" items="${parentsEncPathes}" varStatus="item">
     <c:choose>
       <c:when test="${item.last}">

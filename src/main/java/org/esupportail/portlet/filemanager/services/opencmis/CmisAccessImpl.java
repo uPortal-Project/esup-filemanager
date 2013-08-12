@@ -51,6 +51,7 @@ import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
+import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.apache.chemistry.opencmis.commons.enums.Updatability;
@@ -201,6 +202,13 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 			file.setTotalSize(totalSize);
 			file.setFileCount(fileCount);
 			file.setFolderCount(folderCount);
+		}
+
+		Set<Action> actions = cmisObject.getAllowableActions().getAllowableActions();
+		// check if actions seem to be filled correctly
+		if (actions.contains(Action.CAN_GET_PROPERTIES)) {
+		    // ok, set capability based on available actions
+		    file.setWriteable(actions.contains(Action.CAN_DELETE_OBJECT));
 		}
 		
 		return file;
