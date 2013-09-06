@@ -43,4 +43,9 @@
     	<property name="maxUploadSize" value="100000000"/>
 	</bean>
 
+	<bean class="org.springframework.web.portlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+      <property name="interceptors"><bean class="org.esupportail.portlet.filemanager.portlet.MinimizedStateHandlerInterceptor"/></property>
+   </bean>
+	
+
 </beans>
