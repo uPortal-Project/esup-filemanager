@@ -51,7 +51,10 @@ import org.esupportail.portlet.filemanager.exceptions.EsupStockLostSessionExcept
 import org.esupportail.portlet.filemanager.exceptions.EsupStockPermissionDeniedException;
 import org.esupportail.portlet.filemanager.services.FsAccess;
 import org.esupportail.portlet.filemanager.services.ResourceUtils;
+import org.esupportail.portlet.filemanager.services.auth.cas.UserCasAuthenticatorService;
+import org.esupportail.portlet.filemanager.services.vfs.auth.DynamicUserAuthenticator;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.FileCopyUtils;
 
 import com.jcraft.jsch.ChannelSftp;
@@ -71,6 +74,8 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 	protected boolean sftpSetUserDirIsRoot = false;
 
     protected boolean strictHostKeyChecking = true;
+    
+    protected String ftpControlEncoding = "UTF-8";
     
     // we setup ftpPassiveMode to true by default ...
     protected boolean ftpPassiveMode = true;
@@ -97,7 +102,9 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		try {
 			if(!isOpened()) {
 				FileSystemOptions fsOptions = new FileSystemOptions();
-				FtpFileSystemConfigBuilder.getInstance().setControlEncoding(fsOptions, "UTF-8");
+				
+				if ( ftpControlEncoding != null )
+					FtpFileSystemConfigBuilder.getInstance().setControlEncoding(fsOptions, ftpControlEncoding);
 
 				if(sftpSetUserDirIsRoot) {
 					SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fsOptions, true);
@@ -111,8 +118,13 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 				FtpFileSystemConfigBuilder.getInstance().setPassiveMode(fsOptions, ftpPassiveMode);
 				
 				if(userAuthenticatorService != null) {
-					UserPassword userPassword = userAuthenticatorService.getUserPassword(userParameters);
-					UserAuthenticator userAuthenticator = new StaticUserAuthenticator(userPassword.getDomain(), userPassword.getUsername(), userPassword.getPassword());
+					UserAuthenticator userAuthenticator = null;
+					if ( ClassUtils.isAssignable(UserCasAuthenticatorService.class, userAuthenticatorService.getClass()) ) {
+						userAuthenticator = new DynamicUserAuthenticator(userAuthenticatorService, userParameters);
+					} else {
+						UserPassword userPassword = userAuthenticatorService.getUserPassword(userParameters);
+						userAuthenticator = new StaticUserAuthenticator(userPassword.getDomain(), userPassword.getUsername(), userPassword.getPassword());
+					}
 					DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(fsOptions, userAuthenticator);
 				}
 
@@ -424,6 +436,13 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		}
 		
 		return success;
+	}
+
+	/**
+	 * @param ftpControlEncoding the ftpControlEncoding to set
+	 */
+	public void setFtpControlEncoding(String ftpControlEncoding) {
+		this.ftpControlEncoding = ftpControlEncoding;
 	}
 
 }
