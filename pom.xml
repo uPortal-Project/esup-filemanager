@@ -342,8 +342,8 @@
 	    <include>src/main/java/org/esupportail/portlet/filemanager/**</include>
 	    <include>src/main/webapp/WEB-INF/**</include>
 	    <include>src/main/resources/**</include>
-	    <include>src/main/webapp/js/esup-stock.js</include>
-	    <include>src/main/webapp/css/esup-stock*css</include>
+	    <include>src/main/webapp/js/esup-*.js</include>
+	    <include>src/main/webapp/css/esup-*css</include>
 	  </includes>
 	</configuration>
       </plugin>
