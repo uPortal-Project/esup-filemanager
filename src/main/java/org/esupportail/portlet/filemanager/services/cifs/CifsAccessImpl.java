@@ -365,10 +365,21 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 
 		boolean success = false;
 		SmbFile newFile = null;
-		
+
 		try {
 			SmbFile folder = cd(dir, userParameters);
 			newFile = new SmbFile(folder.getCanonicalPath() + filename, this.userAuthenticator);
+
+			// avoid bug that will remove existing file as success = false if same file name already exist
+			// to solve that we upload the file with an increment in filename. Doing the same thing with other AccessImpl ?
+			String filenameWithoutExt = filename.substring(0, filename.lastIndexOf("."));
+			String fileExtension = filename.substring(filename.lastIndexOf("."));
+			int i = 1;
+			while(newFile.exists()){
+			    newFile = new SmbFile(folder.getCanonicalPath() + filenameWithoutExt + i + fileExtension, this.userAuthenticator);
+			    i++;
+			}
+
 			newFile.createNewFile();
 
 			OutputStream outstr = newFile.getOutputStream();
@@ -382,7 +393,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 		} catch (IOException e) {
 			log.warn("can't upload file : " + e.getMessage(), e);
 		}
-		
+
 		if(!success && newFile != null) {
 			// problem when uploading the file -> the file uploaded is corrupted
 			// best is to delete it
@@ -393,7 +404,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 				log.debug("can't delete corrupted file after bad upload " + e.getMessage());
 			}
 		}
-		
+
 		return success;
 	}
 
