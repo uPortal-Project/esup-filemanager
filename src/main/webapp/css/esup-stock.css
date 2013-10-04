@@ -124,11 +124,6 @@ display: block;
 padding: 24px 5px 0px 10px;
 margin-top: -24px;
 background: url(/esup-filemanager/img/upload_24px.gif) no-repeat top;
-color: #5a95cf!important;
-text-decoration: underline;
-/*text-decoration: none;
-width: 60px;*/
-font-weight:bold;
 }
 
 
@@ -352,7 +347,6 @@ margin: 0px;
 }
 
 .esupstock a.enabled:hover {
-color: #11d;
 background-color: #f8f8f8 !important;
 }
 
@@ -370,12 +364,8 @@ background-color: #f8f8f8 !important;
 	background-color: #f8f8f8 !important;
 }
 
-.esupstock .enabled_upload {
-	background: url(/esup-filemanager/img/upload2_24px.png) no-repeat top;
-}
-
 .esupstock .disabled_upload {
-	background: url(/esup-filemanager/img/disabled/upload2_24px.png) no-repeat top;
+	background: url(/esup-filemanager/img/disabled/upload_24px.gif) no-repeat top;
 }
 
 .esupstock .disabled_upload input {
@@ -545,9 +535,6 @@ margin-left: 5px;
 	height: 100%;
 	overflow: hidden;
 }
-.esupstock .thumbnail .inner_thumbnail > input {
-    position: absolute;
-}
 
 .esupstock .thumbnail a img {
 	margin-top: 16px;
@@ -586,13 +573,6 @@ margin-left: 5px;
 /* RlM6 = FS: coding in Base64 ... */
 .esupstock #path_RlM6 > ins, .esupstock #path_RlM6 > a {
     display: none;
-}
-
-
-/* Hack for uPortal 2.x */
-#portal-page-body .esupstock .container #fileTree ul {
-margin: 0px 5px 0px 0px;
-padding: 0px 0px 0px 15px;
 }
 
 /* bug JSTree :
