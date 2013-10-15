@@ -92,10 +92,10 @@
     <property name="driveName" value="Toto"/>
     <property name="icon" value="/esup-filemanager/img/drives/tux.png" />
     <property name="uri" value="sftp://stock-2.mon-univ.fr/"/>
-    <property name="memberOfAny">
-      <list>
-		<value>pags.mon-univ</value>
-      </list>
+    <property name="evaluator">
+	<bean class="org.esupportail.portlet.filemanager.services.evaluators.UserRoleEvaluator" >
+            <property name="group" value="pags.mon-univ" />
+	</bean>
     </property>
     <property name="userAuthenticatorService" ref="simpleUserAuthenticationService"/>
     <property name="resourceUtils" ref="resourceUtils"/>
@@ -117,7 +117,12 @@
     <property name="driveName" value="bob"/>
     <property name="icon" value="/esup-filemanager/img/drives/root.png" />
     <property name="uri" value="file:///"/>
-    <property name="contextToken" value="justbob"/>
+    <property name="evaluator">
+	<bean class="org.esupportail.portlet.filemanager.services.evaluators.PreferenceEvaluator" >
+            <property name ="attribute" value="contextToken"/>
+            <property name ="value" value="justbob"/>
+	</bean>
+    </property>
     <property name="resourceUtils" ref="resourceUtils"/>
   </bean>
   
@@ -133,10 +138,31 @@
     <property name="driveName" value="Stock2"/>
     <property name="icon" value="/esup-filemanager/img/drives/root.png" />
     <property name="uri" value="sftp://stock-2.mon-univ.fr/home/@uid@/"/>
-    <property name="memberOfAny">
-      <list>
-		<value>pags.mon-univ</value>
-      </list>
+    <property name="evaluator">
+	<bean class="org.esupportail.portlet.filemanager.services.evaluators.GroupEvaluator" >
+            <property name="type" value="AND"/>
+            <property name="evaluators">
+                <list>
+                    <bean class="org.esupportail.portlet.filemanager.services.evaluators.GroupEvaluator" >
+                        <property name="type" value="OR"/>
+                        <property name="evaluators">
+                            <bean class="org.esupportail.portlet.filemanager.services.evaluators.ListUserRoleEvaluatorEditor">
+                                <property name="groupList">
+                                    <list>
+                                        <value>pags.composante3</value>
+                                        <value>pags.composante5</value>
+                                    </list>
+                                </property>
+                            </bean>
+                        </property>
+                    </bean>
+                    <bean class="org.esupportail.portlet.filemanager.services.evaluators.PreferenceEvaluator" >
+                        <property name ="attribute" value="contextToken"/>
+                        <property name ="value" value="justbob"/>
+                    </bean>
+                </list>
+            </property>
+	</bean>
     </property>
     <property name="userAuthenticatorService" ref="formUserAuthenticationService"/>
     <property name="resourceUtils" ref="resourceUtils"/>
@@ -167,12 +193,25 @@
     <property name="icon" value="/esup-filemanager/img/drives/root.png" />
     <property name="uri" value="sftp://stock-2.mon-univ.fr/"/>
     <property name="sftpSetUserDirIsRoot" value="true"/>
-    <property name="hasAttributs">
-		<map>
-			<entry key="affiliation" value="(.*)student(.*)"/>
-			<entry key="compsante" value="unecomposante"/>
-		</map>
-	</property>
+    <property name="evaluator">
+	<bean class="org.esupportail.portlet.filemanager.services.evaluators.GroupEvaluator" >
+            <property name="type" value="AND" />
+            <property name="evaluators">
+                <list>
+                    <bean class="org.esupportail.portlet.filemanager.services.evaluators.UserAttributesEvaluator">
+                        <property name="attribute" value="affiliation" />
+                        <property name="value" value="(.*)student(.*)" />
+                        <property name="mode" value="MATCH" />
+                    </bean>
+                    <bean class="org.esupportail.portlet.filemanager.services.evaluators.UserAttributesEvaluator">
+                        <property name="attribute" value="composante" />
+                        <property name="value" value="unecomposante" />
+                        <property name="mode" value="EQUALS" />
+                    </bean>
+                </list>
+            </property>
+	</bean>
+    </property>
     <property name="userAuthenticatorService" ref="casUserAuthenticationService"/>
     <property name="resourceUtils" ref="resourceUtils"/>
   </bean>
@@ -281,10 +320,17 @@
 		<entry key="affiliation" value="member@mon-univ.fr"/>
       </map>
     </property>
-    <property name="memberOfAny">
-      <list>
-		<value>pags.mon-univ</value>
-      </list>
+    <property name="evaluator">
+        <bean class="org.esupportail.portlet.filemanager.services.evaluators.GroupEvaluator" >
+            <property name="type" value="NOT"/>
+            <property name="evaluators">
+                <list>
+                    <bean class="org.esupportail.portlet.filemanager.services.evaluators.UserRoleEvaluator" >
+                        <property name="group" value="pags.composante3" />
+                    </bean>
+                </list>
+            </property>
+        </bean>
     </property>
     <property name="resourceUtils" ref="resourceUtils"/>
   </bean>

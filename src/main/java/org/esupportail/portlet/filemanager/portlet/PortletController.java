@@ -77,13 +77,10 @@ public class PortletController {
 			String clientIpAdress = request.getProperty("REMOTE_ADDR");
 	    	userParameters.init(clientIpAdress);			
 	        
-	    	final PortletPreferences prefs = request.getPreferences();
-	    	String contextToken = prefs.getValue(PREF_ESUPSTOCK_CONTEXTTOKEN, null);
-	    	
 			Map userInfos = (Map) request.getAttribute(PortletRequest.USER_INFO);	
 			userParameters.setUserInfos(userInfos);
 			
-			List<String> driveNames = serverAccess.getRestrictedDrivesGroupsContext(request, contextToken, userInfos);
+			List<String> driveNames = serverAccess.getRestrictedDrivesGroupsContext(request);
 			userParameters.setDriveNames(driveNames);
 						
 	   		log.info("set SharedUserPortletParameters in application session");   		
