@@ -37,7 +37,7 @@ public interface IServersAccessService {
 	public abstract void setServers(List<FsAccess> servers);
 
 	public abstract List<String> getRestrictedDrivesGroupsContext(
-			PortletRequest request, String contextToken, Map userInfos);
+			PortletRequest request);
 
 	public abstract void initializeServices(
 			SharedUserPortletParameters userParameters);
