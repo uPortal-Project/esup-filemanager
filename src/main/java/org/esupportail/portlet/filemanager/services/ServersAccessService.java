@@ -80,57 +80,15 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 	@Autowired
 	protected PathEncodingUtils pathEncodingUtils;
 
-	public List<String> getRestrictedDrivesGroupsContext(PortletRequest request,
-			String contextToken, Map userInfos) {
+	public List<String> getRestrictedDrivesGroupsContext(PortletRequest request) {
 
 		List<String> driveNames = new ArrayList<String>(this.servers.keySet());
 
-		// contextToken restriction
-		if(contextToken != null) {
-			for(FsAccess server: this.servers.values()) {
-				if(server.getContextToken() == null || !contextToken.equals(server.getContextToken())) {
-					driveNames.remove(server.getDriveName());
-				}
+		for(FsAccess server: this.servers.values()) {
+			if(server.getEvaluator() != null && !server.getEvaluator().isApplicable(request) ) {
+				driveNames.remove(server.getDriveName());
 			}
 		}
-
-		// groups restriction
-		if(request != null)
-			for(FsAccess server: this.servers.values()) {
-				boolean isUserInAnyRole = false;
-				if(server.getMemberOfAny() != null) {
-					for(String group: server.getMemberOfAny()) {
-						if(request.isUserInRole(group)) {
-							isUserInAnyRole = true;
-							break;
-						}
-					}
-				} else {
-					// if null -> no restriction
-					isUserInAnyRole = true;
-				}
-				if(!isUserInAnyRole)
-					driveNames.remove(server.getDriveName());
-		}
-
-		// HasAttribut restriction
-		if(userInfos != null)
-			for(FsAccess server: this.servers.values()) {
-				boolean userHasAttributs = true;
-				if(server.getHasAttributs() != null) {
-					for(String attr: server.getHasAttributs().keySet()) {
-						String attrValue = (String)userInfos.get(attr);
-						String regex = server.getHasAttributs().get(attr);
-						if(attrValue == null || !attrValue.matches(regex)) {
-							userHasAttributs = false;
-							break;
-						}
-					}
-				}
-
-				if(!userHasAttributs)
-					driveNames.remove(server.getDriveName());
-			}
 
 		return driveNames;
 	}
@@ -451,12 +409,12 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 	}
 
 	@CrudLoggable(CrudLogLevel.DEBUG)
-	public DownloadFile getZip(List<String> dirs, SharedUserPortletParameters userParameters) throws IOException {	
+	public DownloadFile getZip(List<String> dirs, SharedUserPortletParameters userParameters) throws IOException {
 		File tmpFile = File.createTempFile("esup-stock-zip.", ".tmp");
 		// we call tmpFile.deleteOnExit so that ths tmp file will be deleted when jvm stops ...
 		// see also DownloadFile.finalize
 		tmpFile.deleteOnExit();
-		
+
 		FileOutputStream output = new FileOutputStream(tmpFile);
 		ZipOutputStream out = new ZipOutputStream(output);
 		for(String dir: dirs) {
