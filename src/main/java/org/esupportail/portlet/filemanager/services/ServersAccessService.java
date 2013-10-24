@@ -41,6 +41,7 @@ import org.apache.commons.logging.LogFactory;
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.DrivesCategory;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
+import org.esupportail.portlet.filemanager.beans.Quota;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
 import org.esupportail.portlet.filemanager.crudlog.CrudLogLevel;
@@ -511,4 +512,14 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 		return defaultPath;
 	}
 
+	
+	public Quota getQuota(String path, 
+	  SharedUserPortletParameters userParameters) {
+	  FsAccess access = this.getFsAccess(getDrive(path), userParameters);
+	  Quota result = null;
+	  if ( access.isSupportQuota(getLocalDir(path), userParameters) ) {
+	    result = access.getQuota(getLocalDir(path), userParameters);
+	  }
+	  return result;
+	}
 }

@@ -163,7 +163,15 @@
                 </list>
             </property>
 	</bean>
-    </property>
+  </property>
+	<property name="quotaService">
+		<bean
+			class="org.esupportail.portlet.filemanager.services.quota.QuotaServiceSimpleWS">
+			<property name="webUrl"
+				value="http://stock-2.mon-univ.fr/cgi-bin/quota.sh?{uid}" />
+			<property name="restTemplate" ref="restTemplate" />
+		</bean>
+	</property>
     <property name="userAuthenticatorService" ref="formUserAuthenticationService"/>
     <property name="resourceUtils" ref="resourceUtils"/>
   </bean>

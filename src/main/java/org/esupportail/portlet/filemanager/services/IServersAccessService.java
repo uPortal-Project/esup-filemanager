@@ -26,6 +26,7 @@ import javax.portlet.PortletRequest;
 
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
+import org.esupportail.portlet.filemanager.beans.Quota;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
 import org.esupportail.portlet.filemanager.crudlog.CrudLoggable;
@@ -106,5 +107,7 @@ public interface IServersAccessService {
 	public abstract String getFirstAvailablePath(
 			SharedUserPortletParameters userParameters,
 			String[] prefsDefaultPathes);
+
+	public abstract Quota getQuota(String path, SharedUserPortletParameters userParameters);
 
 }

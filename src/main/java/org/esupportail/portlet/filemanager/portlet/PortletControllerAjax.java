@@ -38,6 +38,7 @@ import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.FileUpload;
 import org.esupportail.portlet.filemanager.beans.FormCommand;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
+import org.esupportail.portlet.filemanager.beans.Quota;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
 import org.esupportail.portlet.filemanager.services.IServersAccessService;
@@ -443,7 +444,10 @@ public class PortletControllerAjax {
 			pathEncodingUtils.encodeDir(resource);
 			
 			// Based on the resource type, direct to appropriate details view
-			if ("folder".equals(resource.getType()) || "drive".equals(resource.getType())) {
+			if ("folder".equals(resource.getType()) || "drive".equals(resource.getType())) {		
+				Quota quota = this.serverAccess.getQuota(path, userParameters);
+				if(quota != null)
+					model.put("quota", quota);
 				model.put("file", resource);
 				return new ModelAndView("details_folder", model);
 			} else if ("file".equals(resource.getType())) {

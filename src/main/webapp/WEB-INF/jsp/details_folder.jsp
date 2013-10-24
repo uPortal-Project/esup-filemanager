@@ -20,7 +20,7 @@
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <h3 class="ui-widget-header ui-corner-all" >
     <spring:message code="details.header" />
@@ -39,5 +39,10 @@
 
 <dt class="details-attribute-header"><spring:message code="details.totalsize" /> : </dt>
 <dd class="details-attribute">${file.formattedTotalSize.size} <spring:message code="details.${file.formattedTotalSize.unit}"/></dd>
+
+<c:if test="${not empty quota}">
+	<dt class="details-attribute-header"><spring:message code="details.quota" /> : </dt>
+	<dd class="details-attribute"> ${quota.usage}% (${quota.usedSize} ${quota.usedUnit} / ${quota.maxSize} ${quota.maxUnit} )</dd>
+</c:if>
 
 </dl>
