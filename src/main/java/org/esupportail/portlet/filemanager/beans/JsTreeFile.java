@@ -20,6 +20,7 @@ package org.esupportail.portlet.filemanager.beans;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.text.DateFormat;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -438,5 +439,93 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 	public String toString() {
 		return "JFile: " + getPath();
 	}
+	
+	
+	
+	public static Map<String, Comparator<JsTreeFile>> comparators = new HashMap<String, Comparator<JsTreeFile>>();
+	
+	static {
+
+		Comparator titleComparatorAsc = new Comparator<JsTreeFile>() {
+			public int compare(JsTreeFile file1, JsTreeFile file2) {
+				if(file1.getType().equals("folder") &&
+						file2.getType().equals("file"))
+					return -1;
+				if(file1.getType().equals("file") &&
+						file2.getType().equals("folder"))
+					return 1;
+				return file1.getTitle().compareToIgnoreCase(file2.getTitle());
+			}
+		};
+		
+		Comparator titleComparatorDesc = new Comparator<JsTreeFile>() {
+			public int compare(JsTreeFile file1, JsTreeFile file2) {
+				if(file1.getType().equals("folder") &&
+						file2.getType().equals("file"))
+					return -1;
+				if(file1.getType().equals("file") &&
+						file2.getType().equals("folder"))
+					return 1;
+				return file2.getTitle().compareToIgnoreCase(file1.getTitle());
+			}
+		};
+		
+		Comparator sizeComparatorAsc = new Comparator<JsTreeFile>() {
+			public int compare(JsTreeFile file1, JsTreeFile file2) {
+				if(file1.getType().equals("folder") &&
+						file2.getType().equals("file"))
+					return -1;
+				if(file1.getType().equals("file") &&
+						file2.getType().equals("folder"))
+					return 1;
+				return file1.getSize() > file2.getSize() ? 1 : -1;
+			}
+		};
+		
+		Comparator sizeComparatorDesc = new Comparator<JsTreeFile>() {
+			public int compare(JsTreeFile file1, JsTreeFile file2) {
+				if(file1.getType().equals("folder") &&
+						file2.getType().equals("file"))
+					return -1;
+				if(file1.getType().equals("file") &&
+						file2.getType().equals("folder"))
+					return 1;
+				return file2.getSize() > file1.getSize() ? 1 : -1;
+			}
+		};
+		
+		
+		Comparator lastModifiedComparatorAsc = new Comparator<JsTreeFile>() {
+			public int compare(JsTreeFile file1, JsTreeFile file2) {
+				if(file1.getType().equals("folder") &&
+						file2.getType().equals("file"))
+					return -1;
+				if(file1.getType().equals("file") &&
+						file2.getType().equals("folder"))
+					return 1;
+				return file1.getLastModifiedTime().compareToIgnoreCase(file2.getLastModifiedTime());
+			}
+		};
+		
+		Comparator lastModifiedComparatorDesc = new Comparator<JsTreeFile>() {
+			public int compare(JsTreeFile file1, JsTreeFile file2) {
+				if(file1.getType().equals("folder") &&
+						file2.getType().equals("file"))
+					return -1;
+				if(file1.getType().equals("file") &&
+						file2.getType().equals("folder"))
+					return 1;
+				return file2.getLastModifiedTime().compareToIgnoreCase(file1.getLastModifiedTime());
+			}
+		};
+		
+		comparators.put("titleAsc", titleComparatorAsc);
+		comparators.put("titleDesc", titleComparatorDesc);	
+		comparators.put("sizeAsc", sizeComparatorAsc);
+		comparators.put("sizeDesc", sizeComparatorDesc);	
+		comparators.put("lastModifiedAsc", lastModifiedComparatorAsc);
+		comparators.put("lastModifiedDesc", lastModifiedComparatorDesc);	
+	}
+	
 
 }

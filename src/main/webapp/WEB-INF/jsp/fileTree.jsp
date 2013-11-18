@@ -51,10 +51,10 @@
     <table>
       <thead>
         <tr>
-          <th><spring:message code="browserArea.header.filename" /></th>
-          <th><spring:message code="browserArea.header.size" /></th>
+          <th><a class="sortTable" rel="${param.sortField == 'titleAsc' ? 'titleDesc' : 'titleAsc'}" href="#"><spring:message code="browserArea.header.filename" /></a></th>
+          <th><a class="sortTable" rel="${param.sortField == 'sizeAsc' ? 'sizeDesc' : 'sizeAsc'}" href="#"><spring:message code="browserArea.header.size" /></a></th>
           <th><spring:message code="browserArea.header.type" /></th>
-          <th><spring:message code="browserArea.header.modified" /></th>
+          <th><a class="sortTable" rel="${param.sortField == 'lastModifiedAsc' ? 'lastModifiedDesc' : 'lastModifiedAsc'}" href="#"><spring:message code="browserArea.header.modified" /></a></th>
         </tr>
       </thead>
       <tbody id="jqueryFileTreeBody">

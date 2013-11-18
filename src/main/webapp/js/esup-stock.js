@@ -24,6 +24,8 @@ var esupStockFixBlockSizes = $.browser.msie;
 //esupStockFixBlockSizes = true;
 var cursorWaitDialog = (useCursorWaitDialog == 'true');
 
+var sortField = "titleAsc";
+
 //IE does not define this by default
 if ("undefined" === typeof window.console)
 {
@@ -528,7 +530,7 @@ function initJstree() {
                     // the result is fed to the AJAX request `data` option
                     var retData = {
                         "dir": n == -1 ? defaultPath : $.data(n.get(0), "encPath"),
-                        "hierarchy": n == -1 ? "all" : ""
+                        "hierarchy": n == -1 ? "all" : "",
                     };
 
                     console.log("Jtree JSON data function : " + stringifyJSON(retData) + " loading node data ");
@@ -956,7 +958,6 @@ function handleLeftTreeSelection(treeNode) {
     //not garaunteed if the element is not opened automatically.
 
     var path = getPathFromLiNode(treeNode);
-    var type = getTypeFromLiNode(treeNode);
 
     cursor_wait();
 
@@ -965,7 +966,8 @@ function handleLeftTreeSelection(treeNode) {
         type: 'POST',
         url: htmlFileTreeURL,
         data: {
-            "dir": path        
+            "dir": path,
+            "sortField": sortField
         },
         success: function (r) {
             console.log("handleLeftTreeSelection: htmlFileTree ajax call succeeded");
@@ -1816,6 +1818,12 @@ function deleteFiles(dirsDataStruct) {
 
       $('#browserMain div.breadcrumbs a.fileTreeRefCrumbs').bind('click', function () {
           var path = $(this).attr('rel');
+          openAndSelectLiNode(path);
+      });
+
+      $('#browserMain div#jqueryFileTree thead a.sortTable').bind('click', function () {
+          sortField = $(this).attr('rel');
+          var path = $("#bigdirectory").attr('rel');
           openAndSelectLiNode(path);
       });
 
