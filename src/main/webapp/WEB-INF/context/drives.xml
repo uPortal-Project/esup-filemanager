@@ -110,19 +110,11 @@
 
   <!-- bob doesn't use authentication 
   bob is displayed to all people 
-  bob has a contextToken property : if we set up a contextToken parameter with value justbob when publishing the portlet in the portal,
-  only drives with a contextToken equals to justbob (like ebob for example here) will be displayed.
   -->
   <bean  class="org.esupportail.portlet.filemanager.services.vfs.VfsAccessImpl" lazy-init="true">
     <property name="driveName" value="bob"/>
     <property name="icon" value="/esup-filemanager/img/drives/root.png" />
     <property name="uri" value="file:///"/>
-    <property name="evaluator">
-	<bean class="org.esupportail.portlet.filemanager.services.evaluators.PreferenceEvaluator" >
-            <property name ="attribute" value="contextToken"/>
-            <property name ="value" value="justbob"/>
-	</bean>
-    </property>
     <property name="resourceUtils" ref="resourceUtils"/>
   </bean>
   
@@ -139,7 +131,13 @@
     <property name="icon" value="/esup-filemanager/img/drives/root.png" />
     <property name="uri" value="sftp://stock-2.mon-univ.fr/home/@uid@/"/>
     <property name="evaluator">
-	<bean class="org.esupportail.portlet.filemanager.services.evaluators.GroupEvaluator" >
+        <!--
+            Stock2 has an evaluator with :
+            * group evaluator : the user should belong to pags.composante3 or/and pags.composante5 so that Stock2 will be displayed
+            * AND pref evaluator : the published portlet must have a portlet preference/paramater named contextToken 
+            and with value justStock2  so that Stock2 will be displayed
+        -->
+			<bean class="org.esupportail.portlet.filemanager.services.evaluators.GroupEvaluator" >
             <property name="type" value="AND"/>
             <property name="evaluators">
                 <list>
@@ -158,11 +156,11 @@
                     </bean>
                     <bean class="org.esupportail.portlet.filemanager.services.evaluators.PreferenceEvaluator" >
                         <property name ="attribute" value="contextToken"/>
-                        <property name ="value" value="justbob"/>
+                        <property name ="value" value="justStock2"/>
                     </bean>
                 </list>
             </property>
-	</bean>
+			</bean>
   </property>
 	<property name="quotaService">
 		<bean

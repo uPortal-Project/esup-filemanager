@@ -48,7 +48,6 @@ public class PortletController {
 
 	protected Logger log = Logger.getLogger(PortletController.class);
 	
-	public static final String PREF_ESUPSTOCK_CONTEXTTOKEN = "contextToken";
 	public static final String PREF_PORTLET_VIEW = "defaultPortletView";
 	public static final String PREF_DEFAULT_PATH = "defaultPath";
 	public static final String PREF_SHOW_HIDDEN_FILES = "showHiddenFiles";
