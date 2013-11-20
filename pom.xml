@@ -315,24 +315,6 @@
 	<version>2.0.2</version>
       </plugin>
       <plugin>
-	<groupId>org.mortbay.jetty</groupId>
-	<artifactId>jetty-maven-plugin</artifactId>
-	<version>7.1.6.v20100715</version>
-	<configuration>
-	  <webAppConfig>
-	    <contextPath>/esup-filemanager</contextPath>
-	  </webAppConfig>
-	</configuration>
-        <dependencies>
-	  <dependency>
-	    <groupId>javax.portlet</groupId>
-	    <artifactId>portlet-api</artifactId>
-	    <version>1.0</version>
-	    <type>jar</type>
-	  </dependency>
-        </dependencies> 	
-      </plugin>
-      <plugin>
 	<groupId>com.mycila.maven-license-plugin</groupId>
 	<artifactId>maven-license-plugin</artifactId>
 	<version>1.9.0</version>
