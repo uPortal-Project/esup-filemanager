@@ -2175,6 +2175,7 @@ $.authenticate = function(dir, username, password) { authenticate(dir, username,
       break;
     case 46:
       console.log("Suppr key pressed");
+      if ($(".renameSpan:not(:hidden)").length) {return;}
       deleteFiles();
       break;    
     case 113:
