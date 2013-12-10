@@ -61,7 +61,10 @@ import org.springframework.util.Assert;
 public class ServersAccessService implements DisposableBean, IServersAccessService {
 
 	protected static final Log log = LogFactory.getLog(ServersAccessService.class);
-
+	
+	/** Size of zipping buffers: 128 kB. */
+	protected static final int ZIP_BUFFER_SIZE = 131072;
+	
 	protected Map<String, FsAccess> servers = new HashMap<String, FsAccess>();
 
 	protected Map<String, FsAccess> restrictedServers = new HashMap<String, FsAccess>();
@@ -416,19 +419,24 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 		// see also DownloadFile.finalize
 		tmpFile.deleteOnExit();
 		
-		FileOutputStream output = new FileOutputStream(tmpFile);
-		ZipOutputStream out = new ZipOutputStream(output);
-		for(String dir: dirs) {
-			this.addChildrensTozip(out, dir, "", userParameters);
+		FileOutputStream output = null;
+		ZipOutputStream out = null;
+		try {
+			output = new FileOutputStream(tmpFile);
+			out = new ZipOutputStream(output);
+			final byte zippingBuffer[] = new byte[ZIP_BUFFER_SIZE];
+			for(String dir: dirs) {
+				this.addChildrensTozip(out, zippingBuffer, dir, "", userParameters);
+			}
+		} finally {
+			IOUtils.closeQuietly(out);
+			IOUtils.closeQuietly(output);
 		}
-		out.close();
-		output.close();
 
 		String contentType = "application/zip";
 		int size = (int)tmpFile.length();
 		String baseName = "export.zip";
 		InputStream inputStream =  new FileInputStream(tmpFile);
-		output.close();
 
 		return new DownloadFile(contentType, size, baseName, inputStream, tmpFile);
 	}
@@ -439,7 +447,7 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 	    return pattern.matcher(temp).replaceAll("");
 	}
 
-	private void addChildrensTozip(ZipOutputStream out, String dir, String folder, SharedUserPortletParameters userParameters) throws IOException {
+	private void addChildrensTozip(ZipOutputStream out, byte[] zippingBuffer, String dir, String folder, SharedUserPortletParameters userParameters) throws IOException {
 		JsTreeFile tFile = get(dir, userParameters, false, false);
 		if("file".equals(tFile.getType())) {
 			DownloadFile dFile = getFile(dir, userParameters);
@@ -455,7 +463,15 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 			//With java 7, encoding should be added to support special characters in the file names
 			//http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4244499
 			out.putNextEntry(new ZipEntry(fileName));
-			out.write(IOUtils.toByteArray(dFile.getInputStream()));
+			
+			// MBD: this is a problem for large files, because IOUtils.toByteArray() copy all the file in memory
+			//out.write(IOUtils.toByteArray(dFile.getInputStream()));
+			int count;
+			final InputStream dFileInputStream = dFile.getInputStream();
+			while((count = dFileInputStream.read(zippingBuffer, 0, ZIP_BUFFER_SIZE)) != -1) {
+				out.write(zippingBuffer, 0, count);
+			}
+	
 			out.closeEntry();
 		} else {
 			folder = unAccent(folder.concat(tFile.getTitle()).concat("/"));
@@ -465,7 +481,7 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 			out.closeEntry();
 			List<JsTreeFile> childrens = this.getChildren(dir, userParameters);
 			for(JsTreeFile child: childrens) {
-				this.addChildrensTozip(out, child.getPath(), folder, userParameters);
+				this.addChildrensTozip(out, zippingBuffer, child.getPath(), folder, userParameters);
 			}
 		}
 	}
