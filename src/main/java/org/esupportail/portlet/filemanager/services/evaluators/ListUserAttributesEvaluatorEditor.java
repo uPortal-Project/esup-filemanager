@@ -72,7 +72,7 @@ public class ListUserAttributesEvaluatorEditor implements FactoryBean, Initializ
 	private void setAsText(final List<String> arg0, final String arg1, final String arg2) throws IllegalArgumentException {
 		List<UserAttributesEvaluator> list = new LinkedList<UserAttributesEvaluator>();
 		for (String value : arg0) {
-		list.add(new UserAttributesEvaluator(value, arg1, arg2));
+			list.add(new UserAttributesEvaluator(arg1, value, arg2));
 		}
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("In : [" + arg0 + ", " + arg1 + ", " + arg2 + "] out : " + list.toString());

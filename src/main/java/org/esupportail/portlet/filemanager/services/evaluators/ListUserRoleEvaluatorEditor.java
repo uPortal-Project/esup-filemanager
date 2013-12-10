@@ -64,7 +64,7 @@ public class ListUserRoleEvaluatorEditor implements FactoryBean, InitializingBea
 	private void setAsText(final List<String> arg0) throws IllegalArgumentException {
 		List<UserRoleEvaluator> list = new LinkedList<UserRoleEvaluator>();
 		for (String grp : arg0) {
-		list.add(new UserRoleEvaluator(grp));
+			list.add(new UserRoleEvaluator(grp));
 		}
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("String in : " + arg0 + " List out : " + list.toString());
