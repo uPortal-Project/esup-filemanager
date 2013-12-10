@@ -37,10 +37,10 @@ public class GroupEvaluator implements IDriveAccessEvaluator, InitializingBean {
 	 * Type operator to eavluate the list of evaluators.
 	 */
 	public enum Type {
-        OR,
-        AND,
-        NOT;
-    }
+		OR,
+		AND,
+		NOT;
+	}
 
 	/** The logger. */
 	private static Log LOG = LogFactory.getLog(GroupEvaluator.class);
@@ -76,14 +76,14 @@ public class GroupEvaluator implements IDriveAccessEvaluator, InitializingBean {
 	 */
 	public boolean isApplicable(PortletRequest request) {
 		boolean rslt = false;
-        if (LOG.isDebugEnabled())
-            LOG.debug(" >>>> calling GroupEvaluator[" + this + ", op=" + type +
-                    "].isApplicable()");
+		if (LOG.isDebugEnabled())
+			LOG.debug(" >>>> calling GroupEvaluator[" + this + ", op=" + type +
+					"].isApplicable()");
 
-        if (type != null) {
+		if (type != null) {
 
-	        switch (this.type) {
-	        case OR: {
+			switch (this.type) {
+			case OR: {
 			rslt = false;   // presume false in this case...
 			for(IDriveAccessEvaluator v : this.evaluators) {
 				if ( v.isApplicable( request ) ) {
@@ -91,9 +91,9 @@ public class GroupEvaluator implements IDriveAccessEvaluator, InitializingBean {
 					break;
 				}
 			}
-	        } break;
+			} break;
 
-	        case AND: {
+			case AND: {
 			rslt = true;   // presume true in this case...
 			for(IDriveAccessEvaluator v : this.evaluators) {
 				if ( v.isApplicable( request ) == false ) {
@@ -101,9 +101,9 @@ public class GroupEvaluator implements IDriveAccessEvaluator, InitializingBean {
 					break;
 				}
 			}
-	        } break;
+			} break;
 
-	        case NOT: {
+			case NOT: {
 			rslt = false;   // presume false in this case... until later...
 			for(IDriveAccessEvaluator v : this.evaluators) {
 				if ( v.isApplicable( request ) ) {
@@ -112,11 +112,11 @@ public class GroupEvaluator implements IDriveAccessEvaluator, InitializingBean {
 				}
 			}
 			rslt = !rslt;
-	        } break;
-	        }
-        }
+			} break;
+			}
+		}
 
-        if (LOG.isDebugEnabled())
+		if (LOG.isDebugEnabled())
 		LOG.debug(" ---- GroupEvaluator[" + this + ", op=" + type
 				+ "].isApplicable()=" + rslt);
 

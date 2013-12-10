@@ -33,100 +33,100 @@ import org.springframework.util.Assert;
  */
 public class ListUserRoleEvaluatorEditor implements FactoryBean, InitializingBean {
 
-    /** Logger.*/
-    private static final Log LOG = LogFactory.getLog(ListUserRoleEvaluatorEditor.class);
+	/** Logger.*/
+	private static final Log LOG = LogFactory.getLog(ListUserRoleEvaluatorEditor.class);
 
-    /** */
-    private List<String> groupList;
-    /** */
-    private List<UserRoleEvaluator> editedProperties;
+	/** */
+	private List<String> groupList;
+	/** */
+	private List<UserRoleEvaluator> editedProperties;
 
-    /**
-     * Constructor of ListUserRoleEvaluatorEditor.java.
-     */
-    public ListUserRoleEvaluatorEditor() {
-        //block empty
-    }
+	/**
+	 * Constructor of ListUserRoleEvaluatorEditor.java.
+	 */
+	public ListUserRoleEvaluatorEditor() {
+		//block empty
+	}
 
-    /**
-     * Constructor of ListUserRoleEvaluatorEditor.java.
-     * @param arg0
-     */
-    public ListUserRoleEvaluatorEditor(final List<String> arg0) {
-        this.setAsText(arg0);
-    }
+	/**
+	 * Constructor of ListUserRoleEvaluatorEditor.java.
+	 * @param arg0
+	 */
+	public ListUserRoleEvaluatorEditor(final List<String> arg0) {
+		this.setAsText(arg0);
+	}
 
-    /**
-     * @param arg0
-     * @throws IllegalArgumentException
-     * @see org.springframework.beans.propertyeditors.PropertiesEditor#setAsText(java.lang.String)
-     */
-    private void setAsText(final List<String> arg0) throws IllegalArgumentException {
-        List<UserRoleEvaluator> list = new LinkedList<UserRoleEvaluator>();
-        for (String grp : arg0) {
-		list.add(new UserRoleEvaluator(grp));
-        }
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("String in : " + arg0 + " List out : " + list.toString());
-        }
-        this.editedProperties = list;
-    }
+	/**
+	 * @param arg0
+	 * @throws IllegalArgumentException
+	 * @see org.springframework.beans.propertyeditors.PropertiesEditor#setAsText(java.lang.String)
+	 */
+	private void setAsText(final List<String> arg0) throws IllegalArgumentException {
+		List<UserRoleEvaluator> list = new LinkedList<UserRoleEvaluator>();
+		for (String grp : arg0) {
+			list.add(new UserRoleEvaluator(grp));
+		}
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("String in : " + arg0 + " List out : " + list.toString());
+		}
+		this.editedProperties = list;
+	}
 
-    /**
-     * @return <code>Object</code> Here returns a List of LDAP attributes names.
-     * @throws Exception
-     * @see org.springframework.beans.factory.FactoryBean#getObject()
-     */
-    public Object getObject() throws Exception {
-        // TODO Auto-generated method stub
-        return editedProperties;
-    }
+	/**
+	 * @return <code>Object</code> Here returns a List of LDAP attributes names.
+	 * @throws Exception
+	 * @see org.springframework.beans.factory.FactoryBean#getObject()
+	 */
+	public Object getObject() throws Exception {
+		// TODO Auto-generated method stub
+		return editedProperties;
+	}
 
-    /**
-     * @return <code>Class</code> The class name of the object returned.
-     * @see org.springframework.beans.factory.FactoryBean#getObjectType()
-     */
-    @SuppressWarnings("rawtypes")
+	/**
+	 * @return <code>Class</code> The class name of the object returned.
+	 * @see org.springframework.beans.factory.FactoryBean#getObjectType()
+	 */
+	@SuppressWarnings("rawtypes")
 	public Class getObjectType() {
-        // TODO Auto-generated method stub
-        return List.class;
-    }
+		// TODO Auto-generated method stub
+		return List.class;
+	}
 
-    /**
-     * @return <code>boolean</code>
-     * @see org.springframework.beans.factory.FactoryBean#isSingleton()
-     */
-    public boolean isSingleton() {
-        // TODO Auto-generated method stub
-        return false;
-    }
+	/**
+	 * @return <code>boolean</code>
+	 * @see org.springframework.beans.factory.FactoryBean#isSingleton()
+	 */
+	public boolean isSingleton() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-    /**
-     * @throws Exception
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
-    public void afterPropertiesSet() throws Exception {
-        Assert.notEmpty(getGroupList(), "The property groupList in class "
-                + this.getClass().getSimpleName() + " must not be null and not empty.");
+	/**
+	 * @throws Exception
+	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	 */
+	public void afterPropertiesSet() throws Exception {
+		Assert.notEmpty(getGroupList(), "The property groupList in class "
+				+ this.getClass().getSimpleName() + " must not be null and not empty.");
 
-        this.setAsText(getGroupList());
-    }
+		this.setAsText(getGroupList());
+	}
 
-    /**
-     * Getter du membre groupList.
-     * @return <code>String</code> le membre groupList.
-     */
-    public List<String> getGroupList() {
-        return groupList;
-    }
+	/**
+	 * Getter du membre groupList.
+	 * @return <code>String</code> le membre groupList.
+	 */
+	public List<String> getGroupList() {
+		return groupList;
+	}
 
-    /**
-     * Setter du membre groupList.
-     * @param groupList la nouvelle valeur du membre groupList.
-     */
-    public void setGroupList(final List<String> groupList) {
-        this.groupList = groupList;
-    }
+	/**
+	 * Setter du membre groupList.
+	 * @param groupList la nouvelle valeur du membre groupList.
+	 */
+	public void setGroupList(final List<String> groupList) {
+		this.groupList = groupList;
+	}
 
 
 

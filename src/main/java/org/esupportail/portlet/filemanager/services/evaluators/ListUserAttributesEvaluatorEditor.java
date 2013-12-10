@@ -33,98 +33,98 @@ import org.springframework.util.Assert;
  */
 public class ListUserAttributesEvaluatorEditor implements FactoryBean, InitializingBean {
 
-    /** Logger.*/
-    private static final Log LOG = LogFactory.getLog(ListUserAttributesEvaluatorEditor.class);
+	/** Logger.*/
+	private static final Log LOG = LogFactory.getLog(ListUserAttributesEvaluatorEditor.class);
 
-    /** */
-    private List<String> valueList;
-    /** */
-    private String userAttribute;
-    /** */
-    private String mode;
 	/** */
-    private List<UserAttributesEvaluator> editedProperties;
+	private List<String> valueList;
+	/** */
+	private String userAttribute;
+	/** */
+	private String mode;
+	/** */
+	private List<UserAttributesEvaluator> editedProperties;
 
-    /**
-     * Constructor of ListUserRoleEvaluatorEditor.java.
-     */
-    public ListUserAttributesEvaluatorEditor() {
-        //block empty
-    }
+	/**
+	 * Constructor of ListUserRoleEvaluatorEditor.java.
+	 */
+	public ListUserAttributesEvaluatorEditor() {
+		//block empty
+	}
 
-    /**
-     * Constructor of ListUserRoleEvaluatorEditor.java.
-     * @param arg0 list of values
-     * @param arg1 attribute name
-     * @param arg2 mode
-     */
-    public ListUserAttributesEvaluatorEditor(final List<String> arg0, final String arg1, final String arg2) {
-        this.setAsText(arg0, arg1, arg2);
-    }
+	/**
+	 * Constructor of ListUserRoleEvaluatorEditor.java.
+	 * @param arg0 list of values
+	 * @param arg1 attribute name
+	 * @param arg2 mode
+	 */
+	public ListUserAttributesEvaluatorEditor(final List<String> arg0, final String arg1, final String arg2) {
+		this.setAsText(arg0, arg1, arg2);
+	}
 
-    /**
-     * @param arg0 list of values
-     * @param arg1 attribute name
-     * @param arg2 mode
-     * @throws IllegalArgumentException
-     * @see org.springframework.beans.propertyeditors.PropertiesEditor#setAsText(java.lang.String)
-     */
-    private void setAsText(final List<String> arg0, final String arg1, final String arg2) throws IllegalArgumentException {
-        List<UserAttributesEvaluator> list = new LinkedList<UserAttributesEvaluator>();
-        for (String value : arg0) {
-		list.add(new UserAttributesEvaluator(value, arg1, arg2));
-        }
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("In : [" + arg0 + ", " + arg1 + ", " + arg2 + "] out : " + list.toString());
-        }
-        this.editedProperties = list;
-    }
+	/**
+	 * @param arg0 list of values
+	 * @param arg1 attribute name
+	 * @param arg2 mode
+	 * @throws IllegalArgumentException
+	 * @see org.springframework.beans.propertyeditors.PropertiesEditor#setAsText(java.lang.String)
+	 */
+	private void setAsText(final List<String> arg0, final String arg1, final String arg2) throws IllegalArgumentException {
+		List<UserAttributesEvaluator> list = new LinkedList<UserAttributesEvaluator>();
+		for (String value : arg0) {
+			list.add(new UserAttributesEvaluator(arg1, value, arg2));
+		}
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("In : [" + arg0 + ", " + arg1 + ", " + arg2 + "] out : " + list.toString());
+		}
+		this.editedProperties = list;
+	}
 
-    /**
-     * @return <code>Object</code> Here returns a List of LDAP attributes names.
-     * @throws Exception
-     * @see org.springframework.beans.factory.FactoryBean#getObject()
-     */
-    public Object getObject() throws Exception {
-        // TODO Auto-generated method stub
-        return editedProperties;
-    }
+	/**
+	 * @return <code>Object</code> Here returns a List of LDAP attributes names.
+	 * @throws Exception
+	 * @see org.springframework.beans.factory.FactoryBean#getObject()
+	 */
+	public Object getObject() throws Exception {
+		// TODO Auto-generated method stub
+		return editedProperties;
+	}
 
-    /**
-     * @return <code>Class</code> The class name of the object returned.
-     * @see org.springframework.beans.factory.FactoryBean#getObjectType()
-     */
-    @SuppressWarnings("rawtypes")
+	/**
+	 * @return <code>Class</code> The class name of the object returned.
+	 * @see org.springframework.beans.factory.FactoryBean#getObjectType()
+	 */
+	@SuppressWarnings("rawtypes")
 	public Class getObjectType() {
-        // TODO Auto-generated method stub
-        return List.class;
-    }
+		// TODO Auto-generated method stub
+		return List.class;
+	}
 
-    /**
-     * @return <code>boolean</code>
-     * @see org.springframework.beans.factory.FactoryBean#isSingleton()
-     */
-    public boolean isSingleton() {
-        // TODO Auto-generated method stub
-        return false;
-    }
+	/**
+	 * @return <code>boolean</code>
+	 * @see org.springframework.beans.factory.FactoryBean#isSingleton()
+	 */
+	public boolean isSingleton() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-    /**
-     * @throws Exception
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
-    public void afterPropertiesSet() throws Exception {
-        Assert.notEmpty(getValueList(), "The property valueList in class "
-                + this.getClass().getSimpleName() + " must not be null and not empty.");
-        Assert.hasLength(getUserAttribute(), "The property userAttribute in class "
-                + this.getClass().getSimpleName() + " must not be null and not empty.");
-        Assert.hasLength(getMode(), "The property mode in class "
-                + this.getClass().getSimpleName() + " must not be null and not empty.");
+	/**
+	 * @throws Exception
+	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	 */
+	public void afterPropertiesSet() throws Exception {
+		Assert.notEmpty(getValueList(), "The property valueList in class "
+				+ this.getClass().getSimpleName() + " must not be null and not empty.");
+		Assert.hasLength(getUserAttribute(), "The property userAttribute in class "
+				+ this.getClass().getSimpleName() + " must not be null and not empty.");
+		Assert.hasLength(getMode(), "The property mode in class "
+				+ this.getClass().getSimpleName() + " must not be null and not empty.");
 
-        this.setAsText(getValueList(), getUserAttribute(), getMode());
-    }
+		this.setAsText(getValueList(), getUserAttribute(), getMode());
+	}
 
-    /**
+	/**
 	 * Getter of member valueList.
 	 * @return <code>List<String></code> the attribute valueList
 	 */
