@@ -45,8 +45,10 @@ import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UploadActionType;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
+import org.esupportail.portlet.filemanager.exceptions.EsupStockFileExistException;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockLostSessionException;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockPermissionDeniedException;
 import org.esupportail.portlet.filemanager.services.FsAccess;
@@ -403,7 +405,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 	}
 
 	@Override
-	public boolean putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters) {
+	public boolean putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters, UploadActionType uploadOption) {
 
 		boolean success = false;
 		FileObject newFile = null;
@@ -411,6 +413,21 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		try {
 			FileObject folder = cd(dir, userParameters);
 			newFile = folder.resolveFile(filename);
+			if (newFile.exists()) {
+				switch (uploadOption) {
+				case ERROR :
+					throw new EsupStockFileExistException();
+				case OVERRIDE :
+					newFile.delete();
+					break;
+				case RENAME_NEW :
+					newFile = folder.resolveFile(this.getUniqueFilename(filename, "-new-"));	
+					break;		 		
+				case RENAME_OLD :
+					newFile.moveTo(folder.resolveFile(this.getUniqueFilename(filename, "-old-")));
+					break;
+				}
+			}
 			newFile.createFile();
 
 			OutputStream outstr = newFile.getContent().getOutputStream();

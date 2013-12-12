@@ -35,8 +35,8 @@ import org.apache.log4j.Logger;
 import org.esupportail.portlet.filemanager.EsupFileManagerConstants;
 import org.esupportail.portlet.filemanager.api.DownloadRequest;
 import org.esupportail.portlet.filemanager.api.DownloadResponse;
-import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UploadActionType;
 import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -81,6 +81,9 @@ public class PortletControllerDownloadEvent implements PortletConfigAware {
     	boolean showHiddenFiles = "true".equals(prefs.getValue(PortletController.PREF_SHOW_HIDDEN_FILES, "false")); 	
     	userParameters.setShowHiddenFiles(showHiddenFiles);
     	
+		UploadActionType uploadOption = UploadActionType.valueOf(prefs.getValue(PortletController.PREF_UPLOAD_ACTION_EXIST_FILE, UploadActionType.OVERRIDE.toString()));
+		userParameters.setUploadOption(uploadOption);
+
     	serverAccess.initializeServices(userParameters);
     	
     	// DefaultPath
@@ -104,7 +107,7 @@ public class PortletControllerDownloadEvent implements PortletConfigAware {
         	String baseName = fc.getFile().getName().getBaseName();
         	InputStream inputStream = fc.getInputStream();
 
-        	success = serverAccess.putFile(defaultPath, baseName, inputStream, userParameters);
+			success = serverAccess.putFile(defaultPath, baseName, inputStream, userParameters, userParameters.getUploadOption());
         } catch (FileSystemException e) {
         	log.error("putFile failed for this downloadEvent", e);
         }	

@@ -32,8 +32,10 @@ import org.apache.commons.logging.LogFactory;
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UploadActionType;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
+import org.esupportail.portlet.filemanager.exceptions.EsupStockFileExistException;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockLostSessionException;
 import org.esupportail.portlet.filemanager.services.FsAccess;
 import org.esupportail.portlet.filemanager.services.ResourceUtils;
@@ -352,7 +354,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 	}
 
 	@Override
-	public boolean putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters) {
+	public boolean putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters, UploadActionType uploadOption) {
 		try {
 			this.open(userParameters);
 			if (!dir.endsWith("/"))
@@ -360,8 +362,19 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 			
 			String file = this.uri + dir + URLEncoder.encode(filename, "UTF-8");
 			if (root.exists(file)) {
-				log.error("Can't overwrite file '" + file + "'");
-				return false;
+				switch (uploadOption) {
+				case ERROR :
+					throw new EsupStockFileExistException();
+				case OVERRIDE :
+					root.delete(file);
+					break;
+				case RENAME_NEW :
+					file = this.uri + dir + URLEncoder.encode(this.getUniqueFilename(filename, "-new-"), "UTF-8");
+					break;
+				case RENAME_OLD :
+					root.move(file, this.uri + dir + URLEncoder.encode(this.getUniqueFilename(filename, "-old-"), "UTF-8"));
+					break;
+				}
 			}
 			root.put(file, inputStream);
 			return true;

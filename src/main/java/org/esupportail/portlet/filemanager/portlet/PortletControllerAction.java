@@ -211,7 +211,7 @@ public class PortletControllerAction {
 		
 		String filename = command.getQqfile().getOriginalFilename();
 		InputStream inputStream = command.getQqfile().getInputStream();
-		this.serverAccess.putFile(dir, filename, inputStream, userParameters);
+		this.serverAccess.putFile(dir, filename, inputStream, userParameters, userParameters.getUploadOption());
 		
 		response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
 		response.setRenderParameter("action", "browseWai");

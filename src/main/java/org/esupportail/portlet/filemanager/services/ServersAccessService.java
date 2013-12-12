@@ -43,6 +43,7 @@ import org.esupportail.portlet.filemanager.beans.DrivesCategory;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.Quota;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UploadActionType;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
 import org.esupportail.portlet.filemanager.crudlog.CrudLogLevel;
 import org.esupportail.portlet.filemanager.crudlog.CrudLoggable;
@@ -256,7 +257,7 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 		boolean allIsOk = true;
 		if("file".equals(ref.getType())) {
 			DownloadFile file = this.getFile(refDir, userParameters);
-			allIsOk = this.putFile(newDir, file.getBaseName(), file.getInputStream(), userParameters);
+			allIsOk = this.putFile(newDir, file.getBaseName(), file.getInputStream(), userParameters, UploadActionType.ERROR);
 		} else {
 			String localDirParent = this.createFile(newDir, ref.getTitle(), ref.getType(), userParameters);
 			String dirParent = JsTreeFile.ROOT_DRIVE.concat(getDriveCategory(newDir)).concat(JsTreeFile.DRIVE_PATH_SEPARATOR).concat(getDrive(newDir)).concat(JsTreeFile.DRIVE_PATH_SEPARATOR).concat(localDirParent);
@@ -294,8 +295,8 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 	}
 
 	@CrudLoggable(CrudLogLevel.INFO)
-	public boolean  putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters) {
-		return this.getFsAccess(getDrive(dir), userParameters).putFile(getLocalDir(dir), filename, inputStream, userParameters);
+	public boolean  putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters, UploadActionType uploadOption) {
+		return this.getFsAccess(getDrive(dir), userParameters).putFile(getLocalDir(dir), filename, inputStream, userParameters, uploadOption);
 	}
 
 	public JsTreeFile getJsTreeFileRoot() {

@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.esupportail.portlet.filemanager.beans.FormCommand;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UploadActionType;
 import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.esupportail.portlet.filemanager.services.UserAgentInspector;
 import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
@@ -53,6 +54,7 @@ public class PortletController {
 	public static final String PREF_SHOW_HIDDEN_FILES = "showHiddenFiles";
 	public static final String PREF_USE_DOUBLE_CLICK = "useDoubleClick";
 	public static final String PREF_USE_CURSOR_WAIT_DIALOG = "useCursorWaitDialog";
+	public static final String PREF_UPLOAD_ACTION_EXIST_FILE = "uploadActionOnExistingFileName";
 	
 	public static final String STANDARD_VIEW = "standard";
 	public static final String MOBILE_VIEW = "mobile";
@@ -102,6 +104,9 @@ public class PortletController {
     	boolean showHiddenFiles = "true".equals(prefs.getValue(PREF_SHOW_HIDDEN_FILES, "false")); 	
     	userParameters.setShowHiddenFiles(showHiddenFiles);
     	
+		UploadActionType uploadOption = UploadActionType.valueOf(prefs.getValue(PREF_UPLOAD_ACTION_EXIST_FILE, UploadActionType.OVERRIDE.toString()));
+		userParameters.setUploadOption(uploadOption);
+
     	serverAccess.initializeServices(userParameters);
     	
     	String defaultPath = serverAccess.getFirstAvailablePath(userParameters, prefsDefaultPathes);

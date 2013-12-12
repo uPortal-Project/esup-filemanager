@@ -45,6 +45,8 @@ public class SharedUserPortletParameters implements Serializable {
     
     protected boolean showHiddenFiles;
     
+	protected UploadActionType uploadOption;
+
     protected String clientIpAdress;
     
 	public SharedUserPortletParameters() {
@@ -105,6 +107,14 @@ public class SharedUserPortletParameters implements Serializable {
 
 	public void setShowHiddenFiles(boolean showHiddenFiles) {
 		this.showHiddenFiles = showHiddenFiles;
+	}
+
+	public UploadActionType getUploadOption() {
+		return uploadOption;
+	}
+
+	public void setUploadOption(UploadActionType uploadOption) {
+		this.uploadOption = uploadOption;
 	}
 
 	public String getClientIpAdress() {

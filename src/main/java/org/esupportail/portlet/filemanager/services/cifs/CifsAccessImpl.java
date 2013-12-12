@@ -42,8 +42,10 @@ import org.apache.commons.logging.LogFactory;
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UploadActionType;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
+import org.esupportail.portlet.filemanager.exceptions.EsupStockFileExistException;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockPermissionDeniedException;
 import org.esupportail.portlet.filemanager.services.FsAccess;
 import org.esupportail.portlet.filemanager.services.ResourceUtils;
@@ -378,7 +380,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 	 * @return
 	 */
 	@Override
-	public boolean putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters) {
+	public boolean putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters, UploadActionType uploadOption) {
 
 		boolean success = false;
 		SmbFile newFile = null;
@@ -386,6 +388,21 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 		try {
 			SmbFile folder = cd(dir, userParameters);
 			newFile = new SmbFile(folder.getCanonicalPath() + filename, this.userAuthenticator);
+			if (newFile.exists()) {
+				switch (uploadOption) {
+				case ERROR :
+					throw new EsupStockFileExistException();
+				case OVERRIDE :
+					newFile.delete();
+					break;
+				case RENAME_NEW :
+					newFile = new SmbFile(folder.getCanonicalPath() + this.getUniqueFilename(filename, "-new-"), this.userAuthenticator);
+					break;
+				case RENAME_OLD :
+					newFile.renameTo(new SmbFile(newFile.getParent() + this.getUniqueFilename(filename, "-old-"), this.userAuthenticator));
+					break;
+				}
+			}
 			newFile.createNewFile();
 
 			OutputStream outstr = newFile.getOutputStream();

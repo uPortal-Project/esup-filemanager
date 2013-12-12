@@ -41,6 +41,7 @@ import org.esupportail.portlet.filemanager.beans.FormCommand;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.Quota;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UploadActionType;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
 import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.esupportail.portlet.filemanager.services.ResourceUtils;
@@ -93,6 +94,10 @@ public class PortletControllerAjax {
 	@Qualifier("showHiddenFilesModeServlet")
 	protected Boolean showHiddenFilesModeServlet = false;
 	
+	@Autowired(required=false)
+	@Qualifier("uploadActionOnExistingFileNameModeServlet")
+	protected UploadActionType uploadActionOnExistingFileNameServlet = UploadActionType.OVERRIDE;
+
 	
 	//GP Added in order to detect file type (image / sound / etc)
 	@Autowired
@@ -156,7 +161,7 @@ public class PortletControllerAjax {
 		model.put("parentsEncPathes", parentsEncPathes); 
 		
 		FormCommand command = new FormCommand();
-	    model.put("command", command);
+		model.put("command", command);
 
 		final String view = getThumbnailMode(request) ? "fileTree_thumbnails" : "fileTree";
 
@@ -394,10 +399,18 @@ public class PortletControllerAjax {
 	// thanks to use BindingResult if FileUpload failed because of XHR request (and not multipart)
 	// this method is called anyway
 	@ResourceMapping("uploadFile")
-	public  ModelAndView uploadFile(String dir, FileUpload file, BindingResult result, ResourceRequest request) throws IOException {		
+	public  ModelAndView uploadFile(String dir, FileUpload file, BindingResult result, ResourceRequest request, UploadActionType uploadOption) throws IOException {
 		
 		dir = pathEncodingUtils.decodeDir(dir);
 		
+		UploadActionType option = this.uploadActionOnExistingFileNameServlet;
+		if (userParameters.getUploadOption() != null) {
+			option = userParameters.getUploadOption();
+		}
+		if (uploadOption != null) {
+			option = uploadOption;
+		}
+
 		String filename;
 		InputStream inputStream;	
 		
@@ -410,17 +423,17 @@ public class PortletControllerAjax {
 			filename = request.getParameter("qqfile");
 			inputStream = request.getPortletInputStream();
 		}
-		return upload(dir, filename, inputStream, request.getLocale());
+		return upload(dir, filename, inputStream, request.getLocale(), option);
 	}
 
 	
 	// take care : we don't send json like application/json but like text/html !
 	// goal is that the json is written in a frame
-	private ModelAndView upload(String dir, String filename, InputStream inputStream, Locale locale) {
+	private ModelAndView upload(String dir, String filename, InputStream inputStream, Locale locale, UploadActionType uploadOption) {
 		boolean success = true;
 		String text = "";
 		try {
-			if(this.serverAccess.putFile(dir, filename, inputStream, userParameters)) {
+			if (this.serverAccess.putFile(dir, filename, inputStream, userParameters, uploadOption)) {
 				String msg = context.getMessage("ajax.upload.ok", null, locale); 
 				text = "{'success':'true', 'msg':'".concat(msg).concat("'}");
 				log.info("upload file " + filename + " in " + dir + " ok");
