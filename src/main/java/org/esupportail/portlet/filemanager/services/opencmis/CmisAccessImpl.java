@@ -37,7 +37,6 @@ import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
-import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
@@ -56,6 +55,7 @@ import org.apache.commons.logging.LogFactory;
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UploadActionType;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
 import org.esupportail.portlet.filemanager.services.FsAccess;
 import org.esupportail.portlet.filemanager.services.ResourceUtils;
@@ -64,24 +64,24 @@ import org.springframework.beans.factory.DisposableBean;
 public class CmisAccessImpl extends FsAccess implements DisposableBean {
 
 	protected static final Log log = LogFactory.getLog(CmisAccessImpl.class);
-	
+
 	protected ResourceUtils resourceUtils;
-	
+
 	protected Session cmisSession;
-	
+
 	protected String respositoryId = "test";
-	
+
 	// rootPath=@root@" for chemistry cmis server
 	protected String rootId = null;
-	
+
 	protected String rootPath = null;
-	
+
 	private static final Set<Updatability> CREATE_UPDATABILITY = new HashSet<Updatability>();
-    static {
-        CREATE_UPDATABILITY.add(Updatability.ONCREATE);
-        CREATE_UPDATABILITY.add(Updatability.READWRITE);
-    }
-	
+	static {
+		CREATE_UPDATABILITY.add(Updatability.ONCREATE);
+		CREATE_UPDATABILITY.add(Updatability.READWRITE);
+	}
+
 	public void setResourceUtils(ResourceUtils resourceUtils) {
 		this.resourceUtils = resourceUtils;
 	}
@@ -101,7 +101,7 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	@Override
 	protected void manipulateUri(Map userInfos, String formUsername) {
 		if(rootPath != null & userInfos != null) {
-			for(String userInfoKey : (Set<String>)userInfos.keySet()) { 
+			for(String userInfoKey : (Set<String>)userInfos.keySet()) {
 					String userInfo = (String)userInfos.get(userInfoKey);
 					String userInfoKeyToken = TOKEN_SPECIAL_CHAR.concat(userInfoKey).concat(TOKEN_SPECIAL_CHAR);
 					// in nuxeo @ is replaced by - in path
@@ -110,14 +110,14 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 					userInfo = userInfo.replaceAll("\\.", "-");
 					this.rootPath = this.rootPath.replaceAll(userInfoKeyToken, userInfo);
 			}
-		}	
+		}
 		if(formUsername != null) {
 			this.rootPath = this.rootPath.replaceAll(TOKEN_FORM_USERNAME, formUsername);
 		}
 		if(this.uriManipulateService != null)
 			this.uri = this.uriManipulateService.manipulate(rootPath);
 	}
-	
+
 	/**
 	 * @param cmisObject
 	 * @param path
@@ -138,21 +138,21 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		if(lid.startsWith("/"))
 			lid = lid.substring(1);
 
-		String type = (BaseTypeId.CMIS_DOCUMENT.equals(cmisObject.getBaseTypeId())) ? "file" : "folder"; 
-		
+		String type = (BaseTypeId.CMIS_DOCUMENT.equals(cmisObject.getBaseTypeId())) ? "file" : "folder";
+
 		// root case :
 		if("".equals(path)) {
 			title = "";
 			type = "drive";
 		}
-		
+
 		JsTreeFile file = new JsTreeFile(title, lid, type);
 		if(fileDetails) {
-			
+
 			if("file".equals(type)) {
 				String icon = resourceUtils.getIcon(title);
 				file.setIcon(icon);
-				
+
 				Document document = (Document) cmisObject;
 				BigInteger size = BigInteger.ZERO;
 				List<Object> contentStreamLength = document.getProperty("cmis:contentStreamLength").getValues();
@@ -162,13 +162,13 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 				file.setOverSizeLimit(file.getSize() > resourceUtils
 						.getSizeLimit(title));
 			}
-			
+
 			Date date = cmisObject.getLastModificationDate().getTime();
 			file.setLastModifiedTime(new SimpleDateFormat(this.datePattern)
 			.format(date));
-			
+
 		}
-		
+
 		if(folderDetails && ("folder".equals(type) || "drive".equals(type))) {
 			Folder folder =  (Folder) cmisObject;
 			ItemIterable<CmisObject> pl = folder.getChildren();
@@ -178,11 +178,11 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 			fileCount = pl.getTotalNumItems();
 
 			for (CmisObject child : pl) {
-				String childType = (BaseTypeId.CMIS_DOCUMENT.equals(child.getBaseTypeId())) ? "file" : "folder"; 
+				String childType = (BaseTypeId.CMIS_DOCUMENT.equals(child.getBaseTypeId())) ? "file" : "folder";
 				if("folder".equals(childType)) {
 					++folderCount;
 				} else if("file".equals(childType)) {
-					++fileCount;			
+					++fileCount;
 					Document document = (Document) child;
 					BigInteger size = BigInteger.ZERO;
 					List<Object> contentStreamLength = document.getProperty("cmis:contentStreamLength").getValues();
@@ -199,10 +199,10 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		Set<Action> actions = cmisObject.getAllowableActions().getAllowableActions();
 		// check if actions seem to be filled correctly
 		if (actions.contains(Action.CAN_GET_PROPERTIES)) {
-		    // ok, set capability based on available actions
-		    file.setWriteable(actions.contains(Action.CAN_DELETE_OBJECT));
+			// ok, set capability based on available actions
+			file.setWriteable(actions.contains(Action.CAN_DELETE_OBJECT));
 		}
-		
+
 		return file;
 	}
 
@@ -230,42 +230,42 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 
 	@Override
 	public void open(SharedUserPortletParameters userParameters) {
-	
+
 		super.open(userParameters);
-		
+
 		if(!this.isOpened()) {
-		
+
 			Map<String, String> parameters = new HashMap<String, String>();
-	
+
 			parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB
 					.value());
-	
+
 			parameters.put(SessionParameter.ATOMPUB_URL, uri);
 			parameters.put(SessionParameter.REPOSITORY_ID, respositoryId);
-	
+
 			if(userAuthenticatorService != null) {
 				UserPassword userPassword = userAuthenticatorService.getUserPassword(userParameters);
 				parameters.put(SessionParameter.USER, userPassword.getUsername());
 				parameters.put(SessionParameter.PASSWORD, userPassword.getPassword());
-				
+
 			}
 			try {
-				cmisSession = SessionFactoryImpl.newInstance().createSession(parameters);	
+				cmisSession = SessionFactoryImpl.newInstance().createSession(parameters);
 			} catch(CmisConnectionException ce) {
 				log.warn("failed to retrieve cmisSession : " + uri + " , repository is not accessible or simply not started ?", ce);
 			}
 		}
 	}
-	
+
 	@Override
 	public boolean isOpened() {
 		return cmisSession != null;
 	}
-	
+
 	public void destroy() throws Exception {
 		this.close();
 	}
-	
+
 	@Override
 	public void close() {
 		// TODO
@@ -280,16 +280,16 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	}
 
 	@Override
-	public List<JsTreeFile> getChildren(String path, SharedUserPortletParameters userParameters) {	
+	public List<JsTreeFile> getChildren(String path, SharedUserPortletParameters userParameters) {
 		Folder folder =  (Folder)  getCmisObject(path, userParameters);
 		ItemIterable<CmisObject> pl = folder.getChildren();
 
 		List<JsTreeFile> childrens = new ArrayList<JsTreeFile>();
-	   for (CmisObject cmisObject : pl) {
-		   childrens.add(cmisObjectAsJsTreeFile(cmisObject, null, path, false, true));
-	   }
-	   
-	   return childrens;
+	for (CmisObject cmisObject : pl) {
+		childrens.add(cmisObjectAsJsTreeFile(cmisObject, null, path, false, true));
+	}
+
+	return childrens;
 	}
 
 	@Override
@@ -306,7 +306,7 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	@Override
 	public String createFile(String parentPath, String title, String type, SharedUserPortletParameters userParameters) {
 		Folder parent = (Folder)getCmisObject(parentPath, userParameters);
-		CmisObject createdObject = null; 
+		CmisObject createdObject = null;
 		if("folder".equals(type)) {
 			Map prop = new HashMap();
 			prop.put(PropertyIds.OBJECT_TYPE_ID, BaseTypeId.CMIS_FOLDER.value());
@@ -321,7 +321,7 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		JsTreeFile createdJsTreeFile = this.cmisObjectAsJsTreeFile(createdObject, null, parentPath, false, false);
 		return createdJsTreeFile.getPath();
 	}
-	
+
 	@Override
 	public boolean moveCopyFilesIntoDirectory(String dir,
 			List<String> filesToCopy, boolean copy, SharedUserPortletParameters userParameters) {
@@ -363,7 +363,9 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	}
 
 	@Override
-	public boolean putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters) {
+	public boolean putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters, UploadActionType uploadOption) {
+		//must manage the upload option.
+		log.error("You need to implements feature about upload options!");
 		Folder targetFolder = (Folder)getCmisObject(dir, userParameters);
 		Map prop = new HashMap();
 		prop.put(PropertyIds.OBJECT_TYPE_ID, BaseTypeId.CMIS_DOCUMENT.value());
@@ -372,8 +374,8 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		ContentStream stream = new ContentStreamImpl(filename, null, mimeType, inputStream);
 		Document document = targetFolder.createDocument(prop, stream, VersioningState.NONE, null, null, null, cmisSession.getDefaultContext());
 		HashMap m = new HashMap();
-        m.put("cmis:name",filename);
-        document.updateProperties(m); 
+		m.put("cmis:name",filename);
+		document.updateProperties(m);
 		return true;
 	}
 
@@ -388,8 +390,8 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	public boolean renameFile(String path, String title, SharedUserPortletParameters userParameters) {
 		CmisObject cmisObject = getCmisObject(path, userParameters);
 		HashMap m = new HashMap();
-        m.put("cmis:name",title);
-        cmisObject.updateProperties(m); 
+		m.put("cmis:name",title);
+		cmisObject.updateProperties(m);
 		return true;
 	}
 
@@ -397,5 +399,5 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	public boolean supportIntraCopyPast() {
 		return false;
 	}
-	
+
 }

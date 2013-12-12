@@ -43,6 +43,7 @@ import org.esupportail.portlet.filemanager.beans.DrivesCategory;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.Quota;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UploadActionType;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
 import org.esupportail.portlet.filemanager.crudlog.CrudLogLevel;
 import org.esupportail.portlet.filemanager.crudlog.CrudLoggable;
@@ -61,10 +62,10 @@ import org.springframework.util.Assert;
 public class ServersAccessService implements DisposableBean, IServersAccessService {
 
 	protected static final Log log = LogFactory.getLog(ServersAccessService.class);
-	
+
 	/** Size of zipping buffers: 128 kB. */
 	protected static final int ZIP_BUFFER_SIZE = 131072;
-	
+
 	protected Map<String, FsAccess> servers = new HashMap<String, FsAccess>();
 
 	protected Map<String, FsAccess> restrictedServers = new HashMap<String, FsAccess>();
@@ -256,7 +257,7 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 		boolean allIsOk = true;
 		if("file".equals(ref.getType())) {
 			DownloadFile file = this.getFile(refDir, userParameters);
-			allIsOk = this.putFile(newDir, file.getBaseName(), file.getInputStream(), userParameters);
+			allIsOk = this.putFile(newDir, file.getBaseName(), file.getInputStream(), userParameters, UploadActionType.ERROR);
 		} else {
 			String localDirParent = this.createFile(newDir, ref.getTitle(), ref.getType(), userParameters);
 			String dirParent = JsTreeFile.ROOT_DRIVE.concat(getDriveCategory(newDir)).concat(JsTreeFile.DRIVE_PATH_SEPARATOR).concat(getDrive(newDir)).concat(JsTreeFile.DRIVE_PATH_SEPARATOR).concat(localDirParent);
@@ -294,8 +295,8 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 	}
 
 	@CrudLoggable(CrudLogLevel.INFO)
-	public boolean  putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters) {
-		return this.getFsAccess(getDrive(dir), userParameters).putFile(getLocalDir(dir), filename, inputStream, userParameters);
+	public boolean  putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters, UploadActionType uploadOption) {
+		return this.getFsAccess(getDrive(dir), userParameters).putFile(getLocalDir(dir), filename, inputStream, userParameters, uploadOption);
 	}
 
 	public JsTreeFile getJsTreeFileRoot() {
@@ -413,12 +414,12 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 	}
 
 	@CrudLoggable(CrudLogLevel.DEBUG)
-	public DownloadFile getZip(List<String> dirs, SharedUserPortletParameters userParameters) throws IOException {	
+	public DownloadFile getZip(List<String> dirs, SharedUserPortletParameters userParameters) throws IOException {
 		File tmpFile = File.createTempFile("esup-stock-zip.", ".tmp");
 		// we call tmpFile.deleteOnExit so that ths tmp file will be deleted when jvm stops ...
 		// see also DownloadFile.finalize
 		tmpFile.deleteOnExit();
-		
+
 		FileOutputStream output = null;
 		ZipOutputStream out = null;
 		try {
@@ -443,8 +444,8 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 
 	private static String unAccent(String s) {
 		String temp = Normalizer.normalize(s, Normalizer.Form.NFD);
-	    Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-	    return pattern.matcher(temp).replaceAll("");
+		Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+		return pattern.matcher(temp).replaceAll("");
 	}
 
 	private void addChildrensTozip(ZipOutputStream out, byte[] zippingBuffer, String dir, String folder, SharedUserPortletParameters userParameters) throws IOException {
@@ -463,7 +464,7 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 			//With java 7, encoding should be added to support special characters in the file names
 			//http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4244499
 			out.putNextEntry(new ZipEntry(fileName));
-			
+
 			// MBD: this is a problem for large files, because IOUtils.toByteArray() copy all the file in memory
 			//out.write(IOUtils.toByteArray(dFile.getInputStream()));
 			int count;
@@ -471,7 +472,7 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 			while((count = dFileInputStream.read(zippingBuffer, 0, ZIP_BUFFER_SIZE)) != -1) {
 				out.write(zippingBuffer, 0, count);
 			}
-	
+
 			out.closeEntry();
 		} else {
 			folder = unAccent(folder.concat(tFile.getTitle()).concat("/"));
@@ -528,14 +529,14 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 		return defaultPath;
 	}
 
-	
-	public Quota getQuota(String path, 
-	  SharedUserPortletParameters userParameters) {
-	  FsAccess access = this.getFsAccess(getDrive(path), userParameters);
-	  Quota result = null;
-	  if ( access.isSupportQuota(getLocalDir(path), userParameters) ) {
-	    result = access.getQuota(getLocalDir(path), userParameters);
-	  }
-	  return result;
+
+	public Quota getQuota(String path,
+	SharedUserPortletParameters userParameters) {
+	FsAccess access = this.getFsAccess(getDrive(path), userParameters);
+	Quota result = null;
+	if ( access.isSupportQuota(getLocalDir(path), userParameters) ) {
+		result = access.getQuota(getLocalDir(path), userParameters);
+	}
+	return result;
 	}
 }

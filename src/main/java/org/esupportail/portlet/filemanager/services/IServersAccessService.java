@@ -20,7 +20,6 @@ package org.esupportail.portlet.filemanager.services;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 
 import javax.portlet.PortletRequest;
 
@@ -28,8 +27,8 @@ import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.Quota;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UploadActionType;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
-import org.esupportail.portlet.filemanager.crudlog.CrudLoggable;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public interface IServersAccessService {
@@ -78,7 +77,7 @@ public interface IServersAccessService {
 			SharedUserPortletParameters userParameters);
 
 	public abstract boolean putFile(String dir, String filename,
-			InputStream inputStream, SharedUserPortletParameters userParameters);
+			InputStream inputStream, SharedUserPortletParameters userParameters, UploadActionType uploadOption);
 
 	public abstract JsTreeFile getJsTreeFileRoot();
 
