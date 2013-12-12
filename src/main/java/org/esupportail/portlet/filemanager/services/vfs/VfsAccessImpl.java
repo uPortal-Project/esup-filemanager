@@ -194,7 +194,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 			FileObject[] children = resource.getChildren();
 			if(children != null)
 			    for(FileObject child: children)
-				if(userParameters.isShowHiddenFiles() || !this.isFileHidden(child))
+				if(!"imaginary".equals(child.getType().getName()) && (userParameters.isShowHiddenFiles() || !this.isFileHidden(child)))
 					files.add(resourceAsJsTreeFile(child, false, true, userParameters.isShowHiddenFiles()));
 			return files;
 		} catch(FileSystemException fse) {
