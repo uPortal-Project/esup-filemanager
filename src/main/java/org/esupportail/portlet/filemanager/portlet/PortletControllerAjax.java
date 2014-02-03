@@ -158,9 +158,35 @@ public class PortletControllerAjax {
 		FormCommand command = new FormCommand();
 	    model.put("command", command);
 
-	    return new ModelAndView("fileTree", model);
+		/* GIP RECIA : Construct the view in terms of environment */
+		final String view = getThumbnailMode(request) ? "fileTree_thumbnails" : "fileTree";
+
+		return new ModelAndView(view, model);
+	}
+
+
+	private static final String THUMBNAIL_MODE_KEY = "thumbnail_mode";
+
+	private boolean getThumbnailMode(ResourceRequest request) {
+		Object thumbnailMode = request.getPortletSession().getAttribute(THUMBNAIL_MODE_KEY);
+		if (thumbnailMode == null || !(thumbnailMode instanceof Boolean)) {
+			return false;
+		}
+		return (Boolean) thumbnailMode;
 	 }
 
+	private void putThumbnailMode(boolean thumbnailMode, ResourceRequest request) {
+		request.getPortletSession().setAttribute(THUMBNAIL_MODE_KEY, thumbnailMode);
+	}
+
+	@ResourceMapping("toggleThumbnailMode")
+	public ModelAndView toggleThumbnailMode(@RequestParam boolean thumbnailMode, ResourceRequest request) {
+		putThumbnailMode(thumbnailMode, request);
+
+		Map<String, String> jsonMsg = new HashMap<String, String>();
+		jsonMsg.put("thumbnail_mode", new Boolean(thumbnailMode).toString());
+		return getJacksonView(jsonMsg);
+	}
 	
 	
 	/**
