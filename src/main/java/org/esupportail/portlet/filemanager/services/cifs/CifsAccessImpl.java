@@ -35,6 +35,7 @@ import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbAuthException;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
+import jcifs.smb.ACE;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -244,7 +245,23 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 
 		file.setLastModifiedTime(new SimpleDateFormat(this.datePattern).format(resource.getLastModified()));
 		file.setHidden(resource.isHidden());
-		file.setWriteable(resource.canWrite());
+                Boolean resourceWritable = resource.canWrite();
+                if (!resourceWritable) {
+                        try {
+                                ACE[] ACEs = resource.getSecurity();
+                                for(int numACE = 0 ; numACE < ACEs.length ; numACE++) {
+                                        if (this.userAuthenticator.getUsername().equals(ACEs[numACE].getSID().getAccountName())) {
+                                                if ((ACEs[numACE].getAccessMask() & ACE.FILE_WRITE_DATA)!=0) {
+                                                        resourceWritable = true;
+                                                }
+                                        } 
+                                }
+                        } catch (IOException e) {
+                                log.info("Can't get ressource permissions : "+ e.getMessage());
+                        }
+                }
+
+		file.setWriteable(resourceWritable);
 		file.setReadable(resource.canRead());
 		return file;
 	}
