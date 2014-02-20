@@ -43,11 +43,15 @@ package org.esupportail.portlet.filemanager.services.auth.cas;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.portlet.PortletRequest;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.portlet.context.PortletRequestAttributes;
 import org.xml.sax.SAXException;
 
 import edu.yale.its.tp.cas.client.CASReceipt;
@@ -76,7 +80,15 @@ public class UserCasAuthenticatorServiceRoot {
 		if(userParameters.getReceipt() == null) {
         
 			if (proxyTicketService != null) {
-				Map userInfos = userParameters.getUserInfos();
+				
+				// Using userParameters.getUserInfos() - we can have a tool old PT which can be expired
+				// So we get here the PortletRequest to get a new PT from Portal.
+				//Map userInfos = userParameters.getUserInfos();
+				
+				RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
+				PortletRequest portletRequest = ((PortletRequestAttributes) attrs).getRequest();
+				Map userInfos = (Map) portletRequest.getAttribute(PortletRequest.USER_INFO);
+				
 				String ticket = (String) userInfos.get(this.userInfoTicketProperty);
 				if (ticket != null) {
 					try {
