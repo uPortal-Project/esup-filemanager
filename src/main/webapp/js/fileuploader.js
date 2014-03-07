@@ -1012,6 +1012,7 @@ qq.UploadButton.prototype = {
         }
 
         qq.removeClass(this._element, this._options.focusClass);
+        qq.removeClass(this._element, this._options.hoverClass);
         this._input = this._createInput();
     },
     _createInput: function(){
