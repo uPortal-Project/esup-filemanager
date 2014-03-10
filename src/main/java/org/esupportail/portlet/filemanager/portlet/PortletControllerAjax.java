@@ -158,7 +158,6 @@ public class PortletControllerAjax {
 		FormCommand command = new FormCommand();
 	    model.put("command", command);
 
-		/* GIP RECIA : Construct the view in terms of environment */
 		final String view = getThumbnailMode(request) ? "fileTree_thumbnails" : "fileTree";
 
 		return new ModelAndView(view, model);
@@ -337,13 +336,6 @@ public class PortletControllerAjax {
 		return getJacksonView(jsonMsg);
 	}
 	
-	/**
-	 * Added for GIP Recia : Return an image.  
-	 * @param path
-	 * @param request
-	 * @param response
-	 * @throws IOException
-	 */
 	@ResourceMapping("fetchImage")
 	public void fetchImage(String dir, 
 			ResourceRequest request, ResourceResponse response) throws IOException {
@@ -355,13 +347,6 @@ public class PortletControllerAjax {
 		FileCopyUtils.copy(file.getInputStream(), response.getPortletOutputStream());
 	}
 	
-	/**
-	 * Added for GIP Recia : Return a sound
-	 * @param path
-	 * @param request
-	 * @param response
-	 * @throws IOException
-	 */
 	@ResourceMapping("fetchSound")
 	public void fetchSound(String dir, 
 			ResourceRequest request, ResourceResponse response) throws IOException {
