@@ -35,8 +35,8 @@ import org.apache.log4j.Logger;
 import org.esupportail.portlet.filemanager.EsupFileManagerConstants;
 import org.esupportail.portlet.filemanager.api.DownloadRequest;
 import org.esupportail.portlet.filemanager.api.DownloadResponse;
-import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UploadActionType;
 import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -51,75 +51,78 @@ import org.springframework.web.portlet.context.PortletConfigAware;
 public class PortletControllerDownloadEvent implements PortletConfigAware {
 
 	protected Logger log = Logger.getLogger(PortletControllerDownloadEvent.class);
-	
-    private PortletConfig portletConfig;
-    
+
+	private PortletConfig portletConfig;
+
 	@Autowired
 	protected IServersAccessService serverAccess;
-	
+
 	@Autowired
 	protected SharedUserPortletParameters userParameters;
-	
+
 	@Autowired
 	protected PortletController portletController;
-	
+
 	public void setPortletConfig(PortletConfig portletConfig) {
 		this.portletConfig = portletConfig;
 	}
-	
-    @EventMapping(EsupFileManagerConstants.DOWNLOAD_REQUEST_QNAME_STRING)
-    public void downloadEvent(EventRequest request, EventResponse response) {
-    	
-    	log.info("PortletControllerDownloadEvent.downloadEvent from EsupFilemanager is called");
-    	
-    	// INIT  	
-    	portletController.init(request);
-    	
-    	PortletPreferences prefs = request.getPreferences();
-    	String[] prefsDefaultPathes = prefs.getValues(PortletController.PREF_DEFAULT_PATH, null);
-    	
-    	boolean showHiddenFiles = "true".equals(prefs.getValue(PortletController.PREF_SHOW_HIDDEN_FILES, "false")); 	
-    	userParameters.setShowHiddenFiles(showHiddenFiles);
-    	
-    	serverAccess.initializeServices(userParameters);
-    	
-    	// DefaultPath
-    	String defaultPath = serverAccess.getFirstAvailablePath(userParameters, prefsDefaultPathes);
-    
-    	// Event	
-    	final Event event = request.getEvent();
-        final DownloadRequest downloadRequest = (DownloadRequest)event.getValue();
-        
-        String fileUrl = downloadRequest.getUrl();
-        
-        // FS     
-        boolean success = false;
-        try {
-        	FileSystemManager fsManager = VFS.getManager();
 
-        	FileSystemOptions fsOptions = new FileSystemOptions();
+	@EventMapping(EsupFileManagerConstants.DOWNLOAD_REQUEST_QNAME_STRING)
+	public void downloadEvent(EventRequest request, EventResponse response) {
 
-        	FileObject file = fsManager.resolveFile(fileUrl, fsOptions);
-        	FileContent fc = file.getContent();
-        	String baseName = fc.getFile().getName().getBaseName();
-        	InputStream inputStream = fc.getInputStream();
+		log.info("PortletControllerDownloadEvent.downloadEvent from EsupFilemanager is called");
 
-        	success = serverAccess.putFile(defaultPath, baseName, inputStream, userParameters);
-        } catch (FileSystemException e) {
-        	log.error("putFile failed for this downloadEvent", e);
-        }	
-		
-        //Build the result object
-        final DownloadResponse downloadResponse = new DownloadResponse();
-        if(success)
-        	downloadResponse.setSummary("Upload OK");
-        else
-        	downloadResponse.setSummary("Upload Failed");
-                
-        //Add the result to the results and send the event
-        response.setEvent(EsupFileManagerConstants.DOWNLOAD_RESPONSE_QNAME, downloadResponse);
+		// INIT
+		portletController.init(request);
 
-    }
+		PortletPreferences prefs = request.getPreferences();
+		String[] prefsDefaultPathes = prefs.getValues(PortletController.PREF_DEFAULT_PATH, null);
+
+		boolean showHiddenFiles = "true".equals(prefs.getValue(PortletController.PREF_SHOW_HIDDEN_FILES, "false"));
+		userParameters.setShowHiddenFiles(showHiddenFiles);
+
+		UploadActionType uploadOption = UploadActionType.valueOf(prefs.getValue(PortletController.PREF_UPLOAD_ACTION_EXIST_FILE, UploadActionType.OVERRIDE.toString()));
+		userParameters.setUploadOption(uploadOption);
+
+		serverAccess.initializeServices(userParameters);
+
+		// DefaultPath
+		String defaultPath = serverAccess.getFirstAvailablePath(userParameters, prefsDefaultPathes);
+
+		// Event
+		final Event event = request.getEvent();
+		final DownloadRequest downloadRequest = (DownloadRequest)event.getValue();
+
+		String fileUrl = downloadRequest.getUrl();
+
+		// FS
+		boolean success = false;
+		try {
+			FileSystemManager fsManager = VFS.getManager();
+
+			FileSystemOptions fsOptions = new FileSystemOptions();
+
+			FileObject file = fsManager.resolveFile(fileUrl, fsOptions);
+			FileContent fc = file.getContent();
+			String baseName = fc.getFile().getName().getBaseName();
+			InputStream inputStream = fc.getInputStream();
+
+			success = serverAccess.putFile(defaultPath, baseName, inputStream, userParameters, userParameters.getUploadOption());
+		} catch (FileSystemException e) {
+			log.error("putFile failed for this downloadEvent", e);
+		}
+
+		//Build the result object
+		final DownloadResponse downloadResponse = new DownloadResponse();
+		if(success)
+			downloadResponse.setSummary("Upload OK");
+		else
+			downloadResponse.setSummary("Upload Failed");
+
+		//Add the result to the results and send the event
+		response.setEvent(EsupFileManagerConstants.DOWNLOAD_RESPONSE_QNAME, downloadResponse);
+
+	}
 
 }
 

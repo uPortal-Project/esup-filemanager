@@ -45,8 +45,10 @@ import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UploadActionType;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
+import org.esupportail.portlet.filemanager.exceptions.EsupStockFileExistException;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockLostSessionException;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockPermissionDeniedException;
 import org.esupportail.portlet.filemanager.services.FsAccess;
@@ -64,7 +66,7 @@ import com.jcraft.jsch.SftpException;
 public class VfsAccessImpl extends FsAccess implements DisposableBean {
 
 	protected static final Log log = LogFactory.getLog(VfsAccessImpl.class);
-	
+
 	protected FileSystemManager fsManager;
 
 	protected FileObject root;
@@ -73,12 +75,12 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 
 	protected boolean sftpSetUserDirIsRoot = false;
 
-    protected boolean strictHostKeyChecking = true;
-    
-    protected String ftpControlEncoding = "UTF-8";
-    
-    // we setup ftpPassiveMode to true by default ...
-    protected boolean ftpPassiveMode = true;
+	protected boolean strictHostKeyChecking = true;
+
+	protected String ftpControlEncoding = "UTF-8";
+
+	// we setup ftpPassiveMode to true by default ...
+	protected boolean ftpPassiveMode = true;
 
 	public void setResourceUtils(ResourceUtils resourceUtils) {
 		this.resourceUtils = resourceUtils;
@@ -88,7 +90,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		this.sftpSetUserDirIsRoot = sftpSetUserDirIsRoot;
 	}
 
-    public void setStrictHostKeyChecking(boolean strictHostKeyChecking) {
+	public void setStrictHostKeyChecking(boolean strictHostKeyChecking) {
 		this.strictHostKeyChecking = strictHostKeyChecking;
 	}
 
@@ -102,7 +104,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		try {
 			if(!isOpened()) {
 				FileSystemOptions fsOptions = new FileSystemOptions();
-				
+
 				if ( ftpControlEncoding != null )
 					FtpFileSystemConfigBuilder.getInstance().setControlEncoding(fsOptions, ftpControlEncoding);
 
@@ -114,9 +116,9 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 				if(!strictHostKeyChecking) {
 					SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(fsOptions, "no");
 				}
-				
+
 				FtpFileSystemConfigBuilder.getInstance().setPassiveMode(fsOptions, ftpPassiveMode);
-				
+
 				if(userAuthenticatorService != null) {
 					UserAuthenticator userAuthenticator = null;
 					if ( ClassUtils.isAssignable(UserCasAuthenticatorService.class, userAuthenticatorService.getClass()) ) {
@@ -159,11 +161,11 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		try {
 			// assure that it'as already opened
 			this.open(userParameters);
-			
+
 			FileObject returnValue = null;
-			
+
 			if (path == null || path.length() == 0) {
-				returnValue = root; 
+				returnValue = root;
 			} else {
 				returnValue = root.resolveFile(path);
 			}
@@ -173,13 +175,13 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 			return returnValue;
 		} catch(FileSystemException fse) {
 			throw new EsupStockException(fse);
-		} 
+		}
 	}
 
 	@Override
 	public JsTreeFile get(String path, SharedUserPortletParameters userParameters, boolean folderDetails, boolean fileDetails) {
 		try {
-			FileObject resource = cd(path, userParameters);			
+			FileObject resource = cd(path, userParameters);
 			return resourceAsJsTreeFile(resource, folderDetails, fileDetails, userParameters.isShowHiddenFiles());
 		} catch(FileSystemException fse) {
 			throw new EsupStockException(fse);
@@ -193,7 +195,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 			FileObject resource = cd(path, userParameters);
 			FileObject[] children = resource.getChildren();
 			if(children != null)
-			    for(FileObject child: children)
+				for(FileObject child: children)
 				if(userParameters.isShowHiddenFiles() || !this.isFileHidden(child))
 					files.add(resourceAsJsTreeFile(child, false, true, userParameters.isShowHiddenFiles()));
 			return files;
@@ -214,8 +216,8 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		}
 	}
 
-	
-	
+
+
 	private boolean isFileHidden(FileObject file) {
 		boolean isHidden = false;
 		// file.isHidden() works in current version of VFS (1.0) only for local file object :(
@@ -226,7 +228,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 				log.warn("Error on file.isHidden() method ...", e);
 			}
 		} else {
-			// at the moment here we just check if the file begins with a dot 
+			// at the moment here we just check if the file begins with a dot
 			// ... so it works just for unix files ...
 			isHidden = file.getName().getBaseName().startsWith(".");
 		}
@@ -279,7 +281,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 					file.setTotalSize(totalSize);
 					file.setFileCount(fileCount);
 					file.setFolderCount(folderCount);
-				} 
+				}
 			}
 
 			final Calendar date = Calendar.getInstance();
@@ -287,12 +289,12 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 			// In order to have a readable date
 			file.setLastModifiedTime(new SimpleDateFormat(this.datePattern)
 					.format(date.getTime()));
-	
+
 			file.setReadable(resource.isReadable());
 			file.setWriteable(resource.isWriteable());
-			
+
 		} catch(FileSystemException fse) {
-			// we don't want that exception during retrieving details 
+			// we don't want that exception during retrieving details
 			// of the folder breaks  all this method ...
 			log.error("Exception during retrieveing details on " + lid
 					+ " ... maybe broken symbolic links or whatever ...", fse);
@@ -389,8 +391,8 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 			FileContent fc = file.getContent();
 			int size = new Long(fc.getSize()).intValue();
 			String baseName = fc.getFile().getName().getBaseName();
-			// fc.getContentInfo().getContentType() use URLConnection.getFileNameMap, 
-			// we prefer here to use our getMimeType : for Excel files and co 
+			// fc.getContentInfo().getContentType() use URLConnection.getFileNameMap,
+			// we prefer here to use our getMimeType : for Excel files and co
 			// String contentType = fc.getContentInfo().getContentType();
 			String contentType = JsTreeFile.getMimeType(baseName.toLowerCase());
 			InputStream inputStream = fc.getInputStream();
@@ -403,14 +405,29 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 	}
 
 	@Override
-	public boolean putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters) {
+	public boolean putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters, UploadActionType uploadOption) {
 
 		boolean success = false;
 		FileObject newFile = null;
-				
+
 		try {
 			FileObject folder = cd(dir, userParameters);
 			newFile = folder.resolveFile(filename);
+			if (newFile.exists()) {
+				switch (uploadOption) {
+				case ERROR :
+					throw new EsupStockFileExistException();
+				case OVERRIDE :
+					newFile.delete();
+					break;
+				case RENAME_NEW :
+					newFile = folder.resolveFile(this.getUniqueFilename(filename, "-new-"));
+					break;
+				case RENAME_OLD :
+					newFile.moveTo(folder.resolveFile(this.getUniqueFilename(filename, "-old-")));
+					break;
+				}
+			}
 			newFile.createFile();
 
 			OutputStream outstr = newFile.getContent().getOutputStream();
@@ -423,7 +440,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		} catch (IOException e) {
 			log.warn("can't upload file : " + e.getMessage(), e);
 		}
-		
+
 		if(!success && newFile != null) {
 			// problem when uploading the file -> the file uploaded is corrupted
 			// best is to delete it
@@ -434,7 +451,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 				log.debug("can't delete corrupted file after bad upload " + e.getMessage());
 			}
 		}
-		
+
 		return success;
 	}
 

@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.esupportail.portlet.filemanager.beans.FormCommand;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UploadActionType;
 import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.esupportail.portlet.filemanager.services.UserAgentInspector;
 import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
@@ -47,102 +48,106 @@ import org.springframework.web.portlet.ModelAndView;
 public class PortletController {
 
 	protected Logger log = Logger.getLogger(PortletController.class);
-	
+
 	public static final String PREF_PORTLET_VIEW = "defaultPortletView";
 	public static final String PREF_DEFAULT_PATH = "defaultPath";
 	public static final String PREF_SHOW_HIDDEN_FILES = "showHiddenFiles";
 	public static final String PREF_USE_DOUBLE_CLICK = "useDoubleClick";
 	public static final String PREF_USE_CURSOR_WAIT_DIALOG = "useCursorWaitDialog";
-	
+	public static final String PREF_UPLOAD_ACTION_EXIST_FILE = "uploadActionOnExistingFileName";
+
 	public static final String STANDARD_VIEW = "standard";
 	public static final String MOBILE_VIEW = "mobile";
 	public static final String WAI_VIEW = "wai";
-	
+
 	@Autowired
 	protected IServersAccessService serverAccess;
-	
+
 	@Autowired
 	protected UserAgentInspector userAgentInspector;
-	
+
 	@Autowired
 	protected SharedUserPortletParameters userParameters;
 
 	@Autowired
 	protected PathEncodingUtils pathEncodingUtils;
-	
-	protected void init(PortletRequest request) {		
-			
+
+	protected void init(PortletRequest request) {
+
 		if(!userParameters.isInitialized()) {
 			String clientIpAdress = request.getProperty("REMOTE_ADDR");
-	    	userParameters.init(clientIpAdress);			
-	        
-			Map userInfos = (Map) request.getAttribute(PortletRequest.USER_INFO);	
+			userParameters.init(clientIpAdress);
+
+			Map userInfos = (Map) request.getAttribute(PortletRequest.USER_INFO);
 			userParameters.setUserInfos(userInfos);
-			
+
 			List<String> driveNames = serverAccess.getRestrictedDrivesGroupsContext(request);
 			userParameters.setDriveNames(driveNames);
-						
-	   		log.info("set SharedUserPortletParameters in application session");   		
+
+			log.info("set SharedUserPortletParameters in application session");
 		}
 
 	}
-		
-    @RequestMapping("VIEW")
-    protected ModelAndView renderView(RenderRequest request, RenderResponse response) throws Exception {
-    	this.init(request);
-        final PortletPreferences prefs = request.getPreferences();
-    	String defaultPortletView = prefs.getValue(PREF_PORTLET_VIEW, STANDARD_VIEW);
-    	String[] prefsDefaultPathes = prefs.getValues(PREF_DEFAULT_PATH, null);
-    	if(log.isDebugEnabled()) {
-    		log.debug(PREF_DEFAULT_PATH + " preference : ");
-    		for(String prefDefaultPath: prefsDefaultPathes)
-    			log.debug("- " + prefDefaultPath);
-    	}
-    	
-    	boolean showHiddenFiles = "true".equals(prefs.getValue(PREF_SHOW_HIDDEN_FILES, "false")); 	
-    	userParameters.setShowHiddenFiles(showHiddenFiles);
-    	
-    	serverAccess.initializeServices(userParameters);
-    	
-    	String defaultPath = serverAccess.getFirstAvailablePath(userParameters, prefsDefaultPathes);
-    	log.info("defaultPath will be : " + defaultPath);
-    	defaultPath = pathEncodingUtils.encodeDir(defaultPath);
-    	
-	    if(userAgentInspector.isMobile(request)) {
+
+	@RequestMapping("VIEW")
+	protected ModelAndView renderView(RenderRequest request, RenderResponse response) throws Exception {
+		this.init(request);
+		final PortletPreferences prefs = request.getPreferences();
+		String defaultPortletView = prefs.getValue(PREF_PORTLET_VIEW, STANDARD_VIEW);
+		String[] prefsDefaultPathes = prefs.getValues(PREF_DEFAULT_PATH, null);
+		if(log.isDebugEnabled()) {
+			log.debug(PREF_DEFAULT_PATH + " preference : ");
+			for(String prefDefaultPath: prefsDefaultPathes)
+				log.debug("- " + prefDefaultPath);
+		}
+
+		boolean showHiddenFiles = "true".equals(prefs.getValue(PREF_SHOW_HIDDEN_FILES, "false"));
+		userParameters.setShowHiddenFiles(showHiddenFiles);
+
+		UploadActionType uploadOption = UploadActionType.valueOf(prefs.getValue(PREF_UPLOAD_ACTION_EXIST_FILE, UploadActionType.OVERRIDE.toString()));
+		userParameters.setUploadOption(uploadOption);
+
+		serverAccess.initializeServices(userParameters);
+
+		String defaultPath = serverAccess.getFirstAvailablePath(userParameters, prefsDefaultPathes);
+		log.info("defaultPath will be : " + defaultPath);
+		defaultPath = pathEncodingUtils.encodeDir(defaultPath);
+
+		if(userAgentInspector.isMobile(request)) {
 			return this.browseMobile(request, response, defaultPath);
-	    } else {
-	    	if(MOBILE_VIEW.equals(defaultPortletView))
-	    		return this.browseMobile(request, response, defaultPath);
-	    	else if(WAI_VIEW.equals(defaultPortletView))
-	    		return this.browseWai(request, response, defaultPath, null);
-	    	else
-	    		return this.browseStandard(request, response, defaultPath);
-	    }
-    }
-    
+		} else {
+			if(MOBILE_VIEW.equals(defaultPortletView))
+				return this.browseMobile(request, response, defaultPath);
+			else if(WAI_VIEW.equals(defaultPortletView))
+				return this.browseWai(request, response, defaultPath, null);
+			else
+				return this.browseStandard(request, response, defaultPath);
+		}
+	}
+
 	@RequestMapping(value = {"VIEW"}, params = {"action=browseStandard"})
-    public ModelAndView browseStandard(RenderRequest request, RenderResponse response, String dir) {	
-    	this.init(request);
-        final PortletPreferences prefs = request.getPreferences();
-		boolean useDoubleClick = "true".equals(prefs.getValue(PREF_USE_DOUBLE_CLICK, "true")); 
-    	boolean useCursorWaitDialog = "true".equals(prefs.getValue(PREF_USE_CURSOR_WAIT_DIALOG, "false"));
-    	
-		ModelMap model = new ModelMap();     
+	public ModelAndView browseStandard(RenderRequest request, RenderResponse response, String dir) {
+		this.init(request);
+		final PortletPreferences prefs = request.getPreferences();
+		boolean useDoubleClick = "true".equals(prefs.getValue(PREF_USE_DOUBLE_CLICK, "true"));
+		boolean useCursorWaitDialog = "true".equals(prefs.getValue(PREF_USE_CURSOR_WAIT_DIALOG, "false"));
+
+		ModelMap model = new ModelMap();
 		model.put("useDoubleClick", useDoubleClick);
 		model.put("useCursorWaitDialog", useCursorWaitDialog);
 		if(dir == null)
 			dir = "";
 		model.put("defaultPath", dir);
-    	return new ModelAndView("view-portlet", model);
-    }
-    
+		return new ModelAndView("view-portlet", model);
+	}
+
 	@RequestMapping(value = {"VIEW"}, params = {"action=browseMobile"})
-    public ModelAndView browseMobile(RenderRequest request, RenderResponse response,
-    								@RequestParam String dir) {
-    	this.init(request);
-    	
+	public ModelAndView browseMobile(RenderRequest request, RenderResponse response,
+									@RequestParam String dir) {
+		this.init(request);
+
 		String decodedDir = pathEncodingUtils.decodeDir(dir);
-		
+
 		ModelMap model;
 		if( !(dir == null || dir.length() == 0 || decodedDir.equals(JsTreeFile.ROOT_DRIVE)) ) {
 			if(this.serverAccess.formAuthenticationRequired(decodedDir, userParameters)) {
@@ -157,21 +162,21 @@ public class PortletController {
 			}
 		}
 		model = browse(dir);
-        return new ModelAndView("view-portlet-mobile", model);
-    }
-	
+		return new ModelAndView("view-portlet-mobile", model);
+	}
+
 	@RequestMapping(value = {"VIEW"}, params = {"action=browseWai"})
-    public ModelAndView browseWai(RenderRequest request, RenderResponse response,
-    								@RequestParam(required=false) String dir,
-    								@RequestParam(required=false) String msg) {
+	public ModelAndView browseWai(RenderRequest request, RenderResponse response,
+									@RequestParam(required=false) String dir,
+									@RequestParam(required=false) String msg) {
 		this.init(request);
-		
+
 		String decodedDir = pathEncodingUtils.decodeDir(dir);
-		
+
 		if(!serverAccess.isInitialized(userParameters)) {
 			serverAccess.initializeServices(userParameters);
 		}
-		
+
 		ModelMap model;
 		if( !(dir == null || dir.length() == 0 || decodedDir.equals(JsTreeFile.ROOT_DRIVE)) ) {
 			if(this.serverAccess.formAuthenticationRequired(decodedDir, userParameters)) {
@@ -181,19 +186,19 @@ public class PortletController {
 				model.put("parentDir", parentDir);
 				model.put("username", this.serverAccess.getUserPassword(decodedDir, userParameters).getUsername());
 				model.put("password", this.serverAccess.getUserPassword(decodedDir, userParameters).getPassword());
-				if(msg != null) 
+				if(msg != null)
 					model.put("msg",msg);
 				return new ModelAndView("authenticationForm-portlet-wai", model);
 			}
 		}
-		
+
 		model = browse(dir);
 		FormCommand command = new FormCommand();
-	    model.put("command", command);
-	    if(msg != null)
-	    	model.put("msg", msg);
-        return new ModelAndView("view-portlet-wai", model);
-    }
+		model.put("command", command);
+		if(msg != null)
+			model.put("msg", msg);
+		return new ModelAndView("view-portlet-wai", model);
+	}
 
 	private ModelMap browse(String dir) {
 		ModelMap model = new ModelMap();
@@ -207,18 +212,18 @@ public class PortletController {
 		model.put("files", files);
 		model.put("currentDir", dir);
 		ListOrderedMap parentsEncPathes = pathEncodingUtils.getParentsEncPathes(resource);
-		model.put("parentsEncPathes", parentsEncPathes); 
+		model.put("parentsEncPathes", parentsEncPathes);
 		return model;
 	}
-	
-    @RequestMapping("ABOUT")
+
+	@RequestMapping("ABOUT")
 	public ModelAndView renderAboutView(RenderRequest request, RenderResponse response) throws Exception {
 		this.init(request);
 		ModelMap model = new ModelMap();
 		return new ModelAndView("about-portlet", model);
 	}
-    
-    @RequestMapping("HELP")
+
+	@RequestMapping("HELP")
 	public ModelAndView renderHelpView(RenderRequest request, RenderResponse response) throws Exception {
 		this.init(request);
 		ModelMap model = new ModelMap();

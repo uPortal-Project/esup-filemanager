@@ -41,6 +41,7 @@ import org.esupportail.portlet.filemanager.beans.FormCommand;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.Quota;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.beans.UploadActionType;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
 import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.esupportail.portlet.filemanager.services.ResourceUtils;
@@ -68,43 +69,47 @@ import org.springframework.web.servlet.view.json.MappingJacksonJsonView;
 public class PortletControllerAjax {
 
 	protected Logger log = Logger.getLogger(PortletControllerAjax.class);
-	
-    @Autowired  
-    private MessageSource messageSource;
-    
+
+	@Autowired
+	private MessageSource messageSource;
+
 	@Autowired
 	protected IServersAccessService serverAccess;
-	
+
 	@Autowired
 	protected BasketSession basketSession;
-	
+
 	@Autowired
 	protected ApplicationContext context;
-	
+
 	@Autowired(required=false)
 	@Qualifier("useDoubleClickModeServlet")
 	protected Boolean useDoubleClick = true;
-	
+
 	@Autowired(required=false)
 	@Qualifier("useCursorWaitDialogModeServlet")
 	protected Boolean useCursorWaitDialog = false;
-	
+
 	@Autowired(required=false)
 	@Qualifier("showHiddenFilesModeServlet")
 	protected Boolean showHiddenFilesModeServlet = false;
-	
-	
+
+	@Autowired(required=false)
+	@Qualifier("uploadActionOnExistingFileNameModeServlet")
+	protected UploadActionType uploadActionOnExistingFileNameServlet = UploadActionType.OVERRIDE;
+
+
 	//GP Added in order to detect file type (image / sound / etc)
 	@Autowired
 	protected ResourceUtils resourceUtils;
-	
+
 	@Autowired
 	protected PathEncodingUtils pathEncodingUtils;
-	
+
 	@Autowired
 	protected SharedUserPortletParameters userParameters;
 
-	
+
 	/**
 	 * @See https://jira.springsource.org/browse/SPR-7344
 	 * At the moment, we can't use simply @ResponseBody in portlet mode
@@ -137,32 +142,32 @@ public class PortletControllerAjax {
 			model.put("password", this.serverAccess.getUserPassword(dir, userParameters).getPassword());
 			return new ModelAndView("authenticationForm", model);
 		}
-		
+
 		JsTreeFile resource = this.serverAccess.get(dir, userParameters, false, false);
 		pathEncodingUtils.encodeDir(resource);
 		model.put("resource", resource);
 		List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
-		
+
 		Comparator<JsTreeFile> comparator = JsTreeFile.comparators.get(sortField);
 		if(comparator != null) {
 			Collections.sort(files, comparator);
 		} else {
-			Collections.sort(files);	
+			Collections.sort(files);
 		}
-		
+
 		pathEncodingUtils.encodeDir(files);
-		model.put("files", files); 
+		model.put("files", files);
 		ListOrderedMap parentsEncPathes = pathEncodingUtils.getParentsEncPathes(resource);
-		model.put("parentsEncPathes", parentsEncPathes); 
-		
+		model.put("parentsEncPathes", parentsEncPathes);
+
 		FormCommand command = new FormCommand();
-	    model.put("command", command);
+		model.put("command", command);
 
-	    return new ModelAndView("fileTree", model);
-	 }
+		return new ModelAndView("fileTree", model);
+	}
 
-	
-	
+
+
 	/**
 	 * Data for the left tree area
 	 * @param dir
@@ -170,156 +175,156 @@ public class PortletControllerAjax {
 	 * @return
 	 */
 	@ResourceMapping("fileChildren")
-    public ModelAndView fileChildren(@RequestParam String dir, @RequestParam(required=false) String hierarchy, ResourceRequest request) {
+	public ModelAndView fileChildren(@RequestParam String dir, @RequestParam(required=false) String hierarchy, ResourceRequest request) {
 		dir = pathEncodingUtils.decodeDir(dir);
 		List<JsTreeFile> files;
 		if(this.serverAccess.formAuthenticationRequired(dir, userParameters) && this.serverAccess.getUserPassword(dir, userParameters).getPassword() == null) {
-	    	String driveDir = JsTreeFile.ROOT_DRIVE
-	    		.concat(this.serverAccess.getDriveCategory(dir));
-	    	
-	    	// we can't get children of (sub)children of a drive because authentication is required 
-	    	// -> we return empty list   
-	    	if("all".equals(hierarchy)) {
-			    files =  this.serverAccess.getJsTreeFileRoots(driveDir, userParameters);
-	    	} else if(dir.length() > driveDir.length()) {
-	    		files = new Vector<JsTreeFile>();
-	    	} else {
-	    		files = this.serverAccess.getFolderChildren(driveDir, userParameters);
-	    	}
-	    } else {
-	    	if(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE) ) {
-	    		files = this.serverAccess.getJsTreeFileRoots(userParameters);		
-	    	} else if("all".equals(hierarchy)) {
-	    		files =  this.serverAccess.getJsTreeFileRoots(dir, userParameters);
-	    	} else {
+			String driveDir = JsTreeFile.ROOT_DRIVE
+				.concat(this.serverAccess.getDriveCategory(dir));
+
+			// we can't get children of (sub)children of a drive because authentication is required
+			// -> we return empty list
+			if("all".equals(hierarchy)) {
+				files =  this.serverAccess.getJsTreeFileRoots(driveDir, userParameters);
+			} else if(dir.length() > driveDir.length()) {
+				files = new Vector<JsTreeFile>();
+			} else {
+				files = this.serverAccess.getFolderChildren(driveDir, userParameters);
+			}
+		} else {
+			if(dir == null || dir.length() == 0 || dir.equals(JsTreeFile.ROOT_DRIVE) ) {
+				files = this.serverAccess.getJsTreeFileRoots(userParameters);
+			} else if("all".equals(hierarchy)) {
+				files =  this.serverAccess.getJsTreeFileRoots(dir, userParameters);
+			} else {
 				files = this.serverAccess.getFolderChildren(dir, userParameters);
-	    	}
-	    }
+			}
+		}
 		pathEncodingUtils.encodeDir(files);
-		
+
 		return getJacksonView(files);
 	}
 
 
 	@ResourceMapping("removeFiles")
-    public ModelAndView removeFiles(FormCommand command, ResourceRequest request) {
+	public ModelAndView removeFiles(FormCommand command, ResourceRequest request) {
 		Locale locale = request.getLocale();
 		long allOk = 1;
-		String msg = context.getMessage("ajax.remove.ok", null, locale); 
-		Map jsonMsg = new HashMap(); 
+		String msg = context.getMessage("ajax.remove.ok", null, locale);
+		Map jsonMsg = new HashMap();
 		for(String dir: pathEncodingUtils.decodeDirs(command.getDirs())) {
 			if(!this.serverAccess.remove(dir, userParameters)) {
-				msg = context.getMessage("ajax.remove.failed", null, locale); 
+				msg = context.getMessage("ajax.remove.failed", null, locale);
 				allOk = 0;
 			}
 		}
 		jsonMsg.put("status", new Long(allOk));
 		jsonMsg.put("msg", msg);
-		
-    	return getJacksonView(jsonMsg);
-    }
-	
+
+		return getJacksonView(jsonMsg);
+	}
+
 	@ResourceMapping("createFile")
-    public ModelAndView createFile(String parentDir, String title, String type, ResourceRequest request, ResourceResponse response) {
+	public ModelAndView createFile(String parentDir, String title, String type, ResourceRequest request, ResourceResponse response) {
 		String parentDirDecoded = pathEncodingUtils.decodeDir(parentDir);
 		String fileDir = this.serverAccess.createFile(parentDirDecoded, title, type, userParameters);
 		if(fileDir != null) {
 			return this.fileTree(parentDir, null, request, response);
-		} 
-		 
-		//Added for GIP Recia : Error handling 
+		}
+
+		//Added for GIP Recia : Error handling
 		//Usually a duplicate name problem.  Tell the ajax handler that
 		//there is a problem and send the translated error message
 		Locale locale = request.getLocale();
 		ModelMap modelMap = new ModelMap();
 		modelMap.put("errorText", context.getMessage("ajax.fileOrFolderCreate.failed", null, locale));
 		return new ModelAndView("ajax_error", modelMap);
-    }
-	
+	}
+
 	@ResourceMapping("renameFile")
-    public ModelAndView renameFile(String parentDir, String dir, String title, ResourceRequest request, ResourceResponse response) {
+	public ModelAndView renameFile(String parentDir, String dir, String title, ResourceRequest request, ResourceResponse response) {
 		parentDir = pathEncodingUtils.decodeDir(parentDir);
 		dir = pathEncodingUtils.decodeDir(dir);
 		if(this.serverAccess.renameFile(dir, title, userParameters)) {
-			return this.fileTree(pathEncodingUtils.encodeDir(parentDir), null, request, response);	
+			return this.fileTree(pathEncodingUtils.encodeDir(parentDir), null, request, response);
 		}
-		
+
 		//Usually means file does not exist
 		Locale locale = request.getLocale();
 		ModelMap modelMap = new ModelMap();
 		modelMap.put("errorText", context.getMessage("ajax.rename.failed", null, locale));
 		return new ModelAndView("ajax_error", modelMap);
-    }
-    
+	}
+
 	@ResourceMapping("prepareCopyFiles")
-    public ModelAndView prepareCopyFiles(FormCommand command, ResourceRequest request) {
+	public ModelAndView prepareCopyFiles(FormCommand command, ResourceRequest request) {
 		Locale locale = request.getLocale();
 		basketSession.setDirsToCopy(pathEncodingUtils.decodeDirs(command.getDirs()));
 		basketSession.setGoal("copy");
-		Map jsonMsg = new HashMap(); 
+		Map jsonMsg = new HashMap();
 		jsonMsg.put("status", new Long(1));
-		String msg = context.getMessage("ajax.copy.ok", null, locale); 
+		String msg = context.getMessage("ajax.copy.ok", null, locale);
 		jsonMsg.put("msg", msg);
 		return getJacksonView(jsonMsg);
-    }
-	
+	}
+
 	@ResourceMapping("prepareCutFiles")
-    public ModelAndView prepareCutFiles(FormCommand command, ResourceRequest request) {
+	public ModelAndView prepareCutFiles(FormCommand command, ResourceRequest request) {
 		Locale locale = request.getLocale();
 		basketSession.setDirsToCopy(pathEncodingUtils.decodeDirs(command.getDirs()));
 		basketSession.setGoal("cut");
-		Map jsonMsg = new HashMap(); 
+		Map jsonMsg = new HashMap();
 		jsonMsg.put("status", new Long(1));
-		String msg = context.getMessage("ajax.cut.ok", null, locale); 
+		String msg = context.getMessage("ajax.cut.ok", null, locale);
 		jsonMsg.put("msg", msg);
 		return getJacksonView(jsonMsg);
-    }
-	
+	}
+
 	@ResourceMapping("pastFiles")
-    public ModelAndView pastFiles(String dir, ResourceRequest request) {
+	public ModelAndView pastFiles(String dir, ResourceRequest request) {
 		Locale locale = request.getLocale();
 		dir = pathEncodingUtils.decodeDir(dir);
-		Map jsonMsg = new HashMap(); 
+		Map jsonMsg = new HashMap();
 		if(this.serverAccess.moveCopyFilesIntoDirectory(dir, basketSession.getDirsToCopy(), "copy".equals(basketSession.getGoal()), userParameters)) {
 			jsonMsg.put("status", new Long(1));
-			String msg = context.getMessage("ajax.paste.ok", null, locale); 
+			String msg = context.getMessage("ajax.paste.ok", null, locale);
 			jsonMsg.put("msg", msg);
 		}
 		else {
 			jsonMsg.put("status", new Long(0));
-			String msg = context.getMessage("ajax.paste.failed", null, locale); 
+			String msg = context.getMessage("ajax.paste.failed", null, locale);
 			jsonMsg.put("msg", msg);
 		}
 		return getJacksonView(jsonMsg);
 	}
-	
+
 	@ResourceMapping("authenticate")
-    public ModelAndView authenticate(String dir, String username, String password, ResourceRequest request) {
+	public ModelAndView authenticate(String dir, String username, String password, ResourceRequest request) {
 		Locale locale = request.getLocale();
 		dir = pathEncodingUtils.decodeDir(dir);
-		Map jsonMsg = new HashMap(); 
+		Map jsonMsg = new HashMap();
 		if(this.serverAccess.authenticate(dir, username, password, userParameters)) {
 			jsonMsg.put("status", new Long(1));
-			String msg = context.getMessage("auth.ok", null, locale); 
+			String msg = context.getMessage("auth.ok", null, locale);
 			jsonMsg.put("msg", msg);
 		}
 		else {
 			jsonMsg.put("status", new Long(0));
-			String msg = context.getMessage("auth.bad", null, locale); 
+			String msg = context.getMessage("auth.bad", null, locale);
 			jsonMsg.put("msg", msg);
 		}
 		return getJacksonView(jsonMsg);
 	}
-	
+
 	/**
-	 * Added for GIP Recia : Return an image.  
+	 * Added for GIP Recia : Return an image.
 	 * @param path
 	 * @param request
 	 * @param response
 	 * @throws IOException
 	 */
 	@ResourceMapping("fetchImage")
-	public void fetchImage(String dir, 
+	public void fetchImage(String dir,
 			ResourceRequest request, ResourceResponse response) throws IOException {
 		dir = pathEncodingUtils.decodeDir(dir);
 		this.serverAccess.updateUserParameters(dir, userParameters);
@@ -328,7 +333,7 @@ public class PortletControllerAjax {
 		response.setContentLength(file.getSize());
 		FileCopyUtils.copy(file.getInputStream(), response.getPortletOutputStream());
 	}
-	
+
 	/**
 	 * Added for GIP Recia : Return a sound
 	 * @param path
@@ -337,7 +342,7 @@ public class PortletControllerAjax {
 	 * @throws IOException
 	 */
 	@ResourceMapping("fetchSound")
-	public void fetchSound(String dir, 
+	public void fetchSound(String dir,
 			ResourceRequest request, ResourceResponse response) throws IOException {
 		dir = pathEncodingUtils.decodeDir(dir);
 		this.serverAccess.updateUserParameters(dir, userParameters);
@@ -347,28 +352,28 @@ public class PortletControllerAjax {
 		response.setContentLength(file.getSize());
 		FileCopyUtils.copy(file.getInputStream(), response.getPortletOutputStream());
 	}
-	
+
 	/**
 	 * it is used also in portlet mode mobile and wai
 	 */
 	@ResourceMapping("downloadFile")
-    public void downloadFile(@RequestParam String dir, 
-    								 ResourceRequest request, ResourceResponse response) throws IOException {
+	public void downloadFile(@RequestParam String dir,
+									ResourceRequest request, ResourceResponse response) throws IOException {
 		dir = pathEncodingUtils.decodeDir(dir);
 		this.serverAccess.updateUserParameters(dir, userParameters);
 		DownloadFile file = this.serverAccess.getFile(dir, userParameters);
 		response.setContentType(file.getContentType());
-	    response.setContentLength(file.getSize());
+		response.setContentLength(file.getSize());
 		response.setProperty("Content-Disposition","attachment; filename=\"" + file.getBaseName() +"\"");
 		FileCopyUtils.copy(file.getInputStream(), response.getPortletOutputStream());
 	}
-	
+
 	/**
 	 * it is used also in portlet mode mobile and wai
 	 */
 	@ResourceMapping("downloadZip")
-    public void downloadZip(FormCommand command, 
-    								ResourceRequest request, ResourceResponse response) throws IOException {
+	public void downloadZip(FormCommand command,
+									ResourceRequest request, ResourceResponse response) throws IOException {
 		List<String> dirs = pathEncodingUtils.decodeDirs(command.getDirs());
 		this.serverAccess.updateUserParameters(dirs.get(0), userParameters);
 		DownloadFile file = this.serverAccess.getZip(dirs, userParameters);
@@ -378,18 +383,26 @@ public class PortletControllerAjax {
 		response.setProperty("Content-Disposition","attachment; filename=\"" + file.getBaseName() +"\"");
 		FileCopyUtils.copy(file.getInputStream(), response.getPortletOutputStream());
 	}
-	
+
 
 	// thanks to use BindingResult if FileUpload failed because of XHR request (and not multipart)
 	// this method is called anyway
 	@ResourceMapping("uploadFile")
-	public  ModelAndView uploadFile(String dir, FileUpload file, BindingResult result, ResourceRequest request) throws IOException {		
-		
+	public  ModelAndView uploadFile(String dir, FileUpload file, BindingResult result, ResourceRequest request, UploadActionType uploadOption) throws IOException {
+
 		dir = pathEncodingUtils.decodeDir(dir);
-		
+
+		UploadActionType option = this.uploadActionOnExistingFileNameServlet;
+		if (userParameters.getUploadOption() != null) {
+			option = userParameters.getUploadOption();
+		}
+		if (uploadOption != null) {
+			option = uploadOption;
+		}
+
 		String filename;
-		InputStream inputStream;	
-		
+		InputStream inputStream;
+
 		if(file.getQqfile() != null) {
 			// standard multipart form upload
 			filename = file.getQqfile().getOriginalFilename();
@@ -399,18 +412,18 @@ public class PortletControllerAjax {
 			filename = request.getParameter("qqfile");
 			inputStream = request.getPortletInputStream();
 		}
-		return upload(dir, filename, inputStream, request.getLocale());
+		return upload(dir, filename, inputStream, request.getLocale(), option);
 	}
 
-	
+
 	// take care : we don't send json like application/json but like text/html !
 	// goal is that the json is written in a frame
-	private ModelAndView upload(String dir, String filename, InputStream inputStream, Locale locale) {
+	private ModelAndView upload(String dir, String filename, InputStream inputStream, Locale locale, UploadActionType uploadOption) {
 		boolean success = true;
 		String text = "";
 		try {
-			if(this.serverAccess.putFile(dir, filename, inputStream, userParameters)) {
-				String msg = context.getMessage("ajax.upload.ok", null, locale); 
+			if (this.serverAccess.putFile(dir, filename, inputStream, userParameters, uploadOption)) {
+				String msg = context.getMessage("ajax.upload.ok", null, locale);
 				text = "{'success':'true', 'msg':'".concat(msg).concat("'}");
 				log.info("upload file " + filename + " in " + dir + " ok");
 			} else {
@@ -422,14 +435,14 @@ public class PortletControllerAjax {
 		}
 		if(!success) {
 			log.info("Error uploading file " + filename + " in " + dir);
-			String msg = context.getMessage("ajax.upload.failed", null, locale); 
+			String msg = context.getMessage("ajax.upload.failed", null, locale);
 			text = "{'success':'false', 'msg':'".concat(msg).concat("'}");
 		}
 		ModelMap model = new ModelMap("text", text);
 		return new ModelAndView("text", model);
 	}
-	
-	
+
+
 	/**
 	 * Return the correct details view based on the requested file(s)
 	 */
@@ -450,9 +463,9 @@ public class PortletControllerAjax {
 			// get resource with folder details (if it's a folder ...)
 			JsTreeFile resource = this.serverAccess.get(path, userParameters, true, true);
 			pathEncodingUtils.encodeDir(resource);
-			
+
 			// Based on the resource type, direct to appropriate details view
-			if ("folder".equals(resource.getType()) || "drive".equals(resource.getType())) {		
+			if ("folder".equals(resource.getType()) || "drive".equals(resource.getType())) {
 				Quota quota = this.serverAccess.getQuota(path, userParameters);
 				if(quota != null)
 					model.put("quota", quota);
@@ -494,33 +507,33 @@ public class PortletControllerAjax {
 		return new ModelAndView("details_empty", model);
 
 	}
-	
+
 	@ResourceMapping("getParentPath")
 	public ModelAndView getParentPath(String dir,
 			ResourceRequest request, ResourceResponse response) throws UnsupportedEncodingException {
 
 		dir = pathEncodingUtils.decodeDir(dir);
 		String parentDir;
-		
-		ListOrderedMap parentsPathesMap = pathEncodingUtils.getParentsPathes(dir, null, null);		
+
+		ListOrderedMap parentsPathesMap = pathEncodingUtils.getParentsPathes(dir, null, null);
 		List<String> parentsPathes = (List<String>)(parentsPathesMap.keyList());
 		if(parentsPathes.size()<2)
 			parentDir = this.serverAccess.getJsTreeFileRoot().getPath();
 		else
 			parentDir = parentsPathes.get(parentsPathes.size()-2);
-		
+
 		String parentDirEnc = pathEncodingUtils.encodeDir(parentDir);
-		
+
 		return getJacksonView(parentDirEnc);
 	}
 
-	
+
 	@ExceptionHandler
 	public ModelAndView handleException(EsupStockException ex, ResourceRequest resourceRequest, ResourceResponse resourcesResponse, Locale loc) {
-	    ModelMap modelMap = new ModelMap();
-	    String errorText = messageSource.getMessage(ex.getCodeI18n(), new String[] {ex.getMessage()}, loc);
-	    modelMap.put("errorText", errorText);
-	    return new ModelAndView("ajax_error", modelMap);
+		ModelMap modelMap = new ModelMap();
+		String errorText = messageSource.getMessage(ex.getCodeI18n(), new String[] {ex.getMessage()}, loc);
+		modelMap.put("errorText", errorText);
+		return new ModelAndView("ajax_error", modelMap);
 	}
 
 }
