@@ -17,6 +17,9 @@
  */
 package org.esupportail.portlet.filemanager.services.evaluators;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.portlet.PortletRequest;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -54,10 +57,13 @@ public class PreferenceEvaluator implements IDriveAccessEvaluator, InitializingB
 	 * @see org.esupportail.portlet.filemanager.services.evaluators.IDriveAccessEvaluator#isApplicable(javax.portlet.PortletRequest)
 	 */
 	public boolean isApplicable(PortletRequest request) {
-		final String pref = request.getPreferences().getValue(attribute, null);
-		if (pref != null && pref.equals(value) )
+		final String[] prefsArray = request.getPreferences().getValues(attribute, new String[0]);
+		List<String> prefs = Arrays.asList(prefsArray);
+		if(prefs.contains(value)) {
 			return true;
-		return false;
+		} else {
+			return false;
+		}
 	}
 
 	/**
