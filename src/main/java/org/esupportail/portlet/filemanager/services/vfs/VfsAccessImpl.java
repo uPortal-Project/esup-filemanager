@@ -110,6 +110,9 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 				if(sftpSetUserDirIsRoot) {
 					SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fsOptions, true);
 					FtpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fsOptions, true);
+				} else {
+				    SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fsOptions, false);
+				    FtpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(fsOptions, false);
 				}
 
 				if(!strictHostKeyChecking) {
