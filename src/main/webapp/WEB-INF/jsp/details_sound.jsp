@@ -83,7 +83,7 @@
 	:
 </div>
 <div class="details-attribute">
-	<img src="${file.icon}" alt="icon" /> ${file.title}
+	<!--img src="${file.icon}" alt="icon" /--> ${file.title}
 </div>
 
 <div class="details-attribute-header">

@@ -623,7 +623,7 @@ function customMenu(node) {
             "separator_before": false,
             "separator_after": true,
             // false or string - if does not contain `/` - used as classname
-            "icon": "/esup-filemanager/img/refresh_24px.png"
+            "icon": "/esup-filemanager/img/refresh_16px.png"
         },
         "upload": {
             // The item label
@@ -643,7 +643,7 @@ function customMenu(node) {
             // class is applied to the item LI node
             "separator_before": false,
             "separator_after": false,
-            "icon": "/esup-filemanager/img/upload_24px.gif"
+            "icon": "/esup-filemanager/img/upload_16px.png"
         },
 
         "newfolder": {
@@ -657,7 +657,7 @@ function customMenu(node) {
             "_disabled": false,
             "separator_before": false,
             "separator_after": false,
-            "icon": "/esup-filemanager/img/new_folder_24px.gif"
+            "icon": "/esup-filemanager/img/new_folder_16px.png"
         },
         "newfile": {
             // The item label
@@ -670,7 +670,7 @@ function customMenu(node) {
             "_disabled": false,
             "separator_before": false,
             "separator_after": false,
-            "icon": "/esup-filemanager/img/new_file_24px.png"
+            "icon": "/esup-filemanager/img/new_file_16px.png"
         },
         "pasteItem": {
             // The item label
@@ -683,7 +683,7 @@ function customMenu(node) {
             "_disabled": false,
             "separator_before": false,
             "separator_after": false,
-            "icon": "/esup-filemanager/img/paste_24px.gif"
+            "icon": "/esup-filemanager/img/paste_16px.png"
         }
         /*,
         "downloadItem": {

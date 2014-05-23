@@ -47,7 +47,7 @@ border-bottom: 1px solid #bbb;
 
 .esupstock #toolbar {
 background: #f3f3f3;
-padding: 0px 0px 5px 0px;
+padding: 10px 0px 5px 0px;
 border: 1px solid #bbb;
 margin-bottom: 5px;
 }
@@ -71,40 +71,40 @@ text-decoration: underline;
 }
 
 .esupstock #toolbar-create-wai {  
-background: url(/esup-filemanager/img/new_folder_24px.gif) no-repeat center top; 
+background: url(/esup-filemanager/img/flaticons/new_folder_24px.png) no-repeat center top; 
 }
 
 .esupstock #toolbar-refresh-wai {  
-background: url(/esup-filemanager/img/refresh_24px.gif) no-repeat center top; 
+background: url(/esup-filemanager/img/flaticons/refresh_24px.png) no-repeat center top; 
 }
 
 .esupstock #toolbar-copy-wai {  
-background: url(/esup-filemanager/img/copy_24px.gif) no-repeat center top; 
+background: url(/esup-filemanager/img/flaticons/copy_24px.png) no-repeat center top; 
 }
 
 .esupstock #toolbar-cut-wai {  
-background: url(/esup-filemanager/img/cut_24px.gif) no-repeat center top; 
+background: url(/esup-filemanager/img/flaticons/cut_24px.png) no-repeat center top; 
 }
 
 .esupstock #toolbar-past-wai {  
-background: url(/esup-filemanager/img/paste_24px.gif) no-repeat center top; 
+background: url(/esup-filemanager/img/flaticons/paste_24px.png) no-repeat center top; 
 }
 
 .esupstock #toolbar-rename-wai {  
-background: url(/esup-filemanager/img/rename_24px.gif) no-repeat center top; 
+background: url(/esup-filemanager/img/flaticons/rename_24px.png) no-repeat center top; 
 }
 
 .esupstock #toolbar-delete-wai {  
-background: url(/esup-filemanager/img/delete_24px.gif) no-repeat center top; 
+background: url(/esup-filemanager/img/flaticons/delete_24px.png) no-repeat center top; 
 }
 
 .esupstock #toolbar-zip-wai {  
 padding-top: 30px;
-background: url(/esup-filemanager/img/package-x-generic.png) no-repeat center top; 
+background: url(/esup-filemanager/img/flaticons/zip_24px.png) no-repeat center top; 
 }
 
 .esupstock #toolbar-upload-wai {  
-background: url(/esup-filemanager/img/upload_24px.gif) no-repeat center top; 
+background: url(/esup-filemanager/img/flaticons/upload_24px.png) no-repeat center top; 
 }
 
 .esupstock #info-toolbar span {

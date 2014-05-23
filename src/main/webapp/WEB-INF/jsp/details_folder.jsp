@@ -29,7 +29,7 @@
 <dl class="details">
 
 <dt class="details-attribute-header"><spring:message code="details.title" /> : </dt>
-<dd class="details-attribute"><img src="${file.icon}" alt="icon" /> ${file.title}</dd>
+<dd class="details-attribute"><!--img src="${file.icon}" alt="icon" /--> ${file.title}</dd>
 
 <dt class="details-attribute-header"><spring:message code="details.folders" /> : </dt>
 <dd class="details-attribute">${file.folderCount}</dd>

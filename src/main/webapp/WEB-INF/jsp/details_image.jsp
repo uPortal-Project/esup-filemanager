@@ -41,7 +41,7 @@
 
 <div class="details-spacer"></div>
 <div class="details-attribute-header"><spring:message code="details.title" /> : </div>
-<div class="details-attribute"><img src="${file.icon}" alt="icon" /> ${file.title}</div>
+<div class="details-attribute"><!--img src="${file.icon}" alt="icon" /--> ${file.title}</div>
 
 <div class="details-attribute-header"><spring:message code="details.imagesize" /> : </div>
 <div class="details-attribute"><div id="image_width"></div>px X <div id="image_height"></div>px</div>
