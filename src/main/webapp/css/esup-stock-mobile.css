@@ -15,21 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.esupstock {
-width :100%;
-background:#FFF;
-font-style:normal;
-margin-top: 0px;
-padding-top: 0.5em;
-padding-bottom: 1em;
+.esupstock form label {
+	font-weight: bold;
 }
-
-.esupstock a {
-color: blue;
+.esupstock .listAttributes {
+    margin: 0em 0em 1em 1em;
+    white-space: normal;
 }
-
-.esupstock .breadcrumbs {
-color: green;
+.esupstock .listAttribute {
+    margin-right: 0.5em;
+    white-space: nowrap;
+}
+.esupstock .listAttribute .attrLabel {
+	font-weight: bold;
 }
 
 .esupstock .folder {  
@@ -41,38 +39,3 @@ padding-left: 20px;
 background: url(/esup-filemanager/img/root.png) no-repeat; 
 padding-left: 20px;
 }
-
-.esupstock .browserlist { 
-list-style: none; 
-}
-
-.esupstock #jqueryFileTree { 
-padding-left: 0px;
-}
-
-.esupstock #bigdirectory {
-	text-decoration: underline;
-	font-weight: bold;
-}
-
-.esupstock .breadcrumbs {
-	background: #f3f3f3;
-	padding: 5px;
-	border-bottom: 1px solid #bbb;
-}
-
-.esupstock #authenticationForm {
-border: #ddd 1px solid;
-margin: 10px;
-padding: 10px;
-}
-
-.esupstock #authenticationForm label,
-.esupstock #authenticationForm input {
-display: block;
-}
-
-.esupstock #authenticationForm #submit {
-display: inline;
-}
-

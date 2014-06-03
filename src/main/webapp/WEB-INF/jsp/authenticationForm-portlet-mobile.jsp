@@ -22,70 +22,37 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-
-
-  <portlet:defineObjects />
-
-  <c:set var="n">
-    <portlet:namespace />
-  </c:set>
-    
-    <link 
-        rel="stylesheet"
-        href="/esup-filemanager/css/esup-stock-mobile.css"
-        type="text/css"
-        media="screen, projection"/>
-
-
+<portlet:defineObjects />
+<c:set var="n"><portlet:namespace /></c:set>
+<div id="${n}EsupFilemanager" class="ui-content esupstock" role="main" data-role="content" data-theme="c">
     <portlet:actionURL var="authenticationFormMobile">
       <portlet:param name="action" value="formAuthenticationMobile"/>
       <portlet:param name="dir" value="${currentDir}"/>
     </portlet:actionURL>
-
-
-    <div class="esupstock">
-
-      <div class="portlet-section">
-
-        <div class="portlet-section-body">
-
-
+    <div class="ui-body">
+    	<form method="post" id="authenticationForm" action="${authenticationFormMobile}">
+    		<input type="hidden" id="currentDir" value="${currentDir}"/>
+    		<label for="${n}username"><spring:message code="auth.username" htmlEscape="true"/></label>
+    		<input id="${n}username" type="text" name="username" value="${username}"/>
+    		<label for="${n}password"><spring:message code="auth.password" htmlEscape="true"/></label>
+    		<input id="${n}password" type="password" name="password" value="${password}"/>
+    		<input data-theme="b" type="submit" value="<spring:message code="auth.submit" htmlEscape="true"/>"/>
+    	</form>
+    	<%-- cancel --%>
+    	<portlet:renderURL var="cancelUrl" escapeXml="true">
+    		<portlet:param name="action" value="browseMobile"/>
+    		<portlet:param name="dir" value="${parentDir}"/>
+    	</portlet:renderURL>
+    	<a data-role="button" data-icon="delete" data-theme="e" href="${cancelUrl}"><spring:message code="auth.cancel" htmlEscape="true"/></a>
+    </div>
+    <%--
           <div id="info-toolbar">
             <c:if test="${!empty msg}">
               <spring:message code="${msg}"/>
             </c:if>
           </div>
-
-
-          <form:form method="post" id="authenticationForm" action="${authenticationFormMobile}">
-
-            <input type="hidden" id="currentDir" value="${currentDir}"/>
-
-            <label for="username">
-              <spring:message code="auth.username"/>
-            </label>
-            <input type="text" name="username" value="${username}"/>
-
-            <label for="password">
-              <spring:message code="auth.password"/>
-            </label>
-            <input type="password" name="password" value="${password}"/>
-
-            <input type="submit" id="submit" value="<spring:message code="auth.submit"/>"/>
-
-            <a 
-                href="<portlet:renderURL><portlet:param name="action" value="browseMobile"/><portlet:param name="dir" value="${parentDir}"/></portlet:renderURL>">
-
-              <spring:message code="auth.cancel"/>
-            </a>
-
-          </form:form>
-
-        </div>
-
-      </div>
-
-    </div>
+         --%>
+</div>
 
 
 

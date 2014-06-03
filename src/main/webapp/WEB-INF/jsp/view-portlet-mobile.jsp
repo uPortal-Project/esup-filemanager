@@ -21,6 +21,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <portlet:defineObjects />
 
@@ -35,66 +36,89 @@
         media="screen, projection"/>
 
 
-
-  <div style="fl-theme-iphone">
-
-
-    <div class="esupstock">
-
-      <div class="breadcrumbs">
+    <div id="${n}EsupFilemanager" class="ui-content esupstock" role="main" data-role="content" data-theme="c">
+      <div data-role="controlgroup" data-mini="true" data-type="horizontal">
         <c:forEach var="parent" items="${parentsEncPathes}" varStatus="item">
-          <c:choose>
-            <c:when test="${item.last}">
-              <img src="${resource.icon}" alt="icon" />
-              <span>
-                ${resource.title}
-              </span>
-            </c:when>
-            <c:otherwise>
-              <a 
-                  href="<portlet:renderURL> <portlet:param name="action" value="browseMobile"/> <portlet:param name="dir" value="${parent.key}"/></portlet:renderURL>">
-
-
-
-                <img src="${parent.value[1]}" alt="icon" />
-                ${parent.value[0]}
-              </a>
-            </c:otherwise>
-          </c:choose>
+          <%-- last item IS current resource --%>
+          <c:if test="${not item.last}">
+            <portlet:renderURL var="buttonUrl" escapeXml="true"> 
+              <portlet:param name="action" value="browseMobile"/>
+              <portlet:param name="dir" value="${parent.key}"/>
+            </portlet:renderURL>
+            <a  data-role="button" href="${buttonUrl}">
+              <img src="${parent.value[1]}" alt="icon" />
+              ${parent.value[0]}
+              <c:set var="parentItemPath" value="${parent}"/>
+            </a>
+  	  </c:if>
         </c:forEach>
       </div>
 
-      <ul id="jqueryFileTree" style="">
 
-        <c:forEach var="file" items="${files}">
-          <li class="browserlist fl-container">
-          <c:choose>
-            <c:when test="${'file' == file.type}">
-              <img src="${file.icon}" alt="icon" />
-              <portlet:resourceURL id="downloadFile" var="downloadFileURL">
-				 <portlet:param name="dir" value="${file.encPath}"/>
-			  </portlet:resourceURL>
-              <a class="file" href="${downloadFileURL}">
-                ${file.title}
-              </a>
-            </c:when>
+      <div class="ui-body">
+      	<ul id="jqueryFileTree" data-role="listview" data-inset="true">
+      	  <c:if test="${not empty resource and not empty resource.title}">
+      	    <c:choose>
+      	      <c:when test="${not empty parentItemPath}">
+      		<li data-icon="arrow-l" data-theme="b">
+      		  <portlet:renderURL var="parentUrl" escapeXml="true">
+      		    <portlet:param name="action" value="browseMobile"/>
+      		    <portlet:param name="dir" value="${parentItemPath.key}"/>
+      		  </portlet:renderURL>
+      		  <a href="${parentUrl}">
+      		    <img src="${resource.icon}" alt="icon" class="ui-li-icon"/>
+      		    ${resource.title}
+      		  </a>
+      		</li>
+      		<c:remove var="parentItemPath"/>
+      	      </c:when>
+      	      <c:otherwise>
+      		<li data-role="list-divider">
+      		  <span class="list-divider-title">${resource.title}</span>
+      		</li>
+      	      </c:otherwise>
+      	    </c:choose>
+      	  </c:if>
+
+	  <%-- list of files --%>
+          <c:forEach var="file" items="${files}">
+            <c:choose>
+              <c:when test="${'file' == file.type}">
+	        <portlet:resourceURL id="downloadFile" var="downloadFileURL" escapeXml="true">
+		  <portlet:param name="dir" value="${file.encPath}"/>
+		</portlet:resourceURL>
+		<li data-icon="false">
+		  <a href="${downloadFileURL}">
+		    <img src="${file.icon}" alt="icon" class="ui-li-icon"/>
+		    ${file.title}
+		  </a>
+		  <p class="listAttributes">
+		    <span class="listAttribute">
+		      <span class="attrLabel"><spring:message code="browserArea.header.size" htmlEscape="true"/> : </span>
+		      <span class="attrValue">${file.formattedSize.size}&#160;<spring:message code="details.${file.formattedSize.unit}"/></span>
+	            </span>
+		    <span class="listAttribute">
+		      <span class="attrLabel"><spring:message code="browserArea.header.modified" htmlEscape="true"/> : </span>
+		      <span class="attrValue">${file.lastModifiedTime}</span>
+	            </span>
+	          </p>
+	        </li>
+              </c:when>
             <c:otherwise>
-              <img src="${file.icon}" alt="icon" />
-              <a 
-                  class="fileTreeRef"
-                  href="<portlet:renderURL><portlet:param name="action" value="browseMobile"/><portlet:param name="dir" value="${file.encPath}"/></portlet:renderURL>">
-
-
-
-                ${file.title}
-              </a>
+	      <portlet:renderURL var="folderUrl" escapeXml="true">
+	        <portlet:param name="action" value="browseMobile"/>
+	        <portlet:param name="dir" value="${file.encPath}"/>
+	      </portlet:renderURL>
+	      <li>
+		<a href="${folderUrl}">
+		  <img src="${file.icon}" alt="icon" class="ui-li-icon"/>
+		  ${file.title}
+		</a>
+              </li>
             </c:otherwise>
-          </c:choose>
-        </li>
-      </c:forEach>
+            </c:choose>
+	  </c:forEach>
+	</ul>
+      </div>
+    </div>
 
-    </ul>
-
-  </div>
-
-</div>
