@@ -623,7 +623,7 @@ function customMenu(node) {
             "separator_before": false,
             "separator_after": true,
             // false or string - if does not contain `/` - used as classname
-            "icon": "/esup-filemanager/img/refresh_16px.png"
+            "icon": "/esup-filemanager/img/flaticons/refresh_16px.png"
         },
         "upload": {
             // The item label
@@ -643,7 +643,7 @@ function customMenu(node) {
             // class is applied to the item LI node
             "separator_before": false,
             "separator_after": false,
-            "icon": "/esup-filemanager/img/upload_16px.png"
+            "icon": "/esup-filemanager/img/flaticons/upload_16px.png"
         },
 
         "newfolder": {
@@ -657,7 +657,7 @@ function customMenu(node) {
             "_disabled": false,
             "separator_before": false,
             "separator_after": false,
-            "icon": "/esup-filemanager/img/new_folder_16px.png"
+            "icon": "/esup-filemanager/img/flaticons/new_folder_16px.png"
         },
         "newfile": {
             // The item label
@@ -670,7 +670,7 @@ function customMenu(node) {
             "_disabled": false,
             "separator_before": false,
             "separator_after": false,
-            "icon": "/esup-filemanager/img/new_file_16px.png"
+            "icon": "/esup-filemanager/img/flaticons/new_file_16px.png"
         },
         "pasteItem": {
             // The item label
@@ -683,7 +683,7 @@ function customMenu(node) {
             "_disabled": false,
             "separator_before": false,
             "separator_after": false,
-            "icon": "/esup-filemanager/img/paste_16px.png"
+            "icon": "/esup-filemanager/img/flaticons/paste_16px.png"
         }
         /*,
         "downloadItem": {
@@ -697,7 +697,7 @@ function customMenu(node) {
             "_disabled": false,
             "separator_before": true,
             "separator_after": false,
-            "icon": "/esup-filemanager/img/download_24px.gif"
+            "icon": "/esup-filemanager/img/flaticons/download_16px.png"
         },
         "zipItem": {
             // The item label
@@ -709,7 +709,7 @@ function customMenu(node) {
             "_disabled": false,
             "separator_before": false,
             "separator_after": false,
-            "icon": "/esup-filemanager/img/delete_24px.gif"
+            "icon": "/esup-filemanager/img/flaticons/delete_16px.png"
         },
         "copyItem": {
             // The item label
@@ -722,7 +722,7 @@ function customMenu(node) {
             "_disabled": false,
             "separator_before": false,
             "separator_after": false,
-            "icon": "/esup-filemanager/img/copy_24px.gif"
+            "icon": "/esup-filemanager/img/flaticons/copy_16px.png"
         },
         "cutItem": {
             // The item label
@@ -737,7 +737,7 @@ function customMenu(node) {
             "_disabled": false,
             "separator_before": false,
             "separator_after": false,
-            "icon": "/esup-filemanager/img/cut_24px.gif"
+            "icon": "/esup-filemanager/img/flaticons/cut_16px.png"
         },
 
         "renameItem": {
@@ -750,7 +750,7 @@ function customMenu(node) {
             "_disabled": false,
             "separator_before": false,
             "separator_after": false,
-            "icon": "/esup-filemanager/img/rename_16px.gif"
+            "icon": "/esup-filemanager/img/flaticons/rename_16px.png"
         },
         "deleteItem": {
             // The item label
@@ -765,7 +765,7 @@ function customMenu(node) {
             "_disabled": false,
             "separator_before": false,
             "separator_after": false,
-            "icon": "/esup-filemanager/img/delete_24px.gif"
+            "icon": "/esup-filemanager/img/flaticons/delete_16px.png"
         }*/
     };
 
