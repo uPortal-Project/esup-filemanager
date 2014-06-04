@@ -39,3 +39,37 @@ padding-left: 20px;
 background: url(/esup-filemanager/img/root.png) no-repeat; 
 padding-left: 20px;
 }
+
+
+
+/* CSS for Mobile view without JQueryMobile */
+
+.esupstock li {
+list-style: none;
+}
+
+.esupstock #jqueryFileTree { 
+padding-left: 0px;
+}
+
+.esupstock #bigdirectory {
+       text-decoration: underline;
+       font-weight: bold;
+}
+
+.esupstock #authenticationForm {
+border: #ddd 1px solid;
+margin: 10px;
+padding: 10px;
+}
+
+.esupstock #authenticationForm label,
+.esupstock #authenticationForm input {
+display: block;
+}
+
+.esupstock #authenticationForm #submit {
+display: inline;
+}
+
+

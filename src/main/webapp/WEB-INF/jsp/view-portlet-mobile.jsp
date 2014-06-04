@@ -37,49 +37,33 @@
 
 
     <div id="${n}EsupFilemanager" class="ui-content esupstock" role="main" data-role="content" data-theme="c">
-      <div data-role="controlgroup" data-mini="true" data-type="horizontal">
+      <div data-role="controlgroup" data-mini="true" data-type="horizontal" class="breadcrumbs">
         <c:forEach var="parent" items="${parentsEncPathes}" varStatus="item">
           <%-- last item IS current resource --%>
-          <c:if test="${not item.last}">
-            <portlet:renderURL var="buttonUrl" escapeXml="true"> 
-              <portlet:param name="action" value="browseMobile"/>
-              <portlet:param name="dir" value="${parent.key}"/>
-            </portlet:renderURL>
-            <a  data-role="button" href="${buttonUrl}">
-              <img src="${parent.value[1]}" alt="icon" />
-              ${parent.value[0]}
-              <c:set var="parentItemPath" value="${parent}"/>
-            </a>
-  	  </c:if>
+          <c:choose>
+            <c:when test="${item.last}">
+              <span data-role="button">
+                <img src="${resource.icon}" alt="icon" />
+		<span>${resource.title}</span>
+             </c:when>
+             <c:otherwise>
+               <portlet:renderURL var="buttonUrl" escapeXml="true"> 
+		 <portlet:param name="action" value="browseMobile"/>
+		 <portlet:param name="dir" value="${parent.key}"/>
+               </portlet:renderURL>
+               <a data-role="button" href="${buttonUrl}">
+		 <img src="${parent.value[1]}" alt="icon" />
+		 ${parent.value[0]}
+		 <c:set var="parentItemPath" value="${parent}"/>
+               </a>
+             </c:otherwise>
+	  </c:choose>
         </c:forEach>
       </div>
 
 
       <div class="ui-body">
       	<ul id="jqueryFileTree" data-role="listview" data-inset="true">
-      	  <c:if test="${not empty resource and not empty resource.title}">
-      	    <c:choose>
-      	      <c:when test="${not empty parentItemPath}">
-      		<li data-icon="arrow-l" data-theme="b">
-      		  <portlet:renderURL var="parentUrl" escapeXml="true">
-      		    <portlet:param name="action" value="browseMobile"/>
-      		    <portlet:param name="dir" value="${parentItemPath.key}"/>
-      		  </portlet:renderURL>
-      		  <a href="${parentUrl}">
-      		    <img src="${resource.icon}" alt="icon" class="ui-li-icon"/>
-      		    ${resource.title}
-      		  </a>
-      		</li>
-      		<c:remove var="parentItemPath"/>
-      	      </c:when>
-      	      <c:otherwise>
-      		<li data-role="list-divider">
-      		  <span class="list-divider-title">${resource.title}</span>
-      		</li>
-      	      </c:otherwise>
-      	    </c:choose>
-      	  </c:if>
-
 	  <%-- list of files --%>
           <c:forEach var="file" items="${files}">
             <c:choose>
