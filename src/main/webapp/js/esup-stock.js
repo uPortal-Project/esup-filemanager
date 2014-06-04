@@ -1785,6 +1785,8 @@ function deleteFiles(dirsDataStruct) {
 
         var isElemChecked = isChecked(elemClicked);
 
+	if(event.which !== 3 || !isElemChecked) {
+
         if (event.ctrlKey) {
             console.log("Ctrl key pressed");
         } else if (event.shiftKey) {
@@ -1806,6 +1808,8 @@ function deleteFiles(dirsDataStruct) {
             console.log("Current row not selected");
             selectObject(elemClicked, true);
         }
+
+	}
     }
 
     $.handleItemSelection = function(elemClicked, event) {handleItemSelection(elemClicked, event);};
