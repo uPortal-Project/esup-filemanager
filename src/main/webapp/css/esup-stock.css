@@ -592,3 +592,7 @@ http://code.google.com/p/jstree/issues/detail?id=922&q=IE%20expand&colspec=ID%20
 .esupstock .selectable a {
     text-decoration: none;
 }
+
+.esupstock .ui-droppable {
+    min-height: 0;
+}
