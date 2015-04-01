@@ -18,6 +18,8 @@
 // Helper functions
 //
 
+function esupQqUploader() {
+
 var qq = qq || {};
 
 /**
@@ -1529,3 +1531,9 @@ qq.DisposeSupport = {
         this.addDisposer(qq.attach.apply(this, arguments));
     }
 };
+
+  return qq;
+  
+}
+
+var esupQq = esupQqUploader();

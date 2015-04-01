@@ -122,7 +122,7 @@ $.ajaxSetup({
 
         initJstree();
 
-        var uploader = new qq.FileUploader({
+        var uploader = new esupQq.FileUploader({
             multiple: true,
             template: fileuploadTemplate,
             fileTemplate: fileTemplate,
