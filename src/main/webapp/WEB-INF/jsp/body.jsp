@@ -21,85 +21,85 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<div class="esupstock">
+<div class="esupstock" id="${n}">
 
-	<div class="container">
+	<div class="container container-fluid bootstrap-styles esupstock-container" id="${n}container">
 
 		<div class="portlet-section">
 
 			<div class="portlet-section-body">
 
-				<div id="toolbar" class="fl-fix">
-					<div class="separator">
-						<span class="toolbar-item"> <a href="#"
+			  <div id="toolbar" class="fl-fix row">
+			    <div class="separator">
+						<span class="toolbar-item col-md-1 no-col-padding"> <a href="#"
 							title="<spring:message code='toolbar.refresh.title'/>"
 							class="disabled" id="toolbar-refresh" onclick="return false;">
 								<spring:message code="toolbar.refresh" /> </a>
 						</span>
-						<span class="toolbar-item"> <a href="#" id="toolbar-thumbnail"
-							class="disabled" onclick="return false;" style="display: none"
+						<span class="toolbar-item col-md-1 no-col-padding" style="display: none"> <a href="#" id="toolbar-thumbnail"
+							class="disabled" onclick="return false;"
 							title="<spring:message code='toolbar.thumbnail.title'/>"> <spring:message
 									code="toolbar.thumbnail" /> </a>
 						</span>
-						<span class="toolbar-item">
+						<span class="toolbar-item col-md-1 no-col-padding" style="display: none">
 							<a href="#" id="toolbar-list" class="disabled"
-							onclick="return false;" style="display: none"
+							onclick="return false;" 
 							title="<spring:message code='toolbar.list.title'/>"> <spring:message
 									code="toolbar.list" /> </a>
 						</span>
-					</div>
-					<div class="separator">
-						<span class="toolbar-item" id="file-uploader"
+			    </div>
+			    <div class="separator">
+						<span class="toolbar-item col-md-1 no-col-padding" id="file-uploader"
 							title="<spring:message code='toolbar.upload.title'/>"> </span> <span
-							class="toolbar-item"> <a href="#" class="disabled"
+							class="toolbar-item col-md-1 no-col-padding"> <a href="#" class="disabled"
 							id="toolbar-new_folder"
 							title="<spring:message code='toolbar.create.title'/>"> <spring:message
-									code="toolbar.create" /> </a> </span> <span class="toolbar-item">
+									code="toolbar.create" /> </a> </span> <span class="toolbar-item col-md-1 no-col-padding">
 							<a href="#" class="disabled" id="toolbar-new_file"
 							title="<spring:message code='toolbar.create.file.title'/>"> <spring:message
-									code="toolbar.create.file" /> </a> </span>
-					</div>
-					<div class="separator">
-						<span class="toolbar-item"> <a href="#" class="disabled"
+														       code="toolbar.create.file" /> </a> </span>
+			    </div>
+			    <div class="separator">						
+						<span class="toolbar-item col-md-1 no-col-padding"> <a href="#" class="disabled"
 							id="toolbar-download"
 							title="<spring:message code='toolbar.download.title'/>"> <spring:message
-									code="toolbar.download" /> </a> </span> <span class="toolbar-item">
+									code="toolbar.download" /> </a> </span> <span class="toolbar-item col-md-1 no-col-padding">
 							<a href="#" class="disabled" id="toolbar-zip"
 							title="<spring:message code='toolbar.zip.title'/>"> <spring:message
-									code="toolbar.zip" /> </a> </span>
-					</div>
-					<div>
-						<span class="toolbar-item"> <a href="#" class="disabled"
+													       code="toolbar.zip" /> </a> </span>
+			    </div>
+			    <div>						
+						<span class="toolbar-item col-md-1 no-col-padding"> <a href="#" class="disabled"
 							id="toolbar-copy" onclick="return false;"
 							title="<spring:message code='toolbar.copy.title'/>"> <spring:message
-									code="toolbar.copy" /> </a> </span> <span class="toolbar-item"> <a
+									code="toolbar.copy" /> </a> </span> <span class="toolbar-item col-md-1 no-col-padding"> <a
 							href="#" class="disabled" id="toolbar-cut"
 							onclick="return false;"
 							title="<spring:message code='toolbar.cut.title'/>"> <spring:message
-									code="toolbar.cut" /> </a> </span> <span class="toolbar-item"> <a
+									code="toolbar.cut" /> </a> </span> <span class="toolbar-item col-md-1 no-col-padding"> <a
 							href="#" class="disabled" id="toolbar-paste"
 							onclick="return false;"
 							title="<spring:message code='toolbar.paste.title'/>"> <spring:message
-									code="toolbar.paste" /> </a> </span> <span class="toolbar-item"> <a
+									code="toolbar.paste" /> </a> </span> <span class="toolbar-item col-md-1 no-col-padding"> <a
 							href="#" class="disabled" id="toolbar-rename"
 							onclick="return false;"
 							title="<spring:message code='toolbar.rename.title'/>"> <spring:message
-									code="toolbar.rename" /> </a> </span> <span class="toolbar-item">
+									code="toolbar.rename" /> </a> </span> <span class="toolbar-item col-md-1 no-col-padding">
 							<a href="#" class="disabled" id="toolbar-delete"
 							onclick="return false;"
 							title="<spring:message code='toolbar.delete.title'/>"> <spring:message
-									code="toolbar.delete" /> </a> </span>
-					</div>
+														  code="toolbar.delete" /> </a> </span>
+						</div>
 					
 				</div>
 
-				<div id="info-toolbar" class="fl-col-flex1">
+				<div id="info-toolbar" class="fl-col-flex1 row">
 					<span>...</span>
 				</div>
 
-				<div class="fl-col-flex2">
+				<div class="fl-col-flex2 row">
 
-					<div id="leftArea" class="fl-col fl-force-left">
+					<div id="leftArea" class="fl-col fl-force-left col-md-4">
 					     <h3 class="ui-widget-header ui-corner-all arborescentAreaTitle">
 						  	<spring:message code="treearea.header" />
 						</h3>
@@ -111,7 +111,7 @@
 						<div id="detailArea"></div>
 					</div>
 
-					<div id="browserArea" class="ui-widget-content fl-force-right">
+					<div id="browserArea" class="ui-widget-content fl-force-right col-md-8">
 						<div id="browserMain"></div>
 					</div>
 
