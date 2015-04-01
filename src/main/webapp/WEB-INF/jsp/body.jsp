@@ -18,9 +18,15 @@
 
 --%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0"%>
 
+<c:set var="n">
+  <portlet:namespace />
+</c:set>
+  
 <div class="esupstock" id="${n}">
 
 	<div class="container container-fluid bootstrap-styles esupstock-container" id="${n}container">
@@ -31,17 +37,24 @@
 
 			  <div id="toolbar" class="fl-fix row">
 			    <div class="separator">
-						<span class="toolbar-item col-md-1 no-col-padding"> <a href="#"
+					    	<c:if test="${not fullView}">
+			    			      <span class="toolbar-item"> <a href="<portlet:renderURL windowState="maximized" />"
+							title="<spring:message code='toolbar.fullscreen.title'/>"
+							id="toolbar-fullscreen">
+								<spring:message code="toolbar.fullscreen" /> </a>
+						      </span>
+						</c:if>
+						<span class="toolbar-item"> <a href="#"
 							title="<spring:message code='toolbar.refresh.title'/>"
 							class="disabled" id="toolbar-refresh" onclick="return false;">
 								<spring:message code="toolbar.refresh" /> </a>
 						</span>
-						<span class="toolbar-item col-md-1 no-col-padding" style="display: none"> <a href="#" id="toolbar-thumbnail"
+						<span class="toolbar-item" style="display: none"> <a href="#" id="toolbar-thumbnail"
 							class="disabled" onclick="return false;"
 							title="<spring:message code='toolbar.thumbnail.title'/>"> <spring:message
 									code="toolbar.thumbnail" /> </a>
 						</span>
-						<span class="toolbar-item col-md-1 no-col-padding" style="display: none">
+						<span class="toolbar-item" style="display: none">
 							<a href="#" id="toolbar-list" class="disabled"
 							onclick="return false;" 
 							title="<spring:message code='toolbar.list.title'/>"> <spring:message
@@ -49,47 +62,49 @@
 						</span>
 			    </div>
 			    <div class="separator">
-						<span class="toolbar-item col-md-1 no-col-padding" id="file-uploader"
+						<span class="toolbar-item" id="file-uploader"
 							title="<spring:message code='toolbar.upload.title'/>"> </span> <span
-							class="toolbar-item col-md-1 no-col-padding"> <a href="#" class="disabled"
+							class="toolbar-item"> <a href="#" class="disabled"
 							id="toolbar-new_folder"
 							title="<spring:message code='toolbar.create.title'/>"> <spring:message
-									code="toolbar.create" /> </a> </span> <span class="toolbar-item col-md-1 no-col-padding">
+									code="toolbar.create" /> </a> </span> <span class="toolbar-item">
 							<a href="#" class="disabled" id="toolbar-new_file"
 							title="<spring:message code='toolbar.create.file.title'/>"> <spring:message
 														       code="toolbar.create.file" /> </a> </span>
 			    </div>
+    			    <c:if test="${fullView}">
 			    <div class="separator">						
-						<span class="toolbar-item col-md-1 no-col-padding"> <a href="#" class="disabled"
+						<span class="toolbar-item"> <a href="#" class="disabled"
 							id="toolbar-download"
 							title="<spring:message code='toolbar.download.title'/>"> <spring:message
-									code="toolbar.download" /> </a> </span> <span class="toolbar-item col-md-1 no-col-padding">
+									code="toolbar.download" /> </a> </span> <span class="toolbar-item">
 							<a href="#" class="disabled" id="toolbar-zip"
 							title="<spring:message code='toolbar.zip.title'/>"> <spring:message
 													       code="toolbar.zip" /> </a> </span>
 			    </div>
 			    <div>						
-						<span class="toolbar-item col-md-1 no-col-padding"> <a href="#" class="disabled"
+						<span class="toolbar-item"> <a href="#" class="disabled"
 							id="toolbar-copy" onclick="return false;"
 							title="<spring:message code='toolbar.copy.title'/>"> <spring:message
-									code="toolbar.copy" /> </a> </span> <span class="toolbar-item col-md-1 no-col-padding"> <a
+									code="toolbar.copy" /> </a> </span> <span class="toolbar-item"> <a
 							href="#" class="disabled" id="toolbar-cut"
 							onclick="return false;"
 							title="<spring:message code='toolbar.cut.title'/>"> <spring:message
-									code="toolbar.cut" /> </a> </span> <span class="toolbar-item col-md-1 no-col-padding"> <a
+									code="toolbar.cut" /> </a> </span> <span class="toolbar-item"> <a
 							href="#" class="disabled" id="toolbar-paste"
 							onclick="return false;"
 							title="<spring:message code='toolbar.paste.title'/>"> <spring:message
-									code="toolbar.paste" /> </a> </span> <span class="toolbar-item col-md-1 no-col-padding"> <a
+									code="toolbar.paste" /> </a> </span> <span class="toolbar-item"> <a
 							href="#" class="disabled" id="toolbar-rename"
 							onclick="return false;"
 							title="<spring:message code='toolbar.rename.title'/>"> <spring:message
-									code="toolbar.rename" /> </a> </span> <span class="toolbar-item col-md-1 no-col-padding">
+									code="toolbar.rename" /> </a> </span> <span class="toolbar-item">
 							<a href="#" class="disabled" id="toolbar-delete"
 							onclick="return false;"
 							title="<spring:message code='toolbar.delete.title'/>"> <spring:message
 														  code="toolbar.delete" /> </a> </span>
 						</div>
+						</c:if>
 					
 				</div>
 
@@ -111,7 +126,7 @@
 						<div id="detailArea"></div>
 					</div>
 
-					<div id="browserArea" class="ui-widget-content fl-force-right col-md-8">
+					<div id="browserArea" class="ui-widget-content fl-force-right ${fullView ? 'col-md-8' : ''}">
 						<div id="browserMain"></div>
 					</div>
 

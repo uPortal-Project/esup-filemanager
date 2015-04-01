@@ -25,6 +25,7 @@ import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.WindowState;
 
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.log4j.Logger;
@@ -55,6 +56,7 @@ public class PortletController {
 	public static final String PREF_USE_DOUBLE_CLICK = "useDoubleClick";
 	public static final String PREF_USE_CURSOR_WAIT_DIALOG = "useCursorWaitDialog";
 	public static final String PREF_UPLOAD_ACTION_EXIST_FILE = "uploadActionOnExistingFileName";
+	public static final String PREF_FULL_VIEW_ONLY_MAXIMIZED = "fullDesktopViewOnlyOnMaximizedWindowState";
 	
 	public static final String STANDARD_VIEW = "standard";
 	public static final String MOBILE_VIEW = "mobile";
@@ -138,6 +140,11 @@ public class PortletController {
 		if(dir == null)
 			dir = "";
 		model.put("defaultPath", dir);
+		
+		boolean fullViewOnlyMaximized = "true".equals(prefs.getValue(PREF_FULL_VIEW_ONLY_MAXIMIZED, "false"));
+		boolean fullView = !fullViewOnlyMaximized || WindowState.MAXIMIZED.equals(request.getWindowState());
+		model.put("fullView", fullView);
+		
     	return new ModelAndView("view-portlet", model);
     }
     

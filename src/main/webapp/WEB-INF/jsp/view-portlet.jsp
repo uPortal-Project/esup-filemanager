@@ -40,6 +40,17 @@
     <link rel="stylesheet" href="/esup-filemanager/css/jquery.diaporama.css" type="text/css"  media="screen, projection">
     <link type="text/css" href="/esup-filemanager/css/jplayer.blue.monday.css" rel="stylesheet" />
 	<link type="text/css" href="/esup-filemanager/css/esup-jplayer.css" rel="stylesheet" />
+		<c:if test="${not fullView}">
+			<style>
+			#${n} #leftArea {
+				display: none;
+			}
+			#${n} #browserArea {
+			  width: auto !important;
+			  float: none !important;
+			    }
+			</style>
+		</c:if>
 
     <portlet:resourceURL id="htmlFileTree" var="htmlFileTreeURL" />
     <portlet:resourceURL id="uploadFile" var="uploadFileURL" />

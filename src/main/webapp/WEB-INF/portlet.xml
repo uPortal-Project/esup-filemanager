@@ -70,6 +70,10 @@
         		<name>useCursorWaitDialog</name>
         		<value>false</value>
         	</preference> 	
+        	<preference>
+        		<name>fullDesktopViewOnlyOnMaximizedWindowState</name>
+        		<value>true</value>
+        	</preference> 	
         </portlet-preferences>
     	
 	<supported-processing-event>

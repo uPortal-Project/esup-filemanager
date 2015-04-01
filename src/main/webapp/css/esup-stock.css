@@ -69,6 +69,10 @@ padding: 24px 5px 0px 10px;
 margin: 0px 10px;
 }
 
+.esupstock #toolbar-fullscreen {
+background: url(/esup-filemanager/img/flaticons/Full-Screen-24.png) no-repeat center top;
+}
+
 .esupstock #toolbar-create {
 background: url(/esup-filemanager/img/flaticons/new_folder_24px.png) no-repeat center top;
 }
@@ -593,6 +597,10 @@ http://code.google.com/p/jstree/issues/detail?id=922&q=IE%20expand&colspec=ID%20
     text-decoration: none;
 }
 
+/* uPortal Respondr/Bootstrap Theme fix ...*/
 .esupstock .ui-droppable {
     min-height: 0;
+}
+.esupstock .container {
+    width: auto;
 }
