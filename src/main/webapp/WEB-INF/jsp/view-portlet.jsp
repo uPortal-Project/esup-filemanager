@@ -48,6 +48,7 @@
 			#${n} #browserArea {
 			  width: auto !important;
 			  float: none !important;
+			  border: 0;
 			    }
 			</style>
 		</c:if>
