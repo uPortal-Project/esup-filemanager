@@ -141,7 +141,7 @@ public class PortletController {
 			dir = "";
 		model.put("defaultPath", dir);
 		
-		boolean fullViewOnlyMaximized = "true".equals(prefs.getValue(PREF_FULL_VIEW_ONLY_MAXIMIZED, "false"));
+		boolean fullViewOnlyMaximized = "true".equals(prefs.getValue(PREF_FULL_VIEW_ONLY_MAXIMIZED, "true"));
 		boolean fullView = !fullViewOnlyMaximized || WindowState.MAXIMIZED.equals(request.getWindowState());
 		model.put("fullView", fullView);
 		
