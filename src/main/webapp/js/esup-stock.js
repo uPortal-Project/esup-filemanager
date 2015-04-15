@@ -1345,6 +1345,7 @@ function handleRename() {
           var parent = getJqueryObj(getParentRow(this));
             var renameSpan = parent.find(".renameSpan");
             renameSpan.removeClass('esupHide');
+            renameSpan.find("input").focus();
             if (getIsThumbnailMode()) {
               var link = parent.find("span.thumbnailLinkText");
                 link.hide();
