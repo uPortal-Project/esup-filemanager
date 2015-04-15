@@ -25,6 +25,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
+<spring:message code="datePattern" var="datePattern"/>
+
 <div class="breadcrumbs">
   <div class="writeable">${resource.writeable}</div>
   <c:forEach var="parent" items="${parentsEncPathes}" varStatus="item">
@@ -86,7 +88,7 @@
                 <td>-</td>
                 <td><spring:message code="browserarea.directory" />
                 </td>
-                <td>${file.lastModifiedTime}</td>
+                <td><fmt:formatDate value="${file.lastModifiedTime}" pattern="${datePattern}" /></td>
               </tr>
             </c:when>
             <c:when test="${file.type == 'drive'}">
@@ -138,7 +140,7 @@
                 <td>${file.formattedSize.size} <spring:message
                     code="details.${file.formattedSize.unit}" /></td>
                 <td><spring:message code="browserarea.file" /></td>
-                <td>${file.lastModifiedTime}</td>
+                <td><fmt:formatDate value="${file.lastModifiedTime}" pattern="${datePattern}"/></td>
               </tr>
             </c:otherwise>
           </c:choose>

@@ -21,15 +21,16 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 
 import javax.activation.MimetypesFileTypeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 
 public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 
@@ -74,7 +75,8 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 
 	private boolean writeable = true;
 
-	private String lastModifiedTime;
+	@DateTimeFormat(pattern = "dd/MM/yyyy HH:mm")
+	private Date lastModifiedTime;
 
 	private long size = 0;
 
@@ -344,11 +346,12 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		this.writeable = writeable;
 	}
 
-	public String getLastModifiedTime() {
+	@DateTimeFormat(pattern = "dd/MM/yyyy HH:mm")
+	public Date getLastModifiedTime() {
 		return lastModifiedTime;
 	}
 
-	public void setLastModifiedTime(String lastModifiedTime) {
+	public void setLastModifiedTime(Date lastModifiedTime) {
 		this.lastModifiedTime = lastModifiedTime;
 	}
 
@@ -503,7 +506,7 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 				if(file1.getType().equals("file") &&
 						file2.getType().equals("folder"))
 					return 1;
-				return file1.getLastModifiedTime().compareToIgnoreCase(file2.getLastModifiedTime());
+				return file1.getLastModifiedTime().compareTo(file2.getLastModifiedTime());
 			}
 		};
 		
@@ -515,7 +518,7 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 				if(file1.getType().equals("file") &&
 						file2.getType().equals("folder"))
 					return 1;
-				return file2.getLastModifiedTime().compareToIgnoreCase(file1.getLastModifiedTime());
+				return file2.getLastModifiedTime().compareTo(file1.getLastModifiedTime());
 			}
 		};
 		

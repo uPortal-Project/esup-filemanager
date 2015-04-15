@@ -46,8 +46,6 @@ public abstract class FsAccess {
 
 	protected static String TOKEN_FORM_USERNAME =  "@form_username@";
 
-    protected String datePattern = "dd/MM/yyyy HH:mm";
-
 	private IDriveAccessEvaluator evaluator;
 
 	protected String driveName;
@@ -63,10 +61,6 @@ public abstract class FsAccess {
 	private boolean uriManipulateDone = false;
 	
 	protected IQuotaService quotaService = null;
-
-	public void setDatePattern(String datePattern) {
-		this.datePattern = datePattern;
-	}
 
 	public IDriveAccessEvaluator getEvaluator() {
 		return evaluator;

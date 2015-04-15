@@ -22,6 +22,10 @@
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+
+<spring:message code="datePattern" var="datePattern"/>
+
 
 <h3 class="ui-widget-header ui-corner-all">
 	<spring:message code="details.header" />
@@ -104,7 +108,7 @@
 	<spring:message code="details.lastModifiedTime" />
 	:
 </div>
-<div class="details-attribute">${file.lastModifiedTime}</div>
+<div class="details-attribute"><fmt:formatDate value="${file.lastModifiedTime}" pattern="${datePattern}" /></div>
 
 <div class="details-spacer"></div>
 

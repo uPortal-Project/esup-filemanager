@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -245,7 +246,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 			}
 		}
 
-		file.setLastModifiedTime(new SimpleDateFormat(this.datePattern).format(resource.getLastModified()));
+		file.setLastModifiedTime(new Date(resource.getLastModified()));
 		file.setHidden(resource.isHidden());
                 Boolean resourceWritable = resource.canWrite();
                 if (!resourceWritable) {

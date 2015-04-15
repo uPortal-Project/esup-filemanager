@@ -22,6 +22,9 @@
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+
+<spring:message code="datePattern" var="datePattern"/>
 
 <portlet:defineObjects />
 
@@ -83,7 +86,7 @@
 	            </span>
 		    <span class="listAttribute">
 		      <span class="attrLabel"><spring:message code="browserArea.header.modified" htmlEscape="true"/> : </span>
-		      <span class="attrValue">${file.lastModifiedTime}</span>
+		      <span class="attrValue"><fmt:formatDate value="${file.lastModifiedTime}" pattern="${datePattern}" /></span>
 	            </span>
 	          </p>
 	        </li>

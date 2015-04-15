@@ -22,6 +22,9 @@
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+
+<spring:message code="datePattern" var="datePattern"/>
 
 <portlet:resourceURL id="downloadFile" var="downloadFileURL" />
 
@@ -41,7 +44,7 @@
 <div class="details-attribute">${file.mimeType}</div>
 <c:if test="${not empty file.lastModifiedTime}">
 	<div class="details-attribute-header"><spring:message code="details.lastModifiedTime" /> : </div>
-	<div class="details-attribute">${file.lastModifiedTime}</div>
+	<div class="details-attribute"><fmt:formatDate value="${file.lastModifiedTime}" pattern="${datePattern}" /></div>
 </c:if>
 <div class="details-spacer"></div>
 <form:form method="post" id="detailsFileForm"

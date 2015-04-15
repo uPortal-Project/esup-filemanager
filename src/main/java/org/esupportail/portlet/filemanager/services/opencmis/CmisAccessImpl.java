@@ -164,8 +164,7 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 			}
 			
 			Date date = cmisObject.getLastModificationDate().getTime();
-			file.setLastModifiedTime(new SimpleDateFormat(this.datePattern)
-			.format(date));
+			file.setLastModifiedTime(date);
 			
 		}
 		

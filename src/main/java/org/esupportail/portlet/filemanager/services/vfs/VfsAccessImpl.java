@@ -290,8 +290,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 			final Calendar date = Calendar.getInstance();
 			date.setTimeInMillis(resource.getContent().getLastModifiedTime());
 			// In order to have a readable date
-			file.setLastModifiedTime(new SimpleDateFormat(this.datePattern)
-					.format(date.getTime()));
+			file.setLastModifiedTime(date.getTime());
 	
 			file.setReadable(resource.isReadable());
 			file.setWriteable(resource.isWriteable());
