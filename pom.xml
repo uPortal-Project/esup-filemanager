@@ -334,7 +334,7 @@
               <plugin>
             <groupId>net.jlehtinen.portlet</groupId>
             <artifactId>portlet-prototyping-maven-plugin</artifactId>
-            <version>0.6</version>
+            <version>0.9</version>
             <configuration>
 
                 <!-- Comma-separated list of portlets to be prototyped -->
