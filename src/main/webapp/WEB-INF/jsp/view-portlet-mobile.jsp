@@ -50,7 +50,7 @@
 		<span>${resource.title}</span>
              </c:when>
              <c:otherwise>
-               <portlet:renderURL var="buttonUrl" escapeXml="true"> 
+               <portlet:renderURL var="buttonUrl" escapeXml="true" windowState="${forceWindowState4Mobile}"> 
 		 <portlet:param name="action" value="browseMobile"/>
 		 <portlet:param name="dir" value="${parent.key}"/>
                </portlet:renderURL>
@@ -92,7 +92,7 @@
 	        </li>
               </c:when>
             <c:otherwise>
-	      <portlet:renderURL var="folderUrl" escapeXml="true">
+	      <portlet:renderURL var="folderUrl" escapeXml="true" windowState="${forceWindowState4Mobile}">
 	        <portlet:param name="action" value="browseMobile"/>
 	        <portlet:param name="dir" value="${file.encPath}"/>
 	      </portlet:renderURL>

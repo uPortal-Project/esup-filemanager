@@ -57,6 +57,7 @@ public class PortletController {
 	public static final String PREF_USE_CURSOR_WAIT_DIALOG = "useCursorWaitDialog";
 	public static final String PREF_UPLOAD_ACTION_EXIST_FILE = "uploadActionOnExistingFileName";
 	public static final String PREF_FULL_VIEW_ONLY_MAXIMIZED = "fullDesktopViewOnlyOnMaximizedWindowState";
+	public static final String PREF_FORCE_MAXIMIZED_4_MOBILE = "forceMaximizedView4MobileWhenBrowsing";
 	
 	public static final String STANDARD_VIEW = "standard";
 	public static final String MOBILE_VIEW = "mobile";
@@ -152,6 +153,10 @@ public class PortletController {
     public ModelAndView browseMobile(RenderRequest request, RenderResponse response,
     								@RequestParam String dir) {
     	this.init(request);
+    
+    	final PortletPreferences prefs = request.getPreferences();
+    	boolean forceMaximized4Mobile = "true".equals(prefs.getValue(PREF_FORCE_MAXIMIZED_4_MOBILE, "true")); 
+    	String forceWindowState4Mobile = forceMaximized4Mobile ? WindowState.MAXIMIZED.toString() : request.getWindowState().toString();
     	
 		String decodedDir = pathEncodingUtils.decodeDir(dir);
 		
@@ -165,10 +170,12 @@ public class PortletController {
 				model.put("parentDir", parentDir);
 				model.put("username", this.serverAccess.getUserPassword(decodedDir, userParameters).getUsername());
 				model.put("password", this.serverAccess.getUserPassword(decodedDir, userParameters).getPassword());
+				model.put("forceWindowState4Mobile", forceWindowState4Mobile);
 				return new ModelAndView("authenticationForm-portlet-mobile", model);
 			}
 		}
 		model = browse(dir);
+		model.put("forceWindowState4Mobile", forceWindowState4Mobile);
         return new ModelAndView("view-portlet-mobile", model);
     }
 	

@@ -74,6 +74,10 @@
         		<name>fullDesktopViewOnlyOnMaximizedWindowState</name>
         		<value>true</value>
         	</preference> 	
+        	<preference>
+        		<name>forceMaximizedView4MobileWhenBrowsing</name>
+        		<value>true</value>
+        	</preference>     	
         </portlet-preferences>
     	
 	<supported-processing-event>
