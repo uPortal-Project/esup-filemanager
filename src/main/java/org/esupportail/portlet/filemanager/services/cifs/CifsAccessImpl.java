@@ -24,19 +24,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-
-import jcifs.Config;
-import jcifs.smb.NtStatus;
-import jcifs.smb.NtlmPasswordAuthentication;
-import jcifs.smb.SmbAuthException;
-import jcifs.smb.SmbException;
-import jcifs.smb.SmbFile;
-import jcifs.smb.ACE;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,6 +44,14 @@ import org.esupportail.portlet.filemanager.services.ResourceUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.FileCopyUtils;
 
+import jcifs.Config;
+import jcifs.smb.ACE;
+import jcifs.smb.NtStatus;
+import jcifs.smb.NtlmPasswordAuthentication;
+import jcifs.smb.SmbAuthException;
+import jcifs.smb.SmbException;
+import jcifs.smb.SmbFile;
+
 public class CifsAccessImpl extends FsAccess implements DisposableBean {
 
 	protected static final Log log = LogFactory.getLog(CifsAccessImpl.class);
@@ -62,6 +61,8 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 	private NtlmPasswordAuthentication userAuthenticator;
 
 	protected SmbFile root;
+	
+	protected boolean jcifsSynchronizeRootListing = false;
 
 	/** CIFS properties */
 	protected Properties jcifsConfigProperties;
@@ -172,7 +173,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 				ppath = ppath.concat("/");
 			SmbFile resource = new SmbFile(this.getUri() + ppath, userAuthenticator);
 			if (resource.canRead()) {
-				for(SmbFile child: resource.listFiles()) {
+				for(SmbFile child: this.listFiles(resource)) {
 					try {
 						if(!child.isHidden() || userParameters.isShowHiddenFiles()) {
 							files.add(resourceAsJsTreeFile(child, userParameters, false, true));
@@ -226,11 +227,11 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 		}
 
 		if(folderDetails && ("folder".equals(type) || "drive".equals(type))) {
-			if (resource.listFiles() != null) {
+			if (this.listFiles(resource) != null) {
 				long totalSize = 0;
 				long fileCount = 0;
 				long folderCount = 0;
-				for (SmbFile child : resource.listFiles()) {
+				for (SmbFile child : this.listFiles(resource)) {
 					if (userParameters.isShowHiddenFiles() || !child.isHidden()) {
 						if (child.isDirectory()) {
 							++folderCount;
@@ -431,6 +432,17 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 		
 		return success;
 	}
+	
+
+	private SmbFile[] listFiles(SmbFile resource) throws SmbException {
+		if(jcifsSynchronizeRootListing && this.root.equals(resource)) {
+			synchronized (this.root.getCanonicalPath()) {
+				return resource.listFiles();
+			}
+		} else {
+			return resource.listFiles();
+		}
+	}
 
 	public void destroy() throws Exception {
 		this.close();
@@ -451,4 +463,9 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 	public void setResourceUtils(final ResourceUtils resourceUtils) {
 		this.resourceUtils = resourceUtils;
 	}
+
+	public void setJcifsSynchronizeRootListing(boolean jcifsSynchronizeRootListing) {
+		this.jcifsSynchronizeRootListing = jcifsSynchronizeRootListing;
+	}
+	
 }
