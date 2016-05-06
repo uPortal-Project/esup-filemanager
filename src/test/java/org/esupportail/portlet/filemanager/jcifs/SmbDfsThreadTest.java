@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.util.Properties;
 import java.util.Random;
 
+import jcifs.Config;
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbAuthException;
 import jcifs.smb.SmbFile;
@@ -40,7 +41,6 @@ public class SmbDfsThreadTest extends Thread {
     static long session_time = 1 * 1000;
 
     static boolean verbose = true;
-
 
     SmbDfsThreadTest(NtlmPasswordAuthentication auth, String url, boolean synchronizeRootListing, int id) {
         this.url = url;
@@ -87,8 +87,7 @@ public class SmbDfsThreadTest extends Thread {
                     System.out.println( l[i] + " " + exists );
                 }
                 if( l[i].isDirectory() ) {
-                	if(!l[i].getName().contains("MEDPR") && !l[i].getName().contains("CFC"))
-                		traverse( l[i], depth - 1 );
+                	traverse( l[i], depth - 1 );
                 }
             } catch (SmbAuthException ae) {
                 System.err.println("SAE: " + ae.getMessage());
