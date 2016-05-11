@@ -223,7 +223,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 		if(fileDetails && "file".equals(type)) {
 			String icon = getResourceUtils().getIcon(title);
 			file.setIcon(icon);
-			file.setSize(resource.getContentLength());
+			file.setSize(resource.length());
 		}
 
 		if(folderDetails && ("folder".equals(type) || "drive".equals(type))) {
@@ -237,7 +237,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 							++folderCount;
 						} else if (child.isFile()) {
 							++fileCount;
-							totalSize += child.getContentLength();
+							totalSize += child.length();
 						}
 					}
 				}
@@ -362,7 +362,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 	public DownloadFile getFile(String dir, SharedUserPortletParameters userParameters) {
 		try {
 			SmbFile file = cd(dir, userParameters);
-			int size = new Long(file.getContentLength()).intValue();
+			int size = new Long(file.length()).intValue();
 			InputStream inputStream = file.getInputStream();
 			String contentType = JsTreeFile.getMimeType(file.getName().toLowerCase());
 			DownloadFile dlFile = new DownloadFile(contentType, size, file.getName(), inputStream);
