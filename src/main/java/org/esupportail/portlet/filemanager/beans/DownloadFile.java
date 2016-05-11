@@ -30,7 +30,7 @@ public class DownloadFile implements Serializable {
 
 	protected static final Log log = LogFactory.getLog(DownloadFile.class);
 
-	private int size;
+	private long size;
 	
 	private String contentType;
 	
@@ -40,7 +40,7 @@ public class DownloadFile implements Serializable {
 	
 	private File tmpFile;
 	
-	public DownloadFile(String contentType, int size, String baseName, InputStream inputStream) {
+	public DownloadFile(String contentType, long size, String baseName, InputStream inputStream) {
 		this.contentType = contentType;
 		this.size = size;
 		this.baseName = baseName;
@@ -55,7 +55,7 @@ public class DownloadFile implements Serializable {
 	 * @param inputStream
 	 * @param tmpFile a tmp file to delete when this downloadFile is garbage collected
 	 */
-	public DownloadFile(String contentType, int size, String baseName, InputStream inputStream, File tmpFile) {
+	public DownloadFile(String contentType, long size, String baseName, InputStream inputStream, File tmpFile) {
 		this.contentType = contentType;
 		this.size = size;
 		this.baseName = baseName;
@@ -63,11 +63,11 @@ public class DownloadFile implements Serializable {
 		this.tmpFile = tmpFile;
 	}
 
-	public int getSize() {
+	public long getSize() {
 		return size;
 	}
 
-	public void setSize(int size) {
+	public void setSize(long size) {
 		this.size = size;
 	}
 

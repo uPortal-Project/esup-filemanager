@@ -435,7 +435,7 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 		}
 
 		String contentType = "application/zip";
-		int size = (int)tmpFile.length();
+		long size = tmpFile.length();
 		String baseName = "export.zip";
 		InputStream inputStream =  new FileInputStream(tmpFile);
 

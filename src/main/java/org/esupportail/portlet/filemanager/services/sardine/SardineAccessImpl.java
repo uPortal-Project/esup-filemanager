@@ -342,7 +342,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 			String contentType = JsTreeFile.getMimeType(baseName.toLowerCase());
 			InputStream inputStream = root.get(this.uri + path);
 
-			return new DownloadFile(contentType, size.intValue(), baseName, inputStream);
+			return new DownloadFile(contentType, size, baseName, inputStream);
 		}
 		catch (SardineException se) {
 			log.error("Error in download of " + this.uri + path, se);

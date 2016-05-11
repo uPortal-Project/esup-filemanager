@@ -299,7 +299,7 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 		InputStream inputStream = document.getContentStream().getStream();
 		BigInteger size = (BigInteger)document.getProperty("cmis:contentStreamLength").getValues().get(0);
 		String contentType = document.getContentStreamMimeType();
-		return new DownloadFile(contentType, size.intValue(), filename, inputStream);
+		return new DownloadFile(contentType, size.longValue(), filename, inputStream);
 	}
 
 	@Override

@@ -391,7 +391,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		try {
 			FileObject file = cd(dir, userParameters);
 			FileContent fc = file.getContent();
-			int size = new Long(fc.getSize()).intValue();
+			long size = fc.getSize();
 			String baseName = fc.getFile().getName().getBaseName();
 			// fc.getContentInfo().getContentType() use URLConnection.getFileNameMap, 
 			// we prefer here to use our getMimeType : for Excel files and co 
