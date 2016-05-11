@@ -19,6 +19,7 @@ package org.esupportail.portlet.filemanager.services;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 import javax.portlet.PortletRequest;
@@ -91,8 +92,7 @@ public interface IServersAccessService {
 
 	public abstract String getDrive(String dir);
 
-	public abstract DownloadFile getZip(List<String> dirs,
-			SharedUserPortletParameters userParameters) throws IOException;
+	public abstract void writeZip(OutputStream destStream, List<String> dirs, SharedUserPortletParameters userParameters) throws IOException;
 
 	public abstract boolean formAuthenticationRequired(String dir,
 			SharedUserPortletParameters userParameters);

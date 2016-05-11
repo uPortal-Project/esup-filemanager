@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -414,32 +415,15 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 	}
 
 	@CrudLoggable(CrudLogLevel.DEBUG)
-	public DownloadFile getZip(List<String> dirs, SharedUserPortletParameters userParameters) throws IOException {	
-		File tmpFile = File.createTempFile("esup-stock-zip.", ".tmp");
-		// we call tmpFile.deleteOnExit so that ths tmp file will be deleted when jvm stops ...
-		// see also DownloadFile.finalize
-		tmpFile.deleteOnExit();
-		
-		FileOutputStream output = null;
-		ZipOutputStream out = null;
-		try {
-			output = new FileOutputStream(tmpFile);
-			out = new ZipOutputStream(output);
-			final byte zippingBuffer[] = new byte[ZIP_BUFFER_SIZE];
-			for(String dir: dirs) {
-				this.addChildrensTozip(out, zippingBuffer, dir, "", userParameters);
-			}
-		} finally {
-			IOUtils.closeQuietly(out);
-			IOUtils.closeQuietly(output);
+	public void writeZip(OutputStream destStream, List<String> dirs, SharedUserPortletParameters userParameters) throws IOException {	
+
+		ZipOutputStream out = new ZipOutputStream(destStream);
+		final byte zippingBuffer[] = new byte[ZIP_BUFFER_SIZE];
+		for(String dir: dirs) {
+			this.addChildrensTozip(out, zippingBuffer, dir, "", userParameters);
 		}
-
-		String contentType = "application/zip";
-		long size = tmpFile.length();
-		String baseName = "export.zip";
-		InputStream inputStream =  new FileInputStream(tmpFile);
-
-		return new DownloadFile(contentType, size, baseName, inputStream, tmpFile);
+		out.close();
+		
 	}
 
 	private static String unAccent(String s) {

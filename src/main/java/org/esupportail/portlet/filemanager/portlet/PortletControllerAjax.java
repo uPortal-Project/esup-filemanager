@@ -393,14 +393,9 @@ public class PortletControllerAjax {
     								ResourceRequest request, ResourceResponse response) throws IOException {
 		List<String> dirs = pathEncodingUtils.decodeDirs(command.getDirs());
 		this.serverAccess.updateUserParameters(dirs.get(0), userParameters);
-		DownloadFile file = this.serverAccess.getZip(dirs, userParameters);
-		response.setContentType(file.getContentType());
-		if(file.getSize() > 0) {
-			response.setContentLength((int)file.getSize());
-		}
-		//response.setCharacterEncoding("utf-8");
-		response.setProperty("Content-Disposition","attachment; filename=\"" + file.getBaseName() +"\"");
-		FileCopyUtils.copy(file.getInputStream(), response.getPortletOutputStream());
+		response.setContentType("application/zip");
+		response.setProperty("Content-Disposition","attachment; filename=\"export.zip\"");
+		this.serverAccess.writeZip(response.getPortletOutputStream(), dirs, userParameters);
 	}
 	
 
