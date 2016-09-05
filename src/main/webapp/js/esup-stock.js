@@ -542,10 +542,10 @@ function initJstree() {
                     bindDragDropInLeftTree();
                 },
                 "error": function (response) {
-                	if(response.responseText != "[]") {
-                		console.log("filechildren failed");
-                		showDialogError(response.responseText);
-                	}
+                    if(response.responseText != "[]") {
+                        console.log("filechildren failed");
+                        showDialogError(response.responseText);
+                    }
                 }
             }
         },
@@ -810,7 +810,7 @@ function getLiIdFromPath(path) {
  */
 function getParentPath(path) {
 
-	var parentPath = '';
+    var parentPath = '';
 
     $.ajax({
         async: false,
@@ -820,7 +820,7 @@ function getParentPath(path) {
             "dir": path
         },
         success: function (parentPathResp) {
-        	parentPath = parentPathResp;
+            parentPath = parentPathResp;
         },
         error: function (response) {
             console.log("getParentPath failed");
@@ -987,7 +987,7 @@ function handleLeftTreeSelection(treeNode) {
                 $("#detailArea").html("");
             }
 
-	    var writeable = $("#browserMain div.breadcrumbs > .writeable").html() === "true";
+        var writeable = $("#browserMain div.breadcrumbs > .writeable").html() === "true";
 
             //Disable/Enable toolbar items
             setToolbarActionElementEnabled('refresh', true);
@@ -1051,8 +1051,8 @@ function updateDetailsArea(dataObj) {
 }
 
 function showDialogError(error) {
-	 console.log("showDialogError");
-	 console.log("error : " + error);
+     console.log("showDialogError");
+     console.log("error : " + error);
 
      var dialogElem = $("#errorDialog");
 
@@ -1291,7 +1291,7 @@ function updateThumbnailIcons() {
 
     var thumbnailMode = getIsThumbnailMode();
 
-  if (!thumbnailMode) {
+    if (!thumbnailMode) {
       $("#toolbar-thumbnail").show();
       $("#toolbar-list").hide();
     } else {
@@ -1394,8 +1394,8 @@ function downloadFile(fileName) {
 
     console.log("downloadFile. Path: " + fileName);
 
-    var url = /\?/.test(downloadFileURL) ? downloadFileURL + '&' : downloadFileURL + '?'; 
-    url = url + 'dir=' + encodeURIComponent(fileName); 
+    var url = /\?/.test(downloadFileURL) ? downloadFileURL + '&' : downloadFileURL + '?';
+    url = url + 'dir=' + encodeURIComponent(fileName);
 
     console.log(url);
     //window.open(url);
@@ -1680,54 +1680,54 @@ function deleteFiles(dirsDataStruct) {
 
   function handleItemDblOrOneClick(e) {
 
-	    /*Because of limitations with jQuerys double click, we are
-	      obliged to get a bit fancy in order to have a distinct
-	      action on both the click and double click events*/
+        /*Because of limitations with jQuerys double click, we are
+          obliged to get a bit fancy in order to have a distinct
+          action on both the click and double click events*/
 
-	    var jqElem = $(this);
-		  
-	    //Retrieve how many times this element has been clicked
-	    var clicks = 1 + (jqElem.data("clicks") ? jqElem.data("clicks") : 0);
+        var jqElem = $(this);
 
-	    //Store after incrementing
-	    jqElem.data("clicks", clicks);
+        //Retrieve how many times this element has been clicked
+        var clicks = 1 + (jqElem.data("clicks") ? jqElem.data("clicks") : 0);
 
-	    console.log("Item clicked " + jqElem.html() + " clicks : " + clicks);
+        //Store after incrementing
+        jqElem.data("clicks", clicks);
 
-	    if (clicks == 1) {
-	      //Start a timeout function.  If we get another click in time, it will
-	      //be canceled
-	    	var func = function() {
-	    		console.log("Executing single click, should be later");
-	    		handleItemClick(e,jqElem);
-	    	};
+        console.log("Item clicked " + jqElem.html() + " clicks : " + clicks);
 
-	      console.log("Starting timer for single click.");
-	      var singleClickFuncId = setTimeout(func, 300);
+        if (clicks == 1) {
+          //Start a timeout function.  If we get another click in time, it will
+          //be canceled
+            var func = function() {
+                console.log("Executing single click, should be later");
+                handleItemClick(e,jqElem);
+            };
 
-	      //Store timeout function id in case we need to cancel it
-	      jqElem.data("singleClickFuncId", singleClickFuncId);
-	    } 
+          console.log("Starting timer for single click.");
+          var singleClickFuncId = setTimeout(func, 300);
 
-	    return false;
-	  }
+          //Store timeout function id in case we need to cancel it
+          jqElem.data("singleClickFuncId", singleClickFuncId);
+        }
+
+        return false;
+      }
 
 
   function handleItemClick(e,jqElem) {
 
-	  if (!jqElem) {
-	       jqElem =  $(this);
-	  }
+      if (!jqElem) {
+           jqElem =  $(this);
+      }
 
-	  //Reset click counter
-	  jqElem.data("clicks", 0);
-	  jqElem.data("singleClickFuncId", null);
+      //Reset click counter
+      jqElem.data("clicks", 0);
+      jqElem.data("singleClickFuncId", null);
 
-	  console.log("Browser area click");
-	  handleItemSelection(jqElem, e);
+      console.log("Browser area click");
+      handleItemSelection(jqElem, e);
 
-	  //hide the context menu
-	  $(".contextMenu").hide();
+      //hide the context menu
+      $(".contextMenu").hide();
   }
 
   function handleFolderDoubleClick(elemClicked, event) {
@@ -1786,7 +1786,7 @@ function deleteFiles(dirsDataStruct) {
 
         var isElemChecked = isChecked(elemClicked);
 
-	if(event.which !== 3 || !isElemChecked) {
+    if(event.which !== 3 || !isElemChecked) {
 
         if (event.ctrlKey) {
             console.log("Ctrl key pressed");
@@ -1810,7 +1810,7 @@ function deleteFiles(dirsDataStruct) {
             selectObject(elemClicked, true);
         }
 
-	}
+    }
     }
 
     $.handleItemSelection = function(elemClicked, event) {handleItemSelection(elemClicked, event);};
@@ -1860,16 +1860,16 @@ function deleteFiles(dirsDataStruct) {
       var elems = $(selector);
 
 
-	    
-	  if(useDoubleClick == "false") {
-		  console.log("Binding single click like dbleClick");
-		  elems.bind('click', handleItemDblClick);	  
-	  } else {
-		  console.log("Binding single click");
-		  elems.bind('click', handleItemDblOrOneClick);
-		  console.log("Binding double click");
-		  elems.bind('dblclick', handleItemDblClick);
-  	  }
+
+      if(useDoubleClick == "false") {
+          console.log("Binding single click like dbleClick");
+          elems.bind('click', handleItemDblClick);
+      } else {
+          console.log("Binding single click");
+          elems.bind('click', handleItemDblOrOneClick);
+          console.log("Binding double click");
+          elems.bind('dblclick', handleItemDblClick);
+        }
 
       $("#jqueryFileTreeBody").selectable({
           cancel: 'a,span,#newFileOrFolderInput',
@@ -2028,7 +2028,7 @@ function getBrowserAreaCheckedSelectionData() {
     var parentTds = getParentRow(checkedItems);
 
     parentTds.each(function (idx, elem) {
-    	var parentTd = $(elem);
+        var parentTd = $(elem);
 
         readable = readable && parentTd.find("div.readable").html() === "true";
         writeable = writeable && parentTd.find("div.writeable").html() === "true";
@@ -2130,63 +2130,63 @@ $.authenticate = function(dir, username, password) { authenticate(dir, username,
 
 // keyboard events
 
-  var isCtrl = false; 
-  var isShift = false; 
+  var isCtrl = false;
+  var isShift = false;
 
-  $(document).keyup(function(e) { 
-    if(e.which == 17) isCtrl=false; 
-    if(e.which == 16) isShift=false;   
+  $(document).keyup(function(e) {
+    if(e.which == 17) isCtrl=false;
+    if(e.which == 16) isShift=false;
   });
-  
+
   $(document).keydown(function(e) {
     if ($("#browserArea #authenticationForm").length) {return;}
     if ($(".renameSpan:not(:hidden)").length) {return;}
     if(e.which == 17) { isCtrl=true; return; }
     if(e.which == 16) { isShift=true; return; }
-   
+
     if(e.which == 86 && isCtrl) {
       console.log("Ctrl-v key pressed");
       pasteFiles();
       return;
     }
-    
+
 
     if (e.which == 9) {
-		console.log("Tab key pressed");
-		e.preventDefault();
-		clearSelections();
-		var selector = "#browserArea .file, #browserArea .fileTreeRef";
-		var selectableItems = $(selector);
-		selectObject(getJqueryObj(selectableItems[0]), true);
-		return;
-	}
-    
+        console.log("Tab key pressed");
+        e.preventDefault();
+        clearSelections();
+        var selector = "#browserArea .file, #browserArea .fileTreeRef";
+        var selectableItems = $(selector);
+        selectObject(getJqueryObj(selectableItems[0]), true);
+        return;
+    }
+
     var dirs = getCheckedDirs();
     if (dirs == null || dirs.length == 0) {
       return;
     }
-    
+
     switch (e.which) {
     case 67:
       if(isCtrl) {
-	console.log("Ctrl-c key pressed");
-	copyFiles();
+    console.log("Ctrl-c key pressed");
+    copyFiles();
       }
       break;
     case 88:
       if(isCtrl) {
-	console.log("Ctrl-x key pressed");
-	cutFiles();
+    console.log("Ctrl-x key pressed");
+    cutFiles();
       }
       break;
     case 46:
       console.log("Suppr key pressed");
       deleteFiles();
-      break;    
+      break;
     case 113:
       console.log("F2 key pressed");
       handleRename();
-      break; 
+      break;
     case 13:
       // if e.target.nodeName  != BODY maybe we're on dialog / form, etc ...
       if(e.target.nodeName == 'BODY') {
@@ -2196,9 +2196,9 @@ $.authenticate = function(dir, username, password) { authenticate(dir, username,
           downloadFile(baSelData.path);
         } else if (baSelData.singleFolderSelected) {
           openAndSelectLiNode(baSelData.path);
-	}
+    }
       }
-      break;  
+      break;
     case 38:
         console.log("Up key pressed");
         e.preventDefault();
@@ -2211,12 +2211,12 @@ $.authenticate = function(dir, username, password) { authenticate(dir, username,
         }
         var i = lastItemChecked.index(selector);
         if(i > 0) {
-        	if(!isShift)
-        		deselectObject(selectableItems[i], false);
-        	selectObject(selectableItems[i-1], false);
+            if(!isShift)
+                deselectObject(selectableItems[i], false);
+            selectObject(selectableItems[i-1], false);
         }
         handleBrowserAreaSelection();
-    	break;
+        break;
     case 40:
         console.log("Down key pressed");
         e.preventDefault();
@@ -2229,16 +2229,16 @@ $.authenticate = function(dir, username, password) { authenticate(dir, username,
         }
         var i = lastItemChecked.index(selector);
         if(selectableItems.length > i+1) {
-        	if(!isShift)
-        		deselectObject(selectableItems[i], false);
-        	selectObject(selectableItems[i+1], false);
+            if(!isShift)
+                deselectObject(selectableItems[i], false);
+            selectObject(selectableItems[i+1], false);
         }
         handleBrowserAreaSelection();
-    	break;
+        break;
     }
-    
+
     return;
-    
+
   });
 
 
