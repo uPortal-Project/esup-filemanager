@@ -1292,11 +1292,11 @@ function updateThumbnailIcons() {
     var thumbnailMode = getIsThumbnailMode();
 
     if (!thumbnailMode) {
-      $("#toolbar-thumbnail").show();
-      $("#toolbar-list").hide();
+        $("#toolbar-thumbnail").closest(".toolbar-item").show();
+        $("#toolbar-list").closest(".toolbar-item").hide();
     } else {
-      $("#toolbar-thumbnail").hide();
-      $("#toolbar-list").show();
+        $("#toolbar-thumbnail").closest(".toolbar-item").hide();
+        $("#toolbar-list").closest(".toolbar-item").show();
     }
 }
 
