@@ -6,7 +6,7 @@
   <artifactId>esup-filemanager</artifactId>
   <packaging>war</packaging>
   <name>esup-filemanager</name>
-  <version>3.1.1-SNAPSHOT</version>
+  <version>3.1.1</version>
 
 
   <description>ESUP File Manager is a JSR286 Portlet. Esup File Manager allows users to perform file management on their HomeDirs.</description>
