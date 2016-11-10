@@ -8,6 +8,86 @@
   <name>esup-filemanager</name>
   <version>3.1.1-SNAPSHOT</version>
 
+
+  <description>ESUP File Manager is a JSR286 Portlet. Esup File Manager allows users to perform file management on their HomeDirs.</description>
+  <url>https://wiki.jasig.org/display/PLT/ESUP+File+Manager+Portlet</url>
+
+  <organization>
+      <name>EsupPortail</name>
+      <url>https://www.esup-portail.org</url>
+  </organization>
+  <licenses>
+      <license>
+          <name>Apache License, Version 2.0</name>
+          <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+      </license>
+  </licenses>
+
+  <developers>
+      <developer>
+          <name>Vincent Bonamy</name>
+          <organization>Université de Rouen</organization>
+      </developer>
+  </developers>
+  <contributors>
+      <contributor>
+          <name>Jean-Pierre Tran</name>
+          <organization>Université de Rouen</organization>
+      </contributor>
+      <contributor>
+          <name>Julien Marchal</name>
+          <organization>Université de Lorraine</organization>
+      </contributor>
+      <contributor>
+          <name>Julien Gribonvald</name>
+          <organization>GIP RECIA</organization>
+      </contributor>
+      <contributor>
+          <name>David Clarke</name>
+          <organization>Australian National University</organization>          
+      </contributor>
+      <contributor>
+          <name>Pierre Bouvret</name>
+          <organization>Université de Bordeaux</organization>          
+      </contributor>
+      <contributor>
+          <name>Franck Bordinat</name>
+          <organization>Université Jean-François Champollion</organization>                    
+      </contributor>
+      <contributor>
+          <name>Pascal Rigaux</name>
+          <organization>Université Paris 1 Panthéon - Sorbonne</organization>                    
+      </contributor>
+      <contributor>
+          <name>Olivier Franco</name>
+          <organization>INSA de Lyon</organization>          
+      </contributor>
+      <contributor>
+          <name>Maxime Bossard</name>
+          <organization>GIP RECIA</organization>          
+      </contributor>
+      <contributor>
+          <name>Guillaume Colson</name>
+          <organization>Université de Lorraine</organization>          
+      </contributor>
+      <contributor>
+          <name>Denis Elbaz</name>
+          <organization>Université de Perpignan</organization>          
+      </contributor>                  
+  </contributors>
+
+  <mailingLists>
+      <mailingList>
+          <name>esup-utilisateurs@esup-portail.org</name>
+          <subscribe>https://listes.esup-portail.org/sympa/info/esup-utilisateurs</subscribe>
+          <archive>https://listes.esup-portail.org/sympa/arc/esup-utilisateurs</archive>
+      </mailingList>
+  </mailingLists>
+
+  <scm>
+      <url>https://github.com/EsupPortail/esup-filemanager</url>
+  </scm>
+  
   <repositories>
 
   <repository>
