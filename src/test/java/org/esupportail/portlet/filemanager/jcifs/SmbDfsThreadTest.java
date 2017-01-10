@@ -6,13 +6,12 @@ import java.net.MalformedURLException;
 import java.util.Properties;
 import java.util.Random;
 
-import jcifs.Config;
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbAuthException;
 import jcifs.smb.SmbFile;
 
 /**
- * Please configure test.properties before calling the main method of this class application.
+ * Please configure test.properties (jcifs part) before calling the main method of this class application.
  * 
  * * put a dfs share as jcifsUrl property
  * 
