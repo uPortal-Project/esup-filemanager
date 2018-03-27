@@ -22,10 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jasig.cas.client.validation.Assertion;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-
-import edu.yale.its.tp.cas.client.CASReceipt;
 
 @Service("userParameters")
 @Scope("session")
@@ -37,7 +36,7 @@ public class SharedUserPortletParameters implements Serializable {
     
     protected Map userInfos;
     
-    protected CASReceipt receipt;
+    protected Assertion assertion;
     
     protected String username;
     
@@ -68,12 +67,12 @@ public class SharedUserPortletParameters implements Serializable {
 		this.driveNames = driveNames;
 	}
 
-	public CASReceipt getReceipt() {
-		return receipt;
+	public Assertion getAssertion() {
+		return assertion;
 	}
 
-	public void setReceipt(CASReceipt receipt) {
-		this.receipt = receipt;
+	public void setAssertion(Assertion assertion) {
+		this.assertion = assertion;
 	}
 
 	public String getUsername() {

@@ -17,133 +17,73 @@
  */
 package org.esupportail.portlet.filemanager.services.auth.cas;
 
-import edu.yale.its.tp.cas.client.CASReceipt;
-import edu.yale.its.tp.cas.client.ProxyTicketValidator;
-import edu.yale.its.tp.cas.proxy.ProxyTicketReceptor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jasig.cas.client.validation.Assertion;
+import org.jasig.cas.client.validation.TicketValidationException;
+import org.jasig.cas.client.validation.TicketValidator;
 import org.springframework.beans.factory.InitializingBean;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
 
 public class ProxyTicketService implements InitializingBean {
 
-    // TODO: CAS support for portlets should probably be genericized and be an optional library.
-
     private static Log log = LogFactory.getLog(ProxyTicketService.class);
 
-    private String casValidateUrl;
+    private TicketValidator ticketValidator;
+    
     private String serviceUrl;
-    private String urlOfProxyCallbackServlet;
-
-
-    public CASReceipt getProxyTicket(String ticket) throws IOException, SAXException, ParserConfigurationException {
-
-        if (casValidateUrl == null) {
-            log.error("Configuration error. Please set casValidateUrl of ProxyTicketService in spring config");
-        }
-
-        if (serviceUrl == null) {
-            log.error("Configuration error. Please set serviceUrl for ProxyTicketService in spring config");
-        }
-
-        if (urlOfProxyCallbackServlet == null) {
-            log.error("Configuration error. Please set urlOfProxyCallbackServlet for ProxyTicketService in spring config");
-        }
-
-        String errorCode = null;
-        String errorMessage = null;
-        String xmlResponse = null;
-
-        log.debug("validateURL: " + this.casValidateUrl + ", serviceURL: " + this.serviceUrl + ", ticket: " + ticket + ", callbackUrl: " + this.urlOfProxyCallbackServlet);
-
-        /* instantiate a new ProxyTicketValidator */
-        ProxyTicketValidator pv = new ProxyTicketValidator();
-
-        /* set its parameters */
-        pv.setCasValidateUrl(this.casValidateUrl);
-        pv.setService(this.serviceUrl);
-        pv.setServiceTicket(ticket);
-        pv.setProxyCallbackUrl(this.urlOfProxyCallbackServlet);
-
-        /* contact CAS and validate */
-        pv.validate();
-
-        /* if we want to look at the raw response, we can use getResponse() */
-        xmlResponse = pv.getResponse();
-        log.debug("CAS response XML: " + xmlResponse);
-
-        /* read the response */
-        // Yes, this method is misspelled in this way
-        // in the ServiceTicketValidator implementation.
-        // Sorry.
-        if (pv.isAuthenticationSuccesful()) {
-            log.debug("CAS authentication successful");
-        } else {
-            errorCode = pv.getErrorCode();
-            errorMessage = pv.getErrorMessage();
-            /* handle the error */
-            log.error("CAS authentication failed!: " + errorCode + ": " + errorMessage);
-        }
-
-        CASReceipt receipt = new CASReceipt();
-        receipt.setPgtIou(pv.getPgtIou());
-        receipt.setUserName(pv.getUser());
-
-        return receipt;
-
-    }
-
-    public String getCasServiceToken(CASReceipt receipt, String target) {
-        String pgtIou = receipt.getPgtIou();
-        if (log.isDebugEnabled()) {
-            log.debug("entering getCasServiceToken(" + target
-                    + "), previously cached receipt=["
-                    + pgtIou + "]");
-        }
-        if (pgtIou == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Returning null CAS Service Token because cached receipt does not include a PGTIOU.");
-            }
-            return null;
-        }
-        String proxyTicket;
-        try {
-            proxyTicket = ProxyTicketReceptor.getProxyTicket(pgtIou, target);
-        } catch (IOException e) {
-            log.error("Error contacting CAS server for proxy ticket", e);
-            return null;
-        }
-        if (proxyTicket == null) {
-            log.error("Failed to obtain proxy ticket using receipt [" + pgtIou + "], has the Proxy Granting Ticket referenced by the pgtIou expired?");
-            return null;
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("returning from getCasServiceToken(), returning proxy ticket ["
-                    + proxyTicket + "]");
-        }
-        return proxyTicket;
-    }
-
-    public void setCasValidateUrl(String casValidateUrl) {
-        this.casValidateUrl = casValidateUrl;
-    }
 
     public void setServiceUrl(String serviceUrl) {
-        this.serviceUrl = serviceUrl;
+      this.serviceUrl = serviceUrl;
     }
 
-    public void setUrlOfProxyCallbackServlet(String urlOfProxyCallbackServlet) {
-        this.urlOfProxyCallbackServlet = urlOfProxyCallbackServlet;
+    public void setTicketValidator(TicketValidator ticketValidator) {
+      this.ticketValidator = ticketValidator;
     }
+
+    public Assertion getProxyTicket(String ticket) {
+
+        if (ticket == null) {
+          log.debug("No CAS ticket found in the UserInfo map");
+          return null;
+        }
+
+        log.debug("serviceURL: " + this.serviceUrl + ", ticket: " + ticket);
+
+        /* contact CAS and validate */
+
+        try {
+          Assertion assertion = ticketValidator.validate(ticket, this.serviceUrl);
+          return assertion;
+        } catch (TicketValidationException e) {
+          log.warn("Failed to validate proxy ticket", e);
+          return null;
+        }
+      }
+
+    public String getCasServiceToken(Assertion assertion, String target) {
+        final String proxyTicket = assertion.getPrincipal().getProxyTicketFor(target);
+        if (proxyTicket == null) {
+          log.error(
+              "Failed to retrieve proxy ticket for assertion ["
+                  + assertion.toString()
+                  + "].  Is the PGT still valid?");
+          return null;
+        }
+        if (log.isTraceEnabled()) {
+          log.trace(
+              "returning from getCasServiceToken(), returning proxy ticket [" + proxyTicket + "]");
+        }
+        return proxyTicket;
+      }
+    
+    
 
     public void afterPropertiesSet() throws Exception {
         // validate these should be set in spring config
-        if (this.casValidateUrl == null) {
+        if (this.ticketValidator == null) {
             throw new IllegalArgumentException(
-                    "casValidateUrl must be set on "
+                    "ticketValidator must be set on "
                             + this.getClass().getName()
                             + " bean in spring config");
         }
@@ -155,11 +95,5 @@ public class ProxyTicketService implements InitializingBean {
                             + " bean in spring config");
         }
 
-        if (this.urlOfProxyCallbackServlet == null) {
-            throw new IllegalArgumentException(
-                    "urlOfProxyCallbackServlet must be set on "
-                            + this.getClass().getName()
-                            + " bean in spring config");
-        }
     }
 }

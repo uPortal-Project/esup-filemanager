@@ -222,26 +222,44 @@
     <property name="resourceUtils" ref="resourceUtils"/>
   </bean>
 
+
   <!-- you have to define one casUserAuthenticationService per drive -->
   <bean name="casUserAuthenticationService" class="org.esupportail.portlet.filemanager.services.auth.cas.UserCasAuthenticatorService">
-    <property name="proxyTicketService" ref="casService"/>
-    <property name="userCasAuthenticatorServiceRoot" ref="casUserAuthenticationServiceRoot"/>
-    <property name="target" value="sftp://stock-2.mon-univ.fr"/>
+      <property name="proxyTicketService" ref="casService"/>
+      <property name="userCasAuthenticatorServiceRoot" ref="casUserAuthenticationServiceRoot"/>
+      <property name="target" value="sftp://stock-2.mon-univ.fr"/>
   </bean>
 
-
-  <!-- note casUserAuthenticationServiceRoot and casService are sufficient for more than one drive-->
+  <!-- note casUserAuthenticationServiceRoot, casService, ticketValidator, ticketValidationFilter proxyGrantingTicketStorage and  are sufficient for more than one drive-->
 
   <bean name="casUserAuthenticationServiceRoot" class="org.esupportail.portlet.filemanager.services.auth.cas.UserCasAuthenticatorServiceRoot">
-    <property name="proxyTicketService" ref="casService"/>
-    <property name="userInfoTicketProperty" value="casProxyTicket"/>
+      <property name="proxyTicketService" ref="casService"/>
+      <property name="userInfoTicketProperty" value="casProxyTicket"/>
   </bean>
 
   <bean id="casService" class="org.esupportail.portlet.filemanager.services.auth.cas.ProxyTicketService">
-    <property name="casValidateUrl" value="https://cas.mon-univ.fr/cas/proxyValidate"/>
-    <property name="serviceUrl" value="https://ent.mon-univ.fr/esup-filemanager"/>
-    <property name="urlOfProxyCallbackServlet" value="https://ent.mon-univ.fr/esup-filemanager/CasProxyServlet"/>
+      <property name="serviceUrl" value="https://ent.mon-univ.fr/esup-filemanager"/>
+      <property name="ticketValidator" ref="ticketValidator"/>
   </bean>
+
+  <bean id="ticketValidator" class="org.jasig.cas.client.validation.Cas20ProxyTicketValidator">
+      <constructor-arg index="0" value="https://cas.mon-univ.fr" />
+      <property name="proxyCallbackUrl" value="https://ent.mon-univ.fr/esup-filemanager/CasProxyServlet"/>
+      <property name="acceptAnyProxy" value="true"/>
+      <property name="proxyGrantingTicketStorage" ref="proxyGrantingTicketStorage"/>
+  </bean>
+
+  <!-- Ticket validation filter -->
+  <bean id="ticketValidationFilter"
+        class="org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter">
+      <property name="serverName" value="cas.mon-univ.fr"/>
+      <property name="redirectAfterValidation" value="false"/>
+      <property name="proxyReceptorUrl" value="/CasProxyServlet"/>
+      <property name="ticketValidator" ref="ticketValidator"/>
+      <property name="proxyGrantingTicketStorage" ref="proxyGrantingTicketStorage"/>
+  </bean>
+
+  <bean id="proxyGrantingTicketStorage" class="org.jasig.cas.client.proxy.ProxyGrantingTicketStorageImpl" />
 
 
  <!-- Definition of a FSAccess bean : here we have a 'SardineAccessImpl' to use a webdav shared folder -->                          

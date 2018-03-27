@@ -46,26 +46,23 @@ import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
 import org.esupportail.portlet.filemanager.services.auth.UserAuthenticatorService;
+import org.jasig.cas.client.validation.Assertion;
 
-import edu.yale.its.tp.cas.client.CASReceipt;
 
-/**
- * CasProxyCredentialsService returns credentials in the form of a user ID and CAS proxy ticket.
- */
 public class UserCasAuthenticatorService implements UserAuthenticatorService {
 
-    // TODO: CAS support for portlets should probably be genericized and be an optional library.
 
     private static final Log log = LogFactory.getLog(UserCasAuthenticatorService.class);
-
+    
     private UserCasAuthenticatorServiceRoot userCasAuthenticatorServiceRoot;
-   
-    private String target;
+
+    protected ProxyTicketService proxyTicketService;
     
-    private ProxyTicketService proxyTicketService;
+    protected String target;
+
+    protected String CAS_ASSERTION_KEY = "CAS_ASSERTION_KEY";
     
-    public void setUserCasAuthenticatorServiceRoot(
-			UserCasAuthenticatorServiceRoot userCasAuthenticatorServiceRoot) {
+    public void setUserCasAuthenticatorServiceRoot(UserCasAuthenticatorServiceRoot userCasAuthenticatorServiceRoot) {
 		this.userCasAuthenticatorServiceRoot = userCasAuthenticatorServiceRoot;
 	}
 
@@ -79,8 +76,8 @@ public class UserCasAuthenticatorService implements UserAuthenticatorService {
 
 	public void initialize(SharedUserPortletParameters userParameters) {
 		this.userCasAuthenticatorServiceRoot.initialize(userParameters);
-    }
-
+	}
+	
     public UserPassword getUserPassword(SharedUserPortletParameters userParameters) {
 
         if (log.isDebugEnabled()) {
@@ -89,28 +86,28 @@ public class UserCasAuthenticatorService implements UserAuthenticatorService {
         
         log.debug("getting CAS credentials from session");
 
-        CASReceipt receipt = userParameters.getReceipt();
-        if (receipt == null) {
-            throw new EsupStockException("Cannot find a CAS receipt object in session", "exception.sessionIsInvalide");
+        Assertion casAssertion = userParameters.getAssertion();
+
+        if (casAssertion == null) {
+            throw new EsupStockException("Cannot find a CAS assertion object in session", "exception.sessionIsInvalide");
         }
 
-        // get a proxy ticket for the feed's url and append it to the url
-        String casServiceToken = proxyTicketService.getCasServiceToken(receipt,
-                this.target);
-        String username = receipt.getUserName();
-        log.debug("got user '" + username + "'");
-
-        if (casServiceToken == null) {
-            casServiceToken = "";
+        String proxyPrincipalname = casAssertion.getPrincipal().getName();
+        log.debug("got user '" + proxyPrincipalname + "'");
+        
+        String proxyTicket = proxyTicketService.getCasServiceToken(casAssertion, target);
+        if (proxyTicket == null) {
+        	proxyTicket = "";
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("Service ticket: " + casServiceToken);
+            log.debug("Proxy ticket: " + proxyTicket);
         }
 
-        UserPassword auth = new UserPassword(username, casServiceToken);
+        UserPassword auth = new UserPassword(proxyPrincipalname, proxyTicket);
 
         return auth;
 
     }
+
 }

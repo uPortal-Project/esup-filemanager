@@ -62,7 +62,25 @@
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
-    
+
+    <!-- CAS -->
+
+    <!-- Filter used for CAS proxy granting ticket functionality. Will do nothing if not using CAS proxy tickets -->
+    <filter>
+        <filter-name>CAS Validation Filter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+        <init-param>
+            <param-name>targetBeanName</param-name>
+            <param-value>ticketValidationFilter</param-value>
+        </init-param>
+    </filter>
+
+    <!-- Filter used for CAS proxy granting ticket functionality. Will do nothing if not using CAS proxy tickets -->
+    <filter-mapping>
+        <filter-name>CAS Validation Filter</filter-name>
+        <url-pattern>/CasProxyServlet</url-pattern>
+    </filter-mapping>
+
     
     <!-- 
      | This servlet is needed by the spring DispatcherPortlet for rendering.
@@ -73,16 +91,6 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
-	<!-- CAS -->
-
-	<servlet>
-        <servlet-name>CasProxyCallback</servlet-name>
-        <servlet-class>edu.yale.its.tp.cas.proxy.ProxyTicketReceptor</servlet-class>
-        <init-param>
-            <param-name>edu.yale.its.tp.cas.proxyUrl</param-name>
-            <param-value>https://cas.mon-univ.fr/proxy</param-value>
-        </init-param>
-    </servlet>
     
     <!-- [INSERT JSPC FRAGMENT HERE] -->
 
@@ -90,11 +98,5 @@
         <servlet-name>ViewRendererServlet</servlet-name>
         <url-pattern>/WEB-INF/servlet/view</url-pattern>
     </servlet-mapping>
- 
-
-    <servlet-mapping>
-        <servlet-name>CasProxyCallback</servlet-name>
-        <url-pattern>/CasProxyServlet</url-pattern>
-    </servlet-mapping>
-    
+     
 </web-app>

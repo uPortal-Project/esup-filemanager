@@ -270,18 +270,10 @@
       <version>0.1.53</version>
     </dependency>
     
-    
     <dependency>
-      <groupId>cas</groupId>
-      <artifactId>casclient</artifactId>
-      <version>2.1.1</version>
-      <!-- Don't include servlet-api. Was getting "java.lang.NoClassDefFoundError: javax/el/ValueExpression" -->
-      <exclusions>
-	    <exclusion>
-	      <groupId>javax.servlet</groupId>
-	      <artifactId>servlet-api</artifactId>
-	    </exclusion>
-      </exclusions>
+        <groupId>org.jasig.cas.client</groupId>
+        <artifactId>cas-client-core</artifactId>
+        <version>3.5.0</version>
     </dependency>
     
     <dependency>

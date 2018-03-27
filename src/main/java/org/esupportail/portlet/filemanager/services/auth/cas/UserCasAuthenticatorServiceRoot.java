@@ -40,21 +40,17 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.esupportail.portlet.filemanager.services.auth.cas;
 
-import java.io.IOException;
 import java.util.Map;
 
 import javax.portlet.PortletRequest;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.jasig.cas.client.validation.Assertion;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.portlet.context.PortletRequestAttributes;
-import org.xml.sax.SAXException;
-
-import edu.yale.its.tp.cas.client.CASReceipt;
 
 /**
  * CasProxyCredentialsService returns credentials in the form of a user ID and CAS proxy ticket.
@@ -77,7 +73,7 @@ public class UserCasAuthenticatorServiceRoot {
 
 	public void initialize(SharedUserPortletParameters userParameters) {
 		
-		if(userParameters.getReceipt() == null) {
+		if(userParameters.getAssertion() == null) {
         
 			if (proxyTicketService != null) {
 				
@@ -91,18 +87,10 @@ public class UserCasAuthenticatorServiceRoot {
 				
 				String ticket = (String) userInfos.get(this.userInfoTicketProperty);
 				if (ticket != null) {
-					try {
-						log.debug("ticket from portal = " + ticket);
-						CASReceipt receipt = proxyTicketService.getProxyTicket(ticket);
-						userParameters.setReceipt(receipt);
-						log.debug("CASReceipt = " + receipt);
-					} catch (IOException e) {
-						log.error(e);
-					} catch (SAXException e) {
-						log.error(e);
-					} catch (ParserConfigurationException e) {
-						log.error(e);
-					}
+					log.debug("ticket from portal = " + ticket);
+					Assertion assertion = proxyTicketService.getProxyTicket(ticket);
+					userParameters.setAssertion(assertion);
+					log.debug("CAS Assertion = " + assertion);
 				} else {
 					log.debug("no CAS ticket received from portal");
 				}
