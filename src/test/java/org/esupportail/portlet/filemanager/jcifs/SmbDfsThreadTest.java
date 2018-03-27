@@ -6,12 +6,16 @@ import java.net.MalformedURLException;
 import java.util.Properties;
 import java.util.Random;
 
+import jcifs.CIFSContext;
+import jcifs.CIFSException;
+import jcifs.config.PropertyConfiguration;
+import jcifs.context.BaseContext;
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbAuthException;
 import jcifs.smb.SmbFile;
 
 /**
- * Please configure test.properties (jcifs part) before calling the main method of this class application.
+ * Please configure test.properties before calling the main method of this class application.
  * 
  * * put a dfs share as jcifsUrl property
  * 
@@ -32,21 +36,24 @@ public class SmbDfsThreadTest extends Thread {
     NtlmPasswordAuthentication auth;
     long start_time;
     boolean synchronizeRootListing;
+    CIFSContext cifsContext;
 
     static Random rnd = new Random(1234);
     static long num_sessions = 2;
-    static int nbThreads = 2;
-    static int maxDepth = 3;
+    static int nbThreads = 20;
+    static int maxDepth = 1;
     static long session_time = 1 * 1000;
 
     static boolean verbose = true;
 
-    SmbDfsThreadTest(NtlmPasswordAuthentication auth, String url, boolean synchronizeRootListing, int id) {
+    SmbDfsThreadTest(String jcifsDomain, String jcifsUsername, String jcifsPassword, String url, boolean synchronizeRootListing, int id) throws CIFSException {
         this.url = url;
-        this.auth = auth;
         this.id = id;
         this.synchronizeRootListing = synchronizeRootListing;
         this.start_time = System.currentTimeMillis();
+        cifsContext = new BaseContext(new PropertyConfiguration(new Properties()));
+        this.auth = new NtlmPasswordAuthentication(cifsContext, jcifsDomain, jcifsUsername, jcifsPassword);
+        cifsContext = cifsContext.withCredentials(this.auth);
     }
 
     void traverse( SmbFile f, int depth ) throws MalformedURLException, IOException {
@@ -113,7 +120,7 @@ public class SmbDfsThreadTest extends Thread {
 
             while (f == null) {
                 try {
-                    f = new SmbFile(url, auth);
+                    f = new SmbFile(url, cifsContext);
                 } catch (Exception e) {
                     System.err.println(e.getMessage());
                     e.printStackTrace();
@@ -147,12 +154,11 @@ public class SmbDfsThreadTest extends Thread {
     	String jcifsUsername = testProps.getProperty("jcifsUsername" + j);
     	String jcifsPassword = testProps.getProperty("jcifsPassword" + j);
     	String jcifsDomain = testProps.getProperty("jcifsDomain" + j);
-        NtlmPasswordAuthentication auth = new NtlmPasswordAuthentication(jcifsDomain, jcifsUsername, jcifsPassword);
         
         int num = 0;
         System.err.println("creating " + count  + " threads");
         while (num < count) {
-            SmbDfsThreadTest sc = new SmbDfsThreadTest(auth, jcifsUrl, synchronizeRootListing, i * 100 + num++);
+            SmbDfsThreadTest sc = new SmbDfsThreadTest(jcifsDomain, jcifsUsername, jcifsPassword, jcifsUrl, synchronizeRootListing, i * 100 + num++);
             sc.start();
             try {
                 Thread.sleep(50);

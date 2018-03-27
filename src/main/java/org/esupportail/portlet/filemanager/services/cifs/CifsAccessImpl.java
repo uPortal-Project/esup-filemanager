@@ -44,8 +44,11 @@ import org.esupportail.portlet.filemanager.services.ResourceUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.FileCopyUtils;
 
-import jcifs.Config;
-import jcifs.smb.ACE;
+import jcifs.ACE;
+import jcifs.CIFSContext;
+import jcifs.CIFSException;
+import jcifs.config.PropertyConfiguration;
+import jcifs.context.BaseContext;
 import jcifs.smb.NtStatus;
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbAuthException;
@@ -66,6 +69,8 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 
 	/** CIFS properties */
 	protected Properties jcifsConfigProperties;
+	
+	protected CIFSContext cifsContext;
 
 	public void setJcifsConfigProperties(Properties jcifsConfigProperties) {
 		this.jcifsConfigProperties = jcifsConfigProperties;
@@ -78,14 +83,20 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 		if(!this.isOpened()) {
 			// we set the jcifs properties given in the bean for the drive
 			if (this.jcifsConfigProperties != null && !this.jcifsConfigProperties.isEmpty()) {
-				Config.setProperties(jcifsConfigProperties);
+				try {
+					cifsContext = new BaseContext(new PropertyConfiguration(jcifsConfigProperties));
+				} catch (CIFSException e) {
+					log.error(e, e.getCause());
+					throw new EsupStockException(e);
+				}
 			}
 
 			try {
 				if(userAuthenticatorService != null) {
 					UserPassword userPassword = userAuthenticatorService.getUserPassword(userParameters);
-					userAuthenticator = new NtlmPasswordAuthentication(userPassword.getDomain(), userPassword.getUsername(), userPassword.getPassword()) ;
-					SmbFile smbFile = new SmbFile(this.getUri(), userAuthenticator);
+					userAuthenticator = new NtlmPasswordAuthentication(cifsContext, userPassword.getDomain(), userPassword.getUsername(), userPassword.getPassword()) ;
+					cifsContext = cifsContext.withCredentials(userAuthenticator);
+					SmbFile smbFile = new SmbFile(this.getUri(), cifsContext);
 					if (smbFile.exists()) {
 						root = smbFile;
 					}
@@ -131,7 +142,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 			this.open(userParameters);
 			if (path == null || path.length() == 0)
 				return root;
-			return new SmbFile(this.getUri() + path, userAuthenticator);
+			return new SmbFile(this.getUri() + path, cifsContext);
 		} catch (MalformedURLException me) {
 			log.error(me.getMessage());
 			throw new EsupStockException(me);
@@ -171,7 +182,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 			this.open(userParameters);
 			if (!ppath.endsWith("/"))
 				ppath = ppath.concat("/");
-			SmbFile resource = new SmbFile(this.getUri() + ppath, userAuthenticator);
+			SmbFile resource = new SmbFile(this.getUri() + ppath, cifsContext);
 			if (resource.canRead()) {
 				for(SmbFile child: this.listFiles(resource)) {
 					try {
@@ -294,7 +305,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 			if (!ppath.isEmpty() && !ppath.endsWith("/")) {
 				ppath = ppath + "/";
 			}
-			SmbFile newFile = new SmbFile(root.getPath() + ppath + title, this.userAuthenticator);
+			SmbFile newFile = new SmbFile(root.getPath() + ppath + title, this.cifsContext);
 			log.info("newFile : " + newFile.toString());
 			if ("folder".equals(type)) {
 				newFile.mkdir();
@@ -318,7 +329,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 	public boolean renameFile(String path, String title, SharedUserPortletParameters userParameters) {
 		try {
 			SmbFile file = cd(path, userParameters);
-			SmbFile newFile = new SmbFile(file.getParent() + title, this.userAuthenticator);
+			SmbFile newFile = new SmbFile(file.getParent() + title, this.cifsContext);
 			if (file.exists()) {
 				file.renameTo(newFile);
 				return true;
@@ -340,7 +351,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 			SmbFile folder = cd(dir, userParameters);
 			for (String fileToCopyPath : filesToCopy) {
 				SmbFile fileToCopy = cd(fileToCopyPath, userParameters);
-				SmbFile newFile = new SmbFile(folder.getCanonicalPath() + fileToCopy.getName(), this.userAuthenticator);
+				SmbFile newFile = new SmbFile(folder.getCanonicalPath() + fileToCopy.getName(), this.cifsContext);
 				if (copy) {
 					fileToCopy.copyTo(newFile);
 				} else {
@@ -389,7 +400,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 		
 		try {
 			SmbFile folder = cd(dir, userParameters);
-			newFile = new SmbFile(folder.getCanonicalPath() + filename, this.userAuthenticator);
+			newFile = new SmbFile(folder.getCanonicalPath() + filename, this.cifsContext);
 			if (newFile.exists()) {
 				switch (uploadOption) {
 				case ERROR :
@@ -398,10 +409,10 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 					newFile.delete();
 					break;
 				case RENAME_NEW :
-					newFile = new SmbFile(folder.getCanonicalPath() + this.getUniqueFilename(filename, "-new-"), this.userAuthenticator);
+					newFile = new SmbFile(folder.getCanonicalPath() + this.getUniqueFilename(filename, "-new-"), this.cifsContext);
 					break;
 				case RENAME_OLD :
-					newFile.renameTo(new SmbFile(newFile.getParent() + this.getUniqueFilename(filename, "-old-"), this.userAuthenticator));
+					newFile.renameTo(new SmbFile(newFile.getParent() + this.getUniqueFilename(filename, "-old-"), this.cifsContext));
 					break;
 				}
 			}
