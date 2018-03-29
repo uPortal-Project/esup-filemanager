@@ -230,6 +230,13 @@
       <property name="target" value="sftp://stock-2.mon-univ.fr"/>
   </bean>
 
+  <!-- if you want to use clearPass (CAS V5) use instead this casUserAuthenticationService 
+  <bean name="casUserAuthenticationService" class="org.esupportail.portlet.filemanager.services.auth.cas.ClearPassUserCasAuthenticatorService">
+      <property name="userCasAuthenticatorServiceRoot" ref="casUserAuthenticationServiceRoot"/>
+      <property name="pkcs8Key" value="/etc/cas/config/security/private.p8"/>
+      </bean>
+  -->
+
   <!-- note casUserAuthenticationServiceRoot, casService, ticketValidator, ticketValidationFilter proxyGrantingTicketStorage and  are sufficient for more than one drive-->
 
   <bean name="casUserAuthenticationServiceRoot" class="org.esupportail.portlet.filemanager.services.auth.cas.UserCasAuthenticatorServiceRoot">

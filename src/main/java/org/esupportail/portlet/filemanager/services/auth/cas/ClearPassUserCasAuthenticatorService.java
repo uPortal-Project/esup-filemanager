@@ -40,6 +40,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.esupportail.portlet.filemanager.services.auth.cas;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -76,7 +79,8 @@ public class ClearPassUserCasAuthenticatorService implements UserAuthenticatorSe
 	
 	public void setPkcs8Key(String pkcs8Key) throws Exception {
 		 KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-		 privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(pkcs8Key.getBytes()));
+		 Path pkcs8KeyPath = Paths.get(pkcs8Key);
+		 privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(Files.readAllBytes(pkcs8KeyPath)));
 	}
 	
     public UserPassword getUserPassword(SharedUserPortletParameters userParameters) {
