@@ -1,18 +1,19 @@
-Copyright (C) 2016 Esup Portail http://www.esup-portail.org
-Copyright (C) 2016 UNR RUNN http://www.unr-runn.fr
-Copyright (C) 2016 RECIA http://www.recia.fr
-@Author (C) 2016 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
-@Contributor (C) 2016 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
-@Contributor (C) 2016 Julien Marchal <Julien.Marchal@univ-nancy2.fr>
-@Contributor (C) 2016 Julien Gribonvald <Julien.Gribonvald@recia.fr>
-@Contributor (C) 2016 David Clarke <david.clarke@anu.edu.au>
-@Contributor (C) 2016 Pierre Bouvret <pierre.bouvret@u-bordeaux4.fr>
-@Contributor (C) 2016 Franck Bordinat <franck.bordinat@univ-jfc.fr>
-@Contributor (C) 2016 Pascal Rigaux <pascal.rigaux@univ-paris1.fr>
-@Contributor (C) 2016 Olivier Franco <olivier.franco@insa-lyon.fr>
-@Contributor (C) 2016 Maxime Bossard <maxime.bossard@recia.fr>
-@Contributor (C) 2016 Guillaume Colson <guillaume.colson@univ-lorraine.fr>
-@Contributor (C) 2016 Denis Elbaz <denis.elbaz@univ-perp.fr>
+Copyright (C) 2018 Esup Portail http://www.esup-portail.org
+Copyright (C) 2018 UNR RUNN http://www.unr-runn.fr
+Copyright (C) 2018 RECIA http://www.recia.fr
+@Author (C) 2018 Vincent Bonamy <Vincent.Bonamy@univ-rouen.fr>
+@Contributor (C) 2018 Jean-Pierre Tran <Jean-Pierre.Tran@univ-rouen.fr>
+@Contributor (C) 2018 Julien Marchal <Julien.Marchal@univ-nancy2.fr>
+@Contributor (C) 2018 Julien Gribonvald <Julien.Gribonvald@recia.fr>
+@Contributor (C) 2018 David Clarke <david.clarke@anu.edu.au>
+@Contributor (C) 2018 Pierre Bouvret <pierre.bouvret@u-bordeaux4.fr>
+@Contributor (C) 2018 Franck Bordinat <franck.bordinat@univ-jfc.fr>
+@Contributor (C) 2018 Pascal Rigaux <pascal.rigaux@univ-paris1.fr>
+@Contributor (C) 2018 Olivier Franco <olivier.franco@insa-lyon.fr>
+@Contributor (C) 2018 Maxime Bossard <maxime.bossard@recia.fr>
+@Contributor (C) 2018 Guillaume Colson <guillaume.colson@univ-lorraine.fr>
+@Contributor (C) 2018 Denis Elbaz <denis.elbaz@univ-perp.fr>
+@Contributor (C) 2018 Dominique Lalot <dominique.lalot@univ-amu.fr>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
