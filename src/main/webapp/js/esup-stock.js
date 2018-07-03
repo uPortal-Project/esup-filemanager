@@ -1645,11 +1645,6 @@ function deleteFiles(dirsDataStruct) {
         console.log("item  context menu");
         return false;
         });
-
-      $("body").bind('contextmenu', function() {
-        console.log("Body  system context menu ");
-        return false;
-        });
   }
 
   function handleItemDblClick(e, jqElem) {
