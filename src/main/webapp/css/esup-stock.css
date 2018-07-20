@@ -426,6 +426,8 @@ cursor: auto !important;
 	width: 67%;
 	float: left;
 	height:420px;
+	padding-left: 0;
+	padding-right: 0;
 }
 
 .esupstock .container #browserArea #browserMain {
