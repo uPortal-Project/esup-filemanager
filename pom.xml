@@ -88,6 +88,11 @@
     </mailingList>
   </mailingLists>
 
+  <!-- Dependency Version Properties -->
+  <properties>
+    <uportal-libs.version>5.1.0</uportal-libs.version>
+  </properties>
+
   <scm>
     <url>https://github.com/EsupPortail/esup-filemanager</url>
   </scm>
@@ -130,6 +135,44 @@
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
   </distributionManagement>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Provides the PortalPropertySourcesPlaceholderConfigurer
+               that supports global.properties and Jasypt encryption-->
+      <dependency>
+        <groupId>org.jasig.portal</groupId>
+        <artifactId>uPortal-spring</artifactId>
+        <version>${uportal-libs.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.jasig.portal</groupId>
+            <artifactId>uPortal-api-internal</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jasig.portal</groupId>
+            <artifactId>uPortal-security-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jasig.portal</groupId>
+            <artifactId>uPortal-security-mvc</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jasig.portal</groupId>
+            <artifactId>uPortal-tools</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>net.oauth.core</groupId>
+            <artifactId>oauth</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
 
@@ -368,6 +411,11 @@
       <groupId>org.jasig.portal</groupId>
       <artifactId>uportal-search-api</artifactId>
       <version>4.0.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jasig.portal</groupId>
+      <artifactId>uPortal-spring</artifactId>
     </dependency>
 
     <dependency>
