@@ -44,40 +44,40 @@
       </contributor>
       <contributor>
           <name>David Clarke</name>
-          <organization>Australian National University</organization>          
+          <organization>Australian National University</organization>
       </contributor>
       <contributor>
           <name>Pierre Bouvret</name>
-          <organization>Université de Bordeaux</organization>          
+          <organization>Université de Bordeaux</organization>
       </contributor>
       <contributor>
           <name>Franck Bordinat</name>
-          <organization>Université Jean-François Champollion</organization>                    
+          <organization>Université Jean-François Champollion</organization>
       </contributor>
       <contributor>
           <name>Pascal Rigaux</name>
-          <organization>Université Paris 1 Panthéon - Sorbonne</organization>                    
+          <organization>Université Paris 1 Panthéon - Sorbonne</organization>
       </contributor>
       <contributor>
           <name>Olivier Franco</name>
-          <organization>INSA de Lyon</organization>          
+          <organization>INSA de Lyon</organization>
       </contributor>
       <contributor>
           <name>Maxime Bossard</name>
-          <organization>GIP RECIA</organization>          
+          <organization>GIP RECIA</organization>
       </contributor>
       <contributor>
           <name>Guillaume Colson</name>
-          <organization>Université de Lorraine</organization>          
+          <organization>Université de Lorraine</organization>
       </contributor>
       <contributor>
           <name>Denis Elbaz</name>
-          <organization>Université de Perpignan</organization>          
+          <organization>Université de Perpignan</organization>
       </contributor>
       <contributor>
           <name>Dominique Lalot</name>
-          <organization>Aix-Marseille Université</organization>          
-      </contributor>                        
+          <organization>Aix-Marseille Université</organization>
+      </contributor>
   </contributors>
 
   <mailingLists>
@@ -91,7 +91,7 @@
   <scm>
       <url>https://github.com/EsupPortail/esup-filemanager</url>
   </scm>
-  
+
   <repositories>
 
   <repository>
@@ -107,9 +107,9 @@
       <id>jlehtinen.net</id>
       <url>http://repo.jlehtinen.net/maven2/</url>
     </repository>
- 
+
   </repositories>
-  
+
 
   <pluginRepositories>
 
@@ -184,7 +184,7 @@
 		<artifactId>commons-collections</artifactId>
 		<version>3.2.2</version>
 	</dependency>
-	
+
 	<dependency>
 		<groupId>commons-lang</groupId>
 		<artifactId>commons-lang</artifactId>
@@ -247,14 +247,14 @@
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
-      <version>1.2.2</version>
+      <version>1.3.3</version>
     </dependency>
 
     <dependency>
-      <groupId>commons-net</groupId>                                                                                                                       
-      <artifactId>commons-net</artifactId>                                                                                                                 
-      <version>2.2</version>                                                                                                                               
-    </dependency>                    
+      <groupId>commons-net</groupId>
+      <artifactId>commons-net</artifactId>
+      <version>2.2</version>
+    </dependency>
 
     <dependency>
       <groupId>commons-io</groupId>
@@ -273,13 +273,13 @@
       <artifactId>jsch</artifactId>
       <version>0.1.53</version>
     </dependency>
-    
+
     <dependency>
         <groupId>org.jasig.cas.client</groupId>
         <artifactId>cas-client-core</artifactId>
         <version>3.5.0</version>
     </dependency>
-    
+
     <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
@@ -289,33 +289,33 @@
     	<groupId>org.apache.chemistry.opencmis</groupId>
     	<artifactId>chemistry-opencmis-client-impl</artifactId>
     	<version>0.6.0</version>
-    </dependency>   
-    
+    </dependency>
+
 	<dependency>
 	    <groupId>eu.agno3.jcifs</groupId>
 	    <artifactId>jcifs-ng</artifactId>
 	    <version>2.0.5</version>
 	</dependency>
-	
+
     <dependency>
         <groupId>javax.mail</groupId>
 	<artifactId>mail</artifactId>
 	<version>1.4</version>
     </dependency>
-	
-	
+
+
     <dependency>
         <groupId>com.googlecode.sardine</groupId>
         <artifactId>sardine</artifactId>
         <version>343</version>
     </dependency>
-    
+
     <dependency>
   		<groupId>org.apache.httpcomponents</groupId>
   		<artifactId>httpclient</artifactId>
   		<version>4.1.2</version>
 	</dependency>
-	
+
 	<dependency>
   		<groupId>org.slf4j</groupId>
  		<artifactId>slf4j-api</artifactId>
@@ -339,13 +339,13 @@
     	<artifactId>spring-webmvc-portlet</artifactId>
     	<version>3.1.1.RELEASE</version>
     </dependency>
- 
+
      <dependency>
     	<groupId>javax.servlet</groupId>
     	<artifactId>jstl</artifactId>
     	<version>1.1.2</version>
     </dependency>
-    
+
     <dependency>
     	<groupId>taglibs</groupId>
         <artifactId>standard</artifactId>
@@ -357,7 +357,7 @@
 	  <artifactId>commons-vfs2</artifactId>
 	  <version>2.0-esup-patch-2</version>
 	</dependency>
-  	
+
   	<dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-webdav</artifactId>
@@ -369,16 +369,16 @@
           <artifactId>uportal-search-api</artifactId>
           <version>4.0.1</version>
 	</dependency>
-        
+
     <dependency>
       <groupId>org.esupportail.portlet.filemanager</groupId>
       <artifactId>esup-filemanager-api</artifactId>
       <version>3.0.0-rc1</version>
     </dependency>
-	      
+
   </dependencies>
 
-  
+
   <build>
     <finalName>${project.artifactId}</finalName>
     <plugins>
@@ -434,15 +434,15 @@
                 </cssUrls>
 
                 <!-- To use custom Javascript in the portal -->
-		<!--                                                                                                                                        
-                <jsUrls>                                                                                                                                    
-                  <url>http://my.server/custom.js</url>                                                                                                     
-                  <url>http://my.server/another.js</url>                                                                                                    
-                </jsUrls>                                                                                                                                   
+		<!--
+                <jsUrls>
+                  <url>http://my.server/custom.js</url>
+                  <url>http://my.server/another.js</url>
+                </jsUrls>
                 -->
 
             </configuration>
-	      
+
 	 </plugin>
 
          <plugin>
@@ -522,9 +522,8 @@
                  </execution>
              </executions>
          </plugin>
-         
+
     </plugins>
   </build>
 
 </project>
-
