@@ -62,39 +62,39 @@ import org.jasig.cas.client.validation.Assertion;
 public class ClearPassUserCasAuthenticatorService implements UserAuthenticatorService {
 
     private static final Log log = LogFactory.getLog(ClearPassUserCasAuthenticatorService.class);
-    
+
     protected UserCasAuthenticatorServiceRoot userCasAuthenticatorServiceRoot;
-    
+
     protected String credentialAttribute = "credential";
-    
+
     protected PrivateKey privateKey;
-    
-	private String domain;
-    
+
+    private String domain;
+
     public void setDomain(String domain) {
-		this.domain = domain;
-	}
+        this.domain = domain;
+    }
 
-	public void setUserCasAuthenticatorServiceRoot(UserCasAuthenticatorServiceRoot userCasAuthenticatorServiceRoot) {
-		this.userCasAuthenticatorServiceRoot = userCasAuthenticatorServiceRoot;
-	}
+    public void setUserCasAuthenticatorServiceRoot(UserCasAuthenticatorServiceRoot userCasAuthenticatorServiceRoot) {
+        this.userCasAuthenticatorServiceRoot = userCasAuthenticatorServiceRoot;
+    }
 
-	public void initialize(SharedUserPortletParameters userParameters) {
-		this.userCasAuthenticatorServiceRoot.initialize(userParameters);
-	}
-	
-	public void setPkcs8Key(String pkcs8Key) throws Exception {
-		 KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-		 Path pkcs8KeyPath = Paths.get(pkcs8Key);
-		 privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(Files.readAllBytes(pkcs8KeyPath)));
-	}
-	
+    public void initialize(SharedUserPortletParameters userParameters) {
+        this.userCasAuthenticatorServiceRoot.initialize(userParameters);
+    }
+
+    public void setPkcs8Key(String pkcs8Key) throws Exception {
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        Path pkcs8KeyPath = Paths.get(pkcs8Key);
+        privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(Files.readAllBytes(pkcs8KeyPath)));
+    }
+
     public UserPassword getUserPassword(SharedUserPortletParameters userParameters) {
 
         if (log.isDebugEnabled()) {
             log.debug("getting credentials using " + this.getClass().getName());
         }
-        
+
         log.debug("getting CAS credentials from session");
 
         Assertion casAssertion = userParameters.getAssertion();
@@ -105,37 +105,37 @@ public class ClearPassUserCasAuthenticatorService implements UserAuthenticatorSe
 
         String proxyPrincipalname = casAssertion.getPrincipal().getName();
         log.debug("got user '" + proxyPrincipalname + "'");
-        
+
         String credential = (String)casAssertion.getPrincipal().getAttributes().get(credentialAttribute);
         if(credential == null) {
-        	log.error("No credential attribute [" + credentialAttribute + "] found in cas assertion.");
-        	return null;
+            log.error("No credential attribute [" + credentialAttribute + "] found in cas assertion.");
+            return null;
         } else {
-        	
-	        log.trace("got credential '" + credential + "'");
-	        
-	        String password = "";
-			try {
-				password = decodeCredential(credential);
-			} catch (Exception e) {
-				log.error("Credential " + credential + " can't be decoded.");
-			}
-	
-	        UserPassword auth = new UserPassword(proxyPrincipalname, password);
-	        auth.setDomain(domain);
-	
-	        return auth;
+
+            log.trace("got credential '" + credential + "'");
+
+            String password = "";
+            try {
+                password = decodeCredential(credential);
+            } catch (Exception e) {
+                log.error("Credential " + credential + " can't be decoded.");
+            }
+
+            UserPassword auth = new UserPassword(proxyPrincipalname, password);
+            auth.setDomain(domain);
+
+            return auth;
         }
 
     }
 
-	protected String decodeCredential(String encodedPsw) throws Exception {
-		Cipher cipher = Cipher.getInstance(privateKey.getAlgorithm());
-		byte[] cred64 = Base64.decodeBase64(encodedPsw.getBytes());
-		cipher.init(Cipher.DECRYPT_MODE, privateKey);
-		byte[] cipherData = cipher.doFinal(cred64);
-		return new String(cipherData);
-	}
+    protected String decodeCredential(String encodedPsw) throws Exception {
+        Cipher cipher = Cipher.getInstance(privateKey.getAlgorithm());
+        byte[] cred64 = Base64.decodeBase64(encodedPsw.getBytes());
+        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+        byte[] cipherData = cipher.doFinal(cred64);
+        return new String(cipherData);
+    }
 
 }
 
