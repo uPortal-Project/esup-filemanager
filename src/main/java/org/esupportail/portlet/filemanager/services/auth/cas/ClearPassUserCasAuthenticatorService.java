@@ -69,7 +69,13 @@ public class ClearPassUserCasAuthenticatorService implements UserAuthenticatorSe
     
     protected PrivateKey privateKey;
     
-    public void setUserCasAuthenticatorServiceRoot(UserCasAuthenticatorServiceRoot userCasAuthenticatorServiceRoot) {
+	private String domain;
+    
+    public void setDomain(String domain) {
+		this.domain = domain;
+	}
+
+	public void setUserCasAuthenticatorServiceRoot(UserCasAuthenticatorServiceRoot userCasAuthenticatorServiceRoot) {
 		this.userCasAuthenticatorServiceRoot = userCasAuthenticatorServiceRoot;
 	}
 
@@ -116,6 +122,7 @@ public class ClearPassUserCasAuthenticatorService implements UserAuthenticatorSe
 			}
 	
 	        UserPassword auth = new UserPassword(proxyPrincipalname, password);
+	        auth.setDomain(domain);
 	
 	        return auth;
         }
