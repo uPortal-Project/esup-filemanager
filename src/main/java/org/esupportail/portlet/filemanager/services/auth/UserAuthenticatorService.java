@@ -26,4 +26,6 @@ public interface UserAuthenticatorService {
 	
 	public abstract UserPassword getUserPassword(SharedUserPortletParameters userParameters);
 
+	public abstract boolean formAuthenticationNeeded(SharedUserPortletParameters userParameters);
+
 }
