@@ -24,4 +24,8 @@ public class FormUserPasswordAuthenticatorService extends UserPasswordAuthentica
 
 	protected static final Log log = LogFactory.getLog(FormUserPasswordAuthenticatorService.class);
 	
+	public boolean formAuthenticationNeeded() {
+		return true;
+	}
+
 }

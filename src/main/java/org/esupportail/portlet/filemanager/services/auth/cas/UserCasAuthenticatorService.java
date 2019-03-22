@@ -110,4 +110,8 @@ public class UserCasAuthenticatorService implements UserAuthenticatorService {
 
     }
 
+	public boolean formAuthenticationNeeded(SharedUserPortletParameters userParameters) {
+		return false;
+	}
+
 }
