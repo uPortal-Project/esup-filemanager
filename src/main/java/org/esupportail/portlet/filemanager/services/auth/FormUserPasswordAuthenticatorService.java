@@ -23,5 +23,9 @@ import org.apache.commons.logging.LogFactory;
 public class FormUserPasswordAuthenticatorService extends UserPasswordAuthenticatorService {
 
 	protected static final Log log = LogFactory.getLog(FormUserPasswordAuthenticatorService.class);
-	
+
+	public boolean formAuthenticationNeeded() {
+		return true;
+	}
+
 }
