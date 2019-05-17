@@ -97,7 +97,9 @@
   </properties>
 
   <scm>
-    <url>https://github.com/EsupPortail/esup-filemanager</url>
+    <developerConnection>scm:git:ssh://git@github.com/uPortal-contrib/esup-filemanager.git</developerConnection>
+    <url>https://github.com/uPortal-contrib/esup-filemanager</url>
+    <tag>HEAD</tag>
   </scm>
 
   <repositories>
