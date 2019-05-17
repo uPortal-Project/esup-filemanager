@@ -6,7 +6,7 @@
   <artifactId>esup-filemanager</artifactId>
   <packaging>war</packaging>
   <name>esup-filemanager</name>
-  <version>4.0.0</version>
+  <version>4.0.1-SNAPSHOT</version>
 
 
   <description>ESUP File Manager is a JSR286 Portlet. Esup File Manager allows users to perform file management on their HomeDirs.</description>
@@ -99,7 +99,7 @@
   <scm>
     <developerConnection>scm:git:ssh://git@github.com/uPortal-contrib/esup-filemanager.git</developerConnection>
     <url>https://github.com/uPortal-contrib/esup-filemanager</url>
-    <tag>esup-filemanager-4.0.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <repositories>
