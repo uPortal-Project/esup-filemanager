@@ -23,7 +23,7 @@ import org.esupportail.portlet.filemanager.beans.UserPassword;
 public interface UserAuthenticatorService {
 
 	public abstract void initialize(SharedUserPortletParameters userParameters);
-	
+
 	public abstract UserPassword getUserPassword(SharedUserPortletParameters userParameters);
 
 	public abstract boolean formAuthenticationNeeded(SharedUserPortletParameters userParameters);

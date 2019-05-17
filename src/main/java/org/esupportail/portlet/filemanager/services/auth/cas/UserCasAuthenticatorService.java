@@ -53,38 +53,37 @@ public class UserCasAuthenticatorService implements UserAuthenticatorService {
 
 
     private static final Log log = LogFactory.getLog(UserCasAuthenticatorService.class);
-    
+
     private UserCasAuthenticatorServiceRoot userCasAuthenticatorServiceRoot;
 
     protected ProxyTicketService proxyTicketService;
-    
+
     protected String target;
 
     protected String CAS_ASSERTION_KEY = "CAS_ASSERTION_KEY";
-    
+
     public void setUserCasAuthenticatorServiceRoot(UserCasAuthenticatorServiceRoot userCasAuthenticatorServiceRoot) {
-		this.userCasAuthenticatorServiceRoot = userCasAuthenticatorServiceRoot;
-	}
+        this.userCasAuthenticatorServiceRoot = userCasAuthenticatorServiceRoot;
+    }
 
-	public void setProxyTicketService(ProxyTicketService proxyTicketService) {
-		this.proxyTicketService = proxyTicketService;
-	}
+    public void setProxyTicketService(ProxyTicketService proxyTicketService) {
+        this.proxyTicketService = proxyTicketService;
+    }
 
-	public void setTarget(String target) {
-		this.target = target;
-	}
+    public void setTarget(String target) {
+        this.target = target;
+    }
 
-	public void initialize(SharedUserPortletParameters userParameters) {
-		this.userCasAuthenticatorServiceRoot.initialize(userParameters);
-	}
-	
+    public void initialize(SharedUserPortletParameters userParameters) {
+        this.userCasAuthenticatorServiceRoot.initialize(userParameters);
+    }
+
     public UserPassword getUserPassword(SharedUserPortletParameters userParameters) {
 
         if (log.isDebugEnabled()) {
             log.debug("getting credentials using " + this.getClass().getName());
+            log.debug("getting CAS credentials from session");
         }
-        
-        log.debug("getting CAS credentials from session");
 
         Assertion casAssertion = userParameters.getAssertion();
 
@@ -94,10 +93,10 @@ public class UserCasAuthenticatorService implements UserAuthenticatorService {
 
         String proxyPrincipalname = casAssertion.getPrincipal().getName();
         log.debug("got user '" + proxyPrincipalname + "'");
-        
+
         String proxyTicket = proxyTicketService.getCasServiceToken(casAssertion, target);
         if (proxyTicket == null) {
-        	proxyTicket = "";
+            proxyTicket = "";
         }
 
         if (log.isDebugEnabled()) {
@@ -110,8 +109,8 @@ public class UserCasAuthenticatorService implements UserAuthenticatorService {
 
     }
 
-	public boolean formAuthenticationNeeded(SharedUserPortletParameters userParameters) {
-		return false;
-	}
+    public boolean formAuthenticationNeeded(SharedUserPortletParameters userParameters) {
+        return false;
+    }
 
 }

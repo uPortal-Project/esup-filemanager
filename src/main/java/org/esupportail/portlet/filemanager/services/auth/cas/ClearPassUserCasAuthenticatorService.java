@@ -36,7 +36,6 @@ import org.esupportail.portlet.filemanager.services.auth.FormUserPasswordAuthent
 import org.esupportail.portlet.filemanager.services.auth.UserAuthenticatorService;
 import org.jasig.cas.client.validation.Assertion;
 
-
 public class ClearPassUserCasAuthenticatorService implements UserAuthenticatorService {
 
     private static final Log log = LogFactory.getLog(ClearPassUserCasAuthenticatorService.class);
@@ -46,36 +45,36 @@ public class ClearPassUserCasAuthenticatorService implements UserAuthenticatorSe
     protected String credentialAttribute = "credential";
 
     protected PrivateKey privateKey;
-    
+
     private String domain;
-    
+
     UserPassword userPassword;
-    
+
     FormUserPasswordAuthenticatorService formUserPasswordAuthenticatorServiceFallBack;
-    
+
     Boolean initialized = false;
-	
+
     public void setDomain(String domain) {
-	this.domain = domain;
+        this.domain = domain;
     }
-    
+
     public void setUserCasAuthenticatorServiceRoot(UserCasAuthenticatorServiceRoot userCasAuthenticatorServiceRoot) {
-	this.userCasAuthenticatorServiceRoot = userCasAuthenticatorServiceRoot;
+        this.userCasAuthenticatorServiceRoot = userCasAuthenticatorServiceRoot;
     }
-    
+
     public void initialize(SharedUserPortletParameters userParameters) {
-	if(!initialized) {
-	    this.userCasAuthenticatorServiceRoot.initialize(userParameters);
-	    initialized = true;
-	}
+        if(!initialized) {
+            this.userCasAuthenticatorServiceRoot.initialize(userParameters);
+            initialized = true;
+        }
     }
-    
+
     public void setPkcs8Key(String pkcs8Key) throws Exception {
-	KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-	Path pkcs8KeyPath = Paths.get(pkcs8Key);
-	privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(Files.readAllBytes(pkcs8KeyPath)));
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        Path pkcs8KeyPath = Paths.get(pkcs8Key);
+        privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(Files.readAllBytes(pkcs8KeyPath)));
     }
-	
+
     public UserPassword getClearPassUserPassword(SharedUserPortletParameters userParameters) {
 
         if (log.isDebugEnabled()) {
@@ -117,30 +116,30 @@ public class ClearPassUserCasAuthenticatorService implements UserAuthenticatorSe
     }
 
     protected String decodeCredential(String encodedPsw) throws Exception {
-	Cipher cipher = Cipher.getInstance(privateKey.getAlgorithm());
-	byte[] cred64 = Base64.decodeBase64(encodedPsw.getBytes());
-	cipher.init(Cipher.DECRYPT_MODE, privateKey);
-	byte[] cipherData = cipher.doFinal(cred64);
-	return new String(cipherData);
+        Cipher cipher = Cipher.getInstance(privateKey.getAlgorithm());
+        byte[] cred64 = Base64.decodeBase64(encodedPsw.getBytes());
+        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+        byte[] cipherData = cipher.doFinal(cred64);
+        return new String(cipherData);
     }
-	
+
     public UserPassword getUserPassword(SharedUserPortletParameters userParameters) {
-	if(userPassword == null) {
-	    userPassword = getClearPassUserPassword(userParameters);
-	}
-	if(userPassword == null) {
-	    formUserPasswordAuthenticatorServiceFallBack = new FormUserPasswordAuthenticatorService();
-	    formUserPasswordAuthenticatorServiceFallBack.setDomain(domain);
-	    userPassword = formUserPasswordAuthenticatorServiceFallBack.getUserPassword(userParameters);
-	}
-	return userPassword;
+        if(userPassword == null) {
+            userPassword = getClearPassUserPassword(userParameters);
+        }
+        if(userPassword == null) {
+            formUserPasswordAuthenticatorServiceFallBack = new FormUserPasswordAuthenticatorService();
+            formUserPasswordAuthenticatorServiceFallBack.setDomain(domain);
+            userPassword = formUserPasswordAuthenticatorServiceFallBack.getUserPassword(userParameters);
+        }
+        return userPassword;
     }
-	
+
 
     public boolean formAuthenticationNeeded(SharedUserPortletParameters userParameters) {
-	initialize(userParameters);
-	getUserPassword(userParameters);
-	return formUserPasswordAuthenticatorServiceFallBack != null;
+        initialize(userParameters);
+        getUserPassword(userParameters);
+        return formUserPasswordAuthenticatorServiceFallBack != null;
     }
 
 }
