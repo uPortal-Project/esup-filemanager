@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import jcifs.smb.NtlmPasswordAuthenticator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
@@ -50,7 +51,6 @@ import jcifs.CIFSException;
 import jcifs.config.PropertyConfiguration;
 import jcifs.context.BaseContext;
 import jcifs.smb.NtStatus;
-import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbAuthException;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
@@ -61,7 +61,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 
 	protected ResourceUtils resourceUtils;
 
-	private NtlmPasswordAuthentication userAuthenticator;
+	private NtlmPasswordAuthenticator userAuthenticator;
 
 	protected SmbFile root;
 	
@@ -94,7 +94,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 			try {
 				if(userAuthenticatorService != null) {
 					UserPassword userPassword = userAuthenticatorService.getUserPassword(userParameters);
-					userAuthenticator = new NtlmPasswordAuthentication(cifsContext, userPassword.getDomain(), userPassword.getUsername(), userPassword.getPassword()) ;
+					userAuthenticator = new NtlmPasswordAuthenticator(userPassword.getDomain(), userPassword.getUsername(), userPassword.getPassword());
 					cifsContext = cifsContext.withCredentials(userAuthenticator);
 					SmbFile smbFile = new SmbFile(this.getUri(), cifsContext);
 					if (smbFile.exists()) {
