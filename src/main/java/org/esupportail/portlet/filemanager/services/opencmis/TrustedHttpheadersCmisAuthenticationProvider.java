@@ -17,17 +17,13 @@
  */
 package org.esupportail.portlet.filemanager.services.opencmis;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.apache.chemistry.opencmis.client.bindings.spi.AbstractAuthenticationProvider;
-import org.apache.chemistry.opencmis.client.bindings.spi.StandardAuthenticationProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.esupportail.commons.utils.ContextUtils;
-import org.springframework.web.context.request.RequestContextHolder;
+import org.esupportail.portlet.filemanager.utils.ContextUtils;
 
 
 

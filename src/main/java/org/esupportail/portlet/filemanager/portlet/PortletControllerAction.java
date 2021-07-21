@@ -27,7 +27,6 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.apache.log4j.Logger;
 import org.esupportail.portlet.filemanager.beans.BasketSession;
 import org.esupportail.portlet.filemanager.beans.FileUpload;
 import org.esupportail.portlet.filemanager.beans.FormCommand;
@@ -36,6 +35,8 @@ import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
 import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -48,21 +49,20 @@ import org.springframework.web.portlet.ModelAndView;
 @Scope("request")
 public class PortletControllerAction {
 
-	protected Logger log = Logger.getLogger(PortletControllerAction.class);
-	
+	static final Logger log = LoggerFactory.getLogger(PortletControllerAction.class);
+
 	@Autowired
 	protected IServersAccessService serverAccess;
-	
+
 	@Autowired
 	protected BasketSession basketSession;
-	
+
 	@Autowired
 	protected PathEncodingUtils pathEncodingUtils;
-	
+
 	@Autowired
 	protected SharedUserPortletParameters userParameters;
 
-	
 	@RequestMapping(value = { "VIEW" }, params = { "action=formProcessWai" })
 	public void formProcessWai(FormCommand command, @RequestParam String dir,
 			@RequestParam(required = false) String prepareCopy,

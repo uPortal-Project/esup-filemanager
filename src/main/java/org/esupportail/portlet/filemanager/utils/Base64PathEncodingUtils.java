@@ -17,7 +17,8 @@
  */
 package org.esupportail.portlet.filemanager.utils;
 
-import org.esupportail.commons.utils.Base64;
+import java.util.Base64;
+
 import org.springframework.stereotype.Service;
 
 @Service("pathEncodingUtils")
@@ -27,7 +28,7 @@ public class Base64PathEncodingUtils extends PathEncodingUtils {
 		if(path == null)
 			return null;
 		String encodedPath = path;
-		encodedPath = Base64.encodeBytes(path.getBytes(), Base64.URL_SAFE);
+		encodedPath = Base64.getUrlEncoder().encodeToString(path.getBytes());
 		encodedPath = encodedPath.replaceAll("\n", "");
 		encodedPath = encodedPath.replaceAll("=", "");
 		return PREFIX_CODE + encodedPath;
@@ -42,7 +43,7 @@ public class Base64PathEncodingUtils extends PathEncodingUtils {
 			dir = dir + "=";
 		if(nb_equals_to_add == 2)
 			dir = dir + "==";
-		dir = new String(Base64.decode(dir, Base64.URL_SAFE));
+		dir = new String(Base64.getUrlDecoder().decode(dir));
 		return dir;
 	}
 }

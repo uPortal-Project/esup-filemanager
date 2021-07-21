@@ -19,6 +19,7 @@ package org.esupportail.portlet.filemanager.services.opencmis;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,7 +28,6 @@ import java.util.Map;
 import java.util.Random;
 
 import org.apache.chemistry.opencmis.client.bindings.spi.AbstractAuthenticationProvider;
-import org.esupportail.commons.utils.Base64;
 
 public class NuxeoPortalSSOAuthenticationProvider extends AbstractAuthenticationProvider   {
 
@@ -59,7 +59,7 @@ public class NuxeoPortalSSOAuthenticationProvider extends AbstractAuthentication
             throw new Error("Cannot compute token", e);
         }
 
-        String base64HashedToken = Base64.encodeBytes(hashedToken);
+        String base64HashedToken = Base64.getEncoder().encodeToString(hashedToken);
 
         // set request headers
 

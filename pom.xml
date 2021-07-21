@@ -94,6 +94,9 @@
     <project.build.source>1.8</project.build.source>
     <project.build.target>1.8</project.build.target>
     <uportal-libs.version>5.1.0</uportal-libs.version>
+    <maven.javadoc.skip>true</maven.javadoc.skip>
+    <logback.version>1.2.3</logback.version>
+    <jcl.slf4j.version>1.7.25</jcl.slf4j.version>
   </properties>
 
   <scm>
@@ -139,55 +142,11 @@
       <id>ossrh</id>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
+
   </distributionManagement>
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.esupportail</groupId>
-        <artifactId>esup-commons2-web</artifactId>
-        <version>0.2.8</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>
-              jsr168forwardport.org.springframework.web.portlet
-            </artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>esup-uportal-ws-client</artifactId>
-            <groupId>esup</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-context-support</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-beans</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>slf4j-simple</artifactId>
-            <groupId>org.slf4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-test</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>rome</artifactId>
-            <groupId>rome</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-web</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-core</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
       <!-- Provides the PortalPropertySourcesPlaceholderConfigurer
                that supports global.properties and Jasypt encryption-->
       <dependency>
@@ -221,15 +180,99 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc-portlet</artifactId>
+        <version>3.1.2.RELEASE</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>4.1.2</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry.opencmis</groupId>
+        <artifactId>chemistry-opencmis-client-impl</artifactId>
+        <version>0.6.0</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-vfs2</artifactId>
+        <version>2.0-esup-patch-2</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.portals.pluto</groupId>
+        <artifactId>pluto-taglib</artifactId>
+        <version>2.1.0-M2</version>
+        <scope>provided</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>commons-httpclient</groupId>
+        <artifactId>commons-httpclient</artifactId>
+        <version>3.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-webdav</artifactId>
+        <version>1.5.2</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
   <dependencies>
     <dependency>
-      <groupId>org.esupportail</groupId>
-      <artifactId>esup-commons2-web</artifactId>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>${jcl.slf4j.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>${logback.version}</version>
+    </dependency>
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
@@ -242,6 +285,10 @@
       <version>2.6</version>
     </dependency>
 
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+    </dependency>
 
     <!-- ===== Compile Time Dependencies ============================== -->
     <!-- the slf4j commons-logging replacement -->
@@ -263,14 +310,7 @@
     <dependency>
       <groupId>org.apache.portals.pluto</groupId>
       <artifactId>pluto-taglib</artifactId>
-      <version>2.1.0-M2</version>
       <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
@@ -292,7 +332,6 @@
     <dependency>
       <groupId>commons-httpclient</groupId>
       <artifactId>commons-httpclient</artifactId>
-      <version>3.1</version>
     </dependency>
 
     <dependency>
@@ -339,7 +378,6 @@
     <dependency>
       <groupId>org.apache.chemistry.opencmis</groupId>
       <artifactId>chemistry-opencmis-client-impl</artifactId>
-      <version>0.6.0</version>
     </dependency>
 
     <dependency>
@@ -364,13 +402,6 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>4.1.2</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.6.2</version>
     </dependency>
 
     <dependency>
@@ -388,7 +419,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc-portlet</artifactId>
-      <version>3.1.1.RELEASE</version>
     </dependency>
 
     <dependency>
@@ -406,13 +436,11 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-vfs2</artifactId>
-      <version>2.0-esup-patch-2</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-webdav</artifactId>
-      <version>1.5.2</version>
     </dependency>
 
     <dependency>
@@ -538,7 +566,7 @@
           <classpathScope>test</classpathScope>
         </configuration>
       </plugin>
-
+<!--
       <plugin>
         <groupId>org.sonatype.plugins</groupId>
         <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -550,7 +578,7 @@
           <autoReleaseAfterClose>false</autoReleaseAfterClose>
         </configuration>
       </plugin>
-
+-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
@@ -565,6 +593,21 @@
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.2.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -588,3 +631,4 @@
   </build>
 
 </project>
+

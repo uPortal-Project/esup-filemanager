@@ -28,7 +28,8 @@ import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 
 import org.apache.commons.collections.map.ListOrderedMap;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.esupportail.portlet.filemanager.beans.FormCommand;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
@@ -48,8 +49,8 @@ import org.springframework.web.portlet.ModelAndView;
 @Scope("request")
 public class PortletController {
 
-	protected Logger log = Logger.getLogger(PortletController.class);
-	
+	static final Logger log = LoggerFactory.getLogger(PortletController.class);
+
 	public static final String PREF_PORTLET_VIEW = "defaultPortletView";
 	public static final String PREF_DEFAULT_PATH = "defaultPath";
 	public static final String PREF_SHOW_HIDDEN_FILES = "showHiddenFiles";

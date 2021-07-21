@@ -16,9 +16,6 @@
  * limitations under the License.
  */
 package org.esupportail.portlet.filemanager.services;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -36,9 +33,6 @@ import java.util.zip.ZipOutputStream;
 import javax.annotation.Resource;
 import javax.portlet.PortletRequest;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.DrivesCategory;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
@@ -50,6 +44,8 @@ import org.esupportail.portlet.filemanager.crudlog.CrudLogLevel;
 import org.esupportail.portlet.filemanager.crudlog.CrudLoggable;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockLostSessionException;
 import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -62,7 +58,7 @@ import org.springframework.util.Assert;
 @Scope(value="session", proxyMode=ScopedProxyMode.INTERFACES)
 public class ServersAccessService implements DisposableBean, IServersAccessService {
 
-	protected static final Log log = LogFactory.getLog(ServersAccessService.class);
+	static final Logger log = LoggerFactory.getLogger(ServersAccessService.class);
 	
 	/** Size of zipping buffers: 128 kB. */
 	protected static final int ZIP_BUFFER_SIZE = 131072;

@@ -28,9 +28,9 @@ import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConnectionException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.esupportail.commons.utils.ContextUtils;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
+import org.esupportail.portlet.filemanager.utils.ContextUtils;
 
 public class TrustedCmisAccessImpl extends CmisAccessImpl {
 

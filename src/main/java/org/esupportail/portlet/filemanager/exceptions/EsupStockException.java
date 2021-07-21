@@ -17,8 +17,6 @@
  */
 package org.esupportail.portlet.filemanager.exceptions;
 
-import org.esupportail.commons.exceptions.EsupException;
-
 public class EsupStockException extends EsupException {
 	
 	protected String codeI18n = "exception.general";

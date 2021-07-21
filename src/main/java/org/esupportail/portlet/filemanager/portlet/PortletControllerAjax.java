@@ -33,7 +33,6 @@ import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
 import org.apache.commons.collections.map.ListOrderedMap;
-import org.apache.log4j.Logger;
 import org.esupportail.portlet.filemanager.beans.BasketSession;
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.FileUpload;
@@ -47,6 +46,8 @@ import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.esupportail.portlet.filemanager.services.ResourceUtils;
 import org.esupportail.portlet.filemanager.services.ResourceUtils.Type;
 import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -68,7 +69,7 @@ import org.springframework.web.servlet.view.json.MappingJacksonJsonView;
 @RequestMapping("VIEW")
 public class PortletControllerAjax {
 
-	protected Logger log = Logger.getLogger(PortletControllerAjax.class);
+	static final Logger log = LoggerFactory.getLogger(PortletControllerAjax.class);
 	
     @Autowired  
     private MessageSource messageSource;

@@ -26,7 +26,6 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 
-import org.apache.log4j.Logger;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.services.IServersAccessService;
@@ -34,6 +33,8 @@ import org.jasig.portal.search.SearchConstants;
 import org.jasig.portal.search.SearchRequest;
 import org.jasig.portal.search.SearchResult;
 import org.jasig.portal.search.SearchResults;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -46,7 +47,7 @@ import org.springframework.web.portlet.context.PortletConfigAware;
 @RequestMapping("VIEW")
 public class PortletControllerSearchContent implements PortletConfigAware {
 
-	protected Logger log = Logger.getLogger(PortletControllerSearchContent.class);
+    static final Logger log = LoggerFactory.getLogger(PortletControllerSearchContent.class);
 	
     private PortletConfig portletConfig;
     
