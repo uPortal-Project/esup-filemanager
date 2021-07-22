@@ -97,6 +97,7 @@
     <maven.javadoc.skip>true</maven.javadoc.skip>
     <logback.version>1.2.3</logback.version>
     <jcl.slf4j.version>1.7.25</jcl.slf4j.version>
+    <commons-vfs.version>2.2</commons-vfs.version>
     <jcifs-ng.version>2.1.4</jcifs-ng.version>
   </properties>
 
@@ -217,7 +218,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-vfs2</artifactId>
-        <version>2.0-esup-patch-2</version>
+        <version>${commons-vfs.version}</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
