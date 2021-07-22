@@ -177,7 +177,7 @@ public abstract class FsAccess {
 	}
 
 	public boolean formAuthenticationRequired(SharedUserPortletParameters userParameters) {
-		if(this.userAuthenticatorService.formAuthenticationNeeded(userParameters)) {
+		if(this.userAuthenticatorService != null && this.userAuthenticatorService.formAuthenticationNeeded(userParameters)) {
 			if(this.userAuthenticatorService.getUserPassword(userParameters) == null || this.userAuthenticatorService.getUserPassword(userParameters).getPassword() == null || this.userAuthenticatorService.getUserPassword(userParameters).getPassword().length() == 0) {
 				this.userAuthenticatorService.initialize(userParameters);
 				return true;
