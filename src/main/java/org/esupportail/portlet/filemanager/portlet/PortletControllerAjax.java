@@ -32,7 +32,8 @@ import java.util.Vector;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
-import org.apache.commons.collections.map.ListOrderedMap;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.map.ListOrderedMap;
 import org.esupportail.portlet.filemanager.beans.BasketSession;
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.FileUpload;
@@ -46,8 +47,6 @@ import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.esupportail.portlet.filemanager.services.ResourceUtils;
 import org.esupportail.portlet.filemanager.services.ResourceUtils.Type;
 import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -62,15 +61,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
-import org.springframework.web.servlet.view.json.MappingJacksonJsonView;
+import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 @Controller
 @Scope("request")
 @RequestMapping("VIEW")
+@Slf4j
 public class PortletControllerAjax {
 
-	static final Logger log = LoggerFactory.getLogger(PortletControllerAjax.class);
-	
     @Autowired  
     private MessageSource messageSource;
     
@@ -119,7 +117,7 @@ public class PortletControllerAjax {
 	 * @return
 	 */
 	protected ModelAndView getJacksonView(Object object) {
-		MappingJacksonJsonView v = new MappingJacksonJsonView();
+		MappingJackson2JsonView v = new MappingJackson2JsonView();
 		v.setExtractValueFromSingleKeyModel(true);
 		ModelAndView modelAndView = new ModelAndView(v);
 		modelAndView.addObject(object);

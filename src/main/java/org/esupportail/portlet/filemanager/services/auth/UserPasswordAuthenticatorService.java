@@ -19,14 +19,12 @@ package org.esupportail.portlet.filemanager.services.auth;
 
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
 
+@Slf4j
 public class UserPasswordAuthenticatorService implements UserAuthenticatorService {
-
-	protected static final Log log = LogFactory.getLog(UserPasswordAuthenticatorService.class);
 
 	protected UserPassword userPassword = new UserPassword();
 

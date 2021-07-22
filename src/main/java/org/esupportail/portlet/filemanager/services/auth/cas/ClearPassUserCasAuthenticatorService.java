@@ -26,9 +26,8 @@ import java.security.spec.PKCS8EncodedKeySpec;
 
 import javax.crypto.Cipher;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
@@ -36,9 +35,8 @@ import org.esupportail.portlet.filemanager.services.auth.FormUserPasswordAuthent
 import org.esupportail.portlet.filemanager.services.auth.UserAuthenticatorService;
 import org.jasig.cas.client.validation.Assertion;
 
+@Slf4j
 public class ClearPassUserCasAuthenticatorService implements UserAuthenticatorService {
-
-    private static final Log log = LogFactory.getLog(ClearPassUserCasAuthenticatorService.class);
 
     protected UserCasAuthenticatorServiceRoot userCasAuthenticatorServiceRoot;
 

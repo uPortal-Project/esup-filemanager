@@ -20,8 +20,7 @@ package org.esupportail.portlet.filemanager.services.evaluators;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -31,10 +30,8 @@ import org.springframework.util.Assert;
  * @author GIP RECIA - Gribonvald Julien
  * 15 Oct 2013
  */
+@Slf4j
 public class ListUserRoleEvaluatorEditor implements FactoryBean, InitializingBean {
-
-	/** Logger.*/
-	private static final Log LOG = LogFactory.getLog(ListUserRoleEvaluatorEditor.class);
 
 	/** */
 	private List<String> groupList;
@@ -66,8 +63,8 @@ public class ListUserRoleEvaluatorEditor implements FactoryBean, InitializingBea
 		for (String grp : arg0) {
 			list.add(new UserRoleEvaluator(grp));
 		}
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("String in : " + arg0 + " List out : " + list.toString());
+		if (log.isDebugEnabled()) {
+			log.debug("String in : " + arg0 + " List out : " + list.toString());
 		}
 		this.editedProperties = list;
 	}

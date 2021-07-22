@@ -19,16 +19,12 @@ package org.esupportail.portlet.filemanager.beans;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 @Service("basketSession")
 @Scope("session")
 public class BasketSession {
-
-	protected static final Log log = LogFactory.getLog(BasketSession.class);
 
 	private List<String> dirsToCopy;
 	

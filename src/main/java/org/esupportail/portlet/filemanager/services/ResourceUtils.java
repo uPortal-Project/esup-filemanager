@@ -24,18 +24,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.map.CaseInsensitiveMap;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
+@Slf4j
 public class ResourceUtils implements InitializingBean, ResourceLoaderAware {
- 
-	protected static final Log log = LogFactory.getLog(ResourceUtils.class);
 
 	private Map<String, String> icons = new CaseInsensitiveMap();
 	

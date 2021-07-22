@@ -22,8 +22,7 @@ import java.util.List;
 
 import javax.portlet.PortletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -31,6 +30,7 @@ import org.springframework.util.Assert;
  * @author GIP RECIA - Julien Gribonvald
  * 14 oct. 2013
  */
+@Slf4j
 public class GroupEvaluator implements IDriveAccessEvaluator, InitializingBean {
 
 	/**
@@ -41,9 +41,6 @@ public class GroupEvaluator implements IDriveAccessEvaluator, InitializingBean {
 		AND,
 		NOT;
 	}
-
-	/** The logger. */
-	private static Log LOG = LogFactory.getLog(GroupEvaluator.class);
 
 	/** Operator type on evaluators list. */
 	private Type type = null;
@@ -76,8 +73,8 @@ public class GroupEvaluator implements IDriveAccessEvaluator, InitializingBean {
 	 */
 	public boolean isApplicable(PortletRequest request) {
 		boolean rslt = false;
-		if (LOG.isDebugEnabled())
-			LOG.debug(" >>>> calling GroupEvaluator[" + this + ", op=" + type +
+		if (log.isDebugEnabled())
+			log.debug(" >>>> calling GroupEvaluator[" + this + ", op=" + type +
 					"].isApplicable()");
 
 		if (type != null) {
@@ -116,8 +113,8 @@ public class GroupEvaluator implements IDriveAccessEvaluator, InitializingBean {
 			}
 		}
 
-		if (LOG.isDebugEnabled())
-		LOG.debug(" ---- GroupEvaluator[" + this + ", op=" + type
+		if (log.isDebugEnabled())
+		log.debug(" ---- GroupEvaluator[" + this + ", op=" + type
 				+ "].isApplicable()=" + rslt);
 
 		return rslt;

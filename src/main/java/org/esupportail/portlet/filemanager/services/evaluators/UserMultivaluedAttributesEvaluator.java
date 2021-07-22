@@ -22,18 +22,15 @@ import java.util.Map;
 
 import javax.portlet.PortletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
  * @author GIP RECIA - Julien Gribonvald
  * 14 oct. 2013
  */
+@Slf4j
 public class UserMultivaluedAttributesEvaluator extends UserAttributesEvaluator implements InitializingBean {
-
-	/** Logger. */
-	private static final Log log =  LogFactory.getLog(UserMultivaluedAttributesEvaluator.class);
 
 	/**
 	 * Contructor of the object UserMultivaluedAttributesEvaluator.java.

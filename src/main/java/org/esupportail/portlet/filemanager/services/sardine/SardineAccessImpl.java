@@ -22,13 +22,15 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.googlecode.sardine.DavResource;
+import com.googlecode.sardine.Sardine;
+import com.googlecode.sardine.SardineFactory;
+import com.googlecode.sardine.impl.SardineException;
+import lombok.extern.slf4j.Slf4j;
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
@@ -41,14 +43,8 @@ import org.esupportail.portlet.filemanager.services.FsAccess;
 import org.esupportail.portlet.filemanager.services.ResourceUtils;
 import org.springframework.beans.factory.DisposableBean;
 
-import com.googlecode.sardine.DavResource;
-import com.googlecode.sardine.Sardine;
-import com.googlecode.sardine.SardineFactory;
-import com.googlecode.sardine.impl.SardineException;
-
+@Slf4j
 public class SardineAccessImpl extends FsAccess implements DisposableBean {
-
-	protected static final Log log = LogFactory.getLog(SardineAccessImpl.class);
 
 	protected Sardine root;
 	

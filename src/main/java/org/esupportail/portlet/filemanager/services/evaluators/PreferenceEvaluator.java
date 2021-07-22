@@ -59,7 +59,7 @@ public class PreferenceEvaluator implements IDriveAccessEvaluator, InitializingB
 	public boolean isApplicable(PortletRequest request) {
 		final String[] prefsArray = request.getPreferences().getValues(attribute, new String[0]);
 		List<String> prefs = Arrays.asList(prefsArray);
-		if(prefs.contains(value)) {
+		if (prefs.contains(value)) {
 			return true;
 		} else {
 			return false;

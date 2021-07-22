@@ -1,14 +1,12 @@
 package org.esupportail.portlet.filemanager.services.quota;
 
+import lombok.extern.slf4j.Slf4j;
 import org.esupportail.portlet.filemanager.beans.Quota;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
 public class QuotaServiceSimpleWS implements IQuotaService {
-
-	static final Logger log = LoggerFactory.getLogger(QuotaServiceSimpleWS.class);
 	
 	RestTemplate restTemplate;
 	

@@ -20,8 +20,7 @@ package org.esupportail.portlet.filemanager.services.evaluators;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -31,10 +30,8 @@ import org.springframework.util.Assert;
  * @author GIP RECIA - Gribonvald Julien
  * 15 Oct. 2013
  */
+@Slf4j
 public class ListUserMultivaluedAttributesEvaluatorEditor implements FactoryBean, InitializingBean {
-
-	/** Logger.*/
-	private static final Log LOG = LogFactory.getLog(ListUserMultivaluedAttributesEvaluatorEditor.class);
 
 	/** */
 	private List<String> valueList;
@@ -74,8 +71,8 @@ public class ListUserMultivaluedAttributesEvaluatorEditor implements FactoryBean
 		for (String value : arg0) {
 			list.add(new UserMultivaluedAttributesEvaluator(arg1, value, arg2));
 		}
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("In : [" + arg0 + ", " + arg1 + ", " + arg2 + "] out : " + list.toString());
+		if (log.isDebugEnabled()) {
+			log.debug("In : [" + arg0 + ", " + arg1 + ", " + arg2 + "] out : " + list.toString());
 		}
 		this.editedProperties = list;
 	}

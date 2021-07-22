@@ -29,9 +29,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import jcifs.ACE;
+import jcifs.CIFSContext;
+import jcifs.CIFSException;
+import jcifs.config.PropertyConfiguration;
+import jcifs.context.BaseContext;
+import jcifs.smb.NtStatus;
 import jcifs.smb.NtlmPasswordAuthenticator;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import jcifs.smb.SmbAuthException;
+import jcifs.smb.SmbException;
+import jcifs.smb.SmbFile;
+import lombok.extern.slf4j.Slf4j;
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
@@ -45,19 +53,8 @@ import org.esupportail.portlet.filemanager.services.ResourceUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.FileCopyUtils;
 
-import jcifs.ACE;
-import jcifs.CIFSContext;
-import jcifs.CIFSException;
-import jcifs.config.PropertyConfiguration;
-import jcifs.context.BaseContext;
-import jcifs.smb.NtStatus;
-import jcifs.smb.SmbAuthException;
-import jcifs.smb.SmbException;
-import jcifs.smb.SmbFile;
-
+@Slf4j
 public class CifsAccessImpl extends FsAccess implements DisposableBean {
-
-	protected static final Log log = LogFactory.getLog(CifsAccessImpl.class);
 
 	protected ResourceUtils resourceUtils;
 
@@ -86,7 +83,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 				try {
 					cifsContext = new BaseContext(new PropertyConfiguration(jcifsConfigProperties));
 				} catch (CIFSException e) {
-					log.error(e, e.getCause());
+					log.error(e.getMessage(), e.getCause());
 					throw new EsupStockException(e);
 				}
 			}
@@ -102,7 +99,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 					}
 				}
 			} catch (MalformedURLException me) {
-				log.error(me, me.getCause());
+				log.error(me.getMessage(), me.getCause());
 				throw new EsupStockException(me);
 			} catch (SmbAuthException e) {
 				if (e.getNtStatus() == NtStatus.NT_STATUS_WRONG_PASSWORD) {

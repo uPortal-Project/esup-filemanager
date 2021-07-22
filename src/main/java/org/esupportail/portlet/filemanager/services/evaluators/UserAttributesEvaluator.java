@@ -21,8 +21,7 @@ import java.util.Map;
 
 import javax.portlet.PortletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -30,6 +29,7 @@ import org.springframework.util.Assert;
  * @author GIP RECIA - Julien Gribonvald
  * 14 oct. 2013
  */
+@Slf4j
 public class UserAttributesEvaluator implements IDriveAccessEvaluator, InitializingBean {
 
 	public enum Mode {
@@ -40,9 +40,6 @@ public class UserAttributesEvaluator implements IDriveAccessEvaluator, Initializ
 		EXISTS,
 		MATCH,
 	}
-
-	/** Logger. */
-	private static final Log log =  LogFactory.getLog(UserAttributesEvaluator.class);
 
 	/** The portlet preference attribute. */
 	private String attribute;

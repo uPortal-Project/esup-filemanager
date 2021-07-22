@@ -22,8 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -37,6 +36,7 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
+@Slf4j
 public class CrudLogService {
 
 	private static String AFTER_THROWING = "{0} - {1} - {2} - params [ {3}] - exception {4}";
@@ -45,9 +45,6 @@ public class CrudLogService {
 
 	private static String AFTER_RETURNING_VOID = "{0} - {1} - {2} - params [ {3}]";
 
-	protected static final Log log = LogFactory.getLog(CrudLogService.class);
-	
-	
 	/*
 	@Before(value = "@annotation(loggable)", argNames = "joinPoint, loggable")
 	public void before(JoinPoint joinPoint, CrudLoggable loggable) {

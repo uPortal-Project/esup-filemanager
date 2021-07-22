@@ -22,20 +22,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConnectionException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
 import org.esupportail.portlet.filemanager.utils.ContextUtils;
 
+@Slf4j
 public class TrustedCmisAccessImpl extends CmisAccessImpl {
 
-	protected static final Log log = LogFactory.getLog(TrustedCmisAccessImpl.class);
-	
 	protected Map<String, String> userinfosHttpheadersMap;
 	
 	protected Map<String, String> staticHttpheadersMap;

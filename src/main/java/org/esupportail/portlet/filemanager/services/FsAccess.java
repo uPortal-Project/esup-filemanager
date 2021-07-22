@@ -24,23 +24,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.Quota;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UploadActionType;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
-import org.esupportail.portlet.filemanager.services.auth.FormUserPasswordAuthenticatorService;
 import org.esupportail.portlet.filemanager.services.auth.UserAuthenticatorService;
 import org.esupportail.portlet.filemanager.services.evaluators.IDriveAccessEvaluator;
 import org.esupportail.portlet.filemanager.services.quota.IQuotaService;
 import org.esupportail.portlet.filemanager.services.uri.UriManipulateService;
 
+@Slf4j
 public abstract class FsAccess {
-
-	protected static final Log log = LogFactory.getLog(FsAccess.class);
 
 	protected static String TOKEN_SPECIAL_CHAR =  "@";
 

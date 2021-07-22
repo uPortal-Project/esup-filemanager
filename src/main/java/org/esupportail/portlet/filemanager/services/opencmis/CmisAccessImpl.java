@@ -19,7 +19,6 @@ package org.esupportail.portlet.filemanager.services.opencmis;
 
 import java.io.InputStream;
 import java.math.BigInteger;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -31,6 +30,7 @@ import java.util.Set;
 
 import javax.activation.MimetypesFileTypeMap;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
@@ -50,8 +50,6 @@ import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisBaseException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConnectionException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
@@ -61,10 +59,9 @@ import org.esupportail.portlet.filemanager.services.FsAccess;
 import org.esupportail.portlet.filemanager.services.ResourceUtils;
 import org.springframework.beans.factory.DisposableBean;
 
+@Slf4j
 public class CmisAccessImpl extends FsAccess implements DisposableBean {
 
-	protected static final Log log = LogFactory.getLog(CmisAccessImpl.class);
-	
 	protected ResourceUtils resourceUtils;
 	
 	protected Session cmisSession;

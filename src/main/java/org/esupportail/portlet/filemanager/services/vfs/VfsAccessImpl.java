@@ -20,14 +20,15 @@ package org.esupportail.portlet.filemanager.services.vfs;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystem;
@@ -59,13 +60,8 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.FileCopyUtils;
 
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.SftpException;
-
+@Slf4j
 public class VfsAccessImpl extends FsAccess implements DisposableBean {
-
-	protected static final Log log = LogFactory.getLog(VfsAccessImpl.class);
 	
 	protected FileSystemManager fsManager;
 

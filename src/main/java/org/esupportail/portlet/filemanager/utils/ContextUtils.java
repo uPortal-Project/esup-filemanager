@@ -9,22 +9,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.portlet.PortletContext;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestWrapper;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-//TODO CL V2 : use jsf in core module
-//TODO CL V2 : je n'ai pas trouvé le depot maven correspondant
-//import jp.sf.pal.tomahawk.multipart.MultipartPortletRequestWrapper;
-//import jp.sf.pal.tomahawk.multipart.MultipartUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.esupportail.portlet.filemanager.exceptions.NoRequestBoundException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.context.request.RequestAttributes;
@@ -32,16 +24,17 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.portlet.context.PortletRequestAttributes;
 
+//TODO CL V2 : use jsf in core module
+//TODO CL V2 : je n'ai pas trouvé le depot maven correspondant
+//import jp.sf.pal.tomahawk.multipart.MultipartPortletRequestWrapper;
+//import jp.sf.pal.tomahawk.multipart.MultipartUtils;
+
 /**
  * A class that provides facilities with the context.
  */
+@Slf4j
 public class ContextUtils {
-
-    /**
-     * A logger.
-     */
-    static final Log LOG = LogFactory.getLog(ContextUtils.class);
-
+    
     /**
      * Un marqueur pour stocker les attributs initialement contenus dans la requête
      */
@@ -63,23 +56,23 @@ public class ContextUtils {
             final ServletRequestWrapper requestWrapper) {
         ServletRequest servletRequest = requestWrapper.getRequest();
         if (servletRequest == null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("servletRequest is null");
+            if (log.isDebugEnabled()) {
+                log.debug("servletRequest is null");
             }
             return null;
         }
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("retrieved a ServletRequest instance from portletRequest");
+        if (log.isDebugEnabled()) {
+            log.debug("retrieved a ServletRequest instance from portletRequest");
         }
         if (!(servletRequest instanceof HttpServletRequest)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("servletRequest ('" + servletRequest.getClass().getName()
+            if (log.isDebugEnabled()) {
+                log.debug("servletRequest ('" + servletRequest.getClass().getName()
                         + "') is not a HttpServletRequest");
             }
             return null;
         }
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("servletRequest ('" + servletRequest.getClass().getName()
+        if (log.isDebugEnabled()) {
+            log.debug("servletRequest ('" + servletRequest.getClass().getName()
                     + "') casted to HttpServletRequest");
         }
         return (HttpServletRequest) servletRequest;
@@ -103,8 +96,8 @@ public class ContextUtils {
      */
     static HttpServletRequest getHttpServletRequestFromPortletRequest(final PortletRequest portletRequest) {
         if (portletRequest == null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("portletRequest is null");
+            if (log.isDebugEnabled()) {
+                log.debug("portletRequest is null");
             }
             return null;
         }
@@ -118,8 +111,8 @@ public class ContextUtils {
 //			return getHttpServletRequestFromMultipartPortletRequestWrapper(
 //					(MultipartPortletRequestWrapper) portletRequest);
 //		}
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("portletRequest ('" + portletRequest.getClass().getName()
+        if (log.isDebugEnabled()) {
+            log.debug("portletRequest ('" + portletRequest.getClass().getName()
                     + "') is nor a ServletRequestWrapper neither a MultipartPortletRequestWrapper");
         }
 
@@ -323,7 +316,7 @@ public class ContextUtils {
                     objToString = obj.toString();
                     //}
                 } catch (Throwable t) {
-                    LOG.error(t);
+                    log.error("Can't obtain a String", t);
                 }
             }
             if (objToString != null) {
@@ -352,7 +345,7 @@ public class ContextUtils {
                 }
             }
         } else {
-            LOG.warn("no request, can not get request attributes");
+            log.warn("no request, can not get request attributes");
         }
         return attributes;
     }
@@ -436,7 +429,7 @@ public class ContextUtils {
                 }
             }
         } else {
-            LOG.warn("no session, can not get session attributes");
+            log.warn("no session, can not get session attributes");
         }
         return attributes;
     }
@@ -460,7 +453,7 @@ public class ContextUtils {
                 }
             }
         } else {
-            LOG.warn("no session, can not get session attributes");
+            log.warn("no session, can not get session attributes");
         }
         return attributes;
     }

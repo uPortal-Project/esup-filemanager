@@ -40,19 +40,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.esupportail.portlet.filemanager.services.auth.cas;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
 import org.esupportail.portlet.filemanager.services.auth.UserAuthenticatorService;
 import org.jasig.cas.client.validation.Assertion;
 
-
+@Slf4j
 public class UserCasAuthenticatorService implements UserAuthenticatorService {
-
-
-    private static final Log log = LogFactory.getLog(UserCasAuthenticatorService.class);
 
     private UserCasAuthenticatorServiceRoot userCasAuthenticatorServiceRoot;
 

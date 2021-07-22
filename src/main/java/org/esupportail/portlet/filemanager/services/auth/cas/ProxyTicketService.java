@@ -17,17 +17,14 @@
  */
 package org.esupportail.portlet.filemanager.services.auth.cas;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.jasig.cas.client.validation.Assertion;
 import org.jasig.cas.client.validation.TicketValidationException;
 import org.jasig.cas.client.validation.TicketValidator;
 import org.springframework.beans.factory.InitializingBean;
 
-
+@Slf4j
 public class ProxyTicketService implements InitializingBean {
-
-    private static Log log = LogFactory.getLog(ProxyTicketService.class);
 
     private TicketValidator ticketValidator;
     

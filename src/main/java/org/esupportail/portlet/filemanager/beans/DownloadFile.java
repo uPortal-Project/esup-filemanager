@@ -21,14 +21,12 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class DownloadFile implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
-	protected static final Log log = LogFactory.getLog(DownloadFile.class);
 
 	private long size;
 	

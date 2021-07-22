@@ -17,14 +17,13 @@
  */
 package org.esupportail.portlet.filemanager.services.uri;
 
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class RegUriManipulateService implements UriManipulateService {
-	protected static final Log log = LogFactory.getLog(RegUriManipulateService.class);
 
 	protected String regexp = "";
 	protected String replacement = "";

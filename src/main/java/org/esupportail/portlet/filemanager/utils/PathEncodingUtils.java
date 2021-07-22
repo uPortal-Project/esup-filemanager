@@ -19,13 +19,10 @@ package org.esupportail.portlet.filemanager.utils;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.Vector;
 
-import org.apache.commons.collections.map.ListOrderedMap;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.map.ListOrderedMap;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 
 /**
@@ -37,8 +34,6 @@ import org.esupportail.portlet.filemanager.beans.JsTreeFile;
  * (because we don't use accents).
  */
 public abstract class PathEncodingUtils {
-
-	protected static final Log log = LogFactory.getLog(PathEncodingUtils.class);
 
 	protected static final String PREFIX_CODE = "path_";
 	

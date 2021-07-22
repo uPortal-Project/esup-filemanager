@@ -22,10 +22,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -35,12 +32,11 @@ import org.springframework.web.portlet.ModelAndView;
 
 @Controller
 @Scope("request")
+@RequestMapping("EDIT")
 public class PortletControllerEdit {
 
-	static final Logger log = LoggerFactory.getLogger(PortletControllerEdit.class);
-	
-    @RequestMapping("EDIT")
-	public ModelAndView renderEditView(RenderRequest request, RenderResponse response) throws Exception {
+    @RequestMapping
+	public ModelAndView renderEditView(RenderRequest request) throws Exception {
     	
 		ModelMap model = new ModelMap();
 		final PortletPreferences prefs = request.getPreferences();
@@ -67,7 +63,7 @@ public class PortletControllerEdit {
 		return new ModelAndView("edit-portlet", model);
 	}
     
-    @RequestMapping(value = {"EDIT"}, params = {"action=updatePreferences"})
+    @RequestMapping
 	public void updatePreferences(ActionRequest request, ActionResponse response, 
 			@RequestParam(required=false) String viewMode,
 			@RequestParam(required=false) String showHiddenFiles,	

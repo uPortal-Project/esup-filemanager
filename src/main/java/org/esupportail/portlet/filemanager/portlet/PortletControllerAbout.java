@@ -15,12 +15,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.esupportail.portlet.filemanager.services.auth;
+package org.esupportail.portlet.filemanager.portlet;
 
-public class FormUserPasswordAuthenticatorService extends UserPasswordAuthenticatorService {
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-	public boolean formAuthenticationNeeded() {
-		return true;
+@Controller
+@Scope("request")
+@RequestMapping("ABOUT")
+public class PortletControllerAbout {
+
+	@RequestMapping
+	public String renderAboutView() throws Exception {
+		return "about-portlet";
 	}
 
 }

@@ -19,7 +19,6 @@ package org.esupportail.portlet.filemanager.beans;
 
 import java.io.InputStream;
 import java.io.Serializable;
-import java.text.DateFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,17 +27,13 @@ import java.util.Map;
 
 import javax.activation.MimetypesFileTypeMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 
 	private static final long serialVersionUID = 1L;
 
-	protected static final Log log = LogFactory.getLog(JsTreeFile.class);
-
-	static DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
+	//static DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
 
 	public static String ROOT_DRIVE = "FS:";
 

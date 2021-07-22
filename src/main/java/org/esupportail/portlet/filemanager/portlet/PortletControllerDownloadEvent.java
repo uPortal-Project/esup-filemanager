@@ -25,6 +25,7 @@ import javax.portlet.EventResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletPreferences;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
@@ -37,8 +38,6 @@ import org.esupportail.portlet.filemanager.api.DownloadResponse;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UploadActionType;
 import org.esupportail.portlet.filemanager.services.IServersAccessService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -49,10 +48,9 @@ import org.springframework.web.portlet.context.PortletConfigAware;
 @Controller
 @Scope("request")
 @RequestMapping("VIEW")
+@Slf4j
 public class PortletControllerDownloadEvent implements PortletConfigAware {
 
-	static final Logger log = LoggerFactory.getLogger(PortletControllerDownloadEvent.class);
-	
     private PortletConfig portletConfig;
     
 	@Autowired

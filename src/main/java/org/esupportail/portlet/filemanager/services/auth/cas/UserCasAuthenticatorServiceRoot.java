@@ -44,8 +44,7 @@ import java.util.Map;
 
 import javax.portlet.PortletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.jasig.cas.client.validation.Assertion;
 import org.springframework.web.context.request.RequestAttributes;
@@ -55,9 +54,8 @@ import org.springframework.web.portlet.context.PortletRequestAttributes;
 /**
  * CasProxyCredentialsService returns credentials in the form of a user ID and CAS proxy ticket.
  */
+@Slf4j
 public class UserCasAuthenticatorServiceRoot {
-
-    private static final Log log = LogFactory.getLog(UserCasAuthenticatorServiceRoot.class);
 
     private ProxyTicketService proxyTicketService;
     

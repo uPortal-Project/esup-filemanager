@@ -27,9 +27,8 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 
-import org.apache.commons.collections.map.ListOrderedMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.map.ListOrderedMap;
 import org.esupportail.portlet.filemanager.beans.FormCommand;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
@@ -47,9 +46,9 @@ import org.springframework.web.portlet.ModelAndView;
 
 @Controller
 @Scope("request")
+@RequestMapping("VIEW")
+@Slf4j
 public class PortletController {
-
-	static final Logger log = LoggerFactory.getLogger(PortletController.class);
 
 	public static final String PREF_PORTLET_VIEW = "defaultPortletView";
 	public static final String PREF_DEFAULT_PATH = "defaultPath";
@@ -93,7 +92,7 @@ public class PortletController {
 
 	}
 		
-    @RequestMapping("VIEW")
+    @RequestMapping
     protected ModelAndView renderView(RenderRequest request, RenderResponse response) throws Exception {
     	this.init(request);
         final PortletPreferences prefs = request.getPreferences();
@@ -129,7 +128,7 @@ public class PortletController {
 	    }
     }
     
-	@RequestMapping(value = {"VIEW"}, params = {"action=browseStandard"})
+	@RequestMapping
     public ModelAndView browseStandard(RenderRequest request, RenderResponse response, String dir) {	
     	this.init(request);
         final PortletPreferences prefs = request.getPreferences();
@@ -150,7 +149,7 @@ public class PortletController {
     	return new ModelAndView("view-portlet", model);
     }
     
-	@RequestMapping(value = {"VIEW"}, params = {"action=browseMobile"})
+	@RequestMapping
     public ModelAndView browseMobile(RenderRequest request, RenderResponse response,
     								@RequestParam String dir) {
     	this.init(request);
@@ -180,7 +179,7 @@ public class PortletController {
         return new ModelAndView("view-portlet-mobile", model);
     }
 	
-	@RequestMapping(value = {"VIEW"}, params = {"action=browseWai"})
+	@RequestMapping
     public ModelAndView browseWai(RenderRequest request, RenderResponse response,
     								@RequestParam(required=false) String dir,
     								@RequestParam(required=false) String msg) {
@@ -230,19 +229,4 @@ public class PortletController {
 		model.put("parentsEncPathes", parentsEncPathes); 
 		return model;
 	}
-	
-    @RequestMapping("ABOUT")
-	public ModelAndView renderAboutView(RenderRequest request, RenderResponse response) throws Exception {
-		this.init(request);
-		ModelMap model = new ModelMap();
-		return new ModelAndView("about-portlet", model);
-	}
-    
-    @RequestMapping("HELP")
-	public ModelAndView renderHelpView(RenderRequest request, RenderResponse response) throws Exception {
-		this.init(request);
-		ModelMap model = new ModelMap();
-		return new ModelAndView("help-portlet", model);
-	}
-
 }
