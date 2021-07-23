@@ -119,9 +119,7 @@ public class PortletControllerAjax {
 	protected ModelAndView getJacksonView(Object object) {
 		MappingJackson2JsonView v = new MappingJackson2JsonView();
 		v.setExtractValueFromSingleKeyModel(true);
-		v.setPrettyPrint(true);
 		ModelAndView mav = new ModelAndView(v);
-		mav.setViewName("json");
 		mav.addObject(object);
 		return mav;
 	}

@@ -105,13 +105,7 @@
         <property name="suffix" value=".jsp"/>
 		<property name="alwaysInclude" value="true"/>  <!-- To allow ResourceMapping to include full HTML JSP page -->
     </bean>
-
-	<!--
- | View resolvers, look for a named view bean before going to JSP resolution
- +-->
-	<bean class="org.springframework.web.servlet.view.XmlViewResolver"
-		  p:order="1" p:location="/WEB-INF/context/views.xml"/>
-
+	
 	<!--
  | Always declare an 'exceptionResolver' bean with a 'defaultErrorView'
  | because, in addition to other uses, it protects the portlet from
