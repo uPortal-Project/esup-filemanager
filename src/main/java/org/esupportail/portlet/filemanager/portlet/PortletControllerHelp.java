@@ -20,13 +20,14 @@ package org.esupportail.portlet.filemanager.portlet;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
 @Controller
 @Scope("request")
 @RequestMapping("HELP")
 public class PortletControllerHelp {
 
-	@RequestMapping
+	@RenderMapping
 	public String renderHelpView() throws Exception {
 		return "help-portlet";
 	}

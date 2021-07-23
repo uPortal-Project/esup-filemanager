@@ -29,13 +29,15 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.portlet.ModelAndView;
+import org.springframework.web.portlet.bind.annotation.ActionMapping;
+import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
 @Controller
 @Scope("request")
 @RequestMapping("EDIT")
 public class PortletControllerEdit {
 
-    @RequestMapping
+    @RenderMapping
 	public ModelAndView renderEditView(RenderRequest request) throws Exception {
     	
 		ModelMap model = new ModelMap();
@@ -63,7 +65,7 @@ public class PortletControllerEdit {
 		return new ModelAndView("edit-portlet", model);
 	}
     
-    @RequestMapping
+    @ActionMapping
 	public void updatePreferences(ActionRequest request, ActionResponse response, 
 			@RequestParam(required=false) String viewMode,
 			@RequestParam(required=false) String showHiddenFiles,	

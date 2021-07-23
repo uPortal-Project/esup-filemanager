@@ -40,9 +40,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.portlet.ModelAndView;
+import org.springframework.web.portlet.bind.annotation.ActionMapping;
+import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
 @Controller
 @Scope("request")
@@ -62,8 +65,8 @@ public class PortletControllerAction {
 	@Autowired
 	protected SharedUserPortletParameters userParameters;
 
-	@RequestMapping(value = { "VIEW" }, params = { "action=formProcessWai" })
-	public void formProcessWai(FormCommand command, @RequestParam String dir,
+	@ActionMapping(params = { "action=formProcessWai"})
+	public void formProcessWai(@ModelAttribute("command")FormCommand command, @RequestParam String dir,
 			@RequestParam(required = false) String prepareCopy,
 			@RequestParam(required = false) String prepareCut,
 			@RequestParam(required = false) String past,
@@ -122,9 +125,10 @@ public class PortletControllerAction {
 			response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
 			response.setRenderParameter("action", "browseWai");
 		}
+		command = getFormCommand();
 	}
 	
-	@RequestMapping(value = {"VIEW"}, params = {"action=createFolderWai"})
+	@RenderMapping(params = {"action=createFolderWai"})
     public ModelAndView createFolderWai(RenderRequest request, RenderResponse response,
     								@RequestParam String dir) {
 		
@@ -133,10 +137,10 @@ public class PortletControllerAction {
 		return new ModelAndView("view-portlet-create-wai", model);
 	}
 				
-	@RequestMapping(value = { "VIEW" }, params = { "action=formCreateWai" })
-	public void formCreateWai(FormCommand command, @RequestParam String dir,
-			@RequestParam String folderName,
-			ActionRequest request, ActionResponse response) throws IOException {
+	@ActionMapping(params = { "action=formCreateWai"})
+	public void formCreateWai(@ModelAttribute("command") FormCommand command, @RequestParam String dir,
+							  @RequestParam String folderName,
+							  ActionRequest request, ActionResponse response) throws IOException {
 		
 		dir = pathEncodingUtils.decodeDir(dir);
 		
@@ -147,9 +151,10 @@ public class PortletControllerAction {
 			response.setRenderParameter("msg", msg);
 		response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
 		response.setRenderParameter("action", "browseWai");
+		command = getFormCommand();
 	}
 	
-	@RequestMapping(value = {"VIEW"}, params = {"action=renameWai"})
+	@RenderMapping(params = {"action=renameWai"})
     public ModelAndView renameWai(RenderRequest request, RenderResponse response,
     								@RequestParam String dir,
     								@RequestParam List<String> dirs) {
@@ -174,7 +179,7 @@ public class PortletControllerAction {
 		return new ModelAndView("view-portlet-rename-wai", model);
 	}
 	
-	@RequestMapping(value = { "VIEW" }, params = { "action=formRenameWai" })
+	@RenderMapping(params = { "action=formRenameWai" })
 	public void formRenameWai(@RequestParam String dir, 
 			ActionRequest request, ActionResponse response) throws IOException {
 		
@@ -192,7 +197,7 @@ public class PortletControllerAction {
 		response.setRenderParameter("action", "browseWai");
 	}
 	
-	@RequestMapping(value = {"VIEW"}, params = {"action=fileUploadWai"})
+	@RenderMapping(params = {"action=fileUploadWai"})
     public ModelAndView fileUploadWai(RenderRequest request, RenderResponse response,
     								@RequestParam String dir) {
 		
@@ -202,7 +207,7 @@ public class PortletControllerAction {
 	}
 	
 	
-	@RequestMapping(value = {"VIEW"}, params = {"action=formUploadWai"})
+	@ActionMapping(params = {"action=formUploadWai"})
     public void formUploadWai(ActionRequest request, ActionResponse response,
     								@RequestParam String dir, FileUpload command) throws IOException {
 		
@@ -216,7 +221,7 @@ public class PortletControllerAction {
 		response.setRenderParameter("action", "browseWai");
 	}
 	
-	@RequestMapping(value = {"VIEW"}, params = {"action=formAuthenticationWai"})
+	@ActionMapping(params = {"action=formAuthenticationWai"})
     public void formAuthenticationWai(ActionRequest request, ActionResponse response,
     								@RequestParam String dir, @RequestParam String username, @RequestParam String password) throws IOException {
 		
@@ -237,7 +242,7 @@ public class PortletControllerAction {
 		response.setRenderParameter("action", "browseWai");
 	}
     
-	@RequestMapping(value = {"VIEW"}, params = {"action=formAuthenticationMobile"})
+	@ActionMapping(params = {"action=formAuthenticationMobile"})
     public void formAuthenticationMobile(ActionRequest request, ActionResponse response,
     								@RequestParam String dir, @RequestParam String username, @RequestParam String password) throws IOException {
 		
@@ -256,6 +261,11 @@ public class PortletControllerAction {
 		response.setRenderParameter("msg", msg);
 		response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
 		response.setRenderParameter("action", "browseMobile");
+	}
+
+	@ModelAttribute("command")
+	public FormCommand getFormCommand() {
+		return new FormCommand();
 	}
     
 }

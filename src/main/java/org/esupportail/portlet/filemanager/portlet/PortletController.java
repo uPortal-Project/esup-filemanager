@@ -43,6 +43,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.portlet.ModelAndView;
+import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
 @Controller
 @Scope("request")
@@ -92,7 +93,7 @@ public class PortletController {
 
 	}
 		
-    @RequestMapping
+    @RenderMapping
     protected ModelAndView renderView(RenderRequest request, RenderResponse response) throws Exception {
     	this.init(request);
         final PortletPreferences prefs = request.getPreferences();
@@ -128,7 +129,7 @@ public class PortletController {
 	    }
     }
     
-	@RequestMapping
+	@RenderMapping(params = {"action=browseStandard"})
     public ModelAndView browseStandard(RenderRequest request, RenderResponse response, String dir) {	
     	this.init(request);
         final PortletPreferences prefs = request.getPreferences();
@@ -149,7 +150,7 @@ public class PortletController {
     	return new ModelAndView("view-portlet", model);
     }
     
-	@RequestMapping
+	@RenderMapping(params = {"action=browseMobile"})
     public ModelAndView browseMobile(RenderRequest request, RenderResponse response,
     								@RequestParam String dir) {
     	this.init(request);
@@ -179,7 +180,7 @@ public class PortletController {
         return new ModelAndView("view-portlet-mobile", model);
     }
 	
-	@RequestMapping
+	@RenderMapping(params = {"action=browseWai"})
     public ModelAndView browseWai(RenderRequest request, RenderResponse response,
     								@RequestParam(required=false) String dir,
     								@RequestParam(required=false) String msg) {
