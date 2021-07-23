@@ -1394,8 +1394,8 @@ function downloadFile(fileName) {
 
     console.log("downloadFile. Path: " + fileName);
 
-    var url = /\?/.test(downloadFileURL) ? downloadFileURL + '&' : downloadFileURL + '?'; 
-    url = url + 'dir=' + encodeURIComponent(fileName); 
+    var url = /\?/.test(downloadFileURL) ? downloadFileURL + '&' : downloadFileURL + '?';
+    url = url + 'dir=' + encodeURIComponent(fileName);
 
     console.log(url);
     //window.open(url);
@@ -1680,7 +1680,7 @@ function deleteFiles(dirsDataStruct) {
 	      action on both the click and double click events*/
 
 	    var jqElem = $(this);
-		  
+
 	    //Retrieve how many times this element has been clicked
 	    var clicks = 1 + (jqElem.data("clicks") ? jqElem.data("clicks") : 0);
 
@@ -1702,7 +1702,7 @@ function deleteFiles(dirsDataStruct) {
 
 	      //Store timeout function id in case we need to cancel it
 	      jqElem.data("singleClickFuncId", singleClickFuncId);
-	    } 
+	    }
 
 	    return false;
 	  }
@@ -1855,10 +1855,10 @@ function deleteFiles(dirsDataStruct) {
       var elems = $(selector);
 
 
-	    
+
 	  if(useDoubleClick == "false") {
 		  console.log("Binding single click like dbleClick");
-		  elems.bind('click', handleItemDblClick);	  
+		  elems.bind('click', handleItemDblClick);
 	  } else {
 		  console.log("Binding single click");
 		  elems.bind('click', handleItemDblOrOneClick);
@@ -2125,26 +2125,26 @@ $.authenticate = function(dir, username, password) { authenticate(dir, username,
 
 // keyboard events
 
-  var isCtrl = false; 
-  var isShift = false; 
+  var isCtrl = false;
+  var isShift = false;
 
-  $(document).keyup(function(e) { 
-    if(e.which == 17) isCtrl=false; 
-    if(e.which == 16) isShift=false;   
+  $(document).keyup(function(e) {
+    if(e.which == 17) isCtrl=false;
+    if(e.which == 16) isShift=false;
   });
-  
+
   $(document).keydown(function(e) {
     if ($("#browserArea #authenticationForm").length) {return;}
     if ($(".renameSpan:not(:hidden)").length) {return;}
     if(e.which == 17) { isCtrl=true; return; }
     if(e.which == 16) { isShift=true; return; }
-   
+
     if(e.which == 86 && isCtrl) {
       console.log("Ctrl-v key pressed");
       pasteFiles();
       return;
     }
-    
+
 
     if (e.which == 9) {
 		console.log("Tab key pressed");
@@ -2155,12 +2155,12 @@ $.authenticate = function(dir, username, password) { authenticate(dir, username,
 		selectObject(getJqueryObj(selectableItems[0]), true);
 		return;
 	}
-    
+
     var dirs = getCheckedDirs();
     if (dirs == null || dirs.length == 0) {
       return;
     }
-    
+
     switch (e.which) {
     case 67:
       if(isCtrl) {
@@ -2177,11 +2177,11 @@ $.authenticate = function(dir, username, password) { authenticate(dir, username,
     case 46:
       console.log("Suppr key pressed");
       deleteFiles();
-      break;    
+      break;
     case 113:
       console.log("F2 key pressed");
       handleRename();
-      break; 
+      break;
     case 13:
       // if e.target.nodeName  != BODY maybe we're on dialog / form, etc ...
       if(e.target.nodeName == 'BODY') {
@@ -2193,7 +2193,7 @@ $.authenticate = function(dir, username, password) { authenticate(dir, username,
           openAndSelectLiNode(baSelData.path);
 	}
       }
-      break;  
+      break;
     case 38:
         console.log("Up key pressed");
         e.preventDefault();
@@ -2231,9 +2231,9 @@ $.authenticate = function(dir, username, password) { authenticate(dir, username,
         handleBrowserAreaSelection();
     	break;
     }
-    
+
     return;
-    
+
   });
 
 
