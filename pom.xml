@@ -146,7 +146,7 @@
       <dependency>
         <groupId>org.esupportail</groupId>
         <artifactId>esup-commons2-web</artifactId>
-        <version>0.2.8</version>
+        <version>0.3.6</version>
         <exclusions>
           <exclusion>
             <artifactId>
