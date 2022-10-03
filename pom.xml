@@ -93,7 +93,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.source>1.8</project.build.source>
     <project.build.target>1.8</project.build.target>
-    <uportal-libs.version>5.11.0</uportal-libs.version>
+    <uportal-libs.version>5.12.0</uportal-libs.version>
   </properties>
 
   <scm>
