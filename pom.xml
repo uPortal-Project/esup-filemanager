@@ -493,9 +493,9 @@
 
 
       <plugin>
-        <groupId>net.jlehtinen.portlet</groupId>
+        <groupId>org.esupportail</groupId>
         <artifactId>portlet-prototyping-maven-plugin</artifactId>
-        <version>0.9</version>
+        <version>0.11</version>
         <configuration>
 
           <!-- Comma-separated list of portlets to be prototyped -->
