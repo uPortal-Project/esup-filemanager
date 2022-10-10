@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -51,9 +50,9 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 	protected static final Log log = LogFactory.getLog(SardineAccessImpl.class);
 
 	protected Sardine root;
-	
+
 	protected String rootPath = null;
-	
+
 	protected ResourceUtils resourceUtils;
 
 	public void setResourceUtils(ResourceUtils resourceUtils) {
@@ -74,13 +73,13 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 				} else {
 					root = SardineFactory.begin();
 				}
-				if(!uri.endsWith("/")) 
+				if(!uri.endsWith("/"))
 					uri = uri + "/";
-				
+
 				// rootPath is the path without the http(s)://host string
 				URI uriObject = new URI(uri);
 				this.rootPath = uriObject.getRawPath();
-				
+
 				// to be sure that webdav access is ok, we try to retrieve root resources
 				root.list(this.uri);
 			}
@@ -128,22 +127,22 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 			log.error("IOException retrieving this file or directory  : " + this.uri);
 			throw new EsupStockException(ioe);
 		}
-		return null; 
+		return null;
 	}
 
 	@Override
 	public List<JsTreeFile> getChildren(String path, SharedUserPortletParameters userParameters) {
 		try {
-			
+
 			this.open(userParameters);
 			List<JsTreeFile> files = new ArrayList<JsTreeFile>();
-			
+
 			List<DavResource> resources = root.list(this.uri
 					+ path);
-			// .list returns "List of resources for this URI including the parent resource itself" 
+			// .list returns "List of resources for this URI including the parent resource itself"
 			// so we remove the parent
 			resources.remove(0);
-			
+
 			for (DavResource resource : resources) {
 				files.add(resourceAsJsTreeFile(resource, false, true));
 			}
@@ -158,10 +157,10 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 	}
 
 	private JsTreeFile resourceAsJsTreeFile(DavResource resource, boolean folderDetails, boolean fileDetails) {
-		
+
 		// lid must be a relative path from rootPath
 		String lid = resource.getHref().getRawPath();
-		
+
 		if (lid.startsWith(this.rootPath))
 			lid = lid.substring(rootPath.length());
 		if (lid.startsWith("/"))
@@ -172,7 +171,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 
 		if("".equals(lid))
 			type = "drive";
-		
+
 		JsTreeFile file = new JsTreeFile(title, lid, type);
 
 		if (fileDetails && "file".equals(type)) {
@@ -182,7 +181,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 			file.setOverSizeLimit(file.getSize() > resourceUtils
 					.getSizeLimit(title));
 		}
-		
+
 		try {
 			if (folderDetails && resource.isDirectory()) {
 				List<DavResource> children;
@@ -209,7 +208,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 		}
 
 		if (resource.getModified()!=null) {
-		
+
 		final Calendar date = Calendar.getInstance();
 		date.setTimeInMillis(resource.getModified().getTime());
 		// In order to have a readable date
@@ -275,9 +274,9 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 			}
 
 			root.move(oldname, newname);
-			
+
 			return true;
-			
+
 		} catch (SardineException se) {
 			log.error("Can't rename to '" + title, se);
 		} catch (IOException ioe) {
@@ -358,7 +357,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 			this.open(userParameters);
 			if (!dir.endsWith("/"))
 				dir=dir + "/";
-			
+
 			String file = this.uri + dir + URLEncoder.encode(filename, "UTF-8");
 			if (root.exists(file)) {
 				switch (uploadOption) {

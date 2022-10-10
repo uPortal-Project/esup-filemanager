@@ -32,7 +32,6 @@ import org.esupportail.portlet.filemanager.beans.Quota;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UploadActionType;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
-import org.esupportail.portlet.filemanager.services.auth.FormUserPasswordAuthenticatorService;
 import org.esupportail.portlet.filemanager.services.auth.UserAuthenticatorService;
 import org.esupportail.portlet.filemanager.services.evaluators.IDriveAccessEvaluator;
 import org.esupportail.portlet.filemanager.services.quota.IQuotaService;
@@ -59,7 +58,7 @@ public abstract class FsAccess {
 	protected UriManipulateService uriManipulateService;
 
 	private boolean uriManipulateDone = false;
-	
+
 	protected IQuotaService quotaService = null;
 
 	public IDriveAccessEvaluator getEvaluator() {
@@ -103,7 +102,7 @@ public abstract class FsAccess {
 			UriManipulateService uriManipulateService) {
 		this.uriManipulateService = uriManipulateService;
 	}
-	
+
 	public void setQuotaService(IQuotaService quotaService) {
 		this.quotaService = quotaService;
 	}
@@ -189,7 +188,7 @@ public abstract class FsAccess {
 	public UserPassword getUserPassword(SharedUserPortletParameters userParameters) {
 		if(this.userAuthenticatorService != null)
 			return this.userAuthenticatorService.getUserPassword(userParameters);
-		else 
+		else
 			return null;
 	}
 
@@ -214,14 +213,14 @@ public abstract class FsAccess {
 	public void setShowHiddenFiles(boolean showHiddenFiles) {
 		log.warn("showHiddenFiles in FsAccess is now deprecated (it will not be used here), configure showHiddenFiles now in portlet.xml or when publishing your portlet");
 	}
-	
-	public Quota getQuota(String path, 
+
+	public Quota getQuota(String path,
 			SharedUserPortletParameters userParameters) {
 		if(quotaService != null)
 			return quotaService.getQuota(path, userParameters);
 		return null;
 	}
-	public boolean isSupportQuota(String path, 
+	public boolean isSupportQuota(String path,
 			SharedUserPortletParameters userParameters) {
 		if(quotaService != null)
 			return quotaService.isSupportQuota(path, userParameters);

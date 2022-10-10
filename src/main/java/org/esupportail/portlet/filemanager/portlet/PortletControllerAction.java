@@ -27,7 +27,6 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.apache.log4j.Logger;
 import org.esupportail.portlet.filemanager.beans.BasketSession;
 import org.esupportail.portlet.filemanager.beans.FileUpload;
 import org.esupportail.portlet.filemanager.beans.FormCommand;
@@ -36,6 +35,8 @@ import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
 import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -48,21 +49,21 @@ import org.springframework.web.portlet.ModelAndView;
 @Scope("request")
 public class PortletControllerAction {
 
-	protected Logger log = Logger.getLogger(PortletControllerAction.class);
-	
+    private static final Logger logger = LoggerFactory.getLogger(PortletControllerAction.class);
+
 	@Autowired
 	protected IServersAccessService serverAccess;
-	
+
 	@Autowired
 	protected BasketSession basketSession;
-	
+
 	@Autowired
 	protected PathEncodingUtils pathEncodingUtils;
-	
+
 	@Autowired
 	protected SharedUserPortletParameters userParameters;
 
-	
+
 	@RequestMapping(value = { "VIEW" }, params = { "action=formProcessWai" })
 	public void formProcessWai(FormCommand command, @RequestParam String dir,
 			@RequestParam(required = false) String prepareCopy,
@@ -73,9 +74,9 @@ public class PortletControllerAction {
 			@RequestParam(required = false) String zip,
 			@RequestParam(required = false) String createFolder,
 			ActionRequest request, ActionResponse response) throws IOException {
-		
+
 		dir = pathEncodingUtils.decodeDir(dir);
-		
+
 		String msg = null;
 
 		if (zip != null) {
@@ -88,8 +89,8 @@ public class PortletControllerAction {
 			url = url.substring(0, url.length()-1);
 			response.sendRedirect(url);
 			*/
-			log.warn("TODO !");
-			
+			logger.warn("TODO !");
+
 		} else  if (rename != null) {
 			response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
 			response.setRenderParameter("dirs", pathEncodingUtils.encodeDirs(pathEncodingUtils.decodeDirs(command.getDirs())).toArray(new String[] {}));
@@ -110,13 +111,13 @@ public class PortletControllerAction {
 						.equals(basketSession.getGoal()), userParameters);
 				msg = "ajax.paste.ok";
 			} else if (delete != null) {
-				msg = "ajax.remove.ok"; 
+				msg = "ajax.remove.ok";
 				for(String dirToDelete: pathEncodingUtils.decodeDirs(command.getDirs())) {
 					if(!this.serverAccess.remove(dirToDelete, userParameters)) {
-						msg = "ajax.remove.failed"; 
+						msg = "ajax.remove.failed";
 					}
 				}
-			} 
+			}
 
 			if(msg != null)
 				response.setRenderParameter("msg", msg);
@@ -124,40 +125,40 @@ public class PortletControllerAction {
 			response.setRenderParameter("action", "browseWai");
 		}
 	}
-	
+
 	@RequestMapping(value = {"VIEW"}, params = {"action=createFolderWai"})
     public ModelAndView createFolderWai(RenderRequest request, RenderResponse response,
     								@RequestParam String dir) {
-		
-		ModelMap model = new ModelMap();	
+
+		ModelMap model = new ModelMap();
 		model.put("currentDir", dir);
 		return new ModelAndView("view-portlet-create-wai", model);
 	}
-				
+
 	@RequestMapping(value = { "VIEW" }, params = { "action=formCreateWai" })
 	public void formCreateWai(FormCommand command, @RequestParam String dir,
 			@RequestParam String folderName,
 			ActionRequest request, ActionResponse response) throws IOException {
-		
+
 		dir = pathEncodingUtils.decodeDir(dir);
-		
+
 		String msg = null;
 		this.serverAccess.createFile(dir, folderName, "folder", userParameters);
-		
+
 		if(msg != null)
 			response.setRenderParameter("msg", msg);
 		response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
 		response.setRenderParameter("action", "browseWai");
 	}
-	
+
 	@RequestMapping(value = {"VIEW"}, params = {"action=renameWai"})
     public ModelAndView renameWai(RenderRequest request, RenderResponse response,
     								@RequestParam String dir,
     								@RequestParam List<String> dirs) {
-		
+
 		dir = pathEncodingUtils.decodeDir(dir);
 		dirs = pathEncodingUtils.decodeDirs(dirs);
-		
+
 		ModelMap model = new ModelMap();
 		List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
 		List<JsTreeFile> filesToRename = new ArrayList<JsTreeFile>();
@@ -165,7 +166,7 @@ public class PortletControllerAction {
 			for(JsTreeFile file: files) {
 				if(dirs.contains(file.getPath()))
 					filesToRename.add(file);
-			}	
+			}
 		} else {
 			filesToRename = files;
 		}
@@ -174,11 +175,11 @@ public class PortletControllerAction {
 		model.put("currentDir", pathEncodingUtils.encodeDir(dir));
 		return new ModelAndView("view-portlet-rename-wai", model);
 	}
-	
+
 	@RequestMapping(value = { "VIEW" }, params = { "action=formRenameWai" })
-	public void formRenameWai(@RequestParam String dir, 
+	public void formRenameWai(@RequestParam String dir,
 			ActionRequest request, ActionResponse response) throws IOException {
-		
+
 		dir = pathEncodingUtils.decodeDir(dir);
 
 		List<JsTreeFile> files = this.serverAccess.getChildren(dir, userParameters);
@@ -188,75 +189,75 @@ public class PortletControllerAction {
 				this.serverAccess.renameFile(file.getPath(), newTitle, userParameters);
 			}
 		}
-		
+
 		response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
 		response.setRenderParameter("action", "browseWai");
 	}
-	
+
 	@RequestMapping(value = {"VIEW"}, params = {"action=fileUploadWai"})
     public ModelAndView fileUploadWai(RenderRequest request, RenderResponse response,
     								@RequestParam String dir) {
-		
+
 		ModelMap model = new ModelMap();
 		model.put("currentDir", dir);
 		return new ModelAndView("view-portlet-upload-wai", model);
 	}
-	
-	
+
+
 	@RequestMapping(value = {"VIEW"}, params = {"action=formUploadWai"})
     public void formUploadWai(ActionRequest request, ActionResponse response,
     								@RequestParam String dir, FileUpload command) throws IOException {
-		
+
 		dir = pathEncodingUtils.decodeDir(dir);
-		
+
 		String filename = command.getQqfile().getOriginalFilename();
 		InputStream inputStream = command.getQqfile().getInputStream();
 		this.serverAccess.putFile(dir, filename, inputStream, userParameters, userParameters.getUploadOption());
-		
+
 		response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
 		response.setRenderParameter("action", "browseWai");
 	}
-	
+
 	@RequestMapping(value = {"VIEW"}, params = {"action=formAuthenticationWai"})
     public void formAuthenticationWai(ActionRequest request, ActionResponse response,
     								@RequestParam String dir, @RequestParam String username, @RequestParam String password) throws IOException {
-		
+
 		dir = pathEncodingUtils.decodeDir(dir);
-		
+
 		String msg = "auth.bad";
 		if(this.serverAccess.authenticate(dir, username, password, userParameters)) {
 			msg = "auth.ok";
-		
-			// we keep username+password in session so that we can reauthenticate on drive in servlet mode 
+
+			// we keep username+password in session so that we can reauthenticate on drive in servlet mode
 			// (and so that download file would be ok for example with the servlet ...)
 			String driveName = this.serverAccess.getDrive(dir);
 			userParameters.getUserPassword4AuthenticatedFormDrives().put(driveName, new UserPassword(username, password));
 		}
-			
+
 		response.setRenderParameter("msg", msg);
 		response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
 		response.setRenderParameter("action", "browseWai");
 	}
-    
+
 	@RequestMapping(value = {"VIEW"}, params = {"action=formAuthenticationMobile"})
     public void formAuthenticationMobile(ActionRequest request, ActionResponse response,
     								@RequestParam String dir, @RequestParam String username, @RequestParam String password) throws IOException {
-		
+
 		dir = pathEncodingUtils.decodeDir(dir);
-		
+
 		String msg = "auth.bad";
 		if(this.serverAccess.authenticate(dir, username, password, userParameters)) {
 			msg = "auth.ok";
-			
-			// we keep username+password in session so that we can reauthenticate on drive in servlet mode 
+
+			// we keep username+password in session so that we can reauthenticate on drive in servlet mode
 			// (and so that download file would be ok for example with the servlet ...)
 			String driveName = this.serverAccess.getDrive(dir);
 			userParameters.getUserPassword4AuthenticatedFormDrives().put(driveName, new UserPassword(username, password));
 		}
-		
+
 		response.setRenderParameter("msg", msg);
 		response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
 		response.setRenderParameter("action", "browseMobile");
 	}
-    
+
 }
