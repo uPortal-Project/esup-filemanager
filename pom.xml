@@ -143,51 +143,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.esupportail</groupId>
-        <artifactId>esup-commons2-web</artifactId>
-        <version>0.2.8</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>
-              jsr168forwardport.org.springframework.web.portlet
-            </artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>esup-uportal-ws-client</artifactId>
-            <groupId>esup</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-context-support</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-beans</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>slf4j-simple</artifactId>
-            <groupId>org.slf4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-test</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>rome</artifactId>
-            <groupId>rome</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-web</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>spring-core</artifactId>
-            <groupId>org.springframework</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
       <!-- Provides the PortalPropertySourcesPlaceholderConfigurer
                that supports global.properties and Jasypt encryption-->
       <dependency>
@@ -225,9 +180,11 @@
   </dependencyManagement>
 
   <dependencies>
+
     <dependency>
-      <groupId>org.esupportail</groupId>
-      <artifactId>esup-commons2-web</artifactId>
+      <groupId>net.iharder</groupId>
+      <artifactId>base64</artifactId>
+      <version>2.3.9</version>
     </dependency>
 
     <dependency>

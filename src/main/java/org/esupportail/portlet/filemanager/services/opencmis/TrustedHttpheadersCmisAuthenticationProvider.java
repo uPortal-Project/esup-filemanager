@@ -17,28 +17,23 @@
  */
 package org.esupportail.portlet.filemanager.services.opencmis;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.apache.chemistry.opencmis.client.bindings.spi.AbstractAuthenticationProvider;
-import org.apache.chemistry.opencmis.client.bindings.spi.StandardAuthenticationProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.esupportail.commons.utils.ContextUtils;
-import org.springframework.web.context.request.RequestContextHolder;
 
 
 
 public class TrustedHttpheadersCmisAuthenticationProvider extends AbstractAuthenticationProvider  {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	protected static final Log log = LogFactory.getLog(TrustedHttpheadersCmisAuthenticationProvider.class);
 
 	public static final String ESUP_HEADER_SHIB_HTTP_HEADERS = "ESUP_HEADER_SHIB_HTTP_HEADERS";
-	
+
 	@Override
 	public Map<String, List<String>> getHTTPHeaders(String url) {
 		Map<String, List<String>> httpHeaders = null;
