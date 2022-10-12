@@ -99,12 +99,9 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 
 
     public void initializeServices(SharedUserPortletParameters userParameters) {
-
-        Map<String, FsAccess> rServers = this.restrictedServers;
-
         if(userParameters.getDriveNames() != null) {
             for(String driveName : userParameters.getDriveNames()) {
-                rServers.put(driveName, this.servers.get(driveName));
+                this.restrictedServers.put(driveName, this.servers.get(driveName));
             }
         }
         isInitialized = true;
