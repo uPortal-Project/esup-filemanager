@@ -20,24 +20,24 @@
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:context="http://www.springframework.org/schema/context" 
+    xmlns:context="http://www.springframework.org/schema/context"
     xmlns:mvc="http://www.springframework.org/schema/mvc"
     xmlns:aop="http://www.springframework.org/schema/aop"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd  
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
     http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
-    
-    <!-- Configures the @Controller programming model 
+
+    <!-- Configures the @Controller programming model
     -> enable json-> pojo with jackson-mapper-asl-->
 	<mvc:annotation-driven />
-	
+
     <!-- aop for org.esupportail.portlet.filemanager.crudlog -->
-    <aop:aspectj-autoproxy/> 
-    
+    <aop:aspectj-autoproxy/>
+
     <!-- Annotations Configuration 	-->
-    
+
     <context:annotation-config/>
     <context:component-scan base-package="org.esupportail.portlet.filemanager"/>
 
@@ -89,11 +89,11 @@
             <list>
                 <value>messages</value>
             </list>
-        </property>                                     
+        </property>
     </bean>
 
-    <!--                                                                                                                                                    
-     | Standard JSP view resolver                                                                                                                           
+    <!--
+     | Standard JSP view resolver
      +-->
     <bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="cache" value="true"/>
@@ -102,13 +102,13 @@
         <property name="suffix" value=".jsp"/>
     </bean>
 
-    
+
     <bean id="multipartResolver"
         class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
- 
+
     <bean id="requiredAnnotationBeanPostProcessor" class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor" />
-	
-	
+
+
 	<bean id="userAgentInspector" class="org.esupportail.portlet.filemanager.services.UserAgentInspector">
         <property name="userAgentMobile">
 		    <!-- Regexes of mobile device user agents -->
@@ -120,17 +120,17 @@
 		    </list>
         </property>
     </bean>
-	
-	
-	<!-- there is two implementations for org.esupportail.portlet.filemanager.utils.PathEncodingUtils 
-		Base64PathEncodingUtils need more cpu, MemoryMapPathEncodingUtils need more ram 
+
+
+	<!-- there is two implementations for org.esupportail.portlet.filemanager.utils.PathEncodingUtils
+		Base64PathEncodingUtils need more cpu, MemoryMapPathEncodingUtils need more ram
 		MemoryMapPathEncodingUtils gives id shorter than Base64PathEncodingUtils
 		Base64PathEncodingUtils seems faster than MemoryMapPathEncodingUtils (...)
 		We choose by default Base64PathEncodingUtils -->
 	<bean id="pathEncodingUtils" class="org.esupportail.portlet.filemanager.utils.Base64PathEncodingUtils"/>
 	<!-- bean id="pathEncodingUtils" class="org.esupportail.portlet.filemanager.utils.MemoryMapPathEncodingUtils"/-->
-	
-	
+
+
 	<bean id="resourceUtils" class="org.esupportail.portlet.filemanager.services.ResourceUtils">
 		<property name="iconsMap">
 			<map>
@@ -155,7 +155,7 @@
 				<entry key="docx" value="doc"/>
 			</map>
 		</property>
-		
+
 		<!-- Used in order to know what type of file is in the details area -->
 		<property name="typeMap">
 			<map>
@@ -171,7 +171,7 @@
 				<entry key="wma" value="audio"/>
 			</map>
 		</property>
-		
+
 		<!-- Used in order to limit the size of the filetype.  Any file greater than the size will not allow streaming / slideshow
 		/ view in original size functionality -->
 		<property name="sizeLimitMap">
@@ -192,12 +192,12 @@
 
 
 	<bean id="httpClientFactory"
-		class="org.springframework.http.client.CommonsClientHttpRequestFactory" />
+		class="org.springframework.http.client.HttpComponentsClientHttpRequest" />
 
 	<bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
 		<constructor-arg ref="httpClientFactory" />
 	</bean>
-	
+
 	<import resource="drives.xml"/>
-	
+
 </beans>
