@@ -9,13 +9,14 @@ on:
 
 jobs:
   test:
-    name: '${{ matrix.platform }} with Java 8'
+    name: '${{ matrix.platform }} with Java ${{ matrix.java }}'
     strategy:
       matrix:
         platform:
           - ubuntu-latest
           - windows-latest
           - macos-latest
+        java: [ '8', '11' ]
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Checkout
@@ -23,7 +24,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          distribution: adopt-hotspot
-          java-version: 8
+          distribution: 'temurin'
+          java-version: ${{ matrix.java }}
+          cache: 'maven'
       - name: Build and Test
         run: mvn -B package
