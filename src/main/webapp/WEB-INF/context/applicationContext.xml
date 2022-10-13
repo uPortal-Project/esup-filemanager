@@ -189,13 +189,22 @@
 		</property>
 	</bean>
 
+  <!-- 	based on org.apache.http.impl.client.HttpClients.createSystem -->
+  <bean id="httpClientBuilder" class="org.apache.http.impl.client.HttpClientBuilder" factory-method="create">
+    <!--<property name="SSLHostnameVerifier" ref="hostnameVerifier" />-->
+  </bean>
 
-	<bean id="httpClientFactory"
-		class="org.springframework.http.client.HttpComponentsClientHttpRequest" />
+  <bean name="httpClient" factory-bean="httpClientBuilder" factory-method="build" />
 
-	<bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
-		<constructor-arg ref="httpClientFactory" />
-	</bean>
+  <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+    <constructor-arg>
+      <bean class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory">
+        <property name="readTimeout" value="15000"/>
+        <property name="connectTimeout" value="5000"/>
+        <property name="connectionRequestTimeout" value="5000"/>
+      </bean>
+    </constructor-arg>
+  </bean>
 
 	<import resource="drives.xml"/>
 
