@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.collections.map.ListOrderedMap;
+import org.apache.commons.collections4.map.ListOrderedMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;

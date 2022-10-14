@@ -32,7 +32,7 @@ import java.util.Vector;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
-import org.apache.commons.collections.map.ListOrderedMap;
+import org.apache.commons.collections4.map.ListOrderedMap;
 import org.esupportail.portlet.filemanager.beans.BasketSession;
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.FileUpload;
