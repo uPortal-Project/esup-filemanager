@@ -104,7 +104,6 @@
   </scm>
 
   <repositories>
-
     <repository>
       <id>esup</id>
       <url>https://mvn.esup-portail.org/content/repositories/releases</url>
@@ -113,23 +112,7 @@
       <id>esup-third</id>
       <url>https://mvn.esup-portail.org/content/repositories/thirdparty</url>
     </repository>
-
-    <repository>
-      <id>jlehtinen.net</id>
-      <url>http://repo.jlehtinen.net/maven2/</url>
-    </repository>
-
   </repositories>
-
-
-  <pluginRepositories>
-
-    <pluginRepository>
-      <id>jlehtinen.net</id>
-      <url>http://repo.jlehtinen.net/maven2/</url>
-    </pluginRepository>
-
-  </pluginRepositories>
 
   <distributionManagement>
     <snapshotRepository>
@@ -395,9 +378,7 @@
       <artifactId>esup-filemanager-api</artifactId>
       <version>3.0.0-rc1</version>
     </dependency>
-
   </dependencies>
-
 
   <build>
     <finalName>${project.artifactId}</finalName>
@@ -453,36 +434,6 @@
             <include>src/main/webapp/css/esup-*css</include>
           </includes>
         </configuration>
-      </plugin>
-
-
-      <plugin>
-        <groupId>org.esupportail</groupId>
-        <artifactId>portlet-prototyping-maven-plugin</artifactId>
-        <version>0.11</version>
-        <configuration>
-
-          <!-- Comma-separated list of portlets to be prototyped -->
-          <portletNames>esup-filemanager</portletNames>
-
-          <!-- To use custom CSS in the portal -->
-          <cssUrls>
-            <url>/pluto/pluto.css</url>
-            <url>/pluto/portlet-spec-1.0.css</url>
-            <url>/pluto/portlet-spec-2.0.css</url>
-            <url>/esup-filemanager/css/misc/fss-framework-1.4.0.min.css</url>
-          </cssUrls>
-
-          <!-- To use custom Javascript in the portal -->
-          <!--
-                      <jsUrls>
-                        <url>http://my.server/custom.js</url>
-                        <url>http://my.server/another.js</url>
-                      </jsUrls>
-                      -->
-
-        </configuration>
-
       </plugin>
 
       <plugin>
