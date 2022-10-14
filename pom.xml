@@ -366,8 +366,8 @@
 
     <dependency>
       <groupId>org.jasig.portal</groupId>
-      <artifactId>uportal-search-api</artifactId>
-      <version>4.3.1</version>
+      <artifactId>uPortal-api-search</artifactId>
+      <version>${uportal-libs.version}</version>
     </dependency>
 
     <dependency>
