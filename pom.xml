@@ -95,8 +95,10 @@
     <project.build.target>1.8</project.build.target>
     <uportal-libs.version>5.12.0</uportal-libs.version>
     <commons-vfs.version>2.2</commons-vfs.version>
+    <jackson.version>2.12.3</jackson.version>
     <jcifs-ng.version>2.1.8</jcifs-ng.version>
     <logback.version>1.2.11</logback.version>
+    <spring.version>4.3.30.RELEASE</spring.version>
   </properties>
 
   <scm>
@@ -196,8 +198,8 @@
     <!-- the slf4j commons-logging replacement -->
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
       <type>jar</type>
       <scope>provided</scope>
     </dependency>
@@ -229,13 +231,11 @@
       <type>jar</type>
       <scope>test</scope>
     </dependency>
-    <!-- the other slf4j jars -->
-    <!-- using log4j as backend -->
 
     <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-      <version>1.5.3</version>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
     </dependency>
 
     <dependency>
@@ -337,7 +337,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc-portlet</artifactId>
-      <version>3.2.18.RELEASE</version>
+      <version>${spring.version}</version>
     </dependency>
 
     <dependency>
@@ -407,7 +407,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>2.4</version>
+        <version>3.2.1</version>
         <executions>
           <execution>
             <id>attach-sources</id>

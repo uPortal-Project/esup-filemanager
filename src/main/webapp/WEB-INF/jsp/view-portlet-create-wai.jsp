@@ -34,7 +34,7 @@
 <link rel="stylesheet" href="/esup-filemanager/css/esup-stock-wai.css" type="text/css" media="screen, projection">
 
 
-<portlet:actionURL var="formCreateWai">
+<portlet:actionURL var="formCreateWai" escapeXml="false">
   <portlet:param name="action" value="formCreateWai"/>
   <portlet:param name="dir" value="${currentDir}"/>
 </portlet:actionURL>

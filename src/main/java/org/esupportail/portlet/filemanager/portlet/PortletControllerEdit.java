@@ -32,62 +32,65 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.portlet.ModelAndView;
+import org.springframework.web.portlet.bind.annotation.ActionMapping;
+import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
 @Controller
 @Scope("request")
+@RequestMapping("EDIT")
 public class PortletControllerEdit {
 
     private static final Logger logger = LoggerFactory.getLogger(PortletControllerEdit.class);
 
-    @RequestMapping("EDIT")
-	public ModelAndView renderEditView(RenderRequest request, RenderResponse response) throws Exception {
+    @RenderMapping
+    public ModelAndView renderEditView(RenderRequest request, RenderResponse response) throws Exception {
 
-		ModelMap model = new ModelMap();
-		final PortletPreferences prefs = request.getPreferences();
+        ModelMap model = new ModelMap();
+        final PortletPreferences prefs = request.getPreferences();
 
-    	String viewMode = prefs.getValue(PortletController.PREF_PORTLET_VIEW, PortletController.STANDARD_VIEW);
-    	String showHiddenFiles = prefs.getValue(PortletController.PREF_SHOW_HIDDEN_FILES, "false");
-    	String useCursorWaitDialog = prefs.getValue(PortletController.PREF_USE_CURSOR_WAIT_DIALOG, "false");
-    	String useDoubleClick = prefs.getValue(PortletController.PREF_USE_DOUBLE_CLICK, "true");
+        String viewMode = prefs.getValue(PortletController.PREF_PORTLET_VIEW, PortletController.STANDARD_VIEW);
+        String showHiddenFiles = prefs.getValue(PortletController.PREF_SHOW_HIDDEN_FILES, "false");
+        String useCursorWaitDialog = prefs.getValue(PortletController.PREF_USE_CURSOR_WAIT_DIALOG, "false");
+        String useDoubleClick = prefs.getValue(PortletController.PREF_USE_DOUBLE_CLICK, "true");
 
-    	model.put("viewMode", viewMode);
-    	model.put("showHiddenFiles", showHiddenFiles);
-    	model.put("useCursorWaitDialog", useCursorWaitDialog);
-    	model.put("useDoubleClick", useDoubleClick);
+        model.put("viewMode", viewMode);
+        model.put("showHiddenFiles", showHiddenFiles);
+        model.put("useCursorWaitDialog", useCursorWaitDialog);
+        model.put("useDoubleClick", useDoubleClick);
 
-    	boolean roViewMode = prefs.isReadOnly(PortletController.PREF_PORTLET_VIEW);
-    	boolean roShowHiddenFiles = prefs.isReadOnly(PortletController.PREF_SHOW_HIDDEN_FILES);
-    	boolean roUseCursorWaitDialog = prefs.isReadOnly(PortletController.PREF_USE_CURSOR_WAIT_DIALOG);
-    	boolean roUseDoubleClick = prefs.isReadOnly(PortletController.PREF_USE_DOUBLE_CLICK);
-    	model.put("roViewMode", roViewMode);
-    	model.put("roShowHiddenFiles", roShowHiddenFiles);
-    	model.put("roUseCursorWaitDialog", roUseCursorWaitDialog);
-    	model.put("roUseDoubleClick", roUseDoubleClick);
+        boolean roViewMode = prefs.isReadOnly(PortletController.PREF_PORTLET_VIEW);
+        boolean roShowHiddenFiles = prefs.isReadOnly(PortletController.PREF_SHOW_HIDDEN_FILES);
+        boolean roUseCursorWaitDialog = prefs.isReadOnly(PortletController.PREF_USE_CURSOR_WAIT_DIALOG);
+        boolean roUseDoubleClick = prefs.isReadOnly(PortletController.PREF_USE_DOUBLE_CLICK);
+        model.put("roViewMode", roViewMode);
+        model.put("roShowHiddenFiles", roShowHiddenFiles);
+        model.put("roUseCursorWaitDialog", roUseCursorWaitDialog);
+        model.put("roUseDoubleClick", roUseDoubleClick);
 
-		return new ModelAndView("edit-portlet", model);
-	}
+        return new ModelAndView("edit-portlet", model);
+    }
 
-    @RequestMapping(value = {"EDIT"}, params = {"action=updatePreferences"})
-	public void updatePreferences(ActionRequest request, ActionResponse response,
-			@RequestParam(required=false) String viewMode,
-			@RequestParam(required=false) String showHiddenFiles,
-			@RequestParam(required=false) String useCursorWaitDialog,
-			@RequestParam(required=false) String useDoubleClick
-	) throws Exception {
+    @ActionMapping
+    public void updatePreferences(ActionRequest request, ActionResponse response,
+                                  @RequestParam(required=false) String viewMode,
+                                  @RequestParam(required=false) String showHiddenFiles,
+                                  @RequestParam(required=false) String useCursorWaitDialog,
+                                  @RequestParam(required=false) String useDoubleClick
+    ) throws Exception {
 
-    	final PortletPreferences prefs = request.getPreferences();
+        final PortletPreferences prefs = request.getPreferences();
 
-    	if(viewMode != null)
-    		prefs.setValue(PortletController.PREF_PORTLET_VIEW, viewMode);
-    	if(showHiddenFiles != null)
-    		prefs.setValue(PortletController.PREF_SHOW_HIDDEN_FILES, showHiddenFiles);
-    	if(useCursorWaitDialog != null)
-    		prefs.setValue(PortletController.PREF_USE_CURSOR_WAIT_DIALOG, useCursorWaitDialog);
-    	if(useDoubleClick != null)
-    		prefs.setValue(PortletController.PREF_USE_DOUBLE_CLICK, useDoubleClick);
+        if(viewMode != null)
+            prefs.setValue(PortletController.PREF_PORTLET_VIEW, viewMode);
+        if(showHiddenFiles != null)
+            prefs.setValue(PortletController.PREF_SHOW_HIDDEN_FILES, showHiddenFiles);
+        if(useCursorWaitDialog != null)
+            prefs.setValue(PortletController.PREF_USE_CURSOR_WAIT_DIALOG, useCursorWaitDialog);
+        if(useDoubleClick != null)
+            prefs.setValue(PortletController.PREF_USE_DOUBLE_CLICK, useDoubleClick);
 
-    	prefs.store();
+        prefs.store();
 
-    	response.setPortletMode(PortletMode.VIEW);
-	}
+        response.setPortletMode(PortletMode.VIEW);
+    }
 }

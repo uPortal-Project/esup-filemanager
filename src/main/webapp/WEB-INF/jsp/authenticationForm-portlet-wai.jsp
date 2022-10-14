@@ -33,7 +33,7 @@
 <link rel="stylesheet" href="/esup-filemanager/css/esup-stock-wai.css" type="text/css" media="screen, projection">
 
 
-<portlet:actionURL var="authenticationFormWai">
+<portlet:actionURL var="authenticationFormWai" escapeXml="false">
   <portlet:param name="action" value="formAuthenticationWai"/>
   <portlet:param name="dir" value="${currentDir}"/>
 </portlet:actionURL>
