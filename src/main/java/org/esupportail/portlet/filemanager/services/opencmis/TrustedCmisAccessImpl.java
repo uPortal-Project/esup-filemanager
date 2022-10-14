@@ -135,5 +135,4 @@ public class TrustedCmisAccessImpl extends CmisAccessImpl {
 			}
 		}
 	}
-
 }

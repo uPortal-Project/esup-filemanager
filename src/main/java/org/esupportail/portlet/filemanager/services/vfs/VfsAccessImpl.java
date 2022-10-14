@@ -20,11 +20,13 @@ package org.esupportail.portlet.filemanager.services.vfs;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -59,14 +61,10 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.FileCopyUtils;
 
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.SftpException;
-
 public class VfsAccessImpl extends FsAccess implements DisposableBean {
 
 	protected static final Log log = LogFactory.getLog(VfsAccessImpl.class);
-	
+
 	protected FileSystemManager fsManager;
 
 	protected FileObject root;
@@ -76,9 +74,9 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 	protected boolean sftpSetUserDirIsRoot = false;
 
     protected boolean strictHostKeyChecking = true;
-    
+
     protected String ftpControlEncoding = "UTF-8";
-    
+
     // we setup ftpPassiveMode to true by default ...
     protected boolean ftpPassiveMode = true;
 
@@ -104,7 +102,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		try {
 			if(!isOpened()) {
 				FileSystemOptions fsOptions = new FileSystemOptions();
-				
+
 				if ( ftpControlEncoding != null )
 					FtpFileSystemConfigBuilder.getInstance().setControlEncoding(fsOptions, ftpControlEncoding);
 
@@ -119,9 +117,9 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 				if(!strictHostKeyChecking) {
 					SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(fsOptions, "no");
 				}
-				
+
 				FtpFileSystemConfigBuilder.getInstance().setPassiveMode(fsOptions, ftpPassiveMode);
-				
+
 				if(userAuthenticatorService != null) {
 					UserAuthenticator userAuthenticator = null;
 					if ( ClassUtils.isAssignable(UserCasAuthenticatorService.class, userAuthenticatorService.getClass()) ) {
@@ -164,11 +162,11 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		try {
 			// assure that it'as already opened
 			this.open(userParameters);
-			
+
 			FileObject returnValue = null;
-			
+
 			if (path == null || path.length() == 0) {
-				returnValue = root; 
+				returnValue = root;
 			} else {
 				returnValue = root.resolveFile(path);
 			}
@@ -178,13 +176,13 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 			return returnValue;
 		} catch(FileSystemException fse) {
 			throw new EsupStockException(fse);
-		} 
+		}
 	}
 
 	@Override
 	public JsTreeFile get(String path, SharedUserPortletParameters userParameters, boolean folderDetails, boolean fileDetails) {
 		try {
-			FileObject resource = cd(path, userParameters);			
+			FileObject resource = cd(path, userParameters);
 			return resourceAsJsTreeFile(resource, folderDetails, fileDetails, userParameters.isShowHiddenFiles());
 		} catch(FileSystemException fse) {
 			throw new EsupStockException(fse);
@@ -219,8 +217,8 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		}
 	}
 
-	
-	
+
+
 	private boolean isFileHidden(FileObject file) {
 		boolean isHidden = false;
 		// file.isHidden() works in current version of VFS (1.0) only for local file object :(
@@ -231,7 +229,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 				log.warn("Error on file.isHidden() method ...", e);
 			}
 		} else {
-			// at the moment here we just check if the file begins with a dot 
+			// at the moment here we just check if the file begins with a dot
 			// ... so it works just for unix files ...
 			isHidden = file.getName().getBaseName().startsWith(".");
 		}
@@ -284,19 +282,19 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 					file.setTotalSize(totalSize);
 					file.setFileCount(fileCount);
 					file.setFolderCount(folderCount);
-				} 
+				}
 			}
 
 			final Calendar date = Calendar.getInstance();
 			date.setTimeInMillis(resource.getContent().getLastModifiedTime());
 			// In order to have a readable date
 			file.setLastModifiedTime(date.getTime());
-	
+
 			file.setReadable(resource.isReadable());
 			file.setWriteable(resource.isWriteable());
-			
+
 		} catch(FileSystemException fse) {
-			// we don't want that exception during retrieving details 
+			// we don't want that exception during retrieving details
 			// of the folder breaks  all this method ...
 			log.error("Exception during retrieveing details on " + lid
 					+ " ... maybe broken symbolic links or whatever ...", fse);
@@ -393,8 +391,8 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 			FileContent fc = file.getContent();
 			long size = fc.getSize();
 			String baseName = fc.getFile().getName().getBaseName();
-			// fc.getContentInfo().getContentType() use URLConnection.getFileNameMap, 
-			// we prefer here to use our getMimeType : for Excel files and co 
+			// fc.getContentInfo().getContentType() use URLConnection.getFileNameMap,
+			// we prefer here to use our getMimeType : for Excel files and co
 			// String contentType = fc.getContentInfo().getContentType();
 			String contentType = JsTreeFile.getMimeType(baseName.toLowerCase());
 			InputStream inputStream = fc.getInputStream();
@@ -411,7 +409,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 
 		boolean success = false;
 		FileObject newFile = null;
-				
+
 		try {
 			FileObject folder = cd(dir, userParameters);
 			newFile = folder.resolveFile(filename);
@@ -423,8 +421,8 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 					newFile.delete();
 					break;
 				case RENAME_NEW :
-					newFile = folder.resolveFile(this.getUniqueFilename(filename, "-new-"));	
-					break;		 		
+					newFile = folder.resolveFile(this.getUniqueFilename(filename, "-new-"));
+					break;
 				case RENAME_OLD :
 					newFile.moveTo(folder.resolveFile(this.getUniqueFilename(filename, "-old-")));
 					break;
@@ -442,7 +440,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 		} catch (IOException e) {
 			log.warn("can't upload file : " + e.getMessage(), e);
 		}
-		
+
 		if(!success && newFile != null) {
 			// problem when uploading the file -> the file uploaded is corrupted
 			// best is to delete it
@@ -453,7 +451,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 				log.debug("can't delete corrupted file after bad upload " + e.getMessage());
 			}
 		}
-		
+
 		return success;
 	}
 
@@ -463,5 +461,4 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 	public void setFtpControlEncoding(String ftpControlEncoding) {
 		this.ftpControlEncoding = ftpControlEncoding;
 	}
-
 }

@@ -35,7 +35,6 @@ import org.esupportail.portlet.filemanager.beans.JsTreeFile;
  * (because we don't use accents).
  */
 public abstract class PathEncodingUtils {
-
 	protected static final Log log = LogFactory.getLog(PathEncodingUtils.class);
 
 	protected static final String PREFIX_CODE = "path_";

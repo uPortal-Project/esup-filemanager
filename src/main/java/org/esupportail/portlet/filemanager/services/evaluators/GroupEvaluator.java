@@ -117,7 +117,7 @@ public class GroupEvaluator implements IDriveAccessEvaluator, InitializingBean {
 		}
 
 		if (LOG.isDebugEnabled())
-		LOG.debug(" ---- GroupEvaluator[" + this + ", op=" + type
+		    LOG.debug(" ---- GroupEvaluator[" + this + ", op=" + type
 				+ "].isApplicable()=" + rslt);
 
 		return rslt;
@@ -178,13 +178,10 @@ public class GroupEvaluator implements IDriveAccessEvaluator, InitializingBean {
 	 */
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("GroupEvaluator [type=");
-		builder.append(type);
-		builder.append(", evaluators=");
-		builder.append(evaluators);
-		builder.append("]");
-		return builder.toString();
+        return "GroupEvaluator [type=" +
+                type +
+                ", evaluators=" +
+                evaluators +
+                "]";
 	}
-
 }

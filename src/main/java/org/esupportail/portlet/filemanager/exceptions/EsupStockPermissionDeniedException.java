@@ -18,7 +18,7 @@
 package org.esupportail.portlet.filemanager.exceptions;
 
 public class EsupStockPermissionDeniedException extends EsupStockException {
-	
+
 	public EsupStockPermissionDeniedException(Exception e) {
 		super(e);
 	}
@@ -28,5 +28,4 @@ public class EsupStockPermissionDeniedException extends EsupStockException {
 	}
 
 	private static final long serialVersionUID = 1L;
-	
 }

@@ -28,7 +28,7 @@ import org.esupportail.portlet.filemanager.services.auth.UserAuthenticatorServic
 /**
  * A simple gateway UserAuthententicatorSerice.getUserPassord allowing dynamic password retrival while
  * connecting to a VFS backend
- * 
+ *
  * @author ofranco
  *
  */
@@ -36,7 +36,7 @@ public class DynamicUserAuthenticator implements UserAuthenticator {
 
 	private UserAuthenticatorService authenticatorService;
 	private SharedUserPortletParameters userParameters;
-	
+
 	public DynamicUserAuthenticator(UserAuthenticatorService authenticatorService, SharedUserPortletParameters userParameters) {
 		this.authenticatorService = authenticatorService;
 		this.userParameters = userParameters;
@@ -55,5 +55,4 @@ public class DynamicUserAuthenticator implements UserAuthenticator {
 		data.setData(UserAuthenticationData.PASSWORD,  UserAuthenticatorUtils.toChar(userPassword.getPassword()));
 		return data;
 	}
-	
 }

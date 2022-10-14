@@ -122,9 +122,7 @@ public class PortletControllerDownloadEvent implements PortletConfigAware {
 
         //Add the result to the results and send the event
         response.setEvent(EsupFileManagerConstants.DOWNLOAD_RESPONSE_QNAME, downloadResponse);
-
     }
-
 }
 
 

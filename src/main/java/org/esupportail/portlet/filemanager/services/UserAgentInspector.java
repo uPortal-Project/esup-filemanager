@@ -26,11 +26,11 @@ import javax.portlet.PortletRequest;
 import org.springframework.beans.factory.InitializingBean;
 
 public class UserAgentInspector implements InitializingBean {
-    
+
     private List<String> userAgentMobile;
-    
+
     private final List<Pattern> patterns = new ArrayList<Pattern>();
-    
+
     public void setUserAgentMobile(List<String> userAgentMobile) {
 		this.userAgentMobile = userAgentMobile;
 	}
@@ -43,15 +43,15 @@ public class UserAgentInspector implements InitializingBean {
     }
 
     public boolean isMobile(PortletRequest req) {
-        
+
     	boolean isMobile = false;
-    	
+
         // Assertions.
         if (req == null) {
             String msg = "Argument 'req' cannot be null";
             throw new IllegalArgumentException(msg);
         }
-        
+
         String userAgent = req.getProperty("user-agent");
         if (userAgent != null && patterns.size() != 0) {
             for (Pattern pattern : patterns) {
@@ -61,9 +61,6 @@ public class UserAgentInspector implements InitializingBean {
                 }
             }
         }
-
         return isMobile;
-
     }
-
 }

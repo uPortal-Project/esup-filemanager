@@ -37,7 +37,6 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSE
 WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.esupportail.portlet.filemanager.services.auth.cas;
 
 import java.util.Map;
@@ -60,9 +59,9 @@ public class UserCasAuthenticatorServiceRoot {
     private static final Log log = LogFactory.getLog(UserCasAuthenticatorServiceRoot.class);
 
     private ProxyTicketService proxyTicketService;
-    
+
     private String userInfoTicketProperty;
-    
+
     public void setProxyTicketService(ProxyTicketService proxyTicketService) {
 		this.proxyTicketService = proxyTicketService;
 	}
@@ -72,19 +71,19 @@ public class UserCasAuthenticatorServiceRoot {
 	}
 
 	public void initialize(SharedUserPortletParameters userParameters) {
-		
+
 		if(userParameters.getAssertion() == null) {
-        
+
 			if (proxyTicketService != null) {
-				
+
 				// Using userParameters.getUserInfos() - we can have a tool old PT which can be expired
 				// So we get here the PortletRequest to get a new PT from Portal.
 				//Map userInfos = userParameters.getUserInfos();
-				
+
 				RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
 				PortletRequest portletRequest = ((PortletRequestAttributes) attrs).getRequest();
 				Map userInfos = (Map) portletRequest.getAttribute(PortletRequest.USER_INFO);
-				
+
 				String ticket = (String) userInfos.get(this.userInfoTicketProperty);
 				if (ticket != null) {
 					log.debug("ticket from portal = " + ticket);

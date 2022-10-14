@@ -90,5 +90,4 @@ public class PortletControllerEdit {
 
     	response.setPortletMode(PortletMode.VIEW);
 	}
-
 }

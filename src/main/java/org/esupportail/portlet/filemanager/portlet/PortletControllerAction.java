@@ -259,5 +259,4 @@ public class PortletControllerAction {
 		response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));
 		response.setRenderParameter("action", "browseMobile");
 	}
-
 }

@@ -31,15 +31,15 @@ public class DownloadFile implements Serializable {
 	protected static final Log log = LogFactory.getLog(DownloadFile.class);
 
 	private long size;
-	
+
 	private String contentType;
-	
+
 	private InputStream inputStream;
-	
+
 	private String baseName;
-	
+
 	private File tmpFile;
-	
+
 	public DownloadFile(String contentType, long size, String baseName, InputStream inputStream) {
 		this.contentType = contentType;
 		this.size = size;
@@ -47,7 +47,7 @@ public class DownloadFile implements Serializable {
 		this.inputStream = inputStream;
 		this.tmpFile = null;
 	}
-	
+
 	/**
 	 * @param contentType
 	 * @param size
@@ -95,9 +95,9 @@ public class DownloadFile implements Serializable {
 		this.inputStream = inputStream;
 	}
 
-	/* 
+	/*
 	 * Even if we call tmpFile.deleteOnExit on ServerAccessService.getZip
-	 * We're trying here to delete tmpfile via garbage collector 
+	 * We're trying here to delete tmpfile via garbage collector
 	 * @see java.lang.Object#finalize()
 	 */
 	@Override
@@ -109,5 +109,4 @@ public class DownloadFile implements Serializable {
 			}
 		}
 	}
-	
 }

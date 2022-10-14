@@ -141,6 +141,5 @@ public class ClearPassUserCasAuthenticatorService implements UserAuthenticatorSe
         getUserPassword(userParameters);
         return formUserPasswordAuthenticatorServiceFallBack != null;
     }
-
 }
 

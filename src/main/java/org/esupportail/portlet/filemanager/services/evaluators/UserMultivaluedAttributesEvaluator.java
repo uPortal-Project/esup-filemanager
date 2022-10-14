@@ -101,5 +101,4 @@ public class UserMultivaluedAttributesEvaluator extends UserAttributesEvaluator 
 
 		return false;
 	}
-
 }

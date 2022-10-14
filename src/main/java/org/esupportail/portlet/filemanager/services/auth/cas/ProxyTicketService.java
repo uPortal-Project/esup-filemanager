@@ -30,7 +30,7 @@ public class ProxyTicketService implements InitializingBean {
     private static Log log = LogFactory.getLog(ProxyTicketService.class);
 
     private TicketValidator ticketValidator;
-    
+
     private String serviceUrl;
 
     public void setServiceUrl(String serviceUrl) {
@@ -76,8 +76,6 @@ public class ProxyTicketService implements InitializingBean {
         }
         return proxyTicket;
       }
-    
-    
 
     public void afterPropertiesSet() throws Exception {
         // validate these should be set in spring config

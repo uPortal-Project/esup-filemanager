@@ -220,6 +220,7 @@ public abstract class FsAccess {
 			return quotaService.getQuota(path, userParameters);
 		return null;
 	}
+
 	public boolean isSupportQuota(String path,
 			SharedUserPortletParameters userParameters) {
 		if(quotaService != null)

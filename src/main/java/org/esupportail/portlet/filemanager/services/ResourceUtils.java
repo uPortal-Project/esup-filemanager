@@ -34,61 +34,61 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 public class ResourceUtils implements InitializingBean, ResourceLoaderAware {
- 
+
 	protected static final Log log = LogFactory.getLog(ResourceUtils.class);
 
 	private Map<String, String> icons = new CaseInsensitiveMap();
-	
+
 	protected ResourceLoader rl;
-	
+
 	protected Map<String, String> iconsMap;
-	
+
 	protected Map<String, String> typeMap;
-	
+
 	protected Map<String, Long> sizeLimitMap;
-	
+
 	public static enum Type {
 		UNKNOWN,
 		IMAGE,
-		AUDIO;		
+		AUDIO;
 	}
-	
+
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		rl = resourceLoader;
 	}
-	
+
 	public void setIconsMap(Map<String, String> iconsMap) {
 		this.iconsMap = new CaseInsensitiveMap(iconsMap);
 	}
-	
+
 	public void settypeMap(Map<String, String> typeMap) {
 		this.typeMap = new CaseInsensitiveMap(typeMap);
 	}
-	
+
 	public void setSizeLimitMap(Map<String, Long> sizeLimitMap) {
 		this.sizeLimitMap = sizeLimitMap;
 	}
 
 	public void afterPropertiesSet() throws Exception {
-		
+
 		try {
 			Resource iconsFolder = rl.getResource("img/icons");
 			assert iconsFolder.exists();
-		
+
 			FileFilter fileFilter = new WildcardFileFilter("*.png");
 			List<File> files = Arrays.asList(iconsFolder.getFile().listFiles(fileFilter));
 			for(File icon: files) {
 				String iconName = icon.getName();
 				icons.put(iconName.substring(0, iconName.length()-4), "/esup-filemanager/img/icons/".concat(iconName));
 			}
-			
+
 			log.debug("mimetypes incons retrieved : " + icons.toString());
 		} catch (FileNotFoundException e) {
 			log.error("FileNotFoundException getting icons ...", e);
 		}
-		
+
 	}
-	
+
 	/**
 	 * @param filename
 	 * @return size limit in bytes
@@ -96,56 +96,55 @@ public class ResourceUtils implements InitializingBean, ResourceLoaderAware {
 	public Long getSizeLimit(String filename) {
 		Long limit = sizeLimitMap.get(getFileExtension(filename));
 		if (limit == null) {
-			return Long.MAX_VALUE;			
+			return Long.MAX_VALUE;
 		}
-		
+
 		limit *= (1024 * 1024);
-		
+
 		//overflow
 		if (limit < 0) {
 			return Long.MAX_VALUE;
 		}
-		
+
 		return limit;
 	}
-	
+
 	private String getFileExtension(String filename) {
 		int idx = filename.lastIndexOf(".")+1;
-		String mime = filename.substring(idx);		
+		String mime = filename.substring(idx);
 		return mime.toLowerCase();
 	}
-	
+
 	/**
 	 * Added for Recia
 	 * From a filename, retrieve the type of file.  This is used to
-	 * personalize the details area. 
+	 * personalize the details area.
 	 */
 	public Type getType(String filename) {
-		
-		
+
+
 		String typeStr = typeMap.get(getFileExtension(filename));
-		
+
 		if (typeStr == null) {
 			return Type.UNKNOWN;
 		}
-		
-		return Type.valueOf(typeStr.toUpperCase());		
+
+		return Type.valueOf(typeStr.toUpperCase());
 	}
-	
-	
+
+
 	private String getIconFromMime(String mime) {
-		if(iconsMap.containsKey(mime)) 
+		if(iconsMap.containsKey(mime))
 			mime = iconsMap.get(mime);
-			
-		if(icons.containsKey(mime)) 
+
+		if(icons.containsKey(mime))
 			return icons.get(mime);
 		else
 			return "/esup-filemanager/img/icons/unknown.png";
 	}
-	
+
 	public String getIcon(String filename) {
 		return getIconFromMime(getFileExtension(filename));
 	}
- 
 }
-	
+

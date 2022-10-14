@@ -24,5 +24,4 @@ public class EsupStockFileExistException extends EsupStockException {
 	public EsupStockFileExistException() {
 		super("File already exist and overriding file is forbidden !");
 	}
-
 }

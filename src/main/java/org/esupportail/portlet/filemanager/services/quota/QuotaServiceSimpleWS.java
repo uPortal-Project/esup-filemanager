@@ -40,5 +40,4 @@ public class QuotaServiceSimpleWS implements IQuotaService {
 		SharedUserPortletParameters userParameters) {
 		return true;
 	}
-
 }

@@ -32,7 +32,6 @@ import org.springframework.util.Assert;
  * 15 Oct 2013
  */
 public class ListUserAttributesEvaluatorEditor implements FactoryBean, InitializingBean {
-
 	/** Logger.*/
 	private static final Log LOG = LogFactory.getLog(ListUserAttributesEvaluatorEditor.class);
 

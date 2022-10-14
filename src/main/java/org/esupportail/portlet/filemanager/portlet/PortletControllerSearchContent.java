@@ -116,14 +116,13 @@ public class PortletControllerSearchContent implements PortletConfigAware {
     	String defaultPath = serverAccess.getFirstAvailablePath(userParameters, prefsDefaultPathes);
     	List<JsTreeFile> files = this.serverAccess.getChildren(defaultPath, userParameters);
 
-    	String fileNames = "";
+    	StringBuilder fileNames = new StringBuilder();
     	for(JsTreeFile f:  files) {
-    		fileNames = fileNames + " " + f.getTitle();
+    		fileNames.append(" ").append(f.getTitle());
     	}
 
-    	return fileNames;
+    	return fileNames.toString();
     }
-
 }
 
 

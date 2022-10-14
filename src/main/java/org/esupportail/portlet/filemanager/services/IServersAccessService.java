@@ -33,7 +33,6 @@ import org.esupportail.portlet.filemanager.beans.UserPassword;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public interface IServersAccessService {
-
 	@Autowired
 	public abstract void setServers(List<FsAccess> servers);
 
@@ -108,5 +107,4 @@ public interface IServersAccessService {
 			String[] prefsDefaultPathes);
 
 	public abstract Quota getQuota(String path, SharedUserPortletParameters userParameters);
-
 }

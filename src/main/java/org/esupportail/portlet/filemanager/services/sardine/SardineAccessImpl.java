@@ -46,7 +46,6 @@ import com.googlecode.sardine.SardineFactory;
 import com.googlecode.sardine.impl.SardineException;
 
 public class SardineAccessImpl extends FsAccess implements DisposableBean {
-
 	protected static final Log log = LogFactory.getLog(SardineAccessImpl.class);
 
 	protected Sardine root;

@@ -85,7 +85,6 @@ public class UserPasswordAuthenticatorService implements UserAuthenticatorServic
 	public boolean formAuthenticationNeeded(SharedUserPortletParameters userParameters) {
 		return false;
 	}
-
 }
 
 

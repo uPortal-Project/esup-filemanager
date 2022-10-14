@@ -64,12 +64,12 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 	private NtlmPasswordAuthentication userAuthenticator;
 
 	protected SmbFile root;
-	
+
 	protected boolean jcifsSynchronizeRootListing = false;
 
 	/** CIFS properties */
 	protected Properties jcifsConfigProperties;
-	
+
 	protected CIFSContext cifsContext;
 
 	public void setJcifsConfigProperties(Properties jcifsConfigProperties) {
@@ -398,7 +398,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 
 		boolean success = false;
 		SmbFile newFile = null;
-		
+
 		try {
 			SmbFile folder = cd(dir, userParameters);
 			newFile = new SmbFile(folder.getCanonicalPath() + filename, this.cifsContext);
@@ -430,7 +430,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 		} catch (IOException e) {
 			log.warn("can't upload file : " + e.getMessage(), e);
 		}
-		
+
 		if(!success && newFile != null) {
 			// problem when uploading the file -> the file uploaded is corrupted
 			// best is to delete it
@@ -441,10 +441,10 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 				log.debug("can't delete corrupted file after bad upload " + e.getMessage());
 			}
 		}
-		
+
 		return success;
 	}
-	
+
 
 	private SmbFile[] listFiles(SmbFile resource) throws SmbException {
 		if(jcifsSynchronizeRootListing && this.root.equals(resource)) {
@@ -479,5 +479,4 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 	public void setJcifsSynchronizeRootListing(boolean jcifsSynchronizeRootListing) {
 		this.jcifsSynchronizeRootListing = jcifsSynchronizeRootListing;
 	}
-	
 }

@@ -556,5 +556,4 @@ public class PortletControllerAjax {
 	    modelMap.put("errorText", errorText);
 	    return new ModelAndView("ajax_error", modelMap);
 	}
-
 }

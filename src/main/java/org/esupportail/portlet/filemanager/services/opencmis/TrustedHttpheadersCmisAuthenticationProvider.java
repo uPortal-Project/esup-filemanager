@@ -24,8 +24,6 @@ import org.apache.chemistry.opencmis.client.bindings.spi.AbstractAuthenticationP
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-
-
 public class TrustedHttpheadersCmisAuthenticationProvider extends AbstractAuthenticationProvider  {
 
 	private static final long serialVersionUID = 1L;
@@ -46,5 +44,4 @@ public class TrustedHttpheadersCmisAuthenticationProvider extends AbstractAuthen
 		}
 		return httpHeaders;
 	}
-
 }

@@ -71,7 +71,5 @@ public class NuxeoPortalSSOAuthenticationProvider extends AbstractAuthentication
         headers.put("NX_TS", Collections.singletonList(String.valueOf(ts)));
 
         return Collections.unmodifiableMap(headers);
-
     }
-
 }

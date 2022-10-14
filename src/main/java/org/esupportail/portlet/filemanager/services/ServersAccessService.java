@@ -54,7 +54,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-
 @Service("serversAccess")
 @Scope(value="session", proxyMode=ScopedProxyMode.INTERFACES)
 public class ServersAccessService implements DisposableBean, IServersAccessService {
@@ -96,7 +95,6 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 
         return driveNames;
     }
-
 
     public void initializeServices(SharedUserPortletParameters userParameters) {
         if(userParameters.getDriveNames() != null) {
@@ -141,7 +139,6 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
             return null;
         }
     }
-
 
     protected List<FsAccess> getCategoryFsAccess(DrivesCategory dCategory, SharedUserPortletParameters userParameters) {
         List<FsAccess> drives = new ArrayList<FsAccess>();
@@ -320,7 +317,6 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
         return jsTreeFileRoots;
     }
 
-
     public List<JsTreeFile> getJsTreeFileRoots(String dir, SharedUserPortletParameters userParameters) {
 
         JsTreeFile parentFile = null;
@@ -466,13 +462,11 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
         }
     }
 
-
     public boolean formAuthenticationRequired(String dir, SharedUserPortletParameters userParameters) {
         if(getDrive(dir) == null)
             return false;
         return this.getFsAccess(getDrive(dir), userParameters).formAuthenticationRequired(userParameters);
     }
-
 
     public UserPassword getUserPassword(String dir, SharedUserPortletParameters userParameters) {
         if(getDrive(dir) == null)
@@ -494,7 +488,6 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
         return authenticateSuccess;
     }
 
-
     public String getFirstAvailablePath(SharedUserPortletParameters userParameters, String[] prefsDefaultPathes) {
         String defaultPath = JsTreeFile.ROOT_DRIVE;
         Map<String, FsAccess> rServers = this.restrictedServers;
@@ -507,7 +500,6 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
         }
         return defaultPath;
     }
-
 
     public Quota getQuota(String path,
                           SharedUserPortletParameters userParameters) {

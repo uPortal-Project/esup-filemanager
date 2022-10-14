@@ -1,7 +1,6 @@
 package org.esupportail.portlet.filemanager.exceptions;
 
 public class EsupStockNoRequestBoundException extends EsupStockException {
-
     /**
      * Constructor.
      */

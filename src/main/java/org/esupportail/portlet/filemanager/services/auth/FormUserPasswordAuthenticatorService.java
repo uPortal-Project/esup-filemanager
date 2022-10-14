@@ -29,5 +29,4 @@ public class FormUserPasswordAuthenticatorService extends UserPasswordAuthentica
     public boolean formAuthenticationNeeded(SharedUserPortletParameters userParameters) {
 		return true;
 	}
-
 }

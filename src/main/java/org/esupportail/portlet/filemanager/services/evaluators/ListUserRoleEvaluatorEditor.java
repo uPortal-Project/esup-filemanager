@@ -32,7 +32,6 @@ import org.springframework.util.Assert;
  * 15 Oct 2013
  */
 public class ListUserRoleEvaluatorEditor implements FactoryBean, InitializingBean {
-
 	/** Logger.*/
 	private static final Log LOG = LogFactory.getLog(ListUserRoleEvaluatorEditor.class);
 
@@ -127,7 +126,4 @@ public class ListUserRoleEvaluatorEditor implements FactoryBean, InitializingBea
 	public void setGroupList(final List<String> groupList) {
 		this.groupList = groupList;
 	}
-
-
-
 }

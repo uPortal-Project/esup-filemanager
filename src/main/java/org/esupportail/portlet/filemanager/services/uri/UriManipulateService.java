@@ -20,6 +20,4 @@ package org.esupportail.portlet.filemanager.services.uri;
 public interface UriManipulateService {
 
 	public abstract String manipulate(String uri);
-	
-	
 }

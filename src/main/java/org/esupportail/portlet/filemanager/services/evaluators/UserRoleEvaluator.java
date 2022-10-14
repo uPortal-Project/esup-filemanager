@@ -83,10 +83,8 @@ public class UserRoleEvaluator implements IDriveAccessEvaluator, InitializingBea
 	 */
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("UserRoleEvaluator [group=");
-		builder.append(group);
-		builder.append("]");
-		return builder.toString();
+        return "UserRoleEvaluator [group=" +
+                group +
+                "]";
 	}
 }

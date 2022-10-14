@@ -48,7 +48,6 @@ import org.springframework.web.portlet.ModelAndView;
 @Controller
 @Scope("request")
 public class PortletController {
-
 	private static final Logger logger = LoggerFactory.getLogger(PortletController.class);
 
 	public static final String PREF_PORTLET_VIEW = "defaultPortletView";
@@ -244,5 +243,4 @@ public class PortletController {
 		ModelMap model = new ModelMap();
 		return new ModelAndView("help-portlet", model);
 	}
-
 }

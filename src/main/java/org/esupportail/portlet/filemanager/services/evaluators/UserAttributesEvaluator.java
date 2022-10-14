@@ -182,15 +182,12 @@ public class UserAttributesEvaluator implements IDriveAccessEvaluator, Initializ
 	 */
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("UserAttributesEvaluator [attribute=");
-		builder.append(attribute);
-		builder.append(", value=");
-		builder.append(value);
-		builder.append(", mode=");
-		builder.append(mode);
-		builder.append("]");
-		return builder.toString();
+        return "UserAttributesEvaluator [attribute=" +
+                attribute +
+                ", value=" +
+                value +
+                ", mode=" +
+                mode +
+                "]";
 	}
-
 }

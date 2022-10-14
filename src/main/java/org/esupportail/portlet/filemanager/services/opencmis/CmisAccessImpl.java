@@ -397,5 +397,4 @@ public class CmisAccessImpl extends FsAccess implements DisposableBean {
 	public boolean supportIntraCopyPast() {
 		return false;
 	}
-
 }

@@ -27,8 +27,9 @@ public class RegUriManipulateService implements UriManipulateService {
 	protected static final Log log = LogFactory.getLog(RegUriManipulateService.class);
 
 	protected String regexp = "";
+
 	protected String replacement = "";
-	
+
 	public void setRegexp(String regexp) {
 		this.regexp = regexp;
 	}
@@ -41,14 +42,14 @@ public class RegUriManipulateService implements UriManipulateService {
 		String outUri = "";
 		outUri = uri;
 		// we check if the path is a regular expression
-		if (regexp!=null && replacement !=null) {			
+		if (regexp!=null && replacement !=null) {
 			Pattern p = Pattern.compile(regexp, Pattern.CASE_INSENSITIVE);
 			Matcher m = p.matcher(outUri);
-			outUri = m.replaceAll(replacement);			
+			outUri = m.replaceAll(replacement);
 		}
 		if(log.isDebugEnabled())
 			log.debug("RegUriManipulateService:: input uri :"+uri+" -- output uri : "+outUri);
-		
+
 		return outUri;
-	}	
+	}
 }
