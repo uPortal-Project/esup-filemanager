@@ -41,7 +41,6 @@ import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.Quota;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UploadActionType;
-import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
 import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.esupportail.portlet.filemanager.services.ResourceUtils;
 import org.esupportail.portlet.filemanager.services.ResourceUtils.Type;
@@ -57,7 +56,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.portlet.ModelAndView;
@@ -559,20 +557,5 @@ public class PortletControllerAjax {
         String parentDirEnc = pathEncodingUtils.encodeDir(parentDir);
 
         return getJacksonView(parentDirEnc);
-    }
-
-
-    @ExceptionHandler(Exception.class)
-    public ModelAndView handleException(Exception ex, ResourceRequest resourceRequest, ResourceResponse resourcesResponse, Locale loc) {
-        EsupStockException exn;
-        if (ex instanceof EsupStockException) {
-            exn = (EsupStockException) ex;
-        } else {
-            exn = new EsupStockException(ex);
-        }
-        ModelMap modelMap = new ModelMap();
-        String errorText = messageSource.getMessage(exn.getCodeI18n(), new String[] {exn.getMessage()}, loc);
-        modelMap.put("errorText", errorText);
-        return new ModelAndView("ajax_error", modelMap);
     }
 }
