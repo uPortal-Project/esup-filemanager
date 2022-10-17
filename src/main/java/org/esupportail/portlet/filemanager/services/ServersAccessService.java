@@ -47,8 +47,9 @@ import org.esupportail.portlet.filemanager.crudlog.CrudLoggable;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockLostSessionException;
 import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
@@ -56,7 +57,7 @@ import org.springframework.util.Assert;
 
 @Service("serversAccess")
 @Scope(value="session", proxyMode=ScopedProxyMode.INTERFACES)
-public class ServersAccessService implements DisposableBean, IServersAccessService {
+public class ServersAccessService implements DisposableBean, IServersAccessService, InitializingBean {
 
     protected static final Log log = LogFactory.getLog(ServersAccessService.class);
 
@@ -77,11 +78,19 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
     }
 
     @Autowired
-    @Qualifier("drivesCategories")
+    private ApplicationContext applicationContext;
+
+    //@Resource(name="drivesCategories")
     protected Map<String, DrivesCategory> drivesCategories;
 
     @Autowired
     protected PathEncodingUtils pathEncodingUtils;
+
+    // With spring 4.3.x and prior a Map can't be loaded by @Autowired, but @Resource could work if jakarta annotation library is used
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        drivesCategories = applicationContext.getBean("drivesCategories", Map.class);
+    }
 
     public List<String> getRestrictedDrivesGroupsContext(PortletRequest request) {
 
