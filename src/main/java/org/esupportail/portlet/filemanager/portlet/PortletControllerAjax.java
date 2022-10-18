@@ -245,7 +245,7 @@ public class PortletControllerAjax {
                 allOk = 0;
             }
         }
-        jsonMsg.put("status", new Long(allOk));
+        jsonMsg.put("status", allOk);
         jsonMsg.put("msg", msg);
 
         return getJacksonView(jsonMsg);
@@ -292,7 +292,7 @@ public class PortletControllerAjax {
         basketSession.setDirsToCopy(pathEncodingUtils.decodeDirs(command.getDirs()));
         basketSession.setGoal("copy");
         Map jsonMsg = new HashMap();
-        jsonMsg.put("status", new Long(1));
+        jsonMsg.put("status", 1);
         String msg = context.getMessage("ajax.copy.ok", null, locale);
         jsonMsg.put("msg", msg);
         return getJacksonView(jsonMsg);
@@ -305,7 +305,7 @@ public class PortletControllerAjax {
         basketSession.setDirsToCopy(pathEncodingUtils.decodeDirs(command.getDirs()));
         basketSession.setGoal("cut");
         Map jsonMsg = new HashMap();
-        jsonMsg.put("status", new Long(1));
+        jsonMsg.put("status", 1);
         String msg = context.getMessage("ajax.cut.ok", null, locale);
         jsonMsg.put("msg", msg);
         return getJacksonView(jsonMsg);
@@ -318,12 +318,12 @@ public class PortletControllerAjax {
         dir = pathEncodingUtils.decodeDir(dir);
         Map jsonMsg = new HashMap();
         if(this.serverAccess.moveCopyFilesIntoDirectory(dir, basketSession.getDirsToCopy(), "copy".equals(basketSession.getGoal()), userParameters)) {
-            jsonMsg.put("status", new Long(1));
+            jsonMsg.put("status", 1);
             String msg = context.getMessage("ajax.paste.ok", null, locale);
             jsonMsg.put("msg", msg);
         }
         else {
-            jsonMsg.put("status", new Long(0));
+            jsonMsg.put("status", 0);
             String msg = context.getMessage("ajax.paste.failed", null, locale);
             jsonMsg.put("msg", msg);
         }
@@ -337,12 +337,12 @@ public class PortletControllerAjax {
         dir = pathEncodingUtils.decodeDir(dir);
         Map jsonMsg = new HashMap();
         if(this.serverAccess.authenticate(dir, username, password, userParameters)) {
-            jsonMsg.put("status", new Long(1));
+            jsonMsg.put("status", 1);
             String msg = context.getMessage("auth.ok", null, locale);
             jsonMsg.put("msg", msg);
         }
         else {
-            jsonMsg.put("status", new Long(0));
+            jsonMsg.put("status", 0);
             String msg = context.getMessage("auth.bad", null, locale);
             jsonMsg.put("msg", msg);
         }
