@@ -19,29 +19,31 @@ package org.esupportail.portlet.filemanager.services.opencmis;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.chemistry.opencmis.client.bindings.spi.AbstractAuthenticationProvider;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 public class TrustedHttpheadersCmisAuthenticationProvider extends AbstractAuthenticationProvider  {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected static final Log log = LogFactory.getLog(TrustedHttpheadersCmisAuthenticationProvider.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TrustedHttpheadersCmisAuthenticationProvider.class);
 
-	public static final String ESUP_HEADER_SHIB_HTTP_HEADERS = "ESUP_HEADER_SHIB_HTTP_HEADERS";
+    public static final String ESUP_HEADER_SHIB_HTTP_HEADERS = "ESUP_HEADER_SHIB_HTTP_HEADERS";
 
-	@Override
-	public Map<String, List<String>> getHTTPHeaders(String url) {
-		Map<String, List<String>> httpHeaders = null;
-		Object httpHeadersObject = ContextUtils.getSessionAttribute(ESUP_HEADER_SHIB_HTTP_HEADERS);
-		if(httpHeadersObject != null) {
-			httpHeaders = (Map<String, List<String>>) httpHeadersObject;
-			log.debug("httpHeaders :" + httpHeaders.toString());
-		} else {
-			log.warn("httpHeaders will be null : we don't retrieve any userinfos attributes !");
-		}
-		return httpHeaders;
-	}
+    @Override
+    public Map<String, List<String>> getHTTPHeaders(String url) {
+        Map<String, List<String>> httpHeaders = null;
+        Object httpHeadersObject = ContextUtils.getSessionAttribute(ESUP_HEADER_SHIB_HTTP_HEADERS);
+        if(httpHeadersObject != null) {
+            httpHeaders = (Map<String, List<String>>) httpHeadersObject;
+            log.debug("httpHeaders: {}", httpHeaders.entrySet()
+                    .stream()
+                    .map(e -> e.getKey() + "=\"" + e.getValue() + "\"")
+                    .collect(Collectors.joining(", ")));
+        } else {
+            log.warn("httpHeaders will be null : we don't retrieve any userinfos attributes !");
+        }
+        return httpHeaders;
+    }
 }

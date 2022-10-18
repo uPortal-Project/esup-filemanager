@@ -21,44 +21,42 @@ import java.io.IOException;
 
 import net.iharder.Base64;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service("pathEncodingUtils")
 public class Base64PathEncodingUtils extends PathEncodingUtils {
-    private static final Logger logger = LoggerFactory.getLogger(Base64PathEncodingUtils.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Base64PathEncodingUtils.class);
 
-	public String encodeDir(String path) {
-		if(path == null)
-			return null;
-		String encodedPath = path;
+    public String encodeDir(String path) {
+        if(path == null)
+            return null;
+        String encodedPath = path;
         try {
             encodedPath = Base64.encodeBytes(path.getBytes(), Base64.URL_SAFE);
         } catch (IOException e) {
-            logger.error("Base64 encoding fails for path '{}'", path, e);
+            log.error("Base64 encoding fails for path '{}'", path, e);
             throw new EsupStockException(e);
         }
         encodedPath = encodedPath.replaceAll("\n", "");
-		encodedPath = encodedPath.replaceAll("=", "");
-		return PREFIX_CODE + encodedPath;
-	}
+        encodedPath = encodedPath.replaceAll("=", "");
+        return PREFIX_CODE + encodedPath;
+    }
 
-	public String decodeDir(String dir) {
-		if(dir == null || "".equals(dir))
-			return null;
-		dir = dir.substring(PREFIX_CODE.length());
-		int nb_equals_to_add = 4 - dir.length() % 4;
-		if(nb_equals_to_add == 1)
-			dir = dir + "=";
-		if(nb_equals_to_add == 2)
-			dir = dir + "==";
+    public String decodeDir(String dir) {
+        if(dir == null || "".equals(dir))
+            return null;
+        dir = dir.substring(PREFIX_CODE.length());
+        int nb_equals_to_add = 4 - dir.length() % 4;
+        if(nb_equals_to_add == 1)
+            dir = dir + "=";
+        if(nb_equals_to_add == 2)
+            dir = dir + "==";
         try {
             dir = new String(Base64.decode(dir, Base64.URL_SAFE));
         } catch (IOException e) {
-            logger.error("Base64 decoding fails for dir '{}'", dir, e);
+            log.error("Base64 decoding fails for dir '{}'", dir, e);
             throw new RuntimeException(e);
         }
         return dir;
-	}
+    }
 }

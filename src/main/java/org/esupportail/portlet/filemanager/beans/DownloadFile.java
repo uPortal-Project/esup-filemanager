@@ -21,92 +21,89 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 public class DownloadFile implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected static final Log log = LogFactory.getLog(DownloadFile.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DownloadFile.class);
 
-	private long size;
+    private long size;
 
-	private String contentType;
+    private String contentType;
 
-	private InputStream inputStream;
+    private InputStream inputStream;
 
-	private String baseName;
+    private String baseName;
 
-	private File tmpFile;
+    private File tmpFile;
 
-	public DownloadFile(String contentType, long size, String baseName, InputStream inputStream) {
-		this.contentType = contentType;
-		this.size = size;
-		this.baseName = baseName;
-		this.inputStream = inputStream;
-		this.tmpFile = null;
-	}
+    public DownloadFile(String contentType, long size, String baseName, InputStream inputStream) {
+        this.contentType = contentType;
+        this.size = size;
+        this.baseName = baseName;
+        this.inputStream = inputStream;
+        this.tmpFile = null;
+    }
 
-	/**
-	 * @param contentType
-	 * @param size
-	 * @param baseName
-	 * @param inputStream
-	 * @param tmpFile a tmp file to delete when this downloadFile is garbage collected
-	 */
-	public DownloadFile(String contentType, long size, String baseName, InputStream inputStream, File tmpFile) {
-		this.contentType = contentType;
-		this.size = size;
-		this.baseName = baseName;
-		this.inputStream = inputStream;
-		this.tmpFile = tmpFile;
-	}
+    /**
+     * @param contentType
+     * @param size
+     * @param baseName
+     * @param inputStream
+     * @param tmpFile a tmp file to delete when this downloadFile is garbage collected
+     */
+    public DownloadFile(String contentType, long size, String baseName, InputStream inputStream, File tmpFile) {
+        this.contentType = contentType;
+        this.size = size;
+        this.baseName = baseName;
+        this.inputStream = inputStream;
+        this.tmpFile = tmpFile;
+    }
 
-	public long getSize() {
-		return size;
-	}
+    public long getSize() {
+        return size;
+    }
 
-	public void setSize(long size) {
-		this.size = size;
-	}
+    public void setSize(long size) {
+        this.size = size;
+    }
 
-	public String getContentType() {
-		return contentType;
-	}
+    public String getContentType() {
+        return contentType;
+    }
 
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
 
-	public String getBaseName() {
-		return baseName;
-	}
+    public String getBaseName() {
+        return baseName;
+    }
 
-	public void setBaseName(String baseName) {
-		this.baseName = baseName;
-	}
+    public void setBaseName(String baseName) {
+        this.baseName = baseName;
+    }
 
-	public InputStream getInputStream() {
-		return inputStream;
-	}
+    public InputStream getInputStream() {
+        return inputStream;
+    }
 
-	public void setInputStream(InputStream inputStream) {
-		this.inputStream = inputStream;
-	}
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
+    }
 
-	/*
-	 * Even if we call tmpFile.deleteOnExit on ServerAccessService.getZip
-	 * We're trying here to delete tmpfile via garbage collector
-	 * @see java.lang.Object#finalize()
-	 */
-	@Override
-	protected void finalize() throws Throwable {
-		super.finalize();
-		if(tmpFile != null) {
-			if(tmpFile.delete()) {
-				log.debug("tmpFile " + tmpFile + " has been deleted vi GC call to DownloadFile.finalize method");
-			}
-		}
-	}
+    /*
+     * Even if we call tmpFile.deleteOnExit on ServerAccessService.getZip
+     * We're trying here to delete tmpfile via garbage collector
+     * @see java.lang.Object#finalize()
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        if(tmpFile != null) {
+            if(tmpFile.delete()) {
+                log.debug("tmpFile '{}' has been deleted vi GC call to DownloadFile.finalize method", tmpFile);
+            }
+        }
+    }
 }

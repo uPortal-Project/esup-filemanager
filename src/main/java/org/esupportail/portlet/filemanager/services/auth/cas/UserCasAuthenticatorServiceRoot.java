@@ -43,8 +43,6 @@ import java.util.Map;
 
 import javax.portlet.PortletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.jasig.cas.client.validation.Assertion;
 import org.springframework.web.context.request.RequestAttributes;
@@ -56,46 +54,46 @@ import org.springframework.web.portlet.context.PortletRequestAttributes;
  */
 public class UserCasAuthenticatorServiceRoot {
 
-    private static final Log log = LogFactory.getLog(UserCasAuthenticatorServiceRoot.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UserCasAuthenticatorServiceRoot.class);
 
     private ProxyTicketService proxyTicketService;
 
     private String userInfoTicketProperty;
 
     public void setProxyTicketService(ProxyTicketService proxyTicketService) {
-		this.proxyTicketService = proxyTicketService;
-	}
+        this.proxyTicketService = proxyTicketService;
+    }
 
-	public void setUserInfoTicketProperty(String userInfoTicketProperty) {
-		this.userInfoTicketProperty = userInfoTicketProperty;
-	}
+    public void setUserInfoTicketProperty(String userInfoTicketProperty) {
+        this.userInfoTicketProperty = userInfoTicketProperty;
+    }
 
-	public void initialize(SharedUserPortletParameters userParameters) {
+    public void initialize(SharedUserPortletParameters userParameters) {
 
-		if(userParameters.getAssertion() == null) {
+        if(userParameters.getAssertion() == null) {
 
-			if (proxyTicketService != null) {
+            if (proxyTicketService != null) {
 
-				// Using userParameters.getUserInfos() - we can have a tool old PT which can be expired
-				// So we get here the PortletRequest to get a new PT from Portal.
-				//Map userInfos = userParameters.getUserInfos();
+                // Using userParameters.getUserInfos() - we can have a tool old PT which can be expired
+                // So we get here the PortletRequest to get a new PT from Portal.
+                //Map userInfos = userParameters.getUserInfos();
 
-				RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
-				PortletRequest portletRequest = ((PortletRequestAttributes) attrs).getRequest();
-				Map userInfos = (Map) portletRequest.getAttribute(PortletRequest.USER_INFO);
+                RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
+                PortletRequest portletRequest = ((PortletRequestAttributes) attrs).getRequest();
+                Map userInfos = (Map) portletRequest.getAttribute(PortletRequest.USER_INFO);
 
-				String ticket = (String) userInfos.get(this.userInfoTicketProperty);
-				if (ticket != null) {
-					log.debug("ticket from portal = " + ticket);
-					Assertion assertion = proxyTicketService.getProxyTicket(ticket);
-					userParameters.setAssertion(assertion);
-					log.debug("CAS Assertion = " + assertion);
-				} else {
-					log.debug("no CAS ticket received from portal");
-				}
-			} else {
-				log.debug("CAS ticket already received from portal");
-			}
+                String ticket = (String) userInfos.get(this.userInfoTicketProperty);
+                if (ticket != null) {
+                    log.debug("ticket from portal = {}", ticket);
+                    Assertion assertion = proxyTicketService.getProxyTicket(ticket);
+                    userParameters.setAssertion(assertion);
+                    log.debug("CAS Assertion = {}", assertion);
+                } else {
+                    log.debug("no CAS ticket received from portal");
+                }
+            } else {
+                log.debug("CAS ticket already received from portal");
+            }
         }
     }
 }

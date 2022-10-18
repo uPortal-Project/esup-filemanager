@@ -17,16 +17,12 @@
  */
 package org.esupportail.portlet.filemanager.services.auth;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 
 public class FormUserPasswordAuthenticatorService extends UserPasswordAuthenticatorService {
 
-	protected static final Log log = LogFactory.getLog(FormUserPasswordAuthenticatorService.class);
-
     @Override
     public boolean formAuthenticationNeeded(SharedUserPortletParameters userParameters) {
-		return true;
-	}
+        return true;
+    }
 }

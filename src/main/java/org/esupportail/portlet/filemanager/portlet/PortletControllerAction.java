@@ -35,8 +35,6 @@ import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
 import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -53,7 +51,7 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
 @RequestMapping("VIEW")
 public class PortletControllerAction {
 
-    private static final Logger logger = LoggerFactory.getLogger(PortletControllerAction.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PortletControllerAction.class);
 
     @Autowired
     protected IServersAccessService serverAccess;
@@ -93,7 +91,7 @@ public class PortletControllerAction {
 			url = url.substring(0, url.length()-1);
 			response.sendRedirect(url);
 			*/
-            logger.warn("TODO !");
+            log.warn("TODO !");
 
         } else  if (rename != null) {
             response.setRenderParameter("dir", pathEncodingUtils.encodeDir(dir));

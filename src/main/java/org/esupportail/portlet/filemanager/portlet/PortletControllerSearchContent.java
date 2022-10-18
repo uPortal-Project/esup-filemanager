@@ -26,15 +26,13 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 
-import org.esupportail.portlet.filemanager.beans.JsTreeFile;
-import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
-import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.apereo.portal.search.SearchConstants;
 import org.apereo.portal.search.SearchRequest;
 import org.apereo.portal.search.SearchResult;
 import org.apereo.portal.search.SearchResults;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.esupportail.portlet.filemanager.beans.JsTreeFile;
+import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
+import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -47,37 +45,37 @@ import org.springframework.web.portlet.context.PortletConfigAware;
 @RequestMapping("VIEW")
 public class PortletControllerSearchContent implements PortletConfigAware {
 
-    private static final Logger logger = LoggerFactory.getLogger(PortletControllerSearchContent.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PortletControllerSearchContent.class);
 
     private PortletConfig portletConfig;
 
-	@Autowired
-	protected IServersAccessService serverAccess;
+    @Autowired
+    protected IServersAccessService serverAccess;
 
-	@Autowired
-	protected SharedUserPortletParameters userParameters;
+    @Autowired
+    protected SharedUserPortletParameters userParameters;
 
-	@Autowired
-	protected PortletController portletController;
+    @Autowired
+    protected PortletController portletController;
 
-	public void setPortletConfig(PortletConfig portletConfig) {
-		this.portletConfig = portletConfig;
-	}
+    public void setPortletConfig(PortletConfig portletConfig) {
+        this.portletConfig = portletConfig;
+    }
 
     @EventMapping(SearchConstants.SEARCH_REQUEST_QNAME_STRING)
     public void searchContent(EventRequest request, EventResponse response) {
 
-    	logger.info("PortletControllerSearchContent.searchContent from EsupFilemanager is called");
+        log.info("PortletControllerSearchContent.searchContent from EsupFilemanager is called");
 
-    	final Event event = request.getEvent();
+        final Event event = request.getEvent();
         final SearchRequest searchQuery = (SearchRequest)event.getValue();
 
         String searchTermsString = searchQuery.getSearchTerms();
         final String[] searchTerms = searchTermsString.split(" ");
-        logger.info("searchQuery Event : searchTerms = " + searchTermsString);
+        log.info("searchQuery Event : searchTerms = '{}'", searchTermsString);
 
         final String textContent = getFileNames(request);
-        logger.debug("textContent for the portlet = " + textContent);
+        log.debug("textContent for the portlet = '{}'", textContent);
 
         for (final String term : searchTerms) {
             if (textContent.contains(term)) {
@@ -103,25 +101,25 @@ public class PortletControllerSearchContent implements PortletConfigAware {
 
     protected String getFileNames(PortletRequest request){
 
-    	portletController.init(request);
+        portletController.init(request);
 
-    	PortletPreferences prefs = request.getPreferences();
-    	String[] prefsDefaultPathes = prefs.getValues(PortletController.PREF_DEFAULT_PATH, null);
+        PortletPreferences prefs = request.getPreferences();
+        String[] prefsDefaultPathes = prefs.getValues(PortletController.PREF_DEFAULT_PATH, null);
 
-    	boolean showHiddenFiles = "true".equals(prefs.getValue(PortletController.PREF_SHOW_HIDDEN_FILES, "false"));
-    	userParameters.setShowHiddenFiles(showHiddenFiles);
+        boolean showHiddenFiles = Boolean.parseBoolean(prefs.getValue(PortletController.PREF_SHOW_HIDDEN_FILES, "false"));
+        userParameters.setShowHiddenFiles(showHiddenFiles);
 
-    	serverAccess.initializeServices(userParameters);
+        serverAccess.initializeServices(userParameters);
 
-    	String defaultPath = serverAccess.getFirstAvailablePath(userParameters, prefsDefaultPathes);
-    	List<JsTreeFile> files = this.serverAccess.getChildren(defaultPath, userParameters);
+        String defaultPath = serverAccess.getFirstAvailablePath(userParameters, prefsDefaultPathes);
+        List<JsTreeFile> files = this.serverAccess.getChildren(defaultPath, userParameters);
 
-    	StringBuilder fileNames = new StringBuilder();
-    	for(JsTreeFile f:  files) {
-    		fileNames.append(" ").append(f.getTitle());
-    	}
+        StringBuilder fileNames = new StringBuilder();
+        for(JsTreeFile f:  files) {
+            fileNames.append(" ").append(f.getTitle());
+        }
 
-    	return fileNames.toString();
+        return fileNames.toString();
     }
 }
 

@@ -35,8 +35,6 @@ import org.esupportail.portlet.filemanager.beans.UploadActionType;
 import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.esupportail.portlet.filemanager.services.UserAgentInspector;
 import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -50,7 +48,7 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
 @Scope("request")
 @RequestMapping("VIEW")
 public class PortletController {
-    private static final Logger logger = LoggerFactory.getLogger(PortletController.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PortletController.class);
 
     public static final String PREF_PORTLET_VIEW = "defaultPortletView";
     public static final String PREF_DEFAULT_PATH = "defaultPath";
@@ -89,7 +87,7 @@ public class PortletController {
             List<String> driveNames = serverAccess.getRestrictedDrivesGroupsContext(request);
             userParameters.setDriveNames(driveNames);
 
-            logger.info("set SharedUserPortletParameters in application session");
+            log.info("set SharedUserPortletParameters in application session");
         }
 
     }
@@ -100,13 +98,13 @@ public class PortletController {
         final PortletPreferences prefs = request.getPreferences();
         String defaultPortletView = prefs.getValue(PREF_PORTLET_VIEW, STANDARD_VIEW);
         String[] prefsDefaultPathes = prefs.getValues(PREF_DEFAULT_PATH, null);
-        if(logger.isDebugEnabled()) {
-            logger.debug(PREF_DEFAULT_PATH + " preference : ");
+        if(log.isDebugEnabled()) {
+            log.debug(PREF_DEFAULT_PATH + " preference: ");
             for(String prefDefaultPath: prefsDefaultPathes)
-                logger.debug("- " + prefDefaultPath);
+                log.debug("- {}", prefDefaultPath);
         }
 
-        boolean showHiddenFiles = "true".equals(prefs.getValue(PREF_SHOW_HIDDEN_FILES, "false"));
+        boolean showHiddenFiles = Boolean.parseBoolean(prefs.getValue(PREF_SHOW_HIDDEN_FILES, "false"));
         userParameters.setShowHiddenFiles(showHiddenFiles);
 
         UploadActionType uploadOption = UploadActionType.valueOf(prefs.getValue(PREF_UPLOAD_ACTION_EXIST_FILE, UploadActionType.OVERRIDE.toString()));
@@ -115,7 +113,7 @@ public class PortletController {
         serverAccess.initializeServices(userParameters);
 
         String defaultPath = serverAccess.getFirstAvailablePath(userParameters, prefsDefaultPathes);
-        logger.info("defaultPath will be : " + defaultPath);
+        log.info("defaultPath will be '{}'", defaultPath);
         defaultPath = pathEncodingUtils.encodeDir(defaultPath);
 
         if(userAgentInspector.isMobile(request)) {
@@ -134,8 +132,8 @@ public class PortletController {
     public ModelAndView browseStandard(RenderRequest request, RenderResponse response, String dir) {
         this.init(request);
         final PortletPreferences prefs = request.getPreferences();
-        boolean useDoubleClick = "true".equals(prefs.getValue(PREF_USE_DOUBLE_CLICK, "true"));
-        boolean useCursorWaitDialog = "true".equals(prefs.getValue(PREF_USE_CURSOR_WAIT_DIALOG, "false"));
+        boolean useDoubleClick = Boolean.parseBoolean(prefs.getValue(PREF_USE_DOUBLE_CLICK, "true"));
+        boolean useCursorWaitDialog = Boolean.parseBoolean(prefs.getValue(PREF_USE_CURSOR_WAIT_DIALOG, "false"));
 
         ModelMap model = new ModelMap();
         model.put("useDoubleClick", useDoubleClick);
@@ -144,7 +142,7 @@ public class PortletController {
             dir = "";
         model.put("defaultPath", dir);
 
-        boolean fullViewOnlyMaximized = "true".equals(prefs.getValue(PREF_FULL_VIEW_ONLY_MAXIMIZED, "true"));
+        boolean fullViewOnlyMaximized = Boolean.parseBoolean(prefs.getValue(PREF_FULL_VIEW_ONLY_MAXIMIZED, "true"));
         boolean fullView = !fullViewOnlyMaximized || WindowState.MAXIMIZED.equals(request.getWindowState());
         model.put("fullView", fullView);
 
@@ -157,7 +155,7 @@ public class PortletController {
         this.init(request);
 
         final PortletPreferences prefs = request.getPreferences();
-        boolean forceMaximized4Mobile = "true".equals(prefs.getValue(PREF_FORCE_MAXIMIZED_4_MOBILE, "true"));
+        boolean forceMaximized4Mobile = Boolean.parseBoolean(prefs.getValue(PREF_FORCE_MAXIMIZED_4_MOBILE, "true"));
         String forceWindowState4Mobile = forceMaximized4Mobile ? WindowState.MAXIMIZED.toString() : request.getWindowState().toString();
 
         String decodedDir = pathEncodingUtils.decodeDir(dir);

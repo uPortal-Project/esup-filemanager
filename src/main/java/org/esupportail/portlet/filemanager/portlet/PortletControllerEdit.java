@@ -24,8 +24,6 @@ import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -39,8 +37,6 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
 @Scope("request")
 @RequestMapping("EDIT")
 public class PortletControllerEdit {
-
-    private static final Logger logger = LoggerFactory.getLogger(PortletControllerEdit.class);
 
     @RenderMapping
     public ModelAndView renderEditView(RenderRequest request, RenderResponse response) throws Exception {

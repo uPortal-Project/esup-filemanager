@@ -27,8 +27,6 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import javax.crypto.Cipher;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
@@ -38,7 +36,7 @@ import org.jasig.cas.client.validation.Assertion;
 
 public class ClearPassUserCasAuthenticatorService implements UserAuthenticatorService {
 
-    private static final Log log = LogFactory.getLog(ClearPassUserCasAuthenticatorService.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ClearPassUserCasAuthenticatorService.class);
 
     protected UserCasAuthenticatorServiceRoot userCasAuthenticatorServiceRoot;
 
@@ -78,7 +76,7 @@ public class ClearPassUserCasAuthenticatorService implements UserAuthenticatorSe
     public UserPassword getClearPassUserPassword(SharedUserPortletParameters userParameters) {
 
         if (log.isDebugEnabled()) {
-            log.debug("getting credentials using " + this.getClass().getName());
+            log.debug("getting credentials using {}", this.getClass().getName());
         }
 
         log.debug("getting CAS credentials from session");
@@ -90,21 +88,21 @@ public class ClearPassUserCasAuthenticatorService implements UserAuthenticatorSe
         }
 
         String proxyPrincipalname = casAssertion.getPrincipal().getName();
-        log.debug("got user '" + proxyPrincipalname + "'");
+        log.debug("got user '{}'", proxyPrincipalname);
 
         String credential = (String)casAssertion.getPrincipal().getAttributes().get(credentialAttribute);
         if(credential == null) {
-            log.error("No credential attribute [" + credentialAttribute + "] found in cas assertion.");
+            log.error("No credential attribute [{}] found in cas assertion.", credentialAttribute);
             return null;
         } else {
 
-            log.trace("got credential '" + credential + "'");
+            log.trace("got credential '{}'", credential);
 
             String password = "";
             try {
                 password = decodeCredential(credential);
             } catch (Exception e) {
-                log.error("Credential " + credential + " can't be decoded.");
+                log.error("Credential '{}' can't be decoded.", credential);
             }
 
             UserPassword auth = new UserPassword(proxyPrincipalname, password);

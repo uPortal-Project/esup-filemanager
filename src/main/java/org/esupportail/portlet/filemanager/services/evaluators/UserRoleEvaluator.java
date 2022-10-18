@@ -28,63 +28,61 @@ import org.springframework.util.Assert;
  */
 public class UserRoleEvaluator implements IDriveAccessEvaluator, InitializingBean {
 
-	/** The portlet group value. */
-	private String group;
+    /** The portlet group value. */
+    private String group;
 
-	/**
-	 * Contructor of the object UserRoleEvaluator.java.
-	 */
-	public UserRoleEvaluator() {
-		// empty block
-	}
+    /**
+     * Contructor of the object UserRoleEvaluator.java.
+     */
+    public UserRoleEvaluator() {
+        // empty block
+    }
 
-	/**
-	 * Contructor of the object UserRoleEvaluator.java.
-	 * @param group The group name to evaluate.
-	 */
-	public UserRoleEvaluator(final String group) {
-		this.group = group;
-	}
+    /**
+     * Contructor of the object UserRoleEvaluator.java.
+     * @param group The group name to evaluate.
+     */
+    public UserRoleEvaluator(final String group) {
+        this.group = group;
+    }
 
-	/**
-	 * @see org.esupportail.portlet.filemanager.services.evaluators.IDriveAccessEvaluator#isApplicable(javax.portlet.PortletRequest)
-	 */
-	public boolean isApplicable(PortletRequest request) {
-		if (request.isUserInRole(group))
-			return true;
-		return false;
-	}
+    /**
+     * @see org.esupportail.portlet.filemanager.services.evaluators.IDriveAccessEvaluator#isApplicable(javax.portlet.PortletRequest)
+     */
+    public boolean isApplicable(PortletRequest request) {
+        return request.isUserInRole(group);
+    }
 
-	/**
-	 * Getter of member group.
-	 * @return <code>String</code> the attribute group
-	 */
-	public String getGroup() {
-		return group;
-	}
+    /**
+     * Getter of member group.
+     * @return <code>String</code> the attribute group
+     */
+    public String getGroup() {
+        return group;
+    }
 
-	/**
-	 * Setter of attribute group.
-	 * @param group the attribute group to set
-	 */
-	public void setGroup(final String group) {
-		this.group = group;
-	}
+    /**
+     * Setter of attribute group.
+     * @param group the attribute group to set
+     */
+    public void setGroup(final String group) {
+        this.group = group;
+    }
 
-	/**
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-	 */
-	public void afterPropertiesSet() throws Exception {
-		Assert.hasLength(group, "The group to compare must be set !");
-	}
+    /**
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
+    public void afterPropertiesSet() throws Exception {
+        Assert.hasLength(group, "The group to compare must be set !");
+    }
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
         return "UserRoleEvaluator [group=" +
                 group +
                 "]";
-	}
+    }
 }

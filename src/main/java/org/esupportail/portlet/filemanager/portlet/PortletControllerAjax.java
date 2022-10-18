@@ -44,8 +44,6 @@ import org.esupportail.portlet.filemanager.services.IServersAccessService;
 import org.esupportail.portlet.filemanager.services.ResourceUtils;
 import org.esupportail.portlet.filemanager.services.ResourceUtils.Type;
 import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -66,7 +64,7 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 @RequestMapping("VIEW")
 public class PortletControllerAjax {
 
-    private static final Logger logger = LoggerFactory.getLogger(PortletControllerAjax.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PortletControllerAjax.class);
 
     @Autowired
     private MessageSource messageSource;
@@ -132,9 +130,9 @@ public class PortletControllerAjax {
      */
     @ResourceMapping(value="htmlFileTree")
     public ModelAndView fileTree(@RequestParam String dir, @RequestParam(required=false) String sortField, ResourceRequest request, ResourceResponse response) {
-        logger.debug("Requesting htmlFileTree");
+        log.debug("Requesting htmlFileTree");
         dir = pathEncodingUtils.decodeDir(dir);
-        logger.debug("Requesting htmlFileTree on dir {}", dir);
+        log.debug("Requesting htmlFileTree on dir {}", dir);
         ModelMap model = new ModelMap();
         if(this.serverAccess.formAuthenticationRequired(dir, userParameters)) {
             model = new ModelMap("currentDir", pathEncodingUtils.encodeDir(dir));
@@ -185,11 +183,11 @@ public class PortletControllerAjax {
 
     @ResourceMapping(value="toggleThumbnailMode")
     public ModelAndView toggleThumbnailMode(@RequestParam boolean thumbnailMode, ResourceRequest request) {
-        logger.debug("Requesting toggleThumbnailMode");
+        log.debug("Requesting toggleThumbnailMode");
         putThumbnailMode(thumbnailMode, request);
 
         Map<String, String> jsonMsg = new HashMap<String, String>();
-        jsonMsg.put("thumbnail_mode", new Boolean(thumbnailMode).toString());
+        jsonMsg.put("thumbnail_mode", Boolean.toString(thumbnailMode));
         return getJacksonView(jsonMsg);
     }
 
@@ -202,9 +200,9 @@ public class PortletControllerAjax {
      */
     @ResourceMapping(value="fileChildren")
     public ModelAndView fileChildren(@RequestParam String dir, @RequestParam(required=false) String hierarchy, ResourceRequest request) {
-        logger.debug("Requesting fileChildren");
+        log.debug("Requesting fileChildren");
         dir = pathEncodingUtils.decodeDir(dir);
-        logger.debug("Requesting fileChildren decoded dir is {}", dir);
+        log.debug("Requesting fileChildren decoded dir is {}", dir);
         List<JsTreeFile> files;
         if(this.serverAccess.formAuthenticationRequired(dir, userParameters) && this.serverAccess.getUserPassword(dir, userParameters).getPassword() == null) {
             String driveDir = JsTreeFile.ROOT_DRIVE
@@ -236,7 +234,7 @@ public class PortletControllerAjax {
 
     @ResourceMapping(value="removeFiles")
     public ModelAndView removeFiles(FormCommand command, ResourceRequest request) {
-        logger.debug("Requesting removeFiles");
+        log.debug("Requesting removeFiles");
         Locale locale = request.getLocale();
         long allOk = 1;
         String msg = context.getMessage("ajax.remove.ok", null, locale);
@@ -255,7 +253,7 @@ public class PortletControllerAjax {
 
     @ResourceMapping(value="createFile")
     public ModelAndView createFile(String parentDir, String title, String type, ResourceRequest request, ResourceResponse response) {
-        logger.debug("Requesting createFile");
+        log.debug("Requesting createFile");
         String parentDirDecoded = pathEncodingUtils.decodeDir(parentDir);
         String fileDir = this.serverAccess.createFile(parentDirDecoded, title, type, userParameters);
         if(fileDir != null) {
@@ -273,7 +271,7 @@ public class PortletControllerAjax {
 
     @ResourceMapping(value="renameFile")
     public ModelAndView renameFile(String parentDir, String dir, String title, ResourceRequest request, ResourceResponse response) {
-        logger.debug("Requesting renameFile");
+        log.debug("Requesting renameFile");
         parentDir = pathEncodingUtils.decodeDir(parentDir);
         dir = pathEncodingUtils.decodeDir(dir);
         if(this.serverAccess.renameFile(dir, title, userParameters)) {
@@ -289,7 +287,7 @@ public class PortletControllerAjax {
 
     @ResourceMapping(value="prepareCopyFiles")
     public ModelAndView prepareCopyFiles(FormCommand command, ResourceRequest request) {
-        logger.debug("Requesting prepareCopyFiles");
+        log.debug("Requesting prepareCopyFiles");
         Locale locale = request.getLocale();
         basketSession.setDirsToCopy(pathEncodingUtils.decodeDirs(command.getDirs()));
         basketSession.setGoal("copy");
@@ -302,7 +300,7 @@ public class PortletControllerAjax {
 
     @ResourceMapping(value="prepareCutFiles")
     public ModelAndView prepareCutFiles(FormCommand command, ResourceRequest request) {
-        logger.debug("Requesting prepareCutFiles");
+        log.debug("Requesting prepareCutFiles");
         Locale locale = request.getLocale();
         basketSession.setDirsToCopy(pathEncodingUtils.decodeDirs(command.getDirs()));
         basketSession.setGoal("cut");
@@ -315,7 +313,7 @@ public class PortletControllerAjax {
 
     @ResourceMapping(value="pastFiles")
     public ModelAndView pastFiles(String dir, ResourceRequest request) {
-        logger.debug("Requesting pastFiles");
+        log.debug("Requesting pastFiles");
         Locale locale = request.getLocale();
         dir = pathEncodingUtils.decodeDir(dir);
         Map jsonMsg = new HashMap();
@@ -334,7 +332,7 @@ public class PortletControllerAjax {
 
     @ResourceMapping(value="authenticate")
     public ModelAndView authenticate(String dir, String username, String password, ResourceRequest request) {
-        logger.debug("Requesting authenticate");
+        log.debug("Requesting authenticate");
         Locale locale = request.getLocale();
         dir = pathEncodingUtils.decodeDir(dir);
         Map jsonMsg = new HashMap();
@@ -354,7 +352,7 @@ public class PortletControllerAjax {
     @ResourceMapping(value="fetchImage")
     public void fetchImage(String dir,
                            ResourceRequest request, ResourceResponse response) throws IOException {
-        logger.debug("Requesting fetchImage");
+        log.debug("Requesting fetchImage");
         dir = pathEncodingUtils.decodeDir(dir);
         this.serverAccess.updateUserParameters(dir, userParameters);
         DownloadFile file = this.serverAccess.getFile(dir, userParameters);
@@ -368,7 +366,7 @@ public class PortletControllerAjax {
     @ResourceMapping(value="fetchSound")
     public void fetchSound(String dir,
                            ResourceRequest request, ResourceResponse response) throws IOException {
-        logger.debug("Requesting fetchSound");
+        log.debug("Requesting fetchSound");
         dir = pathEncodingUtils.decodeDir(dir);
         this.serverAccess.updateUserParameters(dir, userParameters);
         DownloadFile file = this.serverAccess.getFile(dir, userParameters);
@@ -386,7 +384,7 @@ public class PortletControllerAjax {
     @ResourceMapping(value="downloadFile")
     public void downloadFile(@RequestParam String dir,
                              ResourceRequest request, ResourceResponse response) throws IOException {
-        logger.debug("Requesting downloadFile");
+        log.debug("Requesting downloadFile");
         dir = pathEncodingUtils.decodeDir(dir);
         this.serverAccess.updateUserParameters(dir, userParameters);
         DownloadFile file = this.serverAccess.getFile(dir, userParameters);
@@ -404,7 +402,7 @@ public class PortletControllerAjax {
     @ResourceMapping(value="downloadZip")
     public void downloadZip(FormCommand command,
                             ResourceRequest request, ResourceResponse response) throws IOException {
-        logger.debug("Requesting toggleThumbnailMode");
+        log.debug("Requesting toggleThumbnailMode");
         List<String> dirs = pathEncodingUtils.decodeDirs(command.getDirs());
         this.serverAccess.updateUserParameters(dirs.get(0), userParameters);
         response.setContentType("application/zip");
@@ -418,7 +416,7 @@ public class PortletControllerAjax {
     @ResourceMapping(value="uploadFile")
     public  ModelAndView uploadFile(String dir, FileUpload file, BindingResult result, ResourceRequest request, UploadActionType uploadOption) throws IOException {
 
-        logger.debug("Requesting uploadFile");
+        log.debug("Requesting uploadFile");
         dir = pathEncodingUtils.decodeDir(dir);
 
         UploadActionType option = this.uploadActionOnExistingFileNameServlet;
@@ -454,16 +452,16 @@ public class PortletControllerAjax {
             if (this.serverAccess.putFile(dir, filename, inputStream, userParameters, uploadOption)) {
                 String msg = context.getMessage("ajax.upload.ok", null, locale);
                 text = "{'success':'true', 'msg':'".concat(msg).concat("'}");
-                logger.info("upload file " + filename + " in " + dir + " ok");
+                log.info("upload file '{}' in '{}' ok", filename, dir);
             } else {
                 success = false;
+                log.info("error uploading file '{}' in '{}'", filename, dir);
             }
         } catch (Exception e) {
-            logger.error("error uploading file " + filename + " in " + dir, e);
+            log.error("error uploading file '{}' in '{}", filename, dir, e);
             success = false;
         }
         if(!success) {
-            logger.info("Error uploading file " + filename + " in " + dir);
             String msg = context.getMessage("ajax.upload.failed", null, locale);
             text = "{'success':'false', 'msg':'".concat(msg).concat("'}");
         }
@@ -478,7 +476,7 @@ public class PortletControllerAjax {
     @ResourceMapping(value="detailsArea")
     public ModelAndView detailsArea(FormCommand command,
                                     ResourceRequest request, ResourceResponse response) {
-        logger.debug("Requesting detailsArea");
+        log.debug("Requesting detailsArea");
         ModelMap model = new ModelMap();
 
         if (command == null || pathEncodingUtils.decodeDirs(command.getDirs()) == null) {
@@ -541,7 +539,7 @@ public class PortletControllerAjax {
     @ResourceMapping(value="getParentPath")
     public ModelAndView getParentPath(String dir,
                                       ResourceRequest request, ResourceResponse response) throws UnsupportedEncodingException {
-        logger.debug("Requesting getParentPath");
+        log.debug("Requesting getParentPath");
 
         dir = pathEncodingUtils.decodeDir(dir);
         String parentDir;

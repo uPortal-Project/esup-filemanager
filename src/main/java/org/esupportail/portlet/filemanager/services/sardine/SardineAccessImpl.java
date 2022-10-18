@@ -26,8 +26,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.googlecode.sardine.DavResource;
+import com.googlecode.sardine.Sardine;
+import com.googlecode.sardine.SardineFactory;
+import com.googlecode.sardine.impl.SardineException;
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
@@ -40,346 +42,339 @@ import org.esupportail.portlet.filemanager.services.FsAccess;
 import org.esupportail.portlet.filemanager.services.ResourceUtils;
 import org.springframework.beans.factory.DisposableBean;
 
-import com.googlecode.sardine.DavResource;
-import com.googlecode.sardine.Sardine;
-import com.googlecode.sardine.SardineFactory;
-import com.googlecode.sardine.impl.SardineException;
-
 public class SardineAccessImpl extends FsAccess implements DisposableBean {
-	protected static final Log log = LogFactory.getLog(SardineAccessImpl.class);
 
-	protected Sardine root;
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SardineAccessImpl.class);
 
-	protected String rootPath = null;
+    protected Sardine root;
 
-	protected ResourceUtils resourceUtils;
+    protected String rootPath = null;
 
-	public void setResourceUtils(ResourceUtils resourceUtils) {
-		this.resourceUtils = resourceUtils;
-	}
+    protected ResourceUtils resourceUtils;
 
-	@Override
-	protected void open(SharedUserPortletParameters userParameters) {
-		super.open(userParameters);
-		try {
-			if (!isOpened()) {
-				if (userAuthenticatorService != null) {
-					UserPassword userPassword = userAuthenticatorService
-					.getUserPassword(userParameters);
+    public void setResourceUtils(ResourceUtils resourceUtils) {
+        this.resourceUtils = resourceUtils;
+    }
 
-					root = SardineFactory.begin(userPassword.getUsername(),
-							userPassword.getPassword());
-				} else {
-					root = SardineFactory.begin();
-				}
-				if(!uri.endsWith("/"))
-					uri = uri + "/";
+    @Override
+    protected void open(SharedUserPortletParameters userParameters) {
+        super.open(userParameters);
+        try {
+            if (!isOpened()) {
+                if (userAuthenticatorService != null) {
+                    UserPassword userPassword = userAuthenticatorService
+                            .getUserPassword(userParameters);
 
-				// rootPath is the path without the http(s)://host string
-				URI uriObject = new URI(uri);
-				this.rootPath = uriObject.getRawPath();
+                    root = SardineFactory.begin(userPassword.getUsername(),
+                            userPassword.getPassword());
+                } else {
+                    root = SardineFactory.begin();
+                }
+                if(!uri.endsWith("/"))
+                    uri = uri + "/";
 
-				// to be sure that webdav access is ok, we try to retrieve root resources
-				root.list(this.uri);
-			}
-		} catch (SardineException se) {
-			root = null;
-			if(se.getStatusCode() == 401) {
-				throw new EsupStockLostSessionException(se);
-			}
-			throw new EsupStockException(se);
-		} catch (IOException ioe) {
-			log.error("IOException retrieving this file or directory  : " + this.rootPath);
-			throw new EsupStockException(ioe);
-		} catch (URISyntaxException use) {
-			log.error("URISyntaxException on  : " + this.uri);
-			throw new EsupStockException(use);
-		}
-	}
+                // rootPath is the path without the http(s)://host string
+                URI uriObject = new URI(uri);
+                this.rootPath = uriObject.getRawPath();
 
-	@Override
-	public void close() {
-		this.root = null;
-	}
+                // to be sure that webdav access is ok, we try to retrieve root resources
+                root.list(this.uri);
+            }
+        } catch (SardineException se) {
+            root = null;
+            if(se.getStatusCode() == 401) {
+                throw new EsupStockLostSessionException(se);
+            }
+            throw new EsupStockException(se);
+        } catch (IOException ioe) {
+            log.error("IOException retrieving this file or directory: {}", this.rootPath);
+            throw new EsupStockException(ioe);
+        } catch (URISyntaxException use) {
+            log.error("URISyntaxException on: {}", this.uri);
+            throw new EsupStockException(use);
+        }
+    }
 
-	public void destroy() throws Exception {
-		this.close();
-	}
+    @Override
+    public void close() {
+        this.root = null;
+    }
 
-	@Override
-	protected boolean isOpened() {
-		return (root != null);
-	}
+    public void destroy() throws Exception {
+        this.close();
+    }
 
-	@Override
-	public JsTreeFile get(String path, SharedUserPortletParameters userParameters, boolean folderDetails, boolean fileDetails) {
-		try {
-			this.open(userParameters);
-			List<DavResource> resources = root.list(this.uri
-					+ path);
-			if (resources != null && !resources.isEmpty())
-				return resourceAsJsTreeFile(resources.get(0), folderDetails, fileDetails);
-		} catch (SardineException se) {
-			log.error("SardineException retrieving this file  : " + path);
-			throw new EsupStockException(se);
-		} catch (IOException ioe) {
-			log.error("IOException retrieving this file or directory  : " + this.uri);
-			throw new EsupStockException(ioe);
-		}
-		return null;
-	}
+    @Override
+    protected boolean isOpened() {
+        return (root != null);
+    }
 
-	@Override
-	public List<JsTreeFile> getChildren(String path, SharedUserPortletParameters userParameters) {
-		try {
+    @Override
+    public JsTreeFile get(String path, SharedUserPortletParameters userParameters, boolean folderDetails, boolean fileDetails) {
+        try {
+            this.open(userParameters);
+            List<DavResource> resources = root.list(this.uri
+                    + path);
+            if (resources != null && !resources.isEmpty())
+                return resourceAsJsTreeFile(resources.get(0), folderDetails, fileDetails);
+        } catch (SardineException se) {
+            log.error("SardineException retrieving this file: {}", path);
+            throw new EsupStockException(se);
+        } catch (IOException ioe) {
+            log.error("IOException retrieving this file or directory: {}", this.uri);
+            throw new EsupStockException(ioe);
+        }
+        return null;
+    }
 
-			this.open(userParameters);
-			List<JsTreeFile> files = new ArrayList<JsTreeFile>();
+    @Override
+    public List<JsTreeFile> getChildren(String path, SharedUserPortletParameters userParameters) {
+        try {
 
-			List<DavResource> resources = root.list(this.uri
-					+ path);
-			// .list returns "List of resources for this URI including the parent resource itself"
-			// so we remove the parent
-			resources.remove(0);
+            this.open(userParameters);
+            List<JsTreeFile> files = new ArrayList<JsTreeFile>();
 
-			for (DavResource resource : resources) {
-				files.add(resourceAsJsTreeFile(resource, false, true));
-			}
-			return files;
-		} catch (SardineException se) {
-			log.error("Sardine Exception", se);
-			throw new EsupStockException(se);
-		} catch (IOException ioe) {
-			log.error("IOException retrieving this file or directory  : " + this.uri + path);
-			throw new EsupStockException(ioe);
-		}
-	}
+            List<DavResource> resources = root.list(this.uri
+                    + path);
+            // .list returns "List of resources for this URI including the parent resource itself"
+            // so we remove the parent
+            resources.remove(0);
 
-	private JsTreeFile resourceAsJsTreeFile(DavResource resource, boolean folderDetails, boolean fileDetails) {
+            for (DavResource resource : resources) {
+                files.add(resourceAsJsTreeFile(resource, false, true));
+            }
+            return files;
+        } catch (SardineException se) {
+            log.error("Sardine Exception", se);
+            throw new EsupStockException(se);
+        } catch (IOException ioe) {
+            log.error("IOException retrieving this file or directory: {}{}", this.uri, path);
+            throw new EsupStockException(ioe);
+        }
+    }
 
-		// lid must be a relative path from rootPath
-		String lid = resource.getHref().getRawPath();
+    private JsTreeFile resourceAsJsTreeFile(DavResource resource, boolean folderDetails, boolean fileDetails) {
 
-		if (lid.startsWith(this.rootPath))
-			lid = lid.substring(rootPath.length());
-		if (lid.startsWith("/"))
-			lid = lid.substring(1);
+        // lid must be a relative path from rootPath
+        String lid = resource.getHref().getRawPath();
 
-		String title = resource.getName();
-		String type = resource.isDirectory() ? "folder" : "file";
+        if (lid.startsWith(this.rootPath))
+            lid = lid.substring(rootPath.length());
+        if (lid.startsWith("/"))
+            lid = lid.substring(1);
 
-		if("".equals(lid))
-			type = "drive";
+        String title = resource.getName();
+        String type = resource.isDirectory() ? "folder" : "file";
 
-		JsTreeFile file = new JsTreeFile(title, lid, type);
+        if("".equals(lid))
+            type = "drive";
 
-		if (fileDetails && "file".equals(type)) {
-			String icon = resourceUtils.getIcon(title);
-			file.setIcon(icon);
-			file.setSize(resource.getContentLength().longValue());
-			file.setOverSizeLimit(file.getSize() > resourceUtils
-					.getSizeLimit(title));
-		}
+        JsTreeFile file = new JsTreeFile(title, lid, type);
 
-		try {
-			if (folderDetails && resource.isDirectory()) {
-				List<DavResource> children;
-					children = root.list(this.uri + lid);
-				long totalSize = 0;
-				long fileCount = 0;
-				long folderCount = -1; // Don't count the parent folder
-				for (DavResource child : children) {
-					if (child.isDirectory()) {
-						++folderCount;
-					} else {
-						++fileCount;
-						totalSize += child.getContentLength().longValue();
-					}
-					file.setTotalSize(totalSize);
-					file.setFileCount(fileCount);
-					file.setFolderCount(folderCount);
-				}
-			}
-		} catch (SardineException ex) {
-			log.warn("Error retrying children of this resource : " + this.uri + lid, ex);
-		} catch (IOException ioe) {
-			log.error("IOException retrieving children  : " + this.uri + lid, ioe);
-		}
+        if (fileDetails && "file".equals(type)) {
+            String icon = resourceUtils.getIcon(title);
+            file.setIcon(icon);
+            file.setSize(resource.getContentLength().longValue());
+            file.setOverSizeLimit(file.getSize() > resourceUtils
+                    .getSizeLimit(title));
+        }
 
-		if (resource.getModified()!=null) {
+        try {
+            if (folderDetails && resource.isDirectory()) {
+                List<DavResource> children;
+                children = root.list(this.uri + lid);
+                long totalSize = 0;
+                long fileCount = 0;
+                long folderCount = -1; // Don't count the parent folder
+                for (DavResource child : children) {
+                    if (child.isDirectory()) {
+                        ++folderCount;
+                    } else {
+                        ++fileCount;
+                        totalSize += child.getContentLength().longValue();
+                    }
+                    file.setTotalSize(totalSize);
+                    file.setFileCount(fileCount);
+                    file.setFolderCount(folderCount);
+                }
+            }
+        } catch (SardineException ex) {
+            log.warn("Error retrying children of this resource: {}{}", this.uri, lid, ex);
+        } catch (IOException ioe) {
+            log.error("IOException retrieving children: {}{}", this.uri, lid, ioe);
+        }
 
-		final Calendar date = Calendar.getInstance();
-		date.setTimeInMillis(resource.getModified().getTime());
-		// In order to have a readable date
-		file.setLastModifiedTime(date.getTime());
-		}
-		return file;
-	}
+        if (resource.getModified()!=null) {
 
-	@Override
-	public boolean remove(String path, SharedUserPortletParameters userParameters) {
-		try {
-			this.open(userParameters);
-			String candidate = this.uri + path;
-			root.delete(candidate);
-			return true;
-		} catch (SardineException se) {
-			log.error("can't delete file because of FileSystemException", se);
-		} catch (IOException ioe) {
-			log.error("IOException deleting this resource  : " + this.uri + path, ioe);
-		}
-		return false;
-	}
+            final Calendar date = Calendar.getInstance();
+            date.setTimeInMillis(resource.getModified().getTime());
+            // In order to have a readable date
+            file.setLastModifiedTime(date.getTime());
+        }
+        return file;
+    }
 
-	// Original created folders, and empty files, I only do folders
-	@Override
-	public String createFile(String parentPath, String title, String type, SharedUserPortletParameters userParameters) {
-		try {
-			this.open(userParameters);
-			if ("folder".equals(type)) {
-				if (!parentPath.endsWith("/"))
-					parentPath=parentPath + "/";
-				root.createDirectory(this.uri + parentPath + URLEncoder.encode(title, "UTF-8"));
-			} else {
-				log.warn("Can't create files");
-			}
-			return this.uri + parentPath + title;
-		} catch (SardineException se) {
-			log.error("Error creating '" + title + "', error : "
-					+ se.getResponsePhrase(), se);
-		} catch (IOException ioe) {
-			log.error("IOException creating this file or directory  : " + title, ioe);
-		}
-		return null;
-	}
+    @Override
+    public boolean remove(String path, SharedUserPortletParameters userParameters) {
+        try {
+            this.open(userParameters);
+            String candidate = this.uri + path;
+            root.delete(candidate);
+            return true;
+        } catch (SardineException se) {
+            log.error("can't delete file because of FileSystemException", se);
+        } catch (IOException ioe) {
+            log.error("IOException deleting this resource: {}{}", this.uri, path, ioe);
+        }
+        return false;
+    }
 
-	@Override
-	public boolean renameFile(String path, String title, SharedUserPortletParameters userParameters) {
-		try {
-			this.open(userParameters);
-			String oldname = this.uri + path;
+    // Original created folders, and empty files, I only do folders
+    @Override
+    public String createFile(String parentPath, String title, String type, SharedUserPortletParameters userParameters) {
+        try {
+            this.open(userParameters);
+            if ("folder".equals(type)) {
+                if (!parentPath.endsWith("/"))
+                    parentPath=parentPath + "/";
+                root.createDirectory(this.uri + parentPath + URLEncoder.encode(title, "UTF-8"));
+            } else {
+                log.warn("Can't create files");
+            }
+            return this.uri + parentPath + title;
+        } catch (SardineException se) {
+            log.error("Error creating '{}', error: {}", title, se.getResponsePhrase(), se);
+        } catch (IOException ioe) {
+            log.error("IOException creating this file or directory: {}", title, ioe);
+        }
+        return null;
+    }
 
-			DavResource resource = null;
-			List<DavResource> resources = root.list(this.uri
-					+ path);
-			resource = resources.get(0);
+    @Override
+    public boolean renameFile(String path, String title, SharedUserPortletParameters userParameters) {
+        try {
+            this.open(userParameters);
+            String oldname = this.uri + path;
 
-			int index = path.lastIndexOf("/") + 1;
-			String newname = this.uri + path.substring(0, index) + URLEncoder.encode(title, "UTF-8");
-			if (resource.isDirectory()) {
-				oldname = oldname.substring(0, oldname.length() - 1);
-				newname = oldname.replaceAll("/[^/]*$", "/" + title);
+            DavResource resource = null;
+            List<DavResource> resources = root.list(this.uri
+                    + path);
+            resource = resources.get(0);
 
-			}
+            int index = path.lastIndexOf("/") + 1;
+            String newname = this.uri + path.substring(0, index) + URLEncoder.encode(title, "UTF-8");
+            if (resource.isDirectory()) {
+                oldname = oldname.substring(0, oldname.length() - 1);
+                newname = oldname.replaceAll("/[^/]*$", "/" + title);
 
-			root.move(oldname, newname);
+            }
 
-			return true;
+            root.move(oldname, newname);
 
-		} catch (SardineException se) {
-			log.error("Can't rename to '" + title, se);
-		} catch (IOException ioe) {
-			log.error("IOException retrieving this file  : " + this.uri + path, ioe);
-		}
-		return false;
-	}
+            return true;
 
-	@Override
-	public boolean moveCopyFilesIntoDirectory(String dir,
-			List<String> filesToCopy, boolean copy, SharedUserPortletParameters userParameters) {
-		try {
-			this.open(userParameters);
-			if (!dir.endsWith("/"))
-				dir=dir + "/";
-			// Before we do anything, make sure we won't overwrite a file
-			for (String file : filesToCopy) {
-				List<DavResource> resources = root.list(this.uri
-						+ file);
+        } catch (SardineException se) {
+            log.error("Can't rename to '{}'", title, se);
+        } catch (IOException ioe) {
+            log.error("IOException retrieving this file: {}{}", this.uri, path, ioe);
+        }
+        return false;
+    }
 
-				if (root.exists(this.uri + dir
-						+ URLEncoder.encode(resources.get(0).getName(), "UTF-8"))) {
-					log.info("Won't overwrite file '" + this.uri + dir
-							+ URLEncoder.encode(resources.get(0).getName(), "UTF-8") + "'");
-					return false;
-				}
-			}
+    @Override
+    public boolean moveCopyFilesIntoDirectory(String dir,
+                                              List<String> filesToCopy, boolean copy, SharedUserPortletParameters userParameters) {
+        try {
+            this.open(userParameters);
+            if (!dir.endsWith("/"))
+                dir=dir + "/";
+            // Before we do anything, make sure we won't overwrite a file
+            for (String file : filesToCopy) {
+                List<DavResource> resources = root.list(this.uri
+                        + file);
 
-			for (String file : filesToCopy) {
-				List<DavResource> resources = root.list(this.uri
-						+ file);
-				log.debug("start=" + this.uri + file + " end=" + this.uri + dir
-						+ URLEncoder.encode(resources.get(0).getName(), "UTF-8"));
-				if (copy)
-					root.copy(this.uri + file, this.uri + dir
-							+ URLEncoder.encode(resources.get(0).getName(), "UTF-8"));
-				else
-					root.move(this.uri + file, this.uri + dir
-							+ URLEncoder.encode(resources.get(0).getName(), "UTF-8"));
-			}
-			return true;
+                if (root.exists(this.uri + dir
+                        + URLEncoder.encode(resources.get(0).getName(), "UTF-8"))) {
+                    log.info("Won't overwrite file '{}{}{}'", this.uri, dir, URLEncoder.encode(resources.get(0).getName(), "UTF-8"));
+                    return false;
+                }
+            }
 
-		} catch (SardineException se) {
-			log.error("Copy failed : " + se.getResponsePhrase(), se);
-		} catch (IOException ioe) {
-			log.error("IOException retrieving this resource  : " + this.uri, ioe);
-		}
-		return false;
-	}
+            for (String file : filesToCopy) {
+                List<DavResource> resources = root.list(this.uri
+                        + file);
+                log.debug("start={}{} end={}{}{}", this.uri, file, this.uri, dir, URLEncoder.encode(resources.get(0).getName(), "UTF-8"));
+                if (copy)
+                    root.copy(this.uri + file, this.uri + dir
+                            + URLEncoder.encode(resources.get(0).getName(), "UTF-8"));
+                else
+                    root.move(this.uri + file, this.uri + dir
+                            + URLEncoder.encode(resources.get(0).getName(), "UTF-8"));
+            }
+            return true;
 
-	@Override
-	public DownloadFile getFile(String path, SharedUserPortletParameters userParameters) {
-		try {
-			this.open(userParameters);
+        } catch (SardineException se) {
+            log.error("Copy failed: {}", se.getResponsePhrase(), se);
+        } catch (IOException ioe) {
+            log.error("IOException retrieving this resource: {}", this.uri, ioe);
+        }
+        return false;
+    }
 
-			DavResource resource = null;
-			List<DavResource> resources = root.list(this.uri + path);
-			resource = resources.get(0);
+    @Override
+    public DownloadFile getFile(String path, SharedUserPortletParameters userParameters) {
+        try {
+            this.open(userParameters);
 
-			Long size = resource.getContentLength();
-			String baseName = resource.getName();
-			String contentType = JsTreeFile.getMimeType(baseName.toLowerCase());
-			InputStream inputStream = root.get(this.uri + path);
+            DavResource resource = null;
+            List<DavResource> resources = root.list(this.uri + path);
+            resource = resources.get(0);
 
-			return new DownloadFile(contentType, size, baseName, inputStream);
-		}
-		catch (SardineException se) {
-			log.error("Error in download of " + this.uri + path, se);
-		} catch (IOException ioe) {
-			log.error("IOException downloading this file  : " + this.uri + path, ioe);
-		}
-		return null;
-	}
+            Long size = resource.getContentLength();
+            String baseName = resource.getName();
+            String contentType = JsTreeFile.getMimeType(baseName.toLowerCase());
+            InputStream inputStream = root.get(this.uri + path);
 
-	@Override
-	public boolean putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters, UploadActionType uploadOption) {
-		try {
-			this.open(userParameters);
-			if (!dir.endsWith("/"))
-				dir=dir + "/";
+            return new DownloadFile(contentType, size, baseName, inputStream);
+        }
+        catch (SardineException se) {
+            log.error("Error in download of {}{}", this.uri, path, se);
+        } catch (IOException ioe) {
+            log.error("IOException downloading this file: {}{}", this.uri, path, ioe);
+        }
+        return null;
+    }
 
-			String file = this.uri + dir + URLEncoder.encode(filename, "UTF-8");
-			if (root.exists(file)) {
-				switch (uploadOption) {
-				case ERROR :
-					throw new EsupStockFileExistException();
-				case OVERRIDE :
-					root.delete(file);
-					break;
-				case RENAME_NEW :
-					file = this.uri + dir + URLEncoder.encode(this.getUniqueFilename(filename, "-new-"), "UTF-8");
-					break;
-				case RENAME_OLD :
-					root.move(file, this.uri + dir + URLEncoder.encode(this.getUniqueFilename(filename, "-old-"), "UTF-8"));
-					break;
-				}
-			}
-			root.put(file, inputStream);
-			return true;
-		} catch (SardineException se) {
-			log.error("Error on file upload", se);
-		} catch (IOException ioe) {
-			log.error("IOException retrieving this file or directory  : " + this.uri + dir + filename, ioe);
-		}
-		return false;
-	}
+    @Override
+    public boolean putFile(String dir, String filename, InputStream inputStream, SharedUserPortletParameters userParameters, UploadActionType uploadOption) {
+        try {
+            this.open(userParameters);
+            if (!dir.endsWith("/"))
+                dir=dir + "/";
+
+            String file = this.uri + dir + URLEncoder.encode(filename, "UTF-8");
+            if (root.exists(file)) {
+                switch (uploadOption) {
+                    case ERROR :
+                        throw new EsupStockFileExistException();
+                    case OVERRIDE :
+                        root.delete(file);
+                        break;
+                    case RENAME_NEW :
+                        file = this.uri + dir + URLEncoder.encode(this.getUniqueFilename(filename, "-new-"), "UTF-8");
+                        break;
+                    case RENAME_OLD :
+                        root.move(file, this.uri + dir + URLEncoder.encode(this.getUniqueFilename(filename, "-old-"), "UTF-8"));
+                        break;
+                }
+            }
+            root.put(file, inputStream);
+            return true;
+        } catch (SardineException se) {
+            log.error("Error on file upload", se);
+        } catch (IOException ioe) {
+            log.error("IOException retrieving this file or directory: {}{}{}", this.uri, dir, filename, ioe);
+        }
+        return false;
+    }
 }

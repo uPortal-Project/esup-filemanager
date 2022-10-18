@@ -17,8 +17,6 @@
  */
 package org.esupportail.portlet.filemanager.services.auth.cas;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jasig.cas.client.validation.Assertion;
 import org.jasig.cas.client.validation.TicketValidationException;
 import org.jasig.cas.client.validation.TicketValidator;
@@ -27,55 +25,52 @@ import org.springframework.beans.factory.InitializingBean;
 
 public class ProxyTicketService implements InitializingBean {
 
-    private static Log log = LogFactory.getLog(ProxyTicketService.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ProxyTicketService.class);
 
     private TicketValidator ticketValidator;
 
     private String serviceUrl;
 
     public void setServiceUrl(String serviceUrl) {
-      this.serviceUrl = serviceUrl;
+        this.serviceUrl = serviceUrl;
     }
 
     public void setTicketValidator(TicketValidator ticketValidator) {
-      this.ticketValidator = ticketValidator;
+        this.ticketValidator = ticketValidator;
     }
 
     public Assertion getProxyTicket(String ticket) {
 
         if (ticket == null) {
-          log.debug("No CAS ticket found in the UserInfo map");
-          return null;
+            log.debug("No CAS ticket found in the UserInfo map");
+            return null;
         }
 
-        log.debug("serviceURL: " + this.serviceUrl + ", ticket: " + ticket);
+        log.debug("serviceURL: '{}', ticket: '{}'", this.serviceUrl, ticket);
 
         /* contact CAS and validate */
 
         try {
-          Assertion assertion = ticketValidator.validate(ticket, this.serviceUrl);
-          return assertion;
+            return ticketValidator.validate(ticket, this.serviceUrl);
         } catch (TicketValidationException e) {
-          log.warn("Failed to validate proxy ticket", e);
-          return null;
+            log.warn("Failed to validate proxy ticket", e);
+            return null;
         }
-      }
+    }
 
     public String getCasServiceToken(Assertion assertion, String target) {
         final String proxyTicket = assertion.getPrincipal().getProxyTicketFor(target);
         if (proxyTicket == null) {
-          log.error(
-              "Failed to retrieve proxy ticket for assertion ["
-                  + assertion.toString()
-                  + "].  Is the PGT still valid?");
-          return null;
+            log.error(
+                    "Failed to retrieve proxy ticket for assertion [{}].  Is the PGT still valid?", assertion);
+            return null;
         }
         if (log.isTraceEnabled()) {
-          log.trace(
-              "returning from getCasServiceToken(), returning proxy ticket [" + proxyTicket + "]");
+            log.trace(
+                    "returning from getCasServiceToken(), returning proxy ticket [{}]", proxyTicket);
         }
         return proxyTicket;
-      }
+    }
 
     public void afterPropertiesSet() throws Exception {
         // validate these should be set in spring config

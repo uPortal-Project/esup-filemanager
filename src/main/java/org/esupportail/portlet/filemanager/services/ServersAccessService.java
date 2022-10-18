@@ -33,8 +33,7 @@ import java.util.zip.ZipOutputStream;
 
 import javax.portlet.PortletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.vfs2.FileType;
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.DrivesCategory;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
@@ -59,7 +58,7 @@ import org.springframework.util.Assert;
 @Scope(value="session", proxyMode=ScopedProxyMode.INTERFACES)
 public class ServersAccessService implements DisposableBean, IServersAccessService, InitializingBean {
 
-    protected static final Log log = LogFactory.getLog(ServersAccessService.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ServersAccessService.class);
 
     /** Size of zipping buffers: 128 kB. */
     protected static final int ZIP_BUFFER_SIZE = 131072;
@@ -144,7 +143,7 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
             return this.restrictedServers.get(driveName);
         }
         else {
-            log.error("pb : restrictedServers does not contain this required drive ?? : " + driveName);
+            log.error("pb : restrictedServers does not contain this required drive ?? : '{}'", driveName);
             return null;
         }
     }
@@ -238,7 +237,7 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
     public String createFile(String parentDir, String title, String type, SharedUserPortletParameters userParameters) {
         String drive = getDrive(parentDir);
         if(drive == null) {
-            log.error("Can't create file/folder because we can't retrieve associated drive on this dir : " + parentDir);
+            log.error("Can't create file/folder because we can't retrieve associated drive on this dir '{}'", parentDir);
             return null;
         }
         return this.getFsAccess(drive, userParameters).createFile(getLocalDir(parentDir), title, type, userParameters);
@@ -248,7 +247,7 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
     public boolean renameFile(String dir, String title, SharedUserPortletParameters userParameters) {
         String drive = getDrive(dir);
         if(drive == null) {
-            log.error("Can't rename file/folder because we can't retrieve associated drive on this dir : " + dir);
+            log.error("Can't rename file/folder because we can't retrieve associated drive on this dir '{}'", dir);
             return false;
         }
         return this.getFsAccess(drive, userParameters).renameFile(getLocalDir(dir), title, userParameters);
@@ -336,7 +335,7 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
         //Iterator<String> parentsPathes = jFile.getParentsPathes().keySet().iterator();
         Iterator<String> parentsPathes = pathEncodingUtils.getParentsPathes(jFile.getPath(), null, null).keySet().iterator();
         String parentPath = parentsPathes.next();
-        Assert.isTrue(JsTreeFile.ROOT_DRIVE.equals(parentPath));
+        Assert.isTrue(JsTreeFile.ROOT_DRIVE.equals(parentPath), "ParentPath isn't the root path");
 
         if(!parentsPathes.hasNext())
             return rootAndDrivesAndCategories;
@@ -434,13 +433,13 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 
     private void addChildrensTozip(ZipOutputStream out, byte[] zippingBuffer, String dir, String folder, SharedUserPortletParameters userParameters) throws IOException {
         JsTreeFile tFile = get(dir, userParameters, false, false);
-        if("file".equals(tFile.getType())) {
+        if(FileType.FILE.getName().equals(tFile.getType())) {
             DownloadFile dFile = getFile(dir, userParameters);
 
             //GIP Recia : In some cases (ie, file has NTFS security permissions set), the dFile may be Null.
             //So we must check for null in order to prevent a general catastrophe
             if (dFile == null) {
-                log.warn("Download file is null!  " + dir);
+                log.warn("Download file is null! '{}'", dir);
                 return;
             }
             String fileName =  unAccent(folder.concat(dFile.getBaseName()));

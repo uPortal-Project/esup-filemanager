@@ -17,39 +17,36 @@
  */
 package org.esupportail.portlet.filemanager.services.uri;
 
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.regex.Pattern;
 
 public class RegUriManipulateService implements UriManipulateService {
-	protected static final Log log = LogFactory.getLog(RegUriManipulateService.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RegUriManipulateService.class);
 
-	protected String regexp = "";
+    protected String regexp = "";
 
-	protected String replacement = "";
+    protected String replacement = "";
 
-	public void setRegexp(String regexp) {
-		this.regexp = regexp;
-	}
+    public void setRegexp(String regexp) {
+        this.regexp = regexp;
+    }
 
-	public void setReplacement(String replacement) {
-		this.replacement = replacement;
-	}
+    public void setReplacement(String replacement) {
+        this.replacement = replacement;
+    }
 
-	public  String manipulate(String uri) {
-		String outUri = "";
-		outUri = uri;
-		// we check if the path is a regular expression
-		if (regexp!=null && replacement !=null) {
-			Pattern p = Pattern.compile(regexp, Pattern.CASE_INSENSITIVE);
-			Matcher m = p.matcher(outUri);
-			outUri = m.replaceAll(replacement);
-		}
-		if(log.isDebugEnabled())
-			log.debug("RegUriManipulateService:: input uri :"+uri+" -- output uri : "+outUri);
+    public  String manipulate(String uri) {
+        String outUri = "";
+        outUri = uri;
+        // we check if the path is a regular expression
+        if (regexp!=null && replacement !=null) {
+            Pattern p = Pattern.compile(regexp, Pattern.CASE_INSENSITIVE);
+            Matcher m = p.matcher(outUri);
+            outUri = m.replaceAll(replacement);
+        }
+        if(log.isDebugEnabled())
+            log.debug("RegUriManipulateService:: input uri: '{}' -- output uri: '{}'", uri, outUri);
 
-		return outUri;
-	}
+        return outUri;
+    }
 }
