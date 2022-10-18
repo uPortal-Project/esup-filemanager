@@ -17,10 +17,10 @@
  */
 package org.esupportail.portlet.filemanager.services.opencmis;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
@@ -114,7 +114,7 @@ public class TrustedCmisAccessImpl extends CmisAccessImpl {
 				parameters.put(SessionParameter.AUTHENTICATION_PROVIDER_CLASS,  TrustedHttpheadersCmisAuthenticationProvider.class.getName());
 				Map<String, List<String>> httpHeaders = new HashMap<String, List<String>>();
 				for(String key: userinfosHttpheadersValues.keySet()) {
-						List<String> values = new Vector<String>();
+						List<String> values = new ArrayList<String>();
 						values.add((String)userinfosHttpheadersValues.get(key));
 						httpHeaders.put(key, values);
 				}

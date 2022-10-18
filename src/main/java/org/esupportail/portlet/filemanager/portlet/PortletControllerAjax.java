@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
@@ -216,7 +215,7 @@ public class PortletControllerAjax {
             if("all".equals(hierarchy)) {
                 files =  this.serverAccess.getJsTreeFileRoots(driveDir, userParameters);
             } else if(dir.length() > driveDir.length()) {
-                files = new Vector<JsTreeFile>();
+                files = new ArrayList<JsTreeFile>();
             } else {
                 files = this.serverAccess.getFolderChildren(driveDir, userParameters);
             }

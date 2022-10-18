@@ -17,9 +17,9 @@
  */
 package org.esupportail.portlet.filemanager.utils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.commons.collections4.map.ListOrderedMap;
 import org.apache.commons.logging.Log;
@@ -46,7 +46,7 @@ public abstract class PathEncodingUtils {
 	public List<String> decodeDirs(List<String> dirs) {
 		if(dirs == null)
 			return null;
-		List<String> decodedDirs = new Vector<String>(dirs.size());
+		List<String> decodedDirs = new ArrayList<>(dirs.size());
 		for(String dir: dirs)
 			decodedDirs.add(decodeDir(dir));
 		return decodedDirs;
@@ -55,7 +55,7 @@ public abstract class PathEncodingUtils {
 	public List<String> encodeDirs(List<String> dirs) {
 		if(dirs == null)
 			return null;
-		List<String> encodedDirs = new Vector<String>(dirs.size());
+		List<String> encodedDirs = new ArrayList<>(dirs.size());
 		for(String dir: dirs)
 			encodedDirs.add(encodeDir(dir));
 		return encodedDirs;
