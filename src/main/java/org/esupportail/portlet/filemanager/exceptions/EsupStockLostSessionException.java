@@ -19,8 +19,6 @@ package org.esupportail.portlet.filemanager.exceptions;
 
 public class EsupStockLostSessionException extends EsupStockException {
 
-	private static final long serialVersionUID = 1L;
-
 	public EsupStockLostSessionException(String message) {
 		super(message);
 	}

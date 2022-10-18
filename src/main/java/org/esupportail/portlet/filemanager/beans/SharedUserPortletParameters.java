@@ -30,8 +30,6 @@ import org.springframework.stereotype.Service;
 @Scope("session")
 public class SharedUserPortletParameters implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-
     protected List<String> driveNames;
 
     protected Map userInfos;

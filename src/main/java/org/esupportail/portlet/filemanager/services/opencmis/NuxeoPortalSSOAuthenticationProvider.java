@@ -31,8 +31,6 @@ import org.apache.chemistry.opencmis.client.bindings.spi.AbstractAuthenticationP
 
 public class NuxeoPortalSSOAuthenticationProvider extends AbstractAuthenticationProvider   {
 
-    private static final long serialVersionUID = 1L;
-
     public final static String SECRET_KEY = "NUXEO_PORTAL_SSO_SECRET";
 
     protected String getSecretKey() {

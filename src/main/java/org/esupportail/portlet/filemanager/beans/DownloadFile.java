@@ -23,8 +23,6 @@ import java.io.Serializable;
 
 public class DownloadFile implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DownloadFile.class);
 
     private long size;

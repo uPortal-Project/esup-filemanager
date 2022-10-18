@@ -19,8 +19,6 @@ package org.esupportail.portlet.filemanager.exceptions;
 
 public class EsupStockFileExistException extends EsupStockException {
 
-	private static final long serialVersionUID = 1709146807320625731L;
-
 	public EsupStockFileExistException() {
 		super("File already exist and overriding file is forbidden !");
 	}

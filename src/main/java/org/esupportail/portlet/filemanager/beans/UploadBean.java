@@ -22,7 +22,6 @@ import java.io.Serializable;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 public class UploadBean implements Serializable {
-	private static final long serialVersionUID = 1L;
 
 	private CommonsMultipartFile filedata;
 

@@ -31,8 +31,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 
-	private static final long serialVersionUID = 1L;
-
 	public static String ROOT_DRIVE = "FS:";
 
 	public static String ROOT_DRIVE_NAME = "";

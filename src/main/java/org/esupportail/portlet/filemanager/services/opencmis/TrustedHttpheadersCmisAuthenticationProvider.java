@@ -25,8 +25,6 @@ import org.apache.chemistry.opencmis.client.bindings.spi.AbstractAuthenticationP
 
 public class TrustedHttpheadersCmisAuthenticationProvider extends AbstractAuthenticationProvider  {
 
-    private static final long serialVersionUID = 1L;
-
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TrustedHttpheadersCmisAuthenticationProvider.class);
 
     public static final String ESUP_HEADER_SHIB_HTTP_HEADERS = "ESUP_HEADER_SHIB_HTTP_HEADERS";
