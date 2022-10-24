@@ -44,7 +44,7 @@
 
 	<div class="portlet-section-body">
 	  
-	  <portlet:actionURL var="updatePreferencesUrl">
+	  <portlet:actionURL var="updatePreferencesUrl" escapeXml="false">
     	<portlet:param name="action" value="updatePreferences"/>
   	  </portlet:actionURL>
 	

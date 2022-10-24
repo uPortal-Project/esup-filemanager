@@ -59,11 +59,7 @@ public class PreferenceEvaluator implements IDriveAccessEvaluator, InitializingB
 	public boolean isApplicable(PortletRequest request) {
 		final String[] prefsArray = request.getPreferences().getValues(attribute, new String[0]);
 		List<String> prefs = Arrays.asList(prefsArray);
-		if(prefs.contains(value)) {
-			return true;
-		} else {
-			return false;
-		}
+        return prefs.contains(value);
 	}
 
 	/**
@@ -111,12 +107,10 @@ public class PreferenceEvaluator implements IDriveAccessEvaluator, InitializingB
 	 */
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("PreferenceEvaluator [attribute=");
-		builder.append(attribute);
-		builder.append(", value=");
-		builder.append(value);
-		builder.append("]");
-		return builder.toString();
+        return "PreferenceEvaluator [attribute=" +
+                attribute +
+                ", value=" +
+                value +
+                "]";
 	}
 }

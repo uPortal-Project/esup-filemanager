@@ -34,7 +34,7 @@
 <link rel="stylesheet" href="/esup-filemanager/css/esup-stock-wai.css" type="text/css" media="screen, projection">
 
 
-<portlet:actionURL var="formRenameWai">
+<portlet:actionURL var="formRenameWai" escapeXml="false">
   <portlet:param name="action" value="formRenameWai"/>
   <portlet:param name="dir" value="${currentDir}"/>
   <portlet:param name="filesToRename" value="${files}"/>

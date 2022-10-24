@@ -15,9 +15,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.esupportail.portlet.filemanager.services.uri;
+package org.esupportail.portlet.filemanager.portlet;
 
-public interface UriManipulateService {
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
-	public abstract String manipulate(String uri);
+@Controller
+@Scope("request")
+@RequestMapping("HELP")
+public class PortletControllerHelp {
+
+	@RenderMapping
+	public String renderHelpView() throws Exception {
+		return "help-portlet";
+	}
 }

@@ -22,8 +22,6 @@ import java.util.List;
 
 public class FormCommand implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-	
 	private List<String> dirs;
 
 	public List<String> getDirs() {
@@ -33,5 +31,4 @@ public class FormCommand implements Serializable {
 	public void setDirs(List<String> dirs) {
 		this.dirs = dirs;
 	}
-	
 }

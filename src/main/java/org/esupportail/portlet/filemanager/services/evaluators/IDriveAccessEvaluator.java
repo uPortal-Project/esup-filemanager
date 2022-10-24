@@ -27,7 +27,5 @@ import javax.portlet.PortletRequest;
  * 11 oct. 2013
  */
 public interface IDriveAccessEvaluator {
-
 	boolean isApplicable(PortletRequest request);
-
 }

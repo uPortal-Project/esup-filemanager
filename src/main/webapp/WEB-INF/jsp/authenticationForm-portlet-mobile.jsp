@@ -25,7 +25,7 @@
 <portlet:defineObjects />
 <c:set var="n"><portlet:namespace /></c:set>
 <div id="${n}EsupFilemanager" class="ui-content esupstock" role="main" data-role="content" data-theme="c">
-    <portlet:actionURL var="authenticationFormMobile">
+    <portlet:actionURL var="authenticationFormMobile" escapeXml="false">
       <portlet:param name="action" value="formAuthenticationMobile"/>
       <portlet:param name="dir" value="${currentDir}"/>
     </portlet:actionURL>

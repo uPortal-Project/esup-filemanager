@@ -19,9 +19,8 @@ package org.esupportail.portlet.filemanager.beans;
 
 import java.util.List;
 
-
 public class DrivesCategory {
-	
+
 	private String icon;
 
 	private List<String> drives;
@@ -43,4 +42,4 @@ public class DrivesCategory {
 		this.drives = drives;
 	}
 }
-	
+

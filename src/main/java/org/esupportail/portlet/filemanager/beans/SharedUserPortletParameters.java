@@ -30,31 +30,29 @@ import org.springframework.stereotype.Service;
 @Scope("session")
 public class SharedUserPortletParameters implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-		
     protected List<String> driveNames;
-    
+
     protected Map userInfos;
-    
+
     protected Assertion assertion;
-    
+
     protected String username;
-    
+
     protected Map<String, UserPassword> userPassword4AuthenticatedFormDrives = new HashMap<String, UserPassword>();
-    
+
     protected boolean showHiddenFiles;
-    
+
 	protected UploadActionType uploadOption;
 
     protected String clientIpAdress;
-    
+
 	public SharedUserPortletParameters() {
 	}
-	
+
 	public boolean isInitialized() {
 		return this.clientIpAdress != null;
 	}
-	
+
 	public void init(String clientIpAdress) {
 		this.clientIpAdress = clientIpAdress;
 	}
@@ -119,5 +117,4 @@ public class SharedUserPortletParameters implements Serializable {
 	public String getClientIpAdress() {
 		return clientIpAdress;
 	}
-	
 }

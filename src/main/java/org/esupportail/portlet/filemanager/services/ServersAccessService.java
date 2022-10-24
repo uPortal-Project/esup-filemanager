@@ -33,8 +33,7 @@ import java.util.zip.ZipOutputStream;
 
 import javax.portlet.PortletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.vfs2.FileType;
 import org.esupportail.portlet.filemanager.beans.DownloadFile;
 import org.esupportail.portlet.filemanager.beans.DrivesCategory;
 import org.esupportail.portlet.filemanager.beans.JsTreeFile;
@@ -47,19 +46,19 @@ import org.esupportail.portlet.filemanager.crudlog.CrudLoggable;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockLostSessionException;
 import org.esupportail.portlet.filemanager.utils.PathEncodingUtils;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-
 @Service("serversAccess")
 @Scope(value="session", proxyMode=ScopedProxyMode.INTERFACES)
-public class ServersAccessService implements DisposableBean, IServersAccessService {
+public class ServersAccessService implements DisposableBean, IServersAccessService, InitializingBean {
 
-    protected static final Log log = LogFactory.getLog(ServersAccessService.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ServersAccessService.class);
 
     /** Size of zipping buffers: 128 kB. */
     protected static final int ZIP_BUFFER_SIZE = 131072;
@@ -78,11 +77,19 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
     }
 
     @Autowired
-    @Qualifier("drivesCategories")
+    private ApplicationContext applicationContext;
+
+    //@Resource(name="drivesCategories")
     protected Map<String, DrivesCategory> drivesCategories;
 
     @Autowired
     protected PathEncodingUtils pathEncodingUtils;
+
+    // With spring 4.3.x and prior a Map can't be loaded by @Autowired, but @Resource could work if jakarta annotation library is used
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        drivesCategories = applicationContext.getBean("drivesCategories", Map.class);
+    }
 
     public List<String> getRestrictedDrivesGroupsContext(PortletRequest request) {
 
@@ -96,7 +103,6 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 
         return driveNames;
     }
-
 
     public void initializeServices(SharedUserPortletParameters userParameters) {
         if(userParameters.getDriveNames() != null) {
@@ -137,11 +143,10 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
             return this.restrictedServers.get(driveName);
         }
         else {
-            log.error("pb : restrictedServers does not contain this required drive ?? : " + driveName);
+            log.error("pb : restrictedServers does not contain this required drive ?? : '{}'", driveName);
             return null;
         }
     }
-
 
     protected List<FsAccess> getCategoryFsAccess(DrivesCategory dCategory, SharedUserPortletParameters userParameters) {
         List<FsAccess> drives = new ArrayList<FsAccess>();
@@ -232,7 +237,7 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
     public String createFile(String parentDir, String title, String type, SharedUserPortletParameters userParameters) {
         String drive = getDrive(parentDir);
         if(drive == null) {
-            log.error("Can't create file/folder because we can't retrieve associated drive on this dir : " + parentDir);
+            log.error("Can't create file/folder because we can't retrieve associated drive on this dir '{}'", parentDir);
             return null;
         }
         return this.getFsAccess(drive, userParameters).createFile(getLocalDir(parentDir), title, type, userParameters);
@@ -242,7 +247,7 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
     public boolean renameFile(String dir, String title, SharedUserPortletParameters userParameters) {
         String drive = getDrive(dir);
         if(drive == null) {
-            log.error("Can't rename file/folder because we can't retrieve associated drive on this dir : " + dir);
+            log.error("Can't rename file/folder because we can't retrieve associated drive on this dir '{}'", dir);
             return false;
         }
         return this.getFsAccess(drive, userParameters).renameFile(getLocalDir(dir), title, userParameters);
@@ -320,7 +325,6 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
         return jsTreeFileRoots;
     }
 
-
     public List<JsTreeFile> getJsTreeFileRoots(String dir, SharedUserPortletParameters userParameters) {
 
         JsTreeFile parentFile = null;
@@ -331,7 +335,7 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
         //Iterator<String> parentsPathes = jFile.getParentsPathes().keySet().iterator();
         Iterator<String> parentsPathes = pathEncodingUtils.getParentsPathes(jFile.getPath(), null, null).keySet().iterator();
         String parentPath = parentsPathes.next();
-        Assert.isTrue(JsTreeFile.ROOT_DRIVE.equals(parentPath));
+        Assert.isTrue(JsTreeFile.ROOT_DRIVE.equals(parentPath), "ParentPath isn't the root path");
 
         if(!parentsPathes.hasNext())
             return rootAndDrivesAndCategories;
@@ -429,13 +433,13 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 
     private void addChildrensTozip(ZipOutputStream out, byte[] zippingBuffer, String dir, String folder, SharedUserPortletParameters userParameters) throws IOException {
         JsTreeFile tFile = get(dir, userParameters, false, false);
-        if("file".equals(tFile.getType())) {
+        if(FileType.FILE.getName().equals(tFile.getType())) {
             DownloadFile dFile = getFile(dir, userParameters);
 
             //GIP Recia : In some cases (ie, file has NTFS security permissions set), the dFile may be Null.
             //So we must check for null in order to prevent a general catastrophe
             if (dFile == null) {
-                log.warn("Download file is null!  " + dir);
+                log.warn("Download file is null! '{}'", dir);
                 return;
             }
             String fileName =  unAccent(folder.concat(dFile.getBaseName()));
@@ -466,13 +470,11 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
         }
     }
 
-
     public boolean formAuthenticationRequired(String dir, SharedUserPortletParameters userParameters) {
         if(getDrive(dir) == null)
             return false;
         return this.getFsAccess(getDrive(dir), userParameters).formAuthenticationRequired(userParameters);
     }
-
 
     public UserPassword getUserPassword(String dir, SharedUserPortletParameters userParameters) {
         if(getDrive(dir) == null)
@@ -494,7 +496,6 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
         return authenticateSuccess;
     }
 
-
     public String getFirstAvailablePath(SharedUserPortletParameters userParameters, String[] prefsDefaultPathes) {
         String defaultPath = JsTreeFile.ROOT_DRIVE;
         Map<String, FsAccess> rServers = this.restrictedServers;
@@ -507,7 +508,6 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
         }
         return defaultPath;
     }
-
 
     public Quota getQuota(String path,
                           SharedUserPortletParameters userParameters) {

@@ -19,10 +19,7 @@ package org.esupportail.portlet.filemanager.exceptions;
 
 public class EsupStockNotImplementedException extends EsupStockException {
 
-	private static final long serialVersionUID = 1L;
-	
 	public EsupStockNotImplementedException() {
 		super("Not Implemented");
 	}
-	
 }

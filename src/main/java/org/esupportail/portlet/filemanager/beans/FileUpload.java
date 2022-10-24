@@ -20,7 +20,7 @@ package org.esupportail.portlet.filemanager.beans;
 import org.springframework.web.multipart.MultipartFile;
 
 public class FileUpload {
- 
+
 	MultipartFile qqfile;
 
 	public MultipartFile getQqfile() {
@@ -30,6 +30,5 @@ public class FileUpload {
 	public void setQqfile(MultipartFile qqfile) {
 		this.qqfile = qqfile;
 	}
- 
 }
-	
+

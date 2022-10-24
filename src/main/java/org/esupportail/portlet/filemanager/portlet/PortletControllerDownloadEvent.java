@@ -37,8 +37,6 @@ import org.esupportail.portlet.filemanager.api.DownloadResponse;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UploadActionType;
 import org.esupportail.portlet.filemanager.services.IServersAccessService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -51,7 +49,7 @@ import org.springframework.web.portlet.context.PortletConfigAware;
 @RequestMapping("VIEW")
 public class PortletControllerDownloadEvent implements PortletConfigAware {
 
-    private static final Logger logger = LoggerFactory.getLogger(PortletControllerDownloadEvent.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PortletControllerDownloadEvent.class);
 
     private PortletConfig portletConfig;
 
@@ -71,7 +69,7 @@ public class PortletControllerDownloadEvent implements PortletConfigAware {
     @EventMapping(EsupFileManagerConstants.DOWNLOAD_REQUEST_QNAME_STRING)
     public void downloadEvent(EventRequest request, EventResponse response) {
 
-    	logger.info("PortletControllerDownloadEvent.downloadEvent from EsupFilemanager is called");
+    	log.info("PortletControllerDownloadEvent.downloadEvent from EsupFilemanager is called");
 
     	// INIT
     	portletController.init(request);
@@ -79,7 +77,7 @@ public class PortletControllerDownloadEvent implements PortletConfigAware {
     	PortletPreferences prefs = request.getPreferences();
     	String[] prefsDefaultPathes = prefs.getValues(PortletController.PREF_DEFAULT_PATH, null);
 
-    	boolean showHiddenFiles = "true".equals(prefs.getValue(PortletController.PREF_SHOW_HIDDEN_FILES, "false"));
+    	boolean showHiddenFiles = Boolean.parseBoolean(prefs.getValue(PortletController.PREF_SHOW_HIDDEN_FILES, "false"));
     	userParameters.setShowHiddenFiles(showHiddenFiles);
 
 		UploadActionType uploadOption = UploadActionType.valueOf(prefs.getValue(PortletController.PREF_UPLOAD_ACTION_EXIST_FILE, UploadActionType.OVERRIDE.toString()));
@@ -110,7 +108,7 @@ public class PortletControllerDownloadEvent implements PortletConfigAware {
 
 			success = serverAccess.putFile(defaultPath, baseName, inputStream, userParameters, userParameters.getUploadOption());
         } catch (FileSystemException e) {
-        	logger.error("putFile failed for this downloadEvent", e);
+        	log.error("putFile failed for this downloadEvent", e);
         }
 
         //Build the result object
@@ -122,9 +120,7 @@ public class PortletControllerDownloadEvent implements PortletConfigAware {
 
         //Add the result to the results and send the event
         response.setEvent(EsupFileManagerConstants.DOWNLOAD_RESPONSE_QNAME, downloadResponse);
-
     }
-
 }
 
 

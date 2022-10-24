@@ -18,7 +18,6 @@
 package org.esupportail.portlet.filemanager.beans;
 
 public enum UploadActionType {
-
 	/** To override the same filename. */
 	OVERRIDE(0),
 	/** To automatically rename the file uploaded. */

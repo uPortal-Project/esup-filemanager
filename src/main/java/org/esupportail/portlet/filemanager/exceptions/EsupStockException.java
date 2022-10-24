@@ -48,9 +48,4 @@ public class EsupStockException extends RuntimeException {
     public String getCodeI18n() {
         return codeI18n;
     }
-
-
-
-    private static final long serialVersionUID = 1L;
-
 }

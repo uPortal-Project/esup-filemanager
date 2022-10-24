@@ -23,10 +23,8 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 public class UploadBean implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-	
 	private CommonsMultipartFile filedata;
-	
+
 	private String folder;
 
 	public CommonsMultipartFile getFiledata() {
@@ -44,5 +42,4 @@ public class UploadBean implements Serializable {
 	public void setFolderss(String folder) {
 		this.folder = folder;
 	}
-	
 }

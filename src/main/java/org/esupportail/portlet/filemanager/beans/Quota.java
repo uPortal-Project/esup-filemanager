@@ -6,7 +6,7 @@ public class Quota {
 
 	private long usedBytes;
 	private long maxBytes;
-	
+
 	public Quota(long usedBytes, long maxBytes) {
 		this.usedBytes = usedBytes;
 		this.maxBytes = maxBytes;
@@ -19,7 +19,6 @@ public class Quota {
 		return usedBytes;
 	}
 
-
 	/**
 	 * @return the maxBytes
 	 */
@@ -30,21 +29,21 @@ public class Quota {
 	public float getUsage() {
 		return (float)( usedBytes*100l / maxBytes );
 	}
-	
+
 	public float getUsedSize() {
 		return SizeUtils.getSize(usedBytes);
 	}
-	
+
 	public float getMaxSize() {
 		return SizeUtils.getSize(maxBytes);
 	}
-	
+
 	public String getUsedUnit() {
 		return SizeUtils.getUnit(usedBytes);
 	}
-	
+
 	public String getMaxUnit() {
 		return SizeUtils.getUnit(maxBytes);
-			
+
 	}
 }

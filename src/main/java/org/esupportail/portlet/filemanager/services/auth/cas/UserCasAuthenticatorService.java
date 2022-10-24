@@ -40,19 +40,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.esupportail.portlet.filemanager.services.auth.cas;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.esupportail.portlet.filemanager.beans.SharedUserPortletParameters;
 import org.esupportail.portlet.filemanager.beans.UserPassword;
 import org.esupportail.portlet.filemanager.exceptions.EsupStockException;
 import org.esupportail.portlet.filemanager.services.auth.UserAuthenticatorService;
 import org.jasig.cas.client.validation.Assertion;
 
-
 public class UserCasAuthenticatorService implements UserAuthenticatorService {
 
-
-    private static final Log log = LogFactory.getLog(UserCasAuthenticatorService.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UserCasAuthenticatorService.class);
 
     private UserCasAuthenticatorServiceRoot userCasAuthenticatorServiceRoot;
 
@@ -81,7 +77,7 @@ public class UserCasAuthenticatorService implements UserAuthenticatorService {
     public UserPassword getUserPassword(SharedUserPortletParameters userParameters) {
 
         if (log.isDebugEnabled()) {
-            log.debug("getting credentials using " + this.getClass().getName());
+            log.debug("getting credentials using {}", this.getClass().getName());
             log.debug("getting CAS credentials from session");
         }
 
@@ -92,7 +88,7 @@ public class UserCasAuthenticatorService implements UserAuthenticatorService {
         }
 
         String proxyPrincipalname = casAssertion.getPrincipal().getName();
-        log.debug("got user '" + proxyPrincipalname + "'");
+        log.debug("got user '{}'", proxyPrincipalname);
 
         String proxyTicket = proxyTicketService.getCasServiceToken(casAssertion, target);
         if (proxyTicket == null) {
@@ -100,17 +96,14 @@ public class UserCasAuthenticatorService implements UserAuthenticatorService {
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("Proxy ticket: " + proxyTicket);
+            log.debug("Proxy ticket: {}", proxyTicket);
         }
 
-        UserPassword auth = new UserPassword(proxyPrincipalname, proxyTicket);
-
-        return auth;
+        return new UserPassword(proxyPrincipalname, proxyTicket);
 
     }
 
     public boolean formAuthenticationNeeded(SharedUserPortletParameters userParameters) {
         return false;
     }
-
 }
