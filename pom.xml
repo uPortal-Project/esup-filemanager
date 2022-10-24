@@ -407,7 +407,7 @@
           <warName>esup-filemanager</warName>
           <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
         </configuration>
-        <version>2.6</version>
+        <version>3.3.2</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
