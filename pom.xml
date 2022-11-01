@@ -97,7 +97,7 @@
     <commons-vfs.version>2.2</commons-vfs.version>
     <jackson.version>2.13.4.2</jackson.version>
     <jcifs-ng.version>2.1.8</jcifs-ng.version>
-    <logback.version>1.4.4</logback.version>
+    <logback.version>1.2.11</logback.version>
     <spring.version>4.3.30.RELEASE</spring.version>
   </properties>
 
