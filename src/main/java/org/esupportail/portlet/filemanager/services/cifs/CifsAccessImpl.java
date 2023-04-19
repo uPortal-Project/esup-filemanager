@@ -258,11 +258,13 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
         if (!resourceWritable) {
             try {
                 ACE[] ACEs = resource.getSecurity();
-                for(ACE ace: ACEs) {
-                    if (this.userAuthenticator.getUsername().equals(ace.getSID().getAccountName())) {
-                        if ((ace.getAccessMask() & ACE.FILE_WRITE_DATA)!=0) {
-                            resourceWritable = true;
-                            break;
+                if (ACEs != null) {
+                    for (ACE ace : ACEs) {
+                        if (this.userAuthenticator.getUsername().equals(ace.getSID().getAccountName())) {
+                            if ((ace.getAccessMask() & ACE.FILE_WRITE_DATA) != 0) {
+                                resourceWritable = true;
+                                break;
+                            }
                         }
                     }
                 }
