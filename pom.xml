@@ -94,7 +94,7 @@
     <project.build.source>1.8</project.build.source>
     <project.build.target>1.8</project.build.target>
     <uportal-libs.version>5.12.0</uportal-libs.version>
-    <commons-vfs.version>2.2</commons-vfs.version>
+    <commons-vfs.version>2.10.0</commons-vfs.version>
     <jackson.version>2.13.4.2</jackson.version>
     <jcifs-ng.version>2.1.8</jcifs-ng.version>
     <logback.version>1.3.4</logback.version>
