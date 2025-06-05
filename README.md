@@ -1,7 +1,7 @@
 # ESUP File Manager
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.esupportail.portlet.filemanager/esup-filemanager/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.esupportail.portlet.filemanager/esup-filemanager)
-[![build status](https://github.com/uPortal-Project/esup-filemanager/workflows/CI/badge.svg?branch=master)](https://github.com/uPortal-Project/esup-filemanager/actions)
+[![CI](https://github.com/uPortal-Project/esup-filemanager/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/uPortal-Project/esup-filemanager/actions/workflows/CI.yml)
 
 > Esup File Manager allows users to perform file management on their home directories.
 
