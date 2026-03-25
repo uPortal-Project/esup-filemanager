@@ -451,13 +451,52 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
         return defaultPath;
     }
 
-    public Quota getQuota(String path
-                          ) {
+    public Quota getQuota(String path) {
         FsAccess access = this.getFsAccess(getDrive(path));
         Quota result = null;
         if ( access.isSupportQuota(getLocalDir(path)) ) {
             result = access.getQuota(getLocalDir(path));
         }
         return result;
+    }
+
+    @Override
+    public boolean supportsPresignedUrls(String path) {
+        String drive = getDrive(path);
+        if (drive == null) {
+            return false;
+        }
+        FsAccess access = this.getFsAccess(drive);
+        return access != null && access.supportsPresignedUrls();
+    }
+
+    @Override
+    public PresignedUrl getPresignedDownloadUrl(String path) {
+        String drive = getDrive(path);
+        if (drive == null) {
+            log.warn("Cannot get presigned download URL: no drive found for path {}", path);
+            return null;
+        }
+        FsAccess access = this.getFsAccess(drive);
+        if (access == null) {
+            log.warn("Cannot get presigned download URL: no FsAccess found for drive {}", drive);
+            return null;
+        }
+        return access.getPresignedDownloadUrl(getLocalDir(path));
+    }
+
+    @Override
+    public PresignedUrl getPresignedUploadUrl(String path, String filename) {
+        String drive = getDrive(path);
+        if (drive == null) {
+            log.warn("Cannot get presigned upload URL: no drive found for path {}", path);
+            return null;
+        }
+        FsAccess access = this.getFsAccess(drive);
+        if (access == null) {
+            log.warn("Cannot get presigned upload URL: no FsAccess found for drive {}", drive);
+            return null;
+        }
+        return access.getPresignedUploadUrl(getLocalDir(path), filename);
     }
 }

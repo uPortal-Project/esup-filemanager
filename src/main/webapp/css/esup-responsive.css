@@ -1,0 +1,1119 @@
+/**
+ * ESUP File Manager - Styles Responsives Bootstrap 5
+ * Support Desktop, Tablette et Mobile
+ * Layout moderne avec splitter redimensionnable
+ */
+
+/* ===============================================
+   Variables CSS pour personnalisation
+   =============================================== */
+:root {
+    --mobile-toolbar-height: 70px;
+    --header-height: 56px;
+    --left-panel-width: 280px;
+    --left-panel-min-width: 200px;
+    --left-panel-max-width: 500px;
+    --splitter-width: 6px;
+    --panel-header-height: 48px;
+    --panel-footer-height: auto;
+
+    /* Couleurs */
+    --panel-bg: #ffffff;
+    --panel-header-bg: #f8f9fa;
+    --panel-border: #dee2e6;
+    --splitter-bg: #e9ecef;
+    --splitter-hover-bg: #0d6efd;
+    --splitter-active-bg: #0b5ed7;
+}
+
+/* ===============================================
+   Layout Général
+   =============================================== */
+body {
+    font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow-x: hidden;
+    height: 100vh;
+}
+
+.esupstock {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* ===============================================
+   Toolbar Desktop
+   =============================================== */
+#toolbar {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    background: linear-gradient(180deg, #4a5568 0%, #2d3748 100%) !important;
+    border-bottom: 3px solid #1a202c !important;
+    padding: 0.75rem 1rem !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2) !important;
+}
+
+/* Suppression des images de fond PNG pour la toolbar responsive */
+#toolbar .btn,
+#toolbar #file-uploader,
+#toolbar #toolbar-refresh,
+#toolbar #toolbar-new_folder,
+#toolbar #toolbar-download,
+#toolbar #toolbar-zip,
+#toolbar #toolbar-copy,
+#toolbar #toolbar-cut,
+#toolbar #toolbar-paste,
+#toolbar #toolbar-rename,
+#toolbar #toolbar-delete {
+    background-image: none !important;
+}
+
+#toolbar .btn-group {
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+#toolbar .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    border: none;
+    color: white;
+}
+
+#toolbar .btn i {
+    font-size: 1.125rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+#toolbar .btn span {
+    line-height: 1.2;
+    white-space: nowrap;
+    font-size: 0.875rem;
+}
+
+/* Arrondissement des premiers et derniers boutons du groupe */
+#toolbar .btn-group .btn:first-child {
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+}
+
+#toolbar .btn-group .btn:last-child {
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+}
+
+#toolbar .btn-group .btn:only-child {
+    border-radius: 0.5rem;
+}
+
+/* État désactivé - Grisé mais LISIBLE */
+#toolbar .btn.disabled {
+    cursor: not-allowed;
+    background-color: #9ca3af !important;
+    color: white !important;
+    opacity: 0.6;
+}
+
+#toolbar .btn.disabled i,
+#toolbar .btn.disabled span {
+    color: white !important;
+}
+
+/* Styles spécifiques par type de bouton - Fonds colorés simples avec texte blanc */
+#toolbar .btn-outline-primary {
+    background-color: #3b82f6;
+    color: white;
+}
+
+#toolbar .btn-outline-success {
+    background-color: #10b981;
+    color: white;
+}
+
+#toolbar .btn-outline-info {
+    background-color: #06b6d4;
+    color: white;
+}
+
+#toolbar .btn-outline-secondary {
+    background-color: #6b7280;
+    color: white;
+}
+
+#toolbar .btn-outline-warning {
+    background-color: #f59e0b;
+    color: white;
+}
+
+#toolbar .btn-outline-danger {
+    background-color: #ef4444;
+    color: white;
+}
+
+#toolbar .btn-outline-dark {
+    background-color: #374151;
+    color: white;
+}
+
+/* Séparateur visuel entre groupes - Simple */
+#toolbar .btn-group {
+    position: relative;
+}
+
+#toolbar .btn-group:not(:last-of-type) {
+    margin-right: 1rem;
+}
+
+/* Style pour l'uploader dans la toolbar */
+#toolbar #file-uploader {
+    cursor: pointer;
+}
+
+/* Style simple pour le bouton logout */
+#toolbar #toolbar-logout {
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    background-color: #374151;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    transition: all 0.2s ease;
+}
+
+/* Responsive - Ajustements pour petits écrans large */
+@media (max-width: 1399px) {
+    #toolbar .btn {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.8125rem;
+    }
+
+    #toolbar .btn i {
+        font-size: 1rem;
+    }
+}
+
+/* ===============================================
+   Main Content Wrapper - Layout Flex Moderne
+   =============================================== */
+.main-content-wrapper {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ===============================================
+   Left Panel - Arborescence
+   =============================================== */
+.left-panel {
+    width: var(--left-panel-width);
+    min-width: var(--left-panel-min-width);
+    max-width: var(--left-panel-max-width);
+    background: var(--panel-bg);
+    border-right: 1px solid var(--panel-border);
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    transition: transform 0.3s ease, width 0.3s ease;
+    z-index: 10;
+}
+
+.left-panel.collapsed {
+    transform: translateX(calc(-100% + var(--splitter-width)));
+}
+
+.left-panel .panel-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Header du panneau */
+.panel-header {
+    height: var(--panel-header-height);
+    background: var(--panel-header-bg);
+    border-bottom: 1px solid var(--panel-border);
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.panel-header h6 {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    font-weight: 600;
+    color: #495057;
+}
+
+.panel-header .btn-link {
+    color: #6c757d;
+    text-decoration: none;
+}
+
+.panel-header .btn-link:hover {
+    color: #0d6efd;
+}
+
+/* Body du panneau - Arborescence */
+.panel-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0.75rem;
+}
+
+.panel-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.panel-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.panel-body::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.panel-body::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Footer du panneau - Details */
+.panel-footer {
+    min-height: 150px;
+    max-height: 50vh;
+    background: var(--panel-header-bg);
+    border-top: 1px solid var(--panel-border);
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    flex-shrink: 0;
+}
+
+.panel-footer:empty {
+    display: none;
+}
+
+/* ===============================================
+   Splitter / Resize Handle - Moderne et Simple
+   =============================================== */
+.panel-splitter {
+    width: var(--splitter-width);
+    background: var(--splitter-bg);
+    cursor: ew-resize;
+    position: relative;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.panel-splitter:hover {
+    background: var(--splitter-hover-bg);
+}
+
+.panel-splitter:active,
+.panel-splitter.resizing {
+    background: var(--splitter-active-bg);
+}
+
+.splitter-handle {
+    width: 100%;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.panel-splitter:hover .splitter-handle,
+.panel-splitter.resizing .splitter-handle {
+    opacity: 1;
+    color: white;
+}
+
+/* ===============================================
+   Right Panel - Browser Area
+   =============================================== */
+.right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--panel-bg);
+}
+
+.browser-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 1.5rem;
+}
+
+.browser-content::-webkit-scrollbar {
+    width: 10px;
+}
+
+.browser-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.browser-content::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 5px;
+}
+
+.browser-content::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+#browserMain {
+    min-height: 100%;
+}
+
+
+/* ===============================================
+   Responsive - Tablette et Mobile
+   =============================================== */
+@media (max-width: 991.98px) {
+    /* Masquer le panneau gauche sur tablette/mobile */
+    .left-panel {
+        display: none !important;
+    }
+
+    .right-panel {
+        width: 100%;
+    }
+
+    .browser-content {
+        padding-bottom: calc(var(--mobile-toolbar-height) + 1rem);
+    }
+
+    /* Toolbar desktop caché */
+    #toolbar {
+        display: none !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    /* Mobile - Padding réduit */
+    .browser-content {
+        padding: 0.75rem;
+    }
+}
+
+/* ===============================================
+   États du panneau gauche
+   =============================================== */
+#toggleLeftPanel .bi-chevron-left {
+    transition: transform 0.3s ease;
+}
+
+.left-panel.collapsed #toggleLeftPanel .bi-chevron-left {
+    transform: rotate(180deg);
+}
+
+/* Bouton de réouverture quand panneau fermé */
+.left-panel.collapsed::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: var(--splitter-width);
+    height: 60px;
+    background: var(--splitter-bg);
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    z-index: 100;
+}
+
+/* ===============================================
+   Overlay de redimensionnement
+   =============================================== */
+.resize-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    cursor: ew-resize;
+    z-index: 9999;
+    background: transparent;
+    display: none;
+}
+
+.resize-overlay.active {
+    display: block;
+}
+
+/* ===============================================
+   Tables et contenu du browserArea - Moderne
+   =============================================== */
+#browserArea table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+}
+
+#browserArea table thead th {
+    background: var(--panel-header-bg);
+    border-bottom: 2px solid var(--panel-border);
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    color: #495057;
+    white-space: nowrap;
+}
+
+#browserArea table tbody tr {
+    border-bottom: 1px solid #f1f1f1;
+    transition: background-color 0.15s ease;
+}
+
+#browserArea table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+#browserArea table tbody tr.selected {
+    background-color: #e7f3ff;
+}
+
+#browserArea table tbody td {
+    padding: 0.625rem 1rem;
+    vertical-align: middle;
+}
+
+#browserArea table tbody td img {
+    width: 20px;
+    height: 20px;
+    margin-right: 0.5rem;
+}
+
+#browserArea table a {
+    color: #212529;
+    text-decoration: none;
+}
+
+#browserArea table a:hover {
+    color: #0d6efd;
+}
+
+#browserArea table input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+/* ===============================================
+   Responsive - Mobile
+   =============================================== */
+@media (max-width: 767.98px) {
+    #browserArea table {
+        font-size: 0.85rem;
+    }
+
+    #browserArea table th,
+    #browserArea table td {
+        padding: 0.5rem 0.25rem;
+    }
+
+    /* Masquer colonnes non essentielles sur petit écran */
+    #browserArea table .d-none-mobile {
+        display: none;
+    }
+
+    /* Liste de fichiers en mode card sur mobile */
+    .file-card-mobile {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem;
+        border-bottom: 1px solid #dee2e6;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .file-card-mobile:hover {
+        background-color: #f8f9fa;
+    }
+
+    .file-card-mobile img {
+        width: 32px;
+        height: 32px;
+        margin-right: 0.75rem;
+    }
+
+    .file-card-mobile .file-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .file-card-mobile .file-name {
+        font-weight: 500;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .file-card-mobile .file-meta {
+        font-size: 0.75rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+    }
+
+    .file-card-mobile .file-actions {
+        margin-left: 0.5rem;
+    }
+
+    /* Checkbox plus grande sur mobile */
+    .file-card-mobile input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        margin-right: 0.75rem;
+    }
+}
+
+/* ===============================================
+   Offcanvas Menu Mobile
+   =============================================== */
+.offcanvas {
+    max-width: 85%;
+}
+
+.offcanvas-body {
+    padding: 0;
+}
+
+.offcanvas .list-group-item {
+    border-left: 0;
+    border-right: 0;
+    padding: 1rem 1.5rem;
+}
+
+.offcanvas .list-group-item i {
+    width: 24px;
+    margin-right: 0.5rem;
+}
+
+/* Arborescence dans le menu mobile */
+#fileTreeMobile {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* ===============================================
+   Bottom Toolbar Mobile
+   =============================================== */
+.fixed-bottom {
+    z-index: 1030;
+}
+
+.fixed-bottom .btn-group {
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.fixed-bottom .btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: var(--mobile-toolbar-height);
+    border-radius: 0 !important;
+}
+
+.fixed-bottom .btn:disabled {
+    opacity: 0.4;
+}
+
+.fixed-bottom .btn i {
+    margin-bottom: 0.25rem;
+}
+
+.fixed-bottom .small {
+    font-size: 0.7rem;
+    line-height: 1;
+}
+
+/* ===============================================
+   Bottom Sheet Modal (Actions Mobile)
+   =============================================== */
+.modal-dialog-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    max-width: 100%;
+}
+
+.modal-dialog-bottom .modal-content {
+    border-radius: 1rem 1rem 0 0;
+    border-bottom: 0;
+}
+
+.modal-dialog-bottom .modal-header {
+    border-radius: 1rem 1rem 0 0;
+    background-color: #f8f9fa;
+}
+
+.modal-dialog-bottom .list-group-item {
+    padding: 1rem 1.5rem;
+    border-left: 0;
+    border-right: 0;
+}
+
+.modal-dialog-bottom .list-group-item i {
+    width: 24px;
+    margin-right: 0.75rem;
+}
+
+/* ===============================================
+   Navbar Mobile
+   =============================================== */
+.navbar {
+    height: var(--header-height);
+}
+
+.navbar-brand {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.navbar-text {
+    font-size: 0.85rem;
+}
+
+/* ===============================================
+   Touch Gestures
+   =============================================== */
+@media (hover: none) and (pointer: coarse) {
+    /* Augmenter zones tactiles sur mobile */
+    .btn,
+    .list-group-item,
+    .file-card-mobile {
+        min-height: 44px; /* Apple recommandation */
+    }
+
+    /* Améliorer le feedback tactile */
+    .btn:active,
+    .list-group-item:active,
+    .file-card-mobile:active {
+        transform: scale(0.98);
+        transition: transform 0.1s;
+    }
+}
+
+/* ===============================================
+   Arborescence Responsive
+   =============================================== */
+.file-tree-root {
+    font-size: 0.9rem;
+}
+
+.tree-node-content {
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.tree-node-content:hover {
+    background-color: #f8f9fa;
+}
+
+.tree-node.selected > .tree-node-content {
+    background-color: #d4e5f7;
+    font-weight: 600;
+}
+
+/* ===============================================
+   Scrollbars Personnalisées (WebKit)
+   =============================================== */
+#arborescentArea::-webkit-scrollbar,
+#browserArea::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+#arborescentArea::-webkit-scrollbar-track,
+#browserArea::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+#arborescentArea::-webkit-scrollbar-thumb,
+#browserArea::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+#arborescentArea::-webkit-scrollbar-thumb:hover,
+#browserArea::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* ===============================================
+   Drag & Drop Visuels
+   =============================================== */
+.dragging {
+    opacity: 0.6;
+    cursor: move;
+}
+
+.drag-over {
+    background-color: #e3f2fd;
+    border: 2px dashed #2196f3;
+}
+
+/* ===============================================
+   Sélection Multiple
+   =============================================== */
+.file-selected {
+    background-color: #e7f3ff;
+}
+
+.file-selected:hover {
+    background-color: #d0e8ff;
+}
+
+/* ===============================================
+   Loading States
+   =============================================== */
+.loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ===============================================
+   Animations
+   =============================================== */
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.slide-up {
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ===============================================
+   Safe Area (iPhone X+ notch)
+   =============================================== */
+@supports (padding: max(0px)) {
+    .navbar,
+    .fixed-bottom {
+        padding-left: max(env(safe-area-inset-left), 0);
+        padding-right: max(env(safe-area-inset-right), 0);
+    }
+
+    .fixed-bottom {
+        padding-bottom: max(env(safe-area-inset-bottom), 0);
+    }
+}
+
+/* ===============================================
+   Dark Mode Support (Optionnel)
+   =============================================== */
+@media (prefers-color-scheme: dark) {
+    /* Désactivé par défaut, à activer si besoin */
+    /*
+    body {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+    }
+
+    .bg-white {
+        background-color: #2a2a2a !important;
+        color: #e0e0e0;
+    }
+
+    .bg-light {
+        background-color: #333 !important;
+    }
+
+    .border {
+        border-color: #444 !important;
+    }
+    */
+}
+
+/* ===============================================
+   Utilitaires
+   =============================================== */
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.min-vh-100 {
+    min-height: 100vh;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+/* ===============================================
+   Upload - Drag & Drop depuis le bureau
+   =============================================== */
+.drag-over-upload {
+    position: relative;
+    outline: 3px dashed #0d6efd;
+    outline-offset: -10px;
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+.drag-over-upload::after {
+    content: "Déposez les fichiers ici pour les uploader";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(13, 110, 253, 0.9);
+    color: white;
+    padding: 20px 40px;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    pointer-events: none;
+    z-index: 9999;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Barres de progression d'upload (legacy, conservées par compatibilité) */
+.upload-progress-item {
+    min-width: 300px;
+    max-width: 500px;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0);     }
+}
+
+/* ===============================================
+   Upload - Panneau flottant multi-fichiers
+   =============================================== */
+.upload-panel {
+    position: fixed;
+    bottom: 80px; /* au-dessus de la barre mobile */
+    right: 16px;
+    width: 360px;
+    max-width: calc(100vw - 32px);
+    z-index: 9998;
+    border-radius: 10px;
+    overflow: hidden;
+    animation: uploadPanelIn 0.25s ease-out;
+}
+
+@keyframes uploadPanelIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* Sur desktop, décaler vers le haut (pas de barre mobile) */
+@media (min-width: 992px) {
+    .upload-panel {
+        bottom: 20px;
+        right: 20px;
+    }
+}
+
+/* État réduit : masquer le corps et le pied */
+.upload-panel.minimized .upload-panel-body,
+.upload-panel.minimized .upload-panel-footer {
+    display: none;
+}
+
+.upload-panel-header {
+    background: #0d6efd;
+    color: white;
+    user-select: none;
+}
+
+.upload-panel-btn {
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0 6px;
+    line-height: 1.4;
+    transition: color 0.15s;
+}
+
+.upload-panel-btn:hover {
+    color: white;
+}
+
+.upload-panel-body {
+    max-height: 280px;
+    overflow-y: auto;
+    background: #fff;
+}
+
+.upload-file-item {
+    background: #fff;
+    border-left: none;
+    border-right: none;
+}
+
+.upload-file-item:nth-child(even) {
+    background: #f8f9fa;
+}
+
+.upload-filename {
+    max-width: 220px;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.upload-percent {
+    white-space: nowrap;
+    min-width: 52px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.upload-panel-footer {
+    background: #fff;
+    border-top: 1px solid #dee2e6;
+}
+
+/* ===============================================
+   Authentication Form Styles
+   =============================================== */
+#authenticationForm {
+    border: 1px solid var(--panel-border);
+    margin: 10px;
+    padding: 20px;
+    border-radius: 8px;
+    background: var(--panel-bg);
+}
+
+#authenticationForm label {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #495057;
+}
+
+#authenticationForm input[type="text"],
+#authenticationForm input[type="password"] {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--panel-border);
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+#authenticationForm input[type="text"]:focus,
+#authenticationForm input[type="password"]:focus {
+    outline: none;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+#authenticationForm button[type="submit"] {
+    display: block;
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px 16px;
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+#authenticationForm button[type="submit"]:hover {
+    background-color: #0b5ed7;
+}
+
+#authenticationForm button[type="submit"]:active {
+    background-color: #0a58ca;
+}
+
+#authenticationForm .auth-error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c2c7;
+    color: #842029;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+/* ===============================================
+   Print Styles
+   =============================================== */
+@media print {
+    .navbar,
+    #toolbar,
+    .fixed-bottom,
+    #leftArea {
+        display: none !important;
+    }
+
+    #browserArea {
+        width: 100% !important;
+    }
+}

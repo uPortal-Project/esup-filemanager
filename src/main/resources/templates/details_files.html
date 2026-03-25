@@ -1,25 +1,45 @@
 <!-- src/main/resources/templates/details_files.html -->
-<h3 class="ui-widget-header ui-corner-all" th:text="#{details.header}"></h3>
+<div class="details-card">
+    <h3 class="details-header" th:text="#{details.header}">Détails</h3>
 
-<div class="details-spacer"></div>
+    <div class="details-spacer"></div>
 
-<div class="details-attribute-header" th:text="#{details.numselected} + ' : '"></div>
-<div class="details-attribute" th:text="${numselected}"></div>
+    <dl class="details-info">
+        <dt class="details-label" th:text="#{details.numselected}">Fichiers sélectionnés</dt>
+        <dd class="details-value" th:text="${numselected}"></dd>
+    </dl>
 
-<div class="details-spacer"></div>
-<div id="detail-zip-download" th:text="#{toolbar.zip}"></div>
+    <div class="details-spacer"></div>
 
-<div th:if="${image_paths != null and #lists.size(image_paths) > 0}">
-    <div id="detail-view-images" th:text="#{details.images.title}"></div>
-    <div id="diaporamaDivId" th:title="#{details.images.title}"></div>
-    <div id="diaporamaSource" style="display:none">
-        <ul class="diaporama1">
-            <li th:each="path : ${image_paths}">
-                <img th:src="@{/fetchImage(dir=${path})}" alt="Image" th:title="${path}" />
-            </li>
-        </ul>
+    <div class="details-actions">
+        <button id="detail-zip-download" class="btn-action" th:text="#{toolbar.zip}">Zip</button>
     </div>
-    <div id="ok_text" th:text="#{details.images.ok}"></div>
-    <div id="next_text" th:text="#{details.images.next}"></div>
-    <div id="prev_text" th:text="#{details.images.prev}"></div>
+
+    <div th:if="${image_paths != null and #lists.size(image_paths) > 0}">
+        <div class="details-spacer"></div>
+        <button id="detail-view-images" class="btn-action" th:text="#{details.images.title}">Voir les images</button>
+
+        <!-- Données pour le diaporama -->
+        <div id="slideshowData" style="display: none;">
+            <div th:each="path : ${image_paths}"
+                 class="slideshow-image-data"
+                 th:attr="data-src=@{/fetchImage(dir=${path})},data-title=${path}"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal du diaporama -->
+<div id="slideshowModal" class="slideshow-modal" style="display: none;">
+    <div class="slideshow-content">
+        <span class="slideshow-close">&times;</span>
+        <button class="slideshow-prev">‹</button>
+        <div class="slideshow-image-container">
+            <img id="slideshowImage" alt="Image">
+            <div class="slideshow-counter"><span id="slideCounter"></span></div>
+        </div>
+        <button class="slideshow-next">›</button>
+        <div class="slideshow-controls">
+            <button id="slideshowAutoplay" class="btn-autoplay">▶ Lecture auto</button>
+        </div>
+    </div>
 </div>

@@ -40,7 +40,7 @@ public class UserPasswordAuthenticatorService implements UserAuthenticatorServic
     }
 
     /**
-     * To set a default username retrieving from user uPortal attributes
+     * To set a default username retrieving from user cas attributes
      * @param userInfo4Username
      */
     public void setUserInfo4Username(String userInfo4Username) {
@@ -48,7 +48,7 @@ public class UserPasswordAuthenticatorService implements UserAuthenticatorServic
     }
 
     /**
-     * To set a default password retrieving from user uPortal attributes
+     * To set a default password retrieving from user cas attributes
      * @param userInfo4Password
      */
     public void setUserInfo4Password(String userInfo4Password) {

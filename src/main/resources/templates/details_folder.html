@@ -1,35 +1,43 @@
 <!-- src/main/resources/templates/details_folder.html -->
-<h3 class="ui-widget-header ui-corner-all" th:text="#{details.header}"></h3>
+<div class="details-card">
+    <h3 class="details-header" th:text="#{details.header}">Détails</h3>
 
-<dl class="details">
-    <dt class="details-attribute-header" th:text="#{details.title} + ' : '"></dt>
-    <dd class="details-attribute">
-        <!-- <img th:src="${file.icon}" alt="icon" /> -->
-        <span th:text="${file.title}"></span>
-    </dd>
-
-    <dt class="details-attribute-header" th:text="#{details.folders} + ' : '"></dt>
-    <dd class="details-attribute" th:text="${file.folderCount}"></dd>
-
-    <dt class="details-attribute-header" th:text="#{details.files} + ' : '"></dt>
-    <dd class="details-attribute" th:text="${file.fileCount}"></dd>
-
-    <dt class="details-attribute-header" th:text="#{details.totalsize} + ' : '"></dt>
-    <dd class="details-attribute">
-        <span th:text="${file.formattedTotalSize.size}"></span>
-        <span th:text="#{|details.${file.formattedTotalSize.unit}|}"></span>
-    </dd>
-
-    <th:block th:if="${quota != null}">
-        <dt class="details-attribute-header" th:text="#{details.quota} + ' : '"></dt>
-        <dd class="details-attribute">
-            <span th:text="${quota.usage}"></span>% (
-            <span th:text="${quota.usedSize}"></span>
-            <span th:text="${quota.usedUnit}"></span>
-            /
-            <span th:text="${quota.maxSize}"></span>
-            <span th:text="${quota.maxUnit}"></span>
-            )
+    <dl class="details-info">
+        <dt class="details-label" th:text="#{details.title}">Nom</dt>
+        <dd class="details-value">
+            <span th:text="${file.title}"></span>
         </dd>
-    </th:block>
-</dl>
+
+        <dt class="details-label" th:text="#{details.folders}">Dossiers</dt>
+        <dd class="details-value" th:text="${file.folderCount}"></dd>
+
+        <dt class="details-label" th:text="#{details.files}">Fichiers</dt>
+        <dd class="details-value" th:text="${file.fileCount}"></dd>
+
+        <dt class="details-label" th:text="#{details.totalsize}">Taille totale</dt>
+        <dd class="details-value">
+            <span th:text="${file.formattedTotalSize.size}"></span>
+            <span th:text="#{|details.${file.formattedTotalSize.unit}|}"></span>
+        </dd>
+
+        <th:block th:if="${quota != null}">
+            <dt class="details-label" th:text="#{details.quota}">Quota</dt>
+            <dd class="details-value">
+                <div class="quota-info">
+                    <div class="quota-bar">
+                        <div class="quota-fill" th:style="'width: ' + ${quota.usage} + '%'"></div>
+                    </div>
+                    <div class="quota-text">
+                        <span th:text="${quota.usage}"></span>%
+                        (<span th:text="${quota.usedSize}"></span>
+                        <span th:text="${quota.usedUnit}"></span>
+                        /
+                        <span th:text="${quota.maxSize}"></span>
+                        <span th:text="${quota.maxUnit}"></span>)
+                    </div>
+                </div>
+            </dd>
+        </th:block>
+    </dl>
+</div>
+

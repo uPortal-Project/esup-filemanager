@@ -182,6 +182,33 @@ public abstract class FsAccess {
         return true;
     }
 
+    /**
+     * Check if this implementation supports presigned URLs for direct client access
+     * @return true if presigned URLs are supported, false otherwise
+     */
+    public boolean supportsPresignedUrls() {
+        return false;
+    }
+
+    /**
+     * Get a presigned download URL for direct client access
+     * @param path the file path
+     * @return PresignedUrl object containing the URL and expiration info, or null if not supported
+     */
+    public PresignedUrl getPresignedDownloadUrl(String path) {
+        return null;
+    }
+
+    /**
+     * Get a presigned upload URL for direct client access
+     * @param path the directory path
+     * @param filename the filename to upload
+     * @return PresignedUrl object containing the URL and expiration info, or null if not supported
+     */
+    public PresignedUrl getPresignedUploadUrl(String path, String filename) {
+        return null;
+    }
+
     public boolean formAuthenticationRequired() {
         if (this.userAuthenticatorService != null && this.userAuthenticatorService.formAuthenticationNeeded()) {
             if (this.userAuthenticatorService.getUserPassword() == null || this.userAuthenticatorService.getUserPassword().getPassword() == null || this.userAuthenticatorService.getUserPassword().getPassword().length() == 0) {
@@ -242,7 +269,7 @@ public abstract class FsAccess {
             Map<String, Object> userAttributes = casUser.getAttributes();
             context.setVariable("userAttributes",  userAttributes);
             Boolean hasAccess = (Boolean) exp.getValue(context);
-            log.info("Evaluation of {} -> {} hasAccess for {} : {}", accessRule, authentication, driveName,  hasAccess);
+            log.debug("Evaluation of {} -> {} hasAccess for {} : {}", accessRule, authentication, driveName,  hasAccess);
             return BooleanUtils.isTrue(hasAccess);
         }
         return true;

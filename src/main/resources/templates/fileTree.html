@@ -24,20 +24,20 @@
             <tr>
                 <th>
                     <a class="sortTable"
-                       th:rel="${param.sortField == 'titleAsc' ? 'titleDesc' : 'titleAsc'}"
+                       th:rel="${sortField == 'titleAsc' ? 'titleDesc' : 'titleAsc'}"
                        href="#"
                        th:text="#{browserArea.header.filename}"></a>
                 </th>
                 <th>
                     <a class="sortTable"
-                       th:rel="${param.sortField == 'sizeAsc' ? 'sizeDesc' : 'sizeAsc'}"
+                       th:rel="${sortField == 'sizeAsc' ? 'sizeDesc' : 'sizeAsc'}"
                        href="#"
                        th:text="#{browserArea.header.size}"></a>
                 </th>
                 <th th:text="#{browserArea.header.type}"></th>
                 <th>
                     <a class="sortTable"
-                       th:rel="${param.sortField == 'lastModifiedAsc' ? 'lastModifiedDesc' : 'lastModifiedAsc'}"
+                       th:rel="${sortField == 'lastModifiedAsc' ? 'lastModifiedDesc' : 'lastModifiedAsc'}"
                        href="#"
                        th:text="#{browserArea.header.modified}"></a>
                 </th>

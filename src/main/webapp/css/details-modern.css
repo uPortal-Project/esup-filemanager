@@ -1,0 +1,411 @@
+/*
+ * Details Modern Styles
+ * Styles adaptés pour les blocs de détails du gestionnaire de fichiers
+ * Design harmonisé avec l'interface existante
+ */
+
+/* ==================== Carte de détails ==================== */
+.details-card {
+    background: #FFFFEE;  /* Même couleur que detailArea */
+    padding: 0;
+    margin: 0;
+    border: none;
+}
+
+.details-header {
+    background: #f3f3f3;
+    color: #333333;
+    padding: 10px;
+    margin: 0;
+    font-size: 14px;
+    font-weight: bold;
+    border-bottom: 1px solid #bbb;
+}
+
+/* ==================== Informations de détails ==================== */
+.details-info {
+    padding: 10px;
+    margin: 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px 10px;
+}
+
+.details-label {
+    font-weight: bold;
+    color: #333333;
+    font-size: 13px;
+    margin: 0;
+}
+
+.details-label::after {
+    content: " :";
+}
+
+.details-value {
+    color: #333333;
+    font-size: 13px;
+    margin: 0;
+    word-break: break-word;
+}
+
+.details-spacer {
+    height: 10px;
+}
+
+/* ==================== Lecteurs média ==================== */
+.media-player-container {
+    padding: 10px;
+    background: #FFFFEE;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.audio-player,
+.video-player {
+    width: 100%;
+    border: 1px solid #bbb;
+    outline: none;
+    background: #f5f5f5;
+}
+
+.audio-player {
+    max-width: 100%;
+    height: 48px;
+}
+
+.video-player {
+    max-width: 100%;
+    max-height: 35vh;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+}
+
+/* Personnalisation des contrôles média */
+.audio-player::-webkit-media-controls-panel,
+.video-player::-webkit-media-controls-panel {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* ==================== Aperçu d'image ==================== */
+.image-preview-container {
+    position: relative;
+    padding: 10px;
+    background: #FFFFEE;
+    border-bottom: 1px solid #e0e0e0;
+    text-align: center;
+    cursor: pointer;
+    max-height: 40vh;
+    overflow: hidden;
+}
+
+.details-image {
+    max-width: 100%;
+    max-height: 35vh;
+    width: auto;
+    height: auto;
+    border: 1px solid #bbb;
+    transition: opacity 0.3s ease;
+    object-fit: contain;
+}
+
+.image-preview-container:hover .details-image {
+    opacity: 0.9;
+}
+
+.image-zoom-icon {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 5px 8px;
+    border-radius: 3px;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.image-preview-container:hover .image-zoom-icon {
+    opacity: 1;
+}
+
+/* ==================== Modal d'image ==================== */
+.image-modal {
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.image-modal-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+}
+
+.image-modal-content img {
+    max-width: 100%;
+    max-height: 90vh;
+    border: 2px solid #fff;
+}
+
+.image-modal-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    color: #ffffff;
+    font-size: 36px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.image-modal-close:hover {
+    color: #cccccc;
+}
+
+/* ==================== Diaporama ==================== */
+.slideshow-modal {
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.slideshow-content {
+    position: relative;
+    width: 90%;
+    max-width: 1000px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.slideshow-image-container {
+    flex: 1;
+    position: relative;
+    text-align: center;
+}
+
+.slideshow-image-container img {
+    max-width: 100%;
+    max-height: 75vh;
+    border: 2px solid #fff;
+}
+
+.slideshow-prev,
+.slideshow-next {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid #fff;
+    font-size: 36px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.slideshow-prev:hover,
+.slideshow-next:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.slideshow-close {
+    position: absolute;
+    top: -45px;
+    right: 0;
+    color: #ffffff;
+    font-size: 36px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.slideshow-close:hover {
+    color: #cccccc;
+}
+
+.slideshow-counter {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 3px;
+    font-size: 13px;
+}
+
+.slideshow-controls {
+    position: absolute;
+    bottom: -70px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+}
+
+.btn-autoplay {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid #fff;
+    padding: 8px 16px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.3s ease;
+}
+
+.btn-autoplay:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.btn-autoplay.playing {
+    background: rgba(231, 76, 60, 0.7);
+}
+
+/* ==================== Boutons d'action ==================== */
+.details-actions {
+    padding: 10px;
+    border-top: 1px solid #bbb;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-download,
+.btn-view-fullsize,
+.btn-action {
+    background: #f3f3f3;
+    color: #333333;
+    border: 1px solid #bbb;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s ease;
+}
+
+.btn-download:hover,
+.btn-view-fullsize:hover,
+.btn-action:hover {
+    background: #e0e0e0;
+}
+
+.btn-download:active,
+.btn-view-fullsize:active,
+.btn-action:active {
+    background: #d0d0d0;
+}
+
+/* ==================== Quota ==================== */
+.quota-info {
+    width: 100%;
+}
+
+.quota-bar {
+    width: 100%;
+    height: 20px;
+    background: #e0e0e0;
+    border: 1px solid #bbb;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+.quota-fill {
+    height: 100%;
+    background: #4caf50;
+    transition: width 0.5s ease, background 0.3s ease;
+}
+
+/* Changement de couleur selon le pourcentage */
+.quota-fill[style*="width: 7"],
+.quota-fill[style*="width: 8"],
+.quota-fill[style*="width: 9"] {
+    background: #ff9800;
+}
+
+.quota-fill[style*="width: 10"] {
+    background: #f44336;
+}
+
+.quota-text {
+    color: #333333;
+    font-size: 12px;
+    text-align: left;
+}
+
+/* ==================== Message vide ==================== */
+.details-empty-message {
+    padding: 20px 10px;
+    text-align: center;
+    color: #666666;
+}
+
+/* ==================== Animations ==================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ==================== Responsive ==================== */
+@media (max-width: 768px) {
+    .details-header {
+        font-size: 13px;
+        padding: 8px;
+    }
+
+    .details-info {
+        padding: 8px;
+        gap: 6px 8px;
+    }
+
+    .details-label,
+    .details-value {
+        font-size: 12px;
+    }
+
+    .media-player-container,
+    .image-preview-container {
+        padding: 8px;
+    }
+
+    .details-actions {
+        padding: 8px;
+    }
+
+    .slideshow-prev,
+    .slideshow-next {
+        font-size: 28px;
+        padding: 8px 12px;
+    }
+
+    .slideshow-content {
+        width: 95%;
+        gap: 8px;
+    }
+}
+

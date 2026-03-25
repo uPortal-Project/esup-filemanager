@@ -52,9 +52,58 @@ font-weight: bold;
 }
 
 .esupstock .breadcrumbs {
-background: #f3f3f3;
-padding: 5px;
-border-bottom: 1px solid #bbb;
+background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+padding: 12px 16px;
+border-bottom: 3px solid #0078d4;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+font-size: 16px;
+font-weight: 500;
+margin-bottom: 8px;
+}
+
+.esupstock .breadcrumbs img {
+vertical-align: middle;
+margin-right: 6px;
+width: 20px;
+height: 20px;
+}
+
+.esupstock .breadcrumbs a {
+color: #0078d4;
+text-decoration: none;
+padding: 4px 8px;
+border-radius: 4px;
+transition: all 0.2s ease;
+font-weight: 500;
+}
+
+.esupstock .breadcrumbs a:hover {
+background-color: #e7f3ff;
+color: #005a9e;
+text-decoration: none;
+}
+
+.esupstock .breadcrumbs a:focus {
+outline: 2px solid #0078d4;
+outline-offset: 2px;
+}
+
+.esupstock .breadcrumbs span {
+color: #333;
+font-weight: 600;
+}
+
+.esupstock .breadcrumbs .d-inline {
+display: inline-block;
+}
+
+.esupstock .breadcrumbs .d-inline:not(:last-child)::after {
+content: "›";
+display: inline-block;
+margin: 0 8px;
+color: #6c757d;
+font-size: 18px;
+font-weight: bold;
 }
 
 .esupstock #toolbar {
@@ -196,6 +245,36 @@ padding: 10px;
 display: block;
 }
 
+.esupstock #authenticationForm button {
+display: block;
+margin-top: 10px;
+padding: 8px 16px;
+background-color: #0066cc;
+color: white;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+font-size: 14px;
+}
+
+.esupstock #authenticationForm button:hover {
+background-color: #0052a3;
+}
+
+.esupstock #authenticationForm button:active {
+background-color: #003d7a;
+}
+
+.esupstock #authenticationForm .auth-error {
+background-color: #fee;
+border: 1px solid #c33;
+color: #c33;
+padding: 10px;
+margin-bottom: 10px;
+border-radius: 4px;
+font-weight: bold;
+}
+
 
 
 .esupstock .container #fileTree,
@@ -263,15 +342,6 @@ cursor: auto;
 .esupstock #toolbar-new_folder.disabled {
 	background: url(/img/flaticons/disabled/new_folder_24px.png) no-repeat center top;
 }
-
-.esupstock #toolbar-new_file.enabled {
-	background: url(/img/flaticons/new_file_24px.png) no-repeat center top;
-}
-
-.esupstock #toolbar-new_file.disabled {
-	background: url(/img/flaticons/disabled/new_file_24px.png) no-repeat center top;
-}
-
 
 .esupstock #toolbar-download.enabled {
     background: url(/img/flaticons/download_24px.png) no-repeat center top;
@@ -380,7 +450,7 @@ color: #444444;
 }
 
 .esupstock .disabled_upload input {
-cursor: auto !important;                                 
+cursor: auto !important;
 }
 
 /* Common */
@@ -427,7 +497,6 @@ cursor: auto !important;
 /* Browser Area */
 
 .esupstock #browserArea {
-	width: 67%;
 	float: right;
 	padding-left: 0;
 	padding-right: 0;
@@ -458,7 +527,9 @@ cursor: auto !important;
 
 .esupstock #detailArea {
 	background:#FFFFEE none repeat scroll 0 0;
-	overflow: hidden;
+	overflow-y: auto;
+	overflow-x: hidden;
+	max-height: 100%;
 }
 
 .esupstock #detailArea h3 {

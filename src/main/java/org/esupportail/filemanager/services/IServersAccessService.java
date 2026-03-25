@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.esupportail.filemanager.beans.DownloadFile;
 import org.esupportail.filemanager.beans.JsTreeFile;
+import org.esupportail.filemanager.beans.PresignedUrl;
 import org.esupportail.filemanager.beans.Quota;
 import org.esupportail.filemanager.beans.UploadActionType;
 import org.esupportail.filemanager.beans.UserPassword;
@@ -80,4 +81,26 @@ public interface IServersAccessService {
 			String[] prefsDefaultPathes);
 
 	public abstract Quota getQuota(String path);
+
+	/**
+	 * Check if presigned URLs are supported for the given path
+	 * @param path the file/directory path
+	 * @return true if presigned URLs are supported, false otherwise
+	 */
+	public abstract boolean supportsPresignedUrls(String path);
+
+	/**
+	 * Get a presigned download URL for direct client access
+	 * @param path the file path
+	 * @return PresignedUrl object containing the URL and expiration info, or null if not supported
+	 */
+	public abstract PresignedUrl getPresignedDownloadUrl(String path);
+
+	/**
+	 * Get a presigned upload URL for direct client access
+	 * @param path the directory path
+	 * @param filename the filename to upload
+	 * @return PresignedUrl object containing the URL and expiration info, or null if not supported
+	 */
+	public abstract PresignedUrl getPresignedUploadUrl(String path, String filename);
 }

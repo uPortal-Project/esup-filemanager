@@ -37,6 +37,7 @@
                         <value>Bob</value>
                         <value>Homedir Example</value>
                         <value>Groupdir Example</value>
+                        <value>MinIO Storage</value>
                     </list>
                 </property>
             </bean>
@@ -88,4 +89,23 @@
         <property name="pkcs8Key" value="${cas.clearpass.key}"/>
     </bean>
 
+    <!-- MinIO Storage - S3 API -->
+    <bean class="org.esupportail.filemanager.services.s3.S3AccessImpl" scope="session" lazy-init="true">
+        <property name="driveName" value="MinIO Storage"/>
+        <property name="icon" value="/img/drives/drive_user.png" />
+        <property name="bucketName" value="esup-files"/>
+        <property name="uri" value="http://localhost:9000"/>
+        <property name="pathStyleAccessEnabled" value="true"/>
+        <property name="presignedUrlsEnabled" value="true"/>
+        <property name="basePath" value="/"/>
+        <property name="userAuthenticatorService" ref="s3_minio_auth"/>
+    </bean>
+    
+    <bean name="s3_minio_auth" class="org.esupportail.filemanager.services.auth.FormUserPasswordAuthenticatorService"
+          scope="session">
+        <property name="username" value="minioadmin"/>
+        <property name="password" value="minioadmin"/>
+    </bean>
+
+    
 </beans>

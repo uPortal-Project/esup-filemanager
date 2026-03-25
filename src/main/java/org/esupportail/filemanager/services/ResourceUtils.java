@@ -45,7 +45,8 @@ public class ResourceUtils implements InitializingBean, ResourceLoaderAware {
     public static enum Type {
         UNKNOWN,
         IMAGE,
-        AUDIO;
+        AUDIO,
+        VIDEO;
     }
 
     public void setResourceLoader(ResourceLoader resourceLoader) {

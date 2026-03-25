@@ -1,6 +1,13 @@
-<!-- src/main/resources/templates/details_file.html -->
+<!-- src/main/resources/templates/details_video.html -->
 <div class="details-card">
     <h3 class="details-header" th:text="#{details.header}">Détails</h3>
+
+    <div class="media-player-container">
+        <video controls class="video-player">
+            <source th:src="@{/fetchVideo(dir=${file.encPath})}" th:type="${file.mimeType}">
+            Votre navigateur ne supporte pas la lecture de vidéos HTML5.
+        </video>
+    </div>
 
     <div class="details-spacer"></div>
 
@@ -19,10 +26,8 @@
         <dt class="details-label" th:text="#{details.type}">Type</dt>
         <dd class="details-value" th:text="${file.mimeType}"></dd>
 
-        <th:block th:if="${file.lastModifiedTime != null}">
-            <dt class="details-label" th:text="#{details.lastModifiedTime}">Modifié le</dt>
-            <dd class="details-value" th:text="${#dates.format(file.lastModifiedTime, datePattern)}"></dd>
-        </th:block>
+        <dt class="details-label" th:text="#{details.lastModifiedTime}">Modifié le</dt>
+        <dd class="details-value" th:text="${#dates.format(file.lastModifiedTime, datePattern)}"></dd>
     </dl>
 
     <div class="details-spacer"></div>
@@ -31,5 +36,4 @@
         <a class="btn-download" th:href="@{/downloadFile(dir=${file.encPath})}" th:text="#{details.download}">Télécharger</a>
     </div>
 </div>
-
 

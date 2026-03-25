@@ -20,27 +20,7 @@
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-    http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
-    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
-
-
-  <bean id="userAgentInspector" class="org.esupportail.filemanager.services.UserAgentInspector">
-    <property name="userAgentMobile">
-      <!-- Regexes of mobile device user agents -->
-      <list>
-        <value>.*iPhone.*</value>
-        <value>.*Android.*</value>
-        <value>.*Safari.*Pre.*</value>
-        <value>.*Nokia.*AppleWebKit.*</value>
-      </list>
-    </property>
-  </bean>
-
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
   <bean id="resourceUtils" class="org.esupportail.filemanager.services.ResourceUtils">
     <property name="iconsMap">
@@ -80,6 +60,11 @@
         <entry key="mp3" value="audio"/>
         <entry key="ogg" value="audio"/>
         <entry key="wma" value="audio"/>
+        <entry key="mp4" value="video"/>
+        <entry key="webm" value="video"/>
+        <entry key="avi" value="video"/>
+        <entry key="mov" value="video"/>
+        <entry key="wmv" value="video"/>
       </map>
     </property>
 
@@ -87,16 +72,21 @@
     / view in original size functionality -->
     <property name="sizeLimitMap">
       <map>
-        <entry key="jpg" value="2"/>
-        <entry key="xcf" value="2"/>
-        <entry key="tif" value="2"/>
-        <entry key="dia" value="2"/>
-        <entry key="gif" value="2"/>
-        <entry key="bmp" value="2"/>
-        <entry key="png" value="2"/>
-        <entry key="mp3" value="7"/>
-        <entry key="ogg" value="7"/>
-        <entry key="wma" value="7"/>
+        <entry key="jpg" value="10"/>
+        <entry key="xcf" value="10"/>
+        <entry key="tif" value="10"/>
+        <entry key="dia" value="10"/>
+        <entry key="gif" value="10"/>
+        <entry key="bmp" value="10"/>
+        <entry key="png" value="10"/>
+        <entry key="mp3" value="10"/>
+        <entry key="ogg" value="10"/>
+        <entry key="wma" value="10"/>
+        <entry key="mp4" value="500"/>
+        <entry key="webm" value="500"/>
+        <entry key="avi" value="500"/>
+        <entry key="mov" value="500"/>
+        <entry key="wmv" value="500"/>
       </map>
     </property>
   </bean>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>ESUP File Manager</title>
+
+    <!-- CSS Bootstrap 5 -->
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap-icons/font/bootstrap-icons.min.css}" />
+    <link rel="stylesheet" th:href="@{/webjars/flag-icons/css/flag-icons.min.css}" />
+
+    <!-- CSS Custom -->
+    <link rel="stylesheet" th:href="@{/css/esup-stock.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/google-open-sans.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/file-tree.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/esup-responsive.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/details-modern.css}" type="text/css">
+
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        // Configuration globale
+        var fileuploadTemplate = /*[[#{fileupload.template}]]*/ '';
+        var fileTemplate = /*[[#{fileupload.fileTemplate}]]*/ '';
+        var useDoubleClick = /*[[${useDoubleClick}]]*/ '';
+        var useCursorWaitDialog = /*[[${useCursorWaitDialog}]]*/ '';
+        var defaultPath = /*[[${defaultPath}]]*/ '';
+
+        // URLs des endpoints
+        var htmlFileTreeURL = '/htmlFileTree';
+        var uploadFileURL ='/uploadFile';
+        var prepareCopyFilesURL = '/prepareCopyFiles';
+        var prepareCutFilesURL ='/prepareCutFiles';
+        var pastFilesURL = '/pastFiles';
+        var fileChildrenURL = '/fileChildren';
+        var getParentPathURL = '/getParentPath';
+        var detailsAreaURL = '/detailsArea';
+        var toggleThumbnailModeURL = '/toggleThumbnailMode';
+        var renameFileURL = '/renameFile';
+        var downloadFileURL = '/downloadFile';
+        var downloadZipURL = '/downloadZip';
+        var removeFilesURL = '/removeFiles';
+        var authenticateURL = '/authenticate';
+
+        // Messages I18N exposés au JavaScript
+        window.i18n = {
+            // Upload
+            uploadFileSuccess       : /*[[#{info.uploadFileSuccess}]]*/ 'File uploaded successfully.',
+            uploadFileFailed        : /*[[#{info.uploadFileFailed}]]*/ 'Error uploading file.',
+            // Copier
+            copyOk                  : /*[[#{ajax.copy.ok}]]*/ '',
+            copyFailed              : /*[[#{error.copyFailed}]]*/ 'Copy failed.',
+            itemsCopied             : /*[[#{info.itemsCopied}]]*/ '{0} item(s) copied.',
+            // Couper
+            cutOk                   : /*[[#{ajax.cut.ok}]]*/ '',
+            cutFailed               : /*[[#{error.cutFailed}]]*/ 'Cut failed.',
+            itemsCut                : /*[[#{info.itemsCut}]]*/ '{0} item(s) cut.',
+            // Coller
+            pasteOk                 : /*[[#{ajax.paste.ok}]]*/ '',
+            pasteFailed             : /*[[#{ajax.paste.failed}]]*/ '',
+            clipboardEmpty          : /*[[#{error.clipboardEmpty}]]*/ 'Clipboard is empty.',
+            // Supprimer
+            removeOk                : /*[[#{ajax.remove.ok}]]*/ '',
+            removeFailed            : /*[[#{ajax.remove.failed}]]*/ '',
+            deleteConfirmTitle      : /*[[#{delete.confirm.title}]]*/ 'Delete confirmation',
+            deleteConfirmMessage    : /*[[#{delete.confirm.message}]]*/ 'These items will be deleted permanently. Are you sure?',
+            deleteConfirmOk         : /*[[#{delete.confirm.ok}]]*/ 'Ok',
+            deleteConfirmCancel     : /*[[#{delete.confirm.cancel}]]*/ 'Cancel',
+            deleteButton            : /*[[#{toolbar.delete.button}]]*/ 'Delete',
+            // Renommer
+            renameSuccess           : /*[[#{ajax.rename.success}]]*/ '',
+            renameFailed            : /*[[#{ajax.rename.failed}]]*/ '',
+            // Créer dossier
+            createSuccess           : /*[[#{ajax.fileOrFolderCreate.success}]]*/ '',
+            createFailed            : /*[[#{ajax.fileOrFolderCreate.failed}]]*/ '',
+            createButton            : /*[[#{toolbar.create.button}]]*/ 'Create',
+            newFolderPlaceholder    : /*[[#{dialog.newFolder.placeholder}]]*/ 'Folder name',
+            // Libellés toolbar (menus contextuels)
+            refresh                 : /*[[#{toolbar.refresh}]]*/ 'Refresh',
+            newFolder               : /*[[#{toolbar.create}]]*/ 'New Folder',
+            paste                   : /*[[#{toolbar.paste}]]*/ 'Paste',
+            download                : /*[[#{toolbar.download}]]*/ 'Download',
+            copy                    : /*[[#{toolbar.copy}]]*/ 'Copy',
+            cut                     : /*[[#{toolbar.cut}]]*/ 'Cut',
+            rename                  : /*[[#{toolbar.rename}]]*/ 'Rename',
+            delete_                 : /*[[#{toolbar.delete}]]*/ 'Delete',
+            // Authentification
+            authOk                  : /*[[#{auth.ok}]]*/ '',
+            authBad                 : /*[[#{auth.bad}]]*/ '',
+            authMissingCredentials  : /*[[#{auth.missingCredentials}]]*/ 'Please enter your username and password.',
+            authError               : /*[[#{auth.error}]]*/ 'Authentication error. Please try again.',
+            // Erreurs générales
+            noFileSelected          : /*[[#{error.noFileSelected}]]*/ 'No file selected.',
+            directoryLoadingError   : /*[[#{error.directoryLoading}]]*/ 'Error loading directory.',
+            refreshFailed           : /*[[#{error.refreshFailed}]]*/ 'Error refreshing view.',
+            sortFailed              : /*[[#{error.sortFailed}]]*/ 'Error sorting files.',
+            selectOneItem           : /*[[#{error.selectOneItem}]]*/ 'Please select exactly one item.',
+            cannotFindFile          : /*[[#{error.cannotFindFile}]]*/ 'Cannot find selected file.',
+            cannotRetrieveFileName  : /*[[#{error.cannotRetrieveFileName}]]*/ 'Cannot retrieve file name.',
+            enterFolderName         : /*[[#{error.enterFolderName}]]*/ 'Please enter a folder name.',
+            enterNewName            : /*[[#{error.enterNewName}]]*/ 'Please enter a new name.',
+            // Infos
+            viewRefreshed           : /*[[#{info.viewRefreshed}]]*/ 'View refreshed.',
+            nameUnchanged           : /*[[#{info.nameUnchanged}]]*/ 'Name has not changed.'
+        };
+        /*]]>*/
+    </script>
+
+    <!-- JS - Bootstrap d'abord -->
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.js}"></script>
+
+    <!-- URL pré-signées S3 -->
+    <script type="text/javascript" th:src="@{/js/esup-presigned-urls.js}"></script>
+
+    <!-- Support Mobile et Responsive -->
+    <script type="text/javascript" th:src="@{/js/esup-mobile-support.js}"></script>
+
+    <!-- Panel Resizer - Redimensionnement moderne -->
+    <script type="text/javascript" th:src="@{/js/panel-resizer.js}"></script>
+
+    <!-- Details Manager - Gestion moderne des blocs de détails -->
+    <script type="text/javascript" th:src="@{/js/details-manager.js}"></script>
+
+    <!-- Modules ES6 - Application moderne -->
+    <script type="module" th:src="@{/js/esup-stock-modern.js}"></script>
+
+    <!-- Body content responsive -->
+    <div th:replace="~{body-responsive :: body}"></div>
+</body>
+</html>
+

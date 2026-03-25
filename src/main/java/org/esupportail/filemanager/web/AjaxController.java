@@ -20,6 +20,7 @@ package org.esupportail.filemanager.web;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.esupportail.filemanager.beans.*;
+import org.esupportail.filemanager.exceptions.EsupStockException;
 import org.esupportail.filemanager.services.IServersAccessService;
 import org.esupportail.filemanager.services.ResourceUtils;
 import org.esupportail.filemanager.services.ResourceUtils.Type;
@@ -42,6 +43,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 @Controller
 @Scope("request")
@@ -94,7 +96,7 @@ public class AjaxController {
      * @return
      */
     @PostMapping(value="/htmlFileTree")
-    public ModelAndView fileTree(@RequestParam String dir, @RequestParam(required=false) String sortField, HttpServletRequest request, HttpServletResponse response) {
+    public ModelAndView fileTree(@RequestParam String dir, @RequestParam(required=false) String sortField) {
         log.debug("Requesting htmlFileTree");
         dir = pathEncodingUtils.decodeDir(dir);
         log.debug("Requesting htmlFileTree on dir {}", dir);
@@ -126,7 +128,9 @@ public class AjaxController {
         FormCommand command = new FormCommand();
         model.put("command", command);
 
-        model.put("datePattern", context.getMessage("datePattern", null, request.getLocale()));
+        model.put("sortField", sortField);
+
+        model.put("datePattern", context.getMessage("datePattern", null, LocaleContextHolder.getLocale()));
         return new ModelAndView("fileTree", model);
     }
 
@@ -139,7 +143,7 @@ public class AjaxController {
      */
     @PostMapping(value="/fileChildren")
     @ResponseBody
-    public List<JsTreeFile> fileChildren(Authentication auth, @RequestParam String dir, @RequestParam(required=false) String hierarchy, HttpServletRequest request) {
+    public List<JsTreeFile> fileChildren(Authentication auth, @RequestParam String dir, @RequestParam(required=false) String hierarchy) {
         log.info("User authenticated as {}", auth.getName());
         log.debug("Requesting fileChildren");
         dir = pathEncodingUtils.decodeDir(dir);
@@ -174,9 +178,9 @@ public class AjaxController {
 
     @PostMapping(value="/removeFiles")
     @ResponseBody
-    public Map removeFiles(FormCommand command, HttpServletRequest request) {
+    public Map removeFiles(FormCommand command) {
         log.debug("Requesting removeFiles");
-        Locale locale = request.getLocale();
+        Locale locale = LocaleContextHolder.getLocale();
         long allOk = 1;
         String msg = context.getMessage("ajax.remove.ok", null, locale);
         Map jsonMsg = new HashMap();
@@ -193,44 +197,70 @@ public class AjaxController {
     }
 
     @PostMapping(value="/createFile")
-    public ModelAndView createFile(String parentDir, String title, String type, HttpServletRequest request, HttpServletResponse response) {
-        log.debug("Requesting createFile");
+    @ResponseBody
+    public Map createFile(String parentDir, String title, String type) {
+        log.debug("Requesting createFile - parentDir: '{}', title: '{}', type: '{}'", parentDir, title, type);
+
+        Locale locale = LocaleContextHolder.getLocale();
+        Map jsonMsg = new HashMap();
+
+        // Validate parentDir
+        if(parentDir == null || parentDir.isEmpty()) {
+            log.error("createFile failed: parentDir is null or empty");
+            jsonMsg.put("status", 0);
+            jsonMsg.put("msg", context.getMessage("ajax.fileOrFolderCreate.failed", null, locale));
+            return jsonMsg;
+        }
+
         String parentDirDecoded = pathEncodingUtils.decodeDir(parentDir);
+        log.debug("Decoded parentDir: '{}'", parentDirDecoded);
+
         String fileDir = this.serverAccess.createFile(parentDirDecoded, title, type);
         if(fileDir != null) {
-            return this.fileTree(parentDir, null, request, response);
+            log.info("File/folder '{}' created successfully in '{}'", title, parentDirDecoded);
+            jsonMsg.put("status", 1);
+            jsonMsg.put("msg", context.getMessage("ajax.fileOrFolderCreate.success", null, locale));
+            return jsonMsg;
         }
 
         //Added for GIP Recia : Error handling
         //Usually a duplicate name problem.  Tell the ajax handler that
         //there is a problem and send the translated error message
-        Locale locale = request.getLocale();
-        ModelMap modelMap = new ModelMap();
-        modelMap.put("errorText", context.getMessage("ajax.fileOrFolderCreate.failed", null, locale));
-        return new ModelAndView("ajax_error", modelMap);
+        log.warn("createFile failed for title '{}' in '{}'", title, parentDirDecoded);
+        jsonMsg.put("status", 0);
+        jsonMsg.put("msg", context.getMessage("ajax.fileOrFolderCreate.failed", null, locale));
+        return jsonMsg;
     }
 
     @PostMapping(value="/renameFile")
-    public ModelAndView renameFile(String parentDir, String dir, String title, HttpServletRequest request, HttpServletResponse response) {
-        log.debug("Requesting renameFile");
-        parentDir = pathEncodingUtils.decodeDir(parentDir);
+    @ResponseBody
+    public Map renameFile(String parentDir, String dir, String title) {
+        log.debug("Requesting renameFile - dir: '{}', title: '{}'", dir, title);
+
+        Locale locale = LocaleContextHolder.getLocale();
+        Map jsonMsg = new HashMap();
+
         dir = pathEncodingUtils.decodeDir(dir);
+
         if(this.serverAccess.renameFile(dir, title)) {
-            return this.fileTree(pathEncodingUtils.encodeDir(parentDir), null, request, response);
+            log.info("File/folder renamed successfully: '{}' -> '{}'", dir, title);
+            jsonMsg.put("status", 1);
+            jsonMsg.put("msg", context.getMessage("ajax.rename.success", null, locale));
+            return jsonMsg;
         }
 
-        //Usually means file does not exist
-        Locale locale = request.getLocale();
-        ModelMap modelMap = new ModelMap();
-        modelMap.put("errorText", context.getMessage("ajax.rename.failed", null, locale));
-        return new ModelAndView("ajax_error", modelMap);
+        //Usually means file does not exist or name already exists
+        log.warn("renameFile failed for '{}' to '{}'", dir, title);
+        jsonMsg.put("status", 0);
+        jsonMsg.put("msg", context.getMessage("ajax.rename.failed", null, locale));
+        return jsonMsg;
     }
 
-    @GetMapping(value="/prepareCopyFiles")
+    @RequestMapping(value="/prepareCopyFiles")
     @ResponseBody
-    public Map prepareCopyFiles(FormCommand command, HttpServletRequest request) {
+    public Map prepareCopyFiles(FormCommand command) {
         log.debug("Requesting prepareCopyFiles");
-        Locale locale = request.getLocale();
+        Locale locale = LocaleContextHolder.getLocale();
         basketSession.setDirsToCopy(pathEncodingUtils.decodeDirs(command.getDirs()));
         basketSession.setGoal("copy");
         Map jsonMsg = new HashMap();
@@ -240,11 +270,11 @@ public class AjaxController {
         return jsonMsg;
     }
 
-    @GetMapping(value="/prepareCutFiles")
+    @RequestMapping(value="/prepareCutFiles")
     @ResponseBody
-    public Map prepareCutFiles(FormCommand command, HttpServletRequest request) {
+    public Map prepareCutFiles(FormCommand command) {
         log.debug("Requesting prepareCutFiles");
-        Locale locale = request.getLocale();
+        Locale locale = LocaleContextHolder.getLocale();
         basketSession.setDirsToCopy(pathEncodingUtils.decodeDirs(command.getDirs()));
         basketSession.setGoal("cut");
         Map jsonMsg = new HashMap();
@@ -254,11 +284,11 @@ public class AjaxController {
         return jsonMsg;
     }
 
-    @GetMapping(value="/pastFiles")
+    @RequestMapping(value="/pastFiles")
     @ResponseBody
-    public Map pastFiles(String dir, HttpServletRequest request) {
+    public Map pastFiles(String dir) {
         log.debug("Requesting pastFiles");
-        Locale locale = request.getLocale();
+        Locale locale = LocaleContextHolder.getLocale();
         dir = pathEncodingUtils.decodeDir(dir);
         Map jsonMsg = new HashMap();
         if(this.serverAccess.moveCopyFilesIntoDirectory(dir, basketSession.getDirsToCopy(), "copy".equals(basketSession.getGoal()))) {
@@ -276,27 +306,30 @@ public class AjaxController {
 
     @PostMapping(value="/authenticate")
     @ResponseBody
-    public Map authenticate(String dir, String username, String password, HttpServletRequest request) {
+    public Map authenticate(String dir, String username, String password, HttpServletResponse response) {
         log.debug("Requesting authenticate");
-        Locale locale = request.getLocale();
+        Locale locale = LocaleContextHolder.getLocale();
         dir = pathEncodingUtils.decodeDir(dir);
         Map jsonMsg = new HashMap();
         if(this.serverAccess.authenticate(dir, username, password)) {
             jsonMsg.put("status", 1);
             String msg = context.getMessage("auth.ok", null, locale);
             jsonMsg.put("msg", msg);
+            log.info("Authentication successful for user: {}", username);
         }
         else {
+            // Set HTTP 401 Unauthorized status code for authentication failure
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             jsonMsg.put("status", 0);
             String msg = context.getMessage("auth.bad", null, locale);
             jsonMsg.put("msg", msg);
+            log.warn("Authentication failed for user: {}", username);
         }
         return jsonMsg;
     }
 
     @GetMapping(value="/fetchImage")
-    public void fetchImage(@RequestParam("dir") String dir,
-                           HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void fetchImage(@RequestParam("dir") String dir, HttpServletResponse response) throws IOException {
         log.debug("Requesting fetchImage");
         dir = pathEncodingUtils.decodeDir(dir);
         //this.serverAccess.updateUserParameters(dir);
@@ -309,8 +342,7 @@ public class AjaxController {
     }
 
     @GetMapping(value="/fetchSound")
-    public void fetchSound(String dir,
-                           HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void fetchSound(String dir, HttpServletResponse response) throws IOException {
         log.debug("Requesting fetchSound");
         dir = pathEncodingUtils.decodeDir(dir);
         DownloadFile file = this.serverAccess.getFile(dir);
@@ -322,9 +354,20 @@ public class AjaxController {
         FileCopyUtils.copy(file.getInputStream(), response.getOutputStream());
     }
 
+    @GetMapping(value="/fetchVideo")
+    public void fetchVideo(String dir, HttpServletResponse response) throws IOException {
+        log.debug("Requesting fetchVideo");
+        dir = pathEncodingUtils.decodeDir(dir);
+        DownloadFile file = this.serverAccess.getFile(dir);
+        response.setContentType(file.getContentType());
+        if(file.getSize() > 0) {
+            response.setContentLength((int)file.getSize());
+        }
+        FileCopyUtils.copy(file.getInputStream(), response.getOutputStream());
+    }
+
     @GetMapping(value="/downloadFile")
-    public void downloadFile(@RequestParam String dir,
-                             HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void downloadFile(@RequestParam String dir, HttpServletResponse response) throws IOException {
         log.debug("Requesting downloadFile");
         dir = pathEncodingUtils.decodeDir(dir);
         DownloadFile file = this.serverAccess.getFile(dir);
@@ -336,9 +379,8 @@ public class AjaxController {
         FileCopyUtils.copy(file.getInputStream(), response.getOutputStream());
     }
 
-    @PostMapping(value="/downloadZip")
-    public void downloadZip(FormCommand command,
-                            HttpServletRequest request, HttpServletResponse response) throws IOException {
+    @GetMapping(value="/downloadZip")
+    public void downloadZip(FormCommand command, HttpServletResponse response) throws IOException {
         log.debug("Requesting toggleThumbnailMode");
         List<String> dirs = pathEncodingUtils.decodeDirs(command.getDirs());
         response.setContentType("application/zip");
@@ -350,7 +392,8 @@ public class AjaxController {
     // thanks to use BindingResult if FileUpload failed because of XHR request (and not multipart)
     // this method is called anyway
     @PostMapping(value="/uploadFile")
-    public  ModelAndView uploadFile(String dir, FileUpload file, BindingResult result, HttpServletRequest request, UploadActionType uploadOption) throws IOException {
+    @ResponseBody
+    public UploadResponse uploadFile(String dir, FileUpload file, HttpServletRequest request, UploadActionType uploadOption) throws IOException {
 
         log.debug("Requesting uploadFile");
         dir = pathEncodingUtils.decodeDir(dir);
@@ -372,34 +415,30 @@ public class AjaxController {
             filename = request.getParameter("qqfile");
             inputStream = request.getInputStream();
         }
-        return upload(dir, filename, inputStream, request.getLocale(), option);
+        return upload(dir, filename, inputStream, LocaleContextHolder.getLocale(), option);
     }
 
 
-    // take care : we don't send json like application/json but like text/html !
-    // goal is that the json is written in a frame
-    private ModelAndView upload(String dir, String filename, InputStream inputStream, Locale locale, UploadActionType uploadOption) {
-        boolean success = true;
-        String text = "";
+    private UploadResponse upload(String dir, String filename, InputStream inputStream, Locale locale, UploadActionType uploadOption) {
+        UploadResponse uploadResponse = new UploadResponse();
         try {
             if (this.serverAccess.putFile(dir, filename, inputStream, uploadOption)) {
                 String msg = context.getMessage("ajax.upload.ok", null, locale);
-                text = "{'success':'true', 'msg':'".concat(msg).concat("'}");
+                uploadResponse.setMsg(msg);
                 log.info("upload file '{}' in '{}' ok", filename, dir);
             } else {
-                success = false;
+                uploadResponse.setSuccess(false);
                 log.info("error uploading file '{}' in '{}'", filename, dir);
             }
         } catch (Exception e) {
             log.error("error uploading file '{}' in '{}", filename, dir, e);
-            success = false;
+            uploadResponse.setSuccess(false);
         }
-        if(!success) {
+        if(!uploadResponse.isSuccess()) {
             String msg = context.getMessage("ajax.upload.failed", null, locale);
-            text = "{'success':'false', 'msg':'".concat(msg).concat("'}");
+            uploadResponse.setMsg(msg);
         }
-        ModelMap model = new ModelMap("text", text);
-        return new ModelAndView("text", model);
+        return uploadResponse;
     }
 
 
@@ -407,12 +446,11 @@ public class AjaxController {
      * Return the correct details view based on the requested file(s)
      */
     @PostMapping(value="/detailsArea")
-    public ModelAndView detailsArea(FormCommand command,
-                                    HttpServletRequest request, HttpServletResponse response) {
+    public ModelAndView detailsArea(FormCommand command) {
         log.debug("Requesting detailsArea");
         ModelMap model = new ModelMap();
 
-        model.put("datePattern", context.getMessage("datePattern", null, request.getLocale()));
+        model.put("datePattern", context.getMessage("datePattern", null, LocaleContextHolder.getLocale()));
 
         if (command == null || pathEncodingUtils.decodeDirs(command.getDirs()) == null) {
             return new ModelAndView("details_empty", model);
@@ -423,7 +461,13 @@ public class AjaxController {
             String path = pathEncodingUtils.decodeDirs(command.getDirs()).get(0);
 
             // get resource with folder details (if it's a folder ...)
-            JsTreeFile resource = this.serverAccess.get(path, true, true);
+            JsTreeFile resource;
+            try {
+                resource = this.serverAccess.get(path, true, true);
+            } catch(EsupStockException e) {
+                log.info("Error getting resource details for path: {} : {}", path, e.getMessage());
+                return new ModelAndView("details_empty", model);
+            }
             pathEncodingUtils.encodeDir(resource);
 
             // Based on the resource type, direct to appropriate details view
@@ -438,6 +482,8 @@ public class AjaxController {
                 ResourceUtils.Type fileType = resourceUtils.getType(resource.getTitle());
                 if (fileType == Type.AUDIO && !resource.isOverSizeLimit()) {
                     return new ModelAndView("details_sound", model);
+                } else if (fileType == Type.VIDEO && !resource.isOverSizeLimit()) {
+                    return new ModelAndView("details_video", model);
                 } else if (fileType == Type.IMAGE
                         && !resource.isOverSizeLimit()) {
                     return new ModelAndView("details_image", model);
@@ -472,8 +518,7 @@ public class AjaxController {
 
     @PostMapping(value="/getParentPath")
     @ResponseBody
-    public String getParentPath(String dir,
-                                      HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
+    public String getParentPath(String dir) throws UnsupportedEncodingException {
         log.debug("Requesting getParentPath");
 
         dir = pathEncodingUtils.decodeDir(dir);
@@ -493,5 +538,105 @@ public class AjaxController {
         String parentDirEnc = pathEncodingUtils.encodeDir(parentDir);
 
         return parentDirEnc;
+    }
+
+    /**
+     * Get a presigned download URL for direct S3 access
+     */
+    @GetMapping(value="/getPresignedDownloadUrl")
+    @ResponseBody
+    public Map<String, Object> getPresignedDownloadUrl(@RequestParam String dir, HttpServletRequest request) {
+        log.debug("Requesting presigned download URL for: {}", dir);
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            dir = pathEncodingUtils.decodeDir(dir);
+
+            if (!this.serverAccess.supportsPresignedUrls(dir)) {
+                response.put("success", false);
+                response.put("error", "Presigned URLs are not supported for this file");
+                return response;
+            }
+
+            PresignedUrl presignedUrl = this.serverAccess.getPresignedDownloadUrl(dir);
+            if (presignedUrl != null) {
+                response.put("success", true);
+                response.put("url", presignedUrl.getUrl());
+                response.put("expiresIn", presignedUrl.getSecondsUntilExpiration());
+                response.put("method", presignedUrl.getMethod());
+                response.put("filename", presignedUrl.getFilename());
+                log.info("Generated presigned download URL for file: {}", dir);
+            } else {
+                response.put("success", false);
+                response.put("error", "Failed to generate presigned URL");
+            }
+        } catch (Exception e) {
+            log.error("Error generating presigned download URL", e);
+            response.put("success", false);
+            response.put("error", "Error: " + e.getMessage());
+        }
+
+        return response;
+    }
+
+    /**
+     * Get a presigned upload URL for direct S3 access
+     */
+    @RequestMapping(value="/getPresignedUploadUrl")
+    @ResponseBody
+    public Map<String, Object> getPresignedUploadUrl(@RequestParam String dir,
+                                                       @RequestParam String filename) {
+        log.debug("Requesting presigned upload URL for: {}/{}", dir, filename);
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            dir = pathEncodingUtils.decodeDir(dir);
+
+            if (!this.serverAccess.supportsPresignedUrls(dir)) {
+                response.put("success", false);
+                response.put("error", "Presigned URLs are not supported for this directory");
+                return response;
+            }
+
+            PresignedUrl presignedUrl = this.serverAccess.getPresignedUploadUrl(dir, filename);
+            if (presignedUrl != null) {
+                response.put("success", true);
+                response.put("url", presignedUrl.getUrl());
+                response.put("expiresIn", presignedUrl.getSecondsUntilExpiration());
+                response.put("method", presignedUrl.getMethod());
+                response.put("filename", presignedUrl.getFilename());
+                log.info("Generated presigned upload URL for file: {}/{}", dir, filename);
+            } else {
+                response.put("success", false);
+                response.put("error", "Failed to generate presigned URL");
+            }
+        } catch (Exception e) {
+            log.error("Error generating presigned upload URL", e);
+            response.put("success", false);
+            response.put("error", "Error: " + e.getMessage());
+        }
+
+        return response;
+    }
+
+    /**
+     * Check if presigned URLs are supported for a given path
+     */
+    @RequestMapping(value="/supportsPresignedUrls")
+    @ResponseBody
+    public Map<String, Object> supportsPresignedUrls(@RequestParam String dir) {
+        log.debug("Checking if presigned URLs are supported for: {}", dir);
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            dir = pathEncodingUtils.decodeDir(dir);
+            boolean supported = this.serverAccess.supportsPresignedUrls(dir);
+            response.put("supported", supported);
+        } catch (Exception e) {
+            log.error("Error checking presigned URL support", e);
+            response.put("supported", false);
+        }
+
+        return response;
     }
 }
