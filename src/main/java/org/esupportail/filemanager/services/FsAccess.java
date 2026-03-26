@@ -268,9 +268,15 @@ public abstract class FsAccess {
             EvaluationContext context = new StandardEvaluationContext();
             Map<String, Object> userAttributes = casUser.getAttributes();
             context.setVariable("userAttributes",  userAttributes);
-            Boolean hasAccess = (Boolean) exp.getValue(context);
-            log.debug("Evaluation of {} -> {} hasAccess for {} : {}", accessRule, authentication, driveName,  hasAccess);
-            return BooleanUtils.isTrue(hasAccess);
+            log.debug("Evaluation of {} -> {} hasAccess for {} (userAttributes : {})", accessRule, authentication, driveName, userAttributes);
+            try {
+                Boolean hasAccess = (Boolean) exp.getValue(context);
+                log.debug("Evaluation of {} -> {} hasAccess for {} : {} (userAttributes : {})", accessRule, authentication, driveName, hasAccess, userAttributes);
+                return BooleanUtils.isTrue(hasAccess);
+            } catch (Exception e) {
+                log.error("Error evaluating access rule {} for drive {}, access denied by default (userAttributes : {})", accessRule, driveName, userAttributes, e);
+                return false;
+            }
         }
         return true;
     }

@@ -4,6 +4,7 @@
 
 ## Features
 
+* CAS authentication
 * Modern interface built with Vanilla JavaScript (ES6 modules)
 * Responsive interface optimized for both mobile and desktop devices
 * Native touch support and mobile gestures
@@ -12,6 +13,7 @@
 * Multiple file systems support via Apache Commons VFS: http://commons.apache.org/vfs/filesystems.html - URIs like file:///home/bob, FTP and SFTP supported
 * CIFS support (with JCIFS-NG)
 * S3 storage support (with s3fs)
+* Webdav support (with Sardine)
 * Built on Spring Boot 3.5.x and Bootstrap 5
 * Server access configuration via configuration file
 
@@ -62,13 +64,16 @@ mvn spring-boot:run
 
 Next go to http://localhost:8080
 
-## S3 storage
+## Development environment with Docker
 
-We support S3 storage with the s3fs library. To use it, a default drive with a local MinIO server is configured in drives.xml.
-
-You can for example use a local minio server running in docker with the command : 
+Default configuration is set to use CAS server and filesystems servers running in Docker containers. You can start them with the command : 
 
 ```
-docker run -d --name esup-minio -p 9000:9000 -p 9001:9001   -e MINIO_ROOT_USER=minioadmin   -e MINIO_ROOT_PASSWORD=minioadmin   quay.io/minio/minio server /data --console-address ":9001"
+docker compose -f src/etc/docker-compose.yml up
 ```
 
+This will start a CAS server with test users and filesystems servers (s3, webdav, samba, sftp).
+
+Users are :
+* joe / pass
+* jack / pass

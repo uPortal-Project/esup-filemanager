@@ -786,11 +786,11 @@ public class S3AccessImpl extends FsAccess implements DisposableBean {
     public boolean supportIntraCopyPast() {
         return true;
     }
+
     @Override
     public boolean supportIntraCutPast() {
         return true;
     }
-
 
     /**
      * Initialize the S3 presigner if needed and not already initialized

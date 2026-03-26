@@ -10,7 +10,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.11</version>
+        <version>3.5.12</version>
         <relativePath/>
     </parent>
 
@@ -93,13 +93,10 @@
         </mailingList>
     </mailingLists>
 
-    <!-- Dependency Version Properties -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.source>21</project.build.source>
         <project.build.target>21</project.build.target>
-        <commons-vfs.version>2.10.0</commons-vfs.version>
-        <jcifs-ng.version>2.1.10</jcifs-ng.version>
     </properties>
 
     <dependencies>
@@ -179,16 +176,17 @@
         </dependency>
 
         <dependency>
-            <groupId>com.jcraft</groupId>
+            <groupId>com.github.mwiede</groupId>
             <artifactId>jsch</artifactId>
-            <version>0.1.55</version>
+            <version>2.27.9</version>
         </dependency>
 
         <dependency>
             <groupId>eu.agno3.jcifs</groupId>
             <artifactId>jcifs-ng</artifactId>
-            <version>${jcifs-ng.version}</version>
+            <version>2.1.10</version>
         </dependency>
+
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk18on</artifactId>
@@ -199,23 +197,26 @@
             <artifactId>mslinks</artifactId>
             <version>1.0.6.2</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-vfs2</artifactId>
-            <version>${commons-vfs.version}</version>
+            <version>2.10.0</version>
         </dependency>
         <dependency>
             <groupId>commons-net</groupId>
             <artifactId>commons-net</artifactId>
             <version>3.12.0</version>
         </dependency>
-
-        <!-- AWS SDK for S3 -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3</artifactId>
             <version>2.42.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.lookfirst</groupId>
+            <artifactId>sardine</artifactId>
+            <version>5.13</version>
+            <scope>compile</scope>
         </dependency>
 
         <!-- Webjars dependencies -->

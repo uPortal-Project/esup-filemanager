@@ -18,9 +18,13 @@
 package org.esupportail.filemanager.services.vfs;
 
 import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import jakarta.annotation.Resource;
+import jcifs.CIFSException;
+import jcifs.config.PropertyConfiguration;
+import jcifs.context.BaseContext;
 import org.apache.commons.vfs2.*;
 import org.apache.commons.vfs2.auth.StaticUserAuthenticator;
 import org.apache.commons.vfs2.impl.DefaultFileSystemConfigBuilder;
@@ -43,9 +47,7 @@ import org.springframework.util.FileCopyUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 public class VfsAccessImpl extends FsAccess implements DisposableBean {
 
@@ -66,6 +68,13 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 
     // we setup ftpPassiveMode to true by default ...
     protected boolean ftpPassiveMode = true;
+
+    /** JSCH properties */
+    protected Map<String, String> jschConfigProperties;
+
+    public void setJschConfigProperties(Map<String, String> jschConfigProperties) {
+        this.jschConfigProperties = jschConfigProperties;
+    }
 
     public void setResourceUtils(ResourceUtils resourceUtils) {
         this.resourceUtils = resourceUtils;
@@ -88,6 +97,11 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
         super.open();
         try {
             if(!isOpened()) {
+
+                if (this.jschConfigProperties != null && !this.jschConfigProperties.isEmpty()) {
+                    JSch.setConfig(new Hashtable<>(this.jschConfigProperties));
+                }
+
                 FileSystemOptions fsOptions = new FileSystemOptions();
 
                 if ( ftpControlEncoding != null )

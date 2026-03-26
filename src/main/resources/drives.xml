@@ -34,10 +34,11 @@
                 <property name="icon" value="/img/drives/drive_user.png" />
                 <property name="drives">
                     <list>
-                        <value>Bob</value>
-                        <value>Homedir Example</value>
-                        <value>Groupdir Example</value>
-                        <value>MinIO Storage</value>
+                        <value>tmp</value>
+                        <value>s3</value>
+                        <value>samba</value>
+                        <value>webdav</value>
+                        <value>sftp</value>
                     </list>
                 </property>
             </bean>
@@ -48,12 +49,37 @@
     bob is displayed to all people
     -->
     <bean class="org.esupportail.filemanager.services.vfs.VfsAccessImpl" lazy-init="true">
-        <property name="driveName" value="Bob"/>
+        <property name="driveName" value="tmp"/>
         <property name="icon" value="/img/drives/tux.png" />
         <property name="uri" value="file:///tmp"/>
-        <property name="accessRule" value="#userAttributes['eduPersonPrincipalName']=='bob@example.org' or true"/>
+        <property name="accessRule" value="#userAttributes['uid']=='joe'"/>
     </bean>
 
+    <bean class="org.esupportail.filemanager.services.s3.S3AccessImpl" scope="session" lazy-init="true">
+        <property name="driveName" value="s3"/>
+        <property name="icon" value="/img/drives/drive_user.png" />
+        <property name="bucketName" value="esup-files"/>
+        <property name="uri" value="http://localhost:9000"/>
+        <property name="pathStyleAccessEnabled" value="true"/>
+        <property name="presignedUrlsEnabled" value="true"/>
+        <property name="basePath" value="/"/>
+        <property name="userAuthenticatorService" ref="s3_minio_auth"/>
+    </bean>
+
+    <bean name="s3_minio_auth" class="org.esupportail.filemanager.services.auth.FormUserPasswordAuthenticatorService"
+          scope="session">
+        <property name="username" value="minioadmin"/>
+        <property name="password" value="minioadmin"/>
+    </bean>
+
+    <bean class="org.esupportail.filemanager.services.cifs.CifsAccessImpl" scope="session" lazy-init="true">
+        <property name="driveName" value="samba"/>
+        <property name="icon" value="/img/drives/user.png" />
+        <property name="uri" value="smb://localhost:1445/testshare/"/>
+        <property name="jcifsConfigProperties" ref="cifsProperties" />
+        <property name="userAuthenticatorService" ref="samba_crazymax_auth"/>
+        <property name="accessRule" value="true or (#userAttributes['eduPersonAffiliation'].contains('member') and !#userAttributes['eduPersonAffiliation'].contains('student'))"/>
+    </bean>
 
     <util:properties id="cifsProperties">
         <prop key="jcifs.encoding">UTF8</prop>
@@ -63,24 +89,51 @@
         <prop key="jcifs.smb.client.maxVersion">SMB311</prop>
     </util:properties>
 
-
-    <bean class="org.esupportail.filemanager.services.cifs.CifsAccessImpl" scope="session" lazy-init="true">
-        <property name="driveName" value="Homedir Example"/>
-        <property name="icon" value="/img/drives/user.png" />
-        <property name="uri" value="smb://stockage.example.org/personnels/@uid@/"/>
-        <property name="jcifsConfigProperties" ref="cifsProperties" />
-        <property name="userAuthenticatorService" ref="univ_example_casv5_auth"/>
-        <property name="accessRule" value="#userAttributes['eduPersonAffiliation'].contains('member') and !#userAttributes['eduPersonAffiliation'].contains('student')"/>
+    <bean name="samba_crazymax_auth" class="org.esupportail.filemanager.services.auth.FormUserPasswordAuthenticatorService"
+          scope="session">
+        <property name="username" value="sambauser"/>
+        <property name="password" value="sambapass"/>
     </bean>
 
-    <bean class="org.esupportail.filemanager.services.cifs.CifsAccessImpl" scope="session" lazy-init="true">
-        <property name="driveName" value="Groupdir Example"/>
+    <bean class="org.esupportail.filemanager.services.sardine.SardineAccessImpl" scope="session" lazy-init="true">
+        <property name="driveName" value="webdav"/>
         <property name="icon" value="/img/drives/group.png" />
-        <property name="uri" value="smb://stockage.example.org/Groupdirs/"/>
-        <property name="jcifsConfigProperties" ref="cifsProperties" />
-        <property name="jcifsSynchronizeRootListing" value="true" />
-        <property name="userAuthenticatorService" ref="univ_example_casv5_auth"/>
-        <property name="accessRule" value="#userAttributes['eduPersonAffiliation'].contains('member') and !#userAttributes['eduPersonAffiliation'].contains('student')"/>
+        <property name="uri" value="http://localhost:8888"/>
+        <property name="userAuthenticatorService" ref="webdav_auth"/>
+        <property name="accessRule" value="true or (#userAttributes['eduPersonAffiliation'].contains('member'))"/>
+    </bean>
+
+    <bean name="webdav_auth" class="org.esupportail.filemanager.services.auth.FormUserPasswordAuthenticatorService"
+          scope="session">
+        <property name="username" value="webdav"/>
+        <property name="password" value="webdav"/>
+    </bean>
+
+
+    <bean class="org.esupportail.filemanager.services.vfs.VfsAccessImpl" scope="session" lazy-init="true">
+        <property name="driveName" value="sftp"/>
+        <property name="icon" value="/img/drives/group.png" />
+        <property name="uri" value="sftp://localhost:2222"/>
+        <property name="userAuthenticatorService" ref="sftp_auth"/>
+        <property name="jschConfigProperties">
+            <map>
+                <entry key="PreferredAuthentications" value="password"/>
+            </map>
+        </property>
+        <property name="sftpSetUserDirIsRoot" value="true"/>
+        <property name="accessRule" value="true or (#userAttributes['eduPersonAffiliation'].contains('member'))"/>
+    </bean>
+
+    <bean name="sftp_auth" class="org.esupportail.filemanager.services.auth.FormUserPasswordAuthenticatorService"
+          scope="session">
+        <property name="username" value="sftpuser"/>
+        <property name="password" value="sftppass"/>
+    </bean>
+
+    <bean name="form_auth" class="org.esupportail.filemanager.services.auth.AttrsUserCasAuthenticatorService"
+          scope="session">
+        <property name="domain" value="ur"/>
+        <property name="userInfo4Username" value="uid"/>
     </bean>
 
     <bean name="univ_example_casv5_auth" class="org.esupportail.filemanager.services.auth.ClearPassUserCasAuthenticatorService"
@@ -89,23 +142,6 @@
         <property name="pkcs8Key" value="${cas.clearpass.key}"/>
     </bean>
 
-    <!-- MinIO Storage - S3 API -->
-    <bean class="org.esupportail.filemanager.services.s3.S3AccessImpl" scope="session" lazy-init="true">
-        <property name="driveName" value="MinIO Storage"/>
-        <property name="icon" value="/img/drives/drive_user.png" />
-        <property name="bucketName" value="esup-files"/>
-        <property name="uri" value="http://localhost:9000"/>
-        <property name="pathStyleAccessEnabled" value="true"/>
-        <property name="presignedUrlsEnabled" value="true"/>
-        <property name="basePath" value="/"/>
-        <property name="userAuthenticatorService" ref="s3_minio_auth"/>
-    </bean>
-    
-    <bean name="s3_minio_auth" class="org.esupportail.filemanager.services.auth.FormUserPasswordAuthenticatorService"
-          scope="session">
-        <property name="username" value="minioadmin"/>
-        <property name="password" value="minioadmin"/>
-    </bean>
 
     
 </beans>
