@@ -370,6 +370,21 @@ public class AjaxController {
     public void downloadFile(@RequestParam String dir, HttpServletResponse response) throws IOException {
         log.debug("Requesting downloadFile");
         dir = pathEncodingUtils.decodeDir(dir);
+
+        // Use presigned URL for direct S3 access if supported
+        if (this.serverAccess.supportsPresignedUrls(dir)) {
+            try {
+                PresignedUrl presignedUrl = this.serverAccess.getPresignedDownloadUrl(dir);
+                if (presignedUrl != null) {
+                    log.info("Redirecting download to presigned S3 URL for: {}", dir);
+                    response.sendRedirect(presignedUrl.getUrl());
+                    return;
+                }
+            } catch (Exception e) {
+                log.warn("Failed to generate presigned URL for {}, falling back to server-side download", dir, e);
+            }
+        }
+
         DownloadFile file = this.serverAccess.getFile(dir);
         response.setContentType(file.getContentType());
         if(file.getSize() > 0) {
