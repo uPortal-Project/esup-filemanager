@@ -72,7 +72,7 @@ services:
      image: alpine:latest
      command: >
        sh -c "apk add --no-cache openssh &&
-           adduser -D -u 1001 sftpuser &&
+           adduser -D -u 1001 sftpuser || true &&
            echo 'sftpuser:sftppass' | chpasswd &&
            ssh-keygen -A &&
            echo 'PasswordAuthentication yes' >> /etc/ssh/sshd_config &&
