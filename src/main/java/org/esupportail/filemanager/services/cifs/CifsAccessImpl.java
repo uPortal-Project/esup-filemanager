@@ -464,7 +464,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 
         try {
             SmbFile folder = cd(dir);
-            newFile = new SmbFile(folder.getCanonicalPath() + filename, this.cifsContext);
+            newFile = new SmbFile(folder.getCanonicalPath() + "/" + filename, this.cifsContext);
             if (newFile.exists()) {
                 switch (uploadOption) {
                     case ERROR :
