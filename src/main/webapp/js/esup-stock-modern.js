@@ -159,18 +159,17 @@ class EsupFileManager {
                 );
             },
             onAllUploadsComplete: () => {
-                console.log('All uploads complete - refreshing view');
                 this.updateUploadPanelStats();
 
                 const { total, completed, failed } = this.uploadStats;
                 if (failed === 0) {
                     const msg = completed === 1
                         ? (window.i18n?.uploadFileSuccess || 'File uploaded successfully.')
-                        : `${completed} fichier${completed > 1 ? 's' : ''} uploadé${completed > 1 ? 's' : ''} avec succès`;
+                        : (window.i18n?.uploadFilesSuccess || `${completed} files uploaded successfully.`);
                     UIComponents.showSuccess(msg);
                 } else {
                     UIComponents.showError(
-                        `${completed} fichier${completed > 1 ? 's' : ''} uploadé${completed > 1 ? 's' : ''}, ${failed} erreur${failed > 1 ? 's' : ''}`
+                        window.i18n?.uploadFilesPartial || `${completed} file${completed > 1 ? 's' : ''} uploaded, ${failed} error${failed > 1 ? 's' : ''}.`
                     );
                 }
 
@@ -491,22 +490,15 @@ class EsupFileManager {
                     
                     // Check HTTP status code
                     if (response.status === 401) {
-                        // Authentication failed (401 Unauthorized)
                         const errorMessage = result.msg || window.i18n?.authBad || 'Authentication failed';
-                        console.log('Authentication failed:', errorMessage);
                         this.showAuthError(errorDiv, errorMessage);
                         passwordInput.value = '';
                         passwordInput.focus();
                     } else if (response.ok && result.status === 1) {
-                        // Authentication successful (200 OK with status=1)
                         this.hideAuthError(errorDiv);
-                        
-                        // Reload the file tree to show the authenticated content
                         await this.loadDirectoryContent(currentDir, true, false);
-                        
                         UIComponents.showSuccess(window.i18n?.authOk || 'Authentication successful');
                     } else {
-                        // Other error
                         const errorMessage = result.msg || window.i18n?.authError || 'Authentication error.';
                         this.showAuthError(errorDiv, errorMessage);
                         passwordInput.value = '';
@@ -967,14 +959,10 @@ class EsupFileManager {
                 dirs: selectedPaths.join(',')
             });
 
-            this.clipboard = {
-                files: selectedPaths,
-                operation: 'copy'
-            };
+            this.clipboard = { files: selectedPaths, operation: 'copy' };
 
             UIComponents.showInfo((window.i18n?.itemsCopied || '{0} item(s) copied.').replace('{0}', selectedPaths.length));
 
-            // Enable paste button
             this.updatePasteButtonState();
         } catch (error) {
             console.error('Copy failed:', error);
@@ -994,14 +982,10 @@ class EsupFileManager {
                 dirs: selectedPaths.join(',')
             });
 
-            this.clipboard = {
-                files: selectedPaths,
-                operation: 'cut'
-            };
+            this.clipboard = { files: selectedPaths, operation: 'cut' };
 
             UIComponents.showInfo((window.i18n?.itemsCut || '{0} item(s) cut.').replace('{0}', selectedPaths.length));
 
-            // Enable paste button
             this.updatePasteButtonState();
         } catch (error) {
             console.error('Cut failed:', error);
@@ -1725,30 +1709,30 @@ class EsupFileManager {
             <div class="upload-panel-header card-header d-flex justify-content-between align-items-center py-2 px-3">
                 <span class="fw-semibold small text-white">
                     <i class="bi bi-cloud-upload me-1"></i>
-                    <span id="upload-panel-title">Upload en cours…</span>
+                    <span id="upload-panel-title">Uploading…</span>
                 </span>
                 <div class="d-flex gap-1 ms-2">
                     <button class="btn btn-sm upload-panel-btn upload-panel-minimize-btn"
-                            title="Réduire" aria-label="Réduire le panneau d'upload">
+                            title="Minimize" aria-label="Minimize upload panel">
                         <i class="bi bi-dash-lg"></i>
                     </button>
                     <button class="btn btn-sm upload-panel-btn upload-panel-close-btn"
-                            title="Fermer" aria-label="Fermer le panneau d'upload">
+                            title="Close" aria-label="Close upload panel">
                         <i class="bi bi-x-lg"></i>
                     </button>
                 </div>
             </div>
             <div class="upload-panel-body" id="upload-panel-body">
-                <ul class="list-group list-group-flush" id="upload-file-list" aria-label="Liste des fichiers"></ul>
+                <ul class="list-group list-group-flush" id="upload-file-list" aria-label="File list"></ul>
             </div>
             <div class="upload-panel-footer card-footer py-2 px-3">
                 <div class="progress mb-1" style="height:5px;" role="progressbar"
-                     aria-label="Progression globale" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                     aria-label="Overall progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                     <div id="upload-total-progress-bar"
                          class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
                          style="width:0%"></div>
                 </div>
-                <div class="text-muted small text-center" id="upload-total-label">0 / 0 fichier</div>
+                <div class="text-muted small text-center" id="upload-total-label">0 / 0 file</div>
             </div>
         `;
 
@@ -1801,7 +1785,7 @@ class EsupFileManager {
         if (!list) return;
 
         const itemId = `upload-item-${this.sanitizeFilename(file.name)}`;
-        if (document.getElementById(itemId)) return; // éviter les doublons
+        if (document.getElementById(itemId)) return; // avoid duplicates
 
         const item = document.createElement('li');
         item.id = itemId;
@@ -1810,7 +1794,7 @@ class EsupFileManager {
             <div class="d-flex justify-content-between align-items-center mb-1">
                 <span class="upload-filename small fw-medium text-truncate me-2"
                       title="${this.escapeHtml(file.name)}">${this.escapeHtml(file.name)}</span>
-                <span class="upload-percent small text-muted">En attente…</span>
+                <span class="upload-percent small text-muted">Pending…</span>
             </div>
             <div class="progress" style="height:3px;">
                 <div class="progress-bar bg-secondary" role="progressbar"
@@ -1865,14 +1849,14 @@ class EsupFileManager {
 
         // Titre
         const titleEl = panel.querySelector('#upload-panel-title');
-        if (titleEl) titleEl.textContent = `Upload (${done}/${total})`;
+        if (titleEl) titleEl.textContent = `Uploading (${done}/${total})`;
 
         // Libellé pied de panneau
         const labelEl = panel.querySelector('#upload-total-label');
         if (labelEl) {
-            let text = `${done} / ${total} fichier${total > 1 ? 's' : ''}`;
+            let text = `${done} / ${total} file${total > 1 ? 's' : ''}`;
             if (failed > 0) {
-                labelEl.innerHTML = `${text} — <span class="text-danger">${failed} erreur${failed > 1 ? 's' : ''}</span>`;
+                labelEl.innerHTML = `${text} — <span class="text-danger">${failed} error${failed > 1 ? 's' : ''}</span>`;
             } else {
                 labelEl.textContent = text;
             }
