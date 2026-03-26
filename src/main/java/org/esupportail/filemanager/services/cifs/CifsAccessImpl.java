@@ -252,8 +252,25 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
         String lid = resource.getCanonicalPath();
         String rootPath = root.getCanonicalPath();
         // lid must be a relative path from rootPath
-        if(lid.startsWith(rootPath))
+        if(lid.startsWith(rootPath)) {
             lid = lid.substring(rootPath.length());
+        } else {
+            // Fallback: with a non-standard port, jcifs-ng may represent the canonical
+            // path differently for the root and its children (hostname resolution,
+            // port present/absent in the URL...). Compare only the URL path component
+            // to extract the relative path.
+            try {
+                String resourceUrlPath = new java.net.URL(lid).getPath();
+                String rootUrlPath     = new java.net.URL(rootPath).getPath();
+                if (resourceUrlPath.startsWith(rootUrlPath)) {
+                    lid = resourceUrlPath.substring(rootUrlPath.length());
+                } else {
+                    log.warn("Cannot determine relative path for '{}' from root '{}'", lid, rootPath);
+                }
+            } catch (MalformedURLException e) {
+                log.warn("Cannot parse canonical paths '{}' / '{}'", lid, rootPath, e);
+            }
+        }
         if(lid.startsWith("/"))
             lid = lid.substring(1);
 
@@ -350,7 +367,13 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
             if (!ppath.isEmpty() && !ppath.endsWith("/")) {
                 ppath = ppath + "/";
             }
-            SmbFile newFile = new SmbFile(root.getPath() + ppath + title, this.cifsContext);
+            // Use cd() to properly resolve the parent folder (relative path or absolute
+            // URL), then getCanonicalPath() to build the target path.
+            // Consistent with putFile/moveCopyFilesIntoDirectory and avoids the double-URL
+            // issue when the SMB port is non-standard (root.getPath() already returned the
+            // full URL, and ppath could contain another one).
+            SmbFile parentFolder = cd(ppath);
+            SmbFile newFile = new SmbFile(parentFolder.getCanonicalPath() + title, this.cifsContext);
             log.info("newFile : {}", newFile);
             if ("folder".equals(type)) {
                 newFile.mkdir();
