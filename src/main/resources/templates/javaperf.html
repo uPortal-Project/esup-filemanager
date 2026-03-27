@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Java Performance – ESUP File Manager</title>
+    <title th:text="#{javaperf.page.title}">Java Performance – ESUP File Manager</title>
 
     <!-- CSS Bootstrap 5 -->
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
@@ -35,16 +35,16 @@
     <div class="container-fluid">
         <a class="navbar-brand d-inline-flex align-items-center gap-2" th:href="@{/}">
             <i class="bi bi-folder2-open"></i>
-            <span>ESUP File Manager</span>
+            <span th:text="#{javaperf.nav.brand}">ESUP File Manager</span>
         </a>
         <span class="navbar-text mx-3 text-muted">
             <i class="bi bi-chevron-right small"></i>
-            <strong>Java Performance</strong>
+            <strong th:text="#{javaperf.nav.subtitle}">Java Performance</strong>
         </span>
         <div class="ms-auto d-flex align-items-center gap-2">
             <a th:href="@{/}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
                 <i class="bi bi-arrow-left"></i>
-                <span class="d-none d-sm-inline">Retour</span>
+                <span class="d-none d-sm-inline" th:text="#{javaperf.nav.back}">Back</span>
             </a>
             <a th:href="@{/logout}" class="btn btn-sm btn-outline-dark d-inline-flex align-items-center gap-2">
                 <i class="bi bi-person-circle"></i>
@@ -60,18 +60,18 @@
 
     <h2 class="mb-4 d-flex align-items-center gap-2">
         <i class="bi bi-speedometer2 text-warning"></i>
-        Java Performance
+        <span th:text="#{javaperf.heading}">Java Performance</span>
     </h2>
 
     <!-- Mémoire -->
     <div class="row g-3 mb-4">
-        <h5 class="col-12 mb-0 text-muted"><i class="bi bi-memory me-1"></i>Mémoire JVM</h5>
+        <h5 class="col-12 mb-0 text-muted"><i class="bi bi-memory me-1"></i><span th:text="#{javaperf.memory.title}">JVM Memory</span></h5>
 
         <div class="col-6 col-md-3">
             <div class="card text-bg-secondary h-100">
                 <div class="card-body text-center">
                     <div class="fs-2 fw-bold" th:text="${maxMemoryInMB} + ' MB'">– MB</div>
-                    <div class="small">Max</div>
+                    <div class="small" th:text="#{javaperf.memory.max}">Max</div>
                 </div>
             </div>
         </div>
@@ -79,7 +79,7 @@
             <div class="card text-bg-primary h-100">
                 <div class="card-body text-center">
                     <div class="fs-2 fw-bold" th:text="${totalMemoryInMB} + ' MB'">– MB</div>
-                    <div class="small">Allouée</div>
+                    <div class="small" th:text="#{javaperf.memory.allocated}">Allocated</div>
                 </div>
             </div>
         </div>
@@ -87,7 +87,7 @@
             <div class="card text-bg-success h-100">
                 <div class="card-body text-center">
                     <div class="fs-2 fw-bold" th:text="${freeMemoryInMB} + ' MB'">– MB</div>
-                    <div class="small">Libre</div>
+                    <div class="small" th:text="#{javaperf.memory.free}">Free</div>
                 </div>
             </div>
         </div>
@@ -95,7 +95,7 @@
             <div class="card text-bg-warning h-100">
                 <div class="card-body text-center">
                     <div class="fs-2 fw-bold" th:text="${usedMemoryInMB} + ' MB'">– MB</div>
-                    <div class="small">Utilisée</div>
+                    <div class="small" th:text="#{javaperf.memory.used}">Used</div>
                 </div>
             </div>
         </div>
@@ -103,7 +103,7 @@
         <!-- Barre de progression mémoire -->
         <div class="col-12">
             <div class="d-flex justify-content-between small text-muted mb-1">
-                <span>Utilisation mémoire</span>
+                <span th:text="#{javaperf.memory.usage}">Memory usage</span>
                 <span th:text="${usedMemoryInMB} + ' / ' + ${maxMemoryInMB} + ' MB'"></span>
             </div>
             <div class="progress" style="height: 18px;">
@@ -119,19 +119,16 @@
     <!-- Connexions aux serveurs de stockage -->
     <div class="mb-4">
         <h5 class="text-muted mb-3">
-            <i class="bi bi-hdd-network me-1"></i>Connexions aux serveurs de stockage
-            <small class="ms-2 text-muted fw-normal" style="font-size:.75rem;">
-                (sessions actives par lecteur depuis le démarrage)
-            </small>
+            <i class="bi bi-hdd-network me-1"></i><span th:text="#{javaperf.storage.title}">Storage server connections</span>
+            <small class="ms-2 text-muted fw-normal" style="font-size:.75rem;"
+                   th:text="#{javaperf.storage.subtitle}">(active sessions per drive since startup)</small>
         </h5>
 
         <!-- Aucune connexion enregistrée -->
         <div th:if="${#lists.isEmpty(storageStats)}"
              class="alert alert-info d-flex align-items-center gap-2">
             <i class="bi bi-info-circle-fill fs-5"></i>
-            <span>Aucune connexion enregistrée depuis le démarrage du serveur.
-                  Les compteurs s'alimentent dès qu'un utilisateur ouvre une session
-                  vers un lecteur de stockage.</span>
+            <span th:text="#{javaperf.storage.empty}">No connections recorded since the server started. Counters are updated as soon as a user opens a session to a storage drive.</span>
         </div>
 
         <!-- Cartes de jauge par lecteur -->
@@ -162,7 +159,8 @@
                               th:text="${stat.openConnections}">0</text>
                         <text x="50" y="67"
                               text-anchor="middle"
-                              font-size="9" fill="#6c757d">session(s)</text>
+                              font-size="9" fill="#6c757d"
+                              th:text="#{javaperf.storage.sessions}">session(s)</text>
                     </svg>
 
                     <!-- Nom du lecteur et protocole -->
@@ -181,22 +179,22 @@
         <!-- Légende des couleurs -->
         <div th:unless="${#lists.isEmpty(storageStats)}"
              class="d-flex flex-wrap gap-3 mt-3 small text-muted align-items-center">
-            <span class="fw-semibold">Légende :</span>
-            <span><span class="badge bg-secondary">0</span> Inactif</span>
-            <span><span class="badge bg-success">1–3</span> Faible charge</span>
-            <span><span class="badge bg-primary">4–6</span> Charge moyenne</span>
-            <span><span class="badge bg-warning text-dark">7–9</span> Charge élevée</span>
-            <span><span class="badge bg-danger">10+</span> Haute charge</span>
+            <span class="fw-semibold" th:text="#{javaperf.storage.legend}">Legend:</span>
+            <span><span class="badge bg-secondary">0</span> <span th:text="#{javaperf.storage.legend.inactive}">Inactive</span></span>
+            <span><span class="badge bg-success">1–3</span> <span th:text="#{javaperf.storage.legend.low}">Low load</span></span>
+            <span><span class="badge bg-primary">4–6</span> <span th:text="#{javaperf.storage.legend.medium}">Medium load</span></span>
+            <span><span class="badge bg-warning text-dark">7–9</span> <span th:text="#{javaperf.storage.legend.high}">High load</span></span>
+            <span><span class="badge bg-danger">10+</span> <span th:text="#{javaperf.storage.legend.very_high}">Very high load</span></span>
         </div>
     </div>
 
     <!-- Threads -->
     <div class="mb-4">
-        <h5 class="text-muted mb-3"><i class="bi bi-diagram-3 me-1"></i>Threads</h5>
+        <h5 class="text-muted mb-3"><i class="bi bi-diagram-3 me-1"></i><span th:text="#{javaperf.threads.title}">Threads</span></h5>
 
         <!-- Résumé par état -->
         <div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
-            <span class="fw-semibold me-1">État des threads :</span>
+            <span class="fw-semibold me-1" th:text="#{javaperf.threads.states}">Thread states:</span>
             <span th:each="entry : ${threadStateCount}"
                   th:classappend="'badge rounded-pill badge-state-' + ${entry.key}"
                   class="badge rounded-pill fs-6 px-3 py-1">
@@ -205,9 +203,12 @@
             </span>
             <span class="ms-auto text-muted small">
                 <i class="bi bi-activity"></i>
-                Pic : <strong th:text="${javaPerfWrapper.peakThreadCount}"></strong> threads
+                <span th:text="#{javaperf.threads.peak}">Peak:</span>
+                <strong th:text="${javaPerfWrapper.peakThreadCount}"></strong>
+                <span th:text="#{javaperf.threads.peak.unit}">threads</span>
                 &nbsp;|&nbsp;
-                Thread courant : <code th:text="${currentThreadId}"></code>
+                <span th:text="#{javaperf.threads.current}">Current thread:</span>
+                <code th:text="${currentThreadId}"></code>
             </span>
         </div>
 
@@ -216,12 +217,18 @@
             <table class="table table-sm table-bordered table-hover thread-table align-middle">
                 <thead class="table-dark sticky-top">
                     <tr>
-                        <th>Id</th>
-                        <th>Nom</th>
-                        <th>État</th>
-                        <th>Bloqué<br><small class="fw-normal text-muted">count / ms</small></th>
-                        <th>Attente<br><small class="fw-normal text-muted">count / ms</small></th>
-                        <th>Stack trace</th>
+                        <th th:text="#{javaperf.threads.table.id}">Id</th>
+                        <th th:text="#{javaperf.threads.table.name}">Name</th>
+                        <th th:text="#{javaperf.threads.table.state}">State</th>
+                        <th>
+                            <span th:text="#{javaperf.threads.table.blocked}">Blocked</span><br>
+                            <small class="fw-normal text-muted" th:text="#{javaperf.threads.table.count_ms}">count / ms</small>
+                        </th>
+                        <th>
+                            <span th:text="#{javaperf.threads.table.waited}">Waiting</span><br>
+                            <small class="fw-normal text-muted" th:text="#{javaperf.threads.table.count_ms}">count / ms</small>
+                        </th>
+                        <th th:text="#{javaperf.threads.table.stacktrace}">Stack trace</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -237,7 +244,7 @@
                                   th:text="${threadInfo.threadState}"></span>
                             <i th:if="${currentThreadId eq threadInfo.threadId}"
                                class="bi bi-arrow-left-circle-fill text-success ms-1"
-                               title="Thread courant"></i>
+                               th:title="#{javaperf.threads.current.marker}"></i>
                         </td>
                         <td class="small text-center">
                             <span th:text="${threadInfo.blockedCount}"></span>
@@ -264,9 +271,8 @@
 </div>
 
 <!-- Footer -->
-<footer class="mt-auto py-2 bg-light border-top text-center text-muted small">
-    ESUP File Manager – Java Performance
-</footer>
+<footer class="mt-auto py-2 bg-light border-top text-center text-muted small"
+        th:text="#{javaperf.footer}">ESUP File Manager – Java Performance</footer>
 
 <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.js}"></script>
 </body>
