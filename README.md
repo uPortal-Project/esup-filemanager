@@ -77,3 +77,13 @@ This will start a CAS server with test users and filesystems servers (s3, webdav
 Users are :
 * joe / pass
 * jack / pass
+
+
+## Screenshot
+
+![Esup File Manager Screenshot](https://raw.githubusercontent.com/vbonamy/esup-filemanager/master/src/etc/esup-filemanager-screenshot-1.png)
+
+![Esup File Manager Screenshot - Mobile](https://raw.githubusercontent.com/vbonamy/esup-filemanager/master/src/etc/esup-filemanager-screenshot-2.png)
+
+![Esup File Manager Screenshot - JavaPerf](https://raw.githubusercontent.com/vbonamy/esup-filemanager/master/src/etc/esup-filemanager-screenshot-3.png)
+
