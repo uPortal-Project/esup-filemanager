@@ -1,6 +1,6 @@
 <!-- src/main/resources/templates/body-responsive.html -->
 <!-- Template responsive Bootstrap 5 pour desktop, tablette et mobile -->
-<div class="container-fluid esupstock p-0" th:fragment="body">
+<div class="container-fluid esupstock p-0" th:fragment="body" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
     <!-- Mobile Header avec burger menu -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light d-lg-none sticky-top shadow-sm">
@@ -58,6 +58,13 @@
                 <button class="list-group-item list-group-item-action disabled" id="mobile-delete">
                     <i class="bi bi-trash"></i> <span th:text="#{toolbar.delete.title}">Supprimer</span>
                 </button>
+                <div class="dropdown-divider"></div>
+                <!-- Lien Java Perf - Admin uniquement -->
+                <a sec:authorize="hasRole(@environment.getProperty('security.role.admin'))"
+                   th:href="@{/javaperf}"
+                   class="list-group-item list-group-item-action text-warning">
+                    <i class="bi bi-speedometer2"></i> Java Performance
+                </a>
                 <div class="dropdown-divider"></div>
                 <!-- Sélecteur de langue - Menu Mobile -->
                 <div class="list-group-item d-flex align-items-center gap-2">
@@ -158,6 +165,14 @@
                    th:class="${#locale.language == 'es'} ? 'btn btn-sm btn-primary p-1 lh-1' : 'btn btn-sm btn-outline-secondary p-1 lh-1'"
                    title="Español" aria-label="Español"><span class="fi fi-es"></span></a>
             </div>
+            <!-- Lien Java Perf - Admin uniquement -->
+            <a sec:authorize="hasRole(@environment.getProperty('security.role.admin'))"
+               th:href="@{/javaperf}"
+               class="btn btn-sm btn-outline-warning d-inline-flex align-items-center gap-1 me-1"
+               title="Java Performance">
+                <i class="bi bi-speedometer2"></i>
+                <span class="d-none d-xl-inline">Java Perf</span>
+            </a>
             <a th:href="@{/logout}" class="btn btn-sm btn-outline-dark d-inline-flex align-items-center gap-2" id="toolbar-logout" th:title="#{toolbar.logout}">
                 <i class="bi bi-person-circle"></i>
                 <span th:text="${#authentication.principal.username}">User</span>

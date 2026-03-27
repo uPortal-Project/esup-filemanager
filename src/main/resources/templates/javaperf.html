@@ -1,71 +1,200 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Performance / Java</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Performance – ESUP File Manager</title>
 
-    <!-- CSS -->
+    <!-- CSS Bootstrap 5 -->
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap-icons/font/bootstrap-icons.min.css}" />
-    <link rel="stylesheet" th:href="@{/css/esup-stock.css}" type="text/css" media="screen, projection">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap-icons/font/bootstrap-icons.min.css}"/>
+
+    <!-- CSS Custom -->
+    <link rel="stylesheet" th:href="@{/css/esup-stock.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/google-open-sans.css}" type="text/css">
+
+    <style>
+        body { background-color: #f8f9fa; }
+        .stack-trace { font-family: monospace; font-size: 0.75rem; max-height: 200px; overflow-y: auto; background: #f1f3f5; border-radius: 4px; padding: 6px; margin: 0; }
+        .thread-table th { white-space: nowrap; }
+        .badge-state-RUNNABLE   { background-color: #ffc107; color: #000; }
+        .badge-state-BLOCKED    { background-color: #dc3545; color: #fff; }
+        .badge-state-WAITING,
+        .badge-state-TIMED_WAITING { background-color: #0dcaf0; color: #000; }
+        .badge-state-NEW        { background-color: #6c757d; color: #fff; }
+        .badge-state-TERMINATED { background-color: #198754; color: #fff; }
+        .row-current { background-color: #d1e7dd !important; }
+        .row-RUNNABLE  { background-color: #fff3cd !important; }
+        .row-BLOCKED   { background-color: #f8d7da !important; }
+    </style>
 </head>
-<body>
-<div>
-    <h2>Performance / Java</h2>
+<body class="d-flex flex-column min-vh-100">
 
-    <div>
-        <h3>Memory</h3>
-        <ul class="list">
-            <li><span>max Memory :</span> <span th:text="${maxMemoryInMB}"></span> MB</li>
-            <li><span>total Memory :</span> <span th:text="${totalMemoryInMB}"></span> MB</li>
-            <li><span>free Memory :</span> <span th:text="${freeMemoryInMB}"></span> MB</li>
-            <li><span>used Memory :</span> <span th:text="${usedMemoryInMB}"></span> MB</li>
-        </ul>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom shadow-sm sticky-top">
+    <div class="container-fluid">
+        <a class="navbar-brand d-inline-flex align-items-center gap-2" th:href="@{/}">
+            <i class="bi bi-folder2-open"></i>
+            <span>ESUP File Manager</span>
+        </a>
+        <span class="navbar-text mx-3 text-muted">
+            <i class="bi bi-chevron-right small"></i>
+            <strong>Java Performance</strong>
+        </span>
+        <div class="ms-auto d-flex align-items-center gap-2">
+            <a th:href="@{/}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
+                <i class="bi bi-arrow-left"></i>
+                <span class="d-none d-sm-inline">Retour</span>
+            </a>
+            <a th:href="@{/logout}" class="btn btn-sm btn-outline-dark d-inline-flex align-items-center gap-2">
+                <i class="bi bi-person-circle"></i>
+                <span th:text="${#authentication.principal.username}" class="d-none d-sm-inline">User</span>
+                <i class="bi bi-box-arrow-right"></i>
+            </a>
+        </div>
     </div>
-    <div>
-        <h3>Threads</h3>
-        <ul class="list">
-            <li>
-                <span>threads en cours</span>
-                <ul>
-                    <li th:each="threadState : ${threadStateCount}"
-                        th:classappend="${threadState.key == 'RUNNABLE'} ? 'alert-warning' : (${threadState.key == 'BLOCKED'} ? 'alert-danger' : '')"
-                        th:text="${threadState.key} + ' : ' + ${threadState.value}"></li>
-                </ul>
-            </li>
-            <li><span>avec un pic de</span> <span th:text="${javaPerfWrapper.peakThreadCount}"></span> <span>threads</span></li>
-            <li><span>(num. thread courant :</span> <span th:text="${currentThreadId}"></span>)</li>
-        </ul>
+</nav>
 
-        <table class="table table-striped">
-            <tr>
-                <th>Thread Id</th>
-                <th>Thread Name</th>
-                <th>Thread State</th>
-                <th>Blocked Count</th>
-                <th>Blocked Time</th>
-                <th>Waited Count</th>
-                <th>Waited Time</th>
-                <th>Stack Trace</th>
-            </tr>
+<!-- Contenu principal -->
+<div class="container-xl py-4">
 
-            <tr th:each="threadInfo : ${javaPerfWrapper.threadInfoWrappers}"
-                th:classappend="${currentThreadId eq threadInfo.threadId ? 'success' : (threadInfo.threadState eq 'RUNNABLE' ? 'warning' : (threadInfo.threadState eq 'BLOCKED' ? 'danger' : ''))}">
-                <td th:text="${threadInfo.threadId}"></td>
-                <td th:text="${threadInfo.threadName}"></td>
-                <td th:text="${threadInfo.threadState}"></td>
-                <td th:text="${threadInfo.blockedCount}"></td>
-                <td th:text="${threadInfo.blockedTime}"></td>
-                <td th:text="${threadInfo.waitedCount}"></td>
-                <td th:text="${threadInfo.waitedTime}"></td>
-                <td>
-                    <span th:each="stackTrace : ${threadInfo.stackTrace}">
-                        <span th:text="${stackTrace.className} + '.' + ${stackTrace.methodName} + '(' + ${stackTrace.fileName} + ':' + ${stackTrace.lineNumber} + ')'"></span><br/>
-                    </span>
-                </td>
-            </tr>
-        </table>
+    <h2 class="mb-4 d-flex align-items-center gap-2">
+        <i class="bi bi-speedometer2 text-warning"></i>
+        Java Performance
+    </h2>
+
+    <!-- Mémoire -->
+    <div class="row g-3 mb-4">
+        <h5 class="col-12 mb-0 text-muted"><i class="bi bi-memory me-1"></i>Mémoire JVM</h5>
+
+        <div class="col-6 col-md-3">
+            <div class="card text-bg-secondary h-100">
+                <div class="card-body text-center">
+                    <div class="fs-2 fw-bold" th:text="${maxMemoryInMB} + ' MB'">– MB</div>
+                    <div class="small">Max</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-bg-primary h-100">
+                <div class="card-body text-center">
+                    <div class="fs-2 fw-bold" th:text="${totalMemoryInMB} + ' MB'">– MB</div>
+                    <div class="small">Allouée</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-bg-success h-100">
+                <div class="card-body text-center">
+                    <div class="fs-2 fw-bold" th:text="${freeMemoryInMB} + ' MB'">– MB</div>
+                    <div class="small">Libre</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-bg-warning h-100">
+                <div class="card-body text-center">
+                    <div class="fs-2 fw-bold" th:text="${usedMemoryInMB} + ' MB'">– MB</div>
+                    <div class="small">Utilisée</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barre de progression mémoire -->
+        <div class="col-12">
+            <div class="d-flex justify-content-between small text-muted mb-1">
+                <span>Utilisation mémoire</span>
+                <span th:text="${usedMemoryInMB} + ' / ' + ${maxMemoryInMB} + ' MB'"></span>
+            </div>
+            <div class="progress" style="height: 18px;">
+                <div class="progress-bar bg-warning"
+                     role="progressbar"
+                     th:style="'width: ' + ${#numbers.formatDecimal(usedMemoryInMB * 100.0 / maxMemoryInMB, 1, 1)} + '%'"
+                     th:text="${#numbers.formatDecimal(usedMemoryInMB * 100.0 / maxMemoryInMB, 1, 1)} + '%'">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Threads -->
+    <div class="mb-4">
+        <h5 class="text-muted mb-3"><i class="bi bi-diagram-3 me-1"></i>Threads</h5>
+
+        <!-- Résumé par état -->
+        <div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
+            <span class="fw-semibold me-1">État des threads :</span>
+            <span th:each="entry : ${threadStateCount}"
+                  th:classappend="'badge rounded-pill badge-state-' + ${entry.key}"
+                  class="badge rounded-pill fs-6 px-3 py-1">
+                <span th:text="${entry.key}"></span>
+                <span class="ms-1 fw-bold" th:text="${entry.value}"></span>
+            </span>
+            <span class="ms-auto text-muted small">
+                <i class="bi bi-activity"></i>
+                Pic : <strong th:text="${javaPerfWrapper.peakThreadCount}"></strong> threads
+                &nbsp;|&nbsp;
+                Thread courant : <code th:text="${currentThreadId}"></code>
+            </span>
+        </div>
+
+        <!-- Tableau des threads -->
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered table-hover thread-table align-middle">
+                <thead class="table-dark sticky-top">
+                    <tr>
+                        <th>Id</th>
+                        <th>Nom</th>
+                        <th>État</th>
+                        <th>Bloqué<br><small class="fw-normal text-muted">count / ms</small></th>
+                        <th>Attente<br><small class="fw-normal text-muted">count / ms</small></th>
+                        <th>Stack trace</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="threadInfo : ${javaPerfWrapper.threadInfoWrappers}"
+                        th:classappend="${currentThreadId eq threadInfo.threadId ? 'row-current' :
+                                         (threadInfo.threadState eq 'RUNNABLE'  ? 'row-RUNNABLE' :
+                                         (threadInfo.threadState eq 'BLOCKED'   ? 'row-BLOCKED'  : ''))}">
+                        <td th:text="${threadInfo.threadId}" class="text-muted small"></td>
+                        <td th:text="${threadInfo.threadName}" class="small"></td>
+                        <td>
+                            <span class="badge rounded-pill"
+                                  th:classappend="'badge-state-' + ${threadInfo.threadState}"
+                                  th:text="${threadInfo.threadState}"></span>
+                            <i th:if="${currentThreadId eq threadInfo.threadId}"
+                               class="bi bi-arrow-left-circle-fill text-success ms-1"
+                               title="Thread courant"></i>
+                        </td>
+                        <td class="small text-center">
+                            <span th:text="${threadInfo.blockedCount}"></span>
+                            /
+                            <span th:text="${threadInfo.blockedTime}"></span>
+                        </td>
+                        <td class="small text-center">
+                            <span th:text="${threadInfo.waitedCount}"></span>
+                            /
+                            <span th:text="${threadInfo.waitedTime}"></span>
+                        </td>
+                        <td>
+                            <pre class="stack-trace mb-0"
+                                 th:if="${threadInfo.stackTrace.length > 0}"><span
+                                    th:each="ste : ${threadInfo.stackTrace}"
+                                    th:text="${ste.toString} + '&#10;'"></span></pre>
+                            <span th:if="${threadInfo.stackTrace.length == 0}" class="text-muted small">—</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
+
+<!-- Footer -->
+<footer class="mt-auto py-2 bg-light border-top text-center text-muted small">
+    ESUP File Manager – Java Performance
+</footer>
+
+<script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.js}"></script>
 </body>
 </html>
+
