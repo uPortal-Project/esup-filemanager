@@ -99,6 +99,12 @@ public class S3AccessImpl extends FsAccess implements DisposableBean {
             }
         }
     }
+
+    @Override
+    public String getConnectionType() {
+        return "S3";
+    }
+
     @Override
     protected void open() {
         super.open();
@@ -128,6 +134,7 @@ public class S3AccessImpl extends FsAccess implements DisposableBean {
                 // Test connection by checking if bucket exists
                 try {
                     s3Client.headBucket(HeadBucketRequest.builder().bucket(bucketName).build());
+                    notifyConnectionOpened();
                 } catch (S3Exception e) {
                     log.error("Cannot access bucket {}: {}", bucketName, e.awsErrorDetails().errorMessage());
                     throw new EsupStockException("Cannot access S3 bucket: " + e.awsErrorDetails().errorMessage(), e);
@@ -145,6 +152,7 @@ public class S3AccessImpl extends FsAccess implements DisposableBean {
             s3Presigner = null;
         }
         if (s3Client != null) {
+            notifyConnectionClosed();
             s3Client.close();
             s3Client = null;
         }

@@ -93,6 +93,19 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
     }
 
     @Override
+    public String getConnectionType() {
+        String u = getUri();
+        if (u != null) {
+            if (u.startsWith("sftp://"))  return "SFTP";
+            if (u.startsWith("ftp://"))   return "FTP";
+            if (u.startsWith("ftps://"))  return "FTPS";
+            if (u.startsWith("file://"))  return "Local";
+            if (u.startsWith("smb://"))   return "CIFS/SMB";
+        }
+        return "VFS";
+    }
+
+    @Override
     protected void open() {
         super.open();
         try {
@@ -130,6 +143,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
 
                 fsManager = VFS.getManager();
                 root = fsManager.resolveFile(uri, fsOptions);
+                notifyConnectionOpened();
             }
         } catch(FileSystemException fse) {
             throw new EsupStockException(fse);
@@ -140,6 +154,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
     public void close() {
         FileSystem fs = null;
         if(this.root != null) {
+            notifyConnectionClosed();
             fs = this.root.getFileSystem();
             this.fsManager.closeFileSystem(fs);
             this.root = null;

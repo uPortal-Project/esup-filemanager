@@ -22,6 +22,7 @@ import org.esupportail.filemanager.beans.*;
 import org.esupportail.filemanager.services.auth.UserAuthenticatorService;
 import org.esupportail.filemanager.services.quota.IQuotaService;
 import org.esupportail.filemanager.services.uri.UriManipulateService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
@@ -61,6 +62,43 @@ public abstract class FsAccess {
     protected IQuotaService quotaService = null;
 
     String accessRule = null;
+
+    /** Injected by Spring (optional – may be null in test contexts). */
+    @Autowired(required = false)
+    protected StorageConnectionMonitor storageConnectionMonitor;
+
+    // -----------------------------------------------------------------------
+    // Connection monitoring helpers
+    // -----------------------------------------------------------------------
+
+    /**
+     * Returns a short human-readable label identifying the storage protocol used
+     * by this drive (e.g. "SFTP", "WebDAV", "S3", "CIFS/SMB", "Local", …).
+     * Subclasses should override this.
+     */
+    public String getConnectionType() {
+        return "Unknown";
+    }
+
+    /**
+     * Must be called by subclass {@code open()} implementations once a
+     * connection has been successfully established.
+     */
+    protected void notifyConnectionOpened() {
+        if (storageConnectionMonitor != null) {
+            storageConnectionMonitor.connectionOpened(driveName, getConnectionType());
+        }
+    }
+
+    /**
+     * Must be called by subclass {@code close()} implementations before
+     * tearing down an existing connection.
+     */
+    protected void notifyConnectionClosed() {
+        if (storageConnectionMonitor != null) {
+            storageConnectionMonitor.connectionClosed(driveName);
+        }
+    }
 
     public String getDriveName() {
         return driveName;

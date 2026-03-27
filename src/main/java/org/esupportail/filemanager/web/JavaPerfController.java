@@ -1,5 +1,7 @@
 package org.esupportail.filemanager.web;
 
+import org.esupportail.filemanager.services.StorageConnectionMonitor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +17,9 @@ import java.util.*;
 @Controller
 @PreAuthorize("hasRole(@environment.getProperty('security.role.admin'))")
 public class JavaPerfController {
+
+    @Autowired
+    private StorageConnectionMonitor storageConnectionMonitor;
 
 	@RequestMapping
 	public String getJavaPerf(Model uiModel) throws IOException {
@@ -49,6 +54,9 @@ public class JavaPerfController {
 		uiModel.addAttribute("currentThreadId", currentThreadId);
 
         uiModel.addAttribute("javaPerfWrapper", new JavaPerfWrapper(threadMXBean, threadInfos));
+
+        // Storage connection stats
+        uiModel.addAttribute("storageStats", storageConnectionMonitor.getStats());
 
         return "javaperf";
 	}

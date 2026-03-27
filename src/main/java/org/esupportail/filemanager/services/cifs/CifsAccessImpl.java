@@ -78,6 +78,11 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
     }
 
     @Override
+    public String getConnectionType() {
+        return "CIFS/SMB";
+    }
+
+    @Override
     public void open() {
         super.open();
 
@@ -100,6 +105,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
                     SmbFile smbFile = new SmbFile(this.getUri(), cifsContext);
                     if (smbFile.exists()) {
                         root = smbFile;
+                        notifyConnectionOpened();
                     }
                 }
             } catch (MalformedURLException me) {
@@ -127,6 +133,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
     public void close() {
         log.debug("Closing CIFS connection");
         if (this.root != null) {
+            notifyConnectionClosed();
             try {
                 this.root.close();
             } catch (Exception e) {

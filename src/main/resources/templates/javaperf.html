@@ -116,6 +116,80 @@
         </div>
     </div>
 
+    <!-- Connexions aux serveurs de stockage -->
+    <div class="mb-4">
+        <h5 class="text-muted mb-3">
+            <i class="bi bi-hdd-network me-1"></i>Connexions aux serveurs de stockage
+            <small class="ms-2 text-muted fw-normal" style="font-size:.75rem;">
+                (sessions actives par lecteur depuis le démarrage)
+            </small>
+        </h5>
+
+        <!-- Aucune connexion enregistrée -->
+        <div th:if="${#lists.isEmpty(storageStats)}"
+             class="alert alert-info d-flex align-items-center gap-2">
+            <i class="bi bi-info-circle-fill fs-5"></i>
+            <span>Aucune connexion enregistrée depuis le démarrage du serveur.
+                  Les compteurs s'alimentent dès qu'un utilisateur ouvre une session
+                  vers un lecteur de stockage.</span>
+        </div>
+
+        <!-- Cartes de jauge par lecteur -->
+        <div th:unless="${#lists.isEmpty(storageStats)}" class="row g-3">
+            <div th:each="stat : ${storageStats}" class="col-6 col-md-4 col-lg-3 col-xl-2">
+                <div class="card shadow-sm h-100 text-center py-3 px-2">
+
+                    <!-- Jauge circulaire SVG (type compteur/speedometer) -->
+                    <svg viewBox="0 0 100 100" width="110" height="110"
+                         class="mx-auto" aria-hidden="true">
+                        <!-- Piste de fond -->
+                        <circle cx="50" cy="50" r="38"
+                                fill="none" stroke="#e9ecef" stroke-width="12"/>
+                        <!-- Arc de progression (10 connexions = plein) -->
+                        <circle cx="50" cy="50" r="38"
+                                fill="none"
+                                th:attr="stroke=${stat.gaugeColor},
+                                         stroke-dashoffset=${stat.gaugeDashOffset}"
+                                stroke-width="12"
+                                stroke-linecap="round"
+                                stroke-dasharray="238.76"
+                                transform="rotate(-90 50 50)"
+                                style="transition: stroke-dashoffset .5s ease;"/>
+                        <!-- Nombre de connexions (valeur centrale) -->
+                        <text x="50" y="46"
+                              text-anchor="middle" dominant-baseline="central"
+                              font-size="26" font-weight="bold" fill="#212529"
+                              th:text="${stat.openConnections}">0</text>
+                        <text x="50" y="67"
+                              text-anchor="middle"
+                              font-size="9" fill="#6c757d">session(s)</text>
+                    </svg>
+
+                    <!-- Nom du lecteur et protocole -->
+                    <div class="mt-2 px-1">
+                        <div class="fw-semibold text-truncate small"
+                             th:text="${stat.driveName}"
+                             th:title="${stat.driveName}">drive</div>
+                        <span class="badge mt-1"
+                              th:classappend="'bg-' + ${stat.statusBadgeClass}"
+                              th:text="${stat.type}">type</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Légende des couleurs -->
+        <div th:unless="${#lists.isEmpty(storageStats)}"
+             class="d-flex flex-wrap gap-3 mt-3 small text-muted align-items-center">
+            <span class="fw-semibold">Légende :</span>
+            <span><span class="badge bg-secondary">0</span> Inactif</span>
+            <span><span class="badge bg-success">1–3</span> Faible charge</span>
+            <span><span class="badge bg-primary">4–6</span> Charge moyenne</span>
+            <span><span class="badge bg-warning text-dark">7–9</span> Charge élevée</span>
+            <span><span class="badge bg-danger">10+</span> Haute charge</span>
+        </div>
+    </div>
+
     <!-- Threads -->
     <div class="mb-4">
         <h5 class="text-muted mb-3"><i class="bi bi-diagram-3 me-1"></i>Threads</h5>

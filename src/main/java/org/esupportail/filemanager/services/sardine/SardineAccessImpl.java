@@ -61,6 +61,11 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
     }
 
     @Override
+    public String getConnectionType() {
+        return "WebDAV";
+    }
+
+    @Override
     protected void open() {
         super.open();
         try {
@@ -81,6 +86,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 
                 // to be sure that webdav access is ok, we try to retrieve root resources
                 root.list(this.uri);
+                notifyConnectionOpened();
             }
         } catch (SardineException se) {
             root = null;
@@ -99,7 +105,10 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
 
     @Override
     public void close() {
-        this.root = null;
+        if (this.root != null) {
+            notifyConnectionClosed();
+            this.root = null;
+        }
     }
 
     public void destroy() throws Exception {
