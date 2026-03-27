@@ -49,9 +49,16 @@
 
         // Messages I18N exposés au JavaScript
         window.i18n = {
-            // Upload
-            uploadFileSuccess       : /*[[#{info.uploadFileSuccess}]]*/ 'File uploaded successfully.',
-            uploadFileFailed        : /*[[#{info.uploadFileFailed}]]*/ 'Error uploading file.',
+            // Upload - fichier individuel
+            uploadFileSuccess       : /*[[#{info.uploadFileSuccess}]]*/ 'File "{0}" uploaded successfully.',
+            uploadFileFailed        : /*[[#{info.uploadFileFailed}]]*/ 'Error uploading file "{0}".',
+            // Upload - bilan global
+            uploadFilesSuccess      : /*[[#{info.uploadFilesSuccess}]]*/ '{0} file(s) uploaded successfully.',
+            uploadFilesPartial      : /*[[#{info.uploadFilesPartial}]]*/ '{0} file(s) uploaded, {1} error(s).',
+            // Upload - labels du panneau de progression
+            uploadingProgress       : /*[[#{info.uploadingProgress}]]*/ 'Uploading ({0}/{1})',
+            uploadProgress          : /*[[#{info.uploadProgress}]]*/ '{0} / {1} file(s)',
+            uploadErrors            : /*[[#{info.uploadErrors}]]*/ '{0} error(s)',
             // Copier
             copyOk                  : /*[[#{ajax.copy.ok}]]*/ '',
             copyFailed              : /*[[#{error.copyFailed}]]*/ 'Copy failed.',
@@ -73,6 +80,8 @@
             deleteConfirmCancel     : /*[[#{delete.confirm.cancel}]]*/ 'Cancel',
             deleteButton            : /*[[#{toolbar.delete.button}]]*/ 'Delete',
             // Renommer
+            renameTitle             : /*[[#{dialog.rename.title}]]*/ 'Rename',
+            renameButton            : /*[[#{dialog.rename.button}]]*/ 'Rename',
             renameSuccess           : /*[[#{ajax.rename.success}]]*/ '',
             renameFailed            : /*[[#{ajax.rename.failed}]]*/ '',
             // Créer dossier

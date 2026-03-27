@@ -163,13 +163,14 @@ class EsupFileManager {
 
                 const { total, completed, failed } = this.uploadStats;
                 if (failed === 0) {
-                    const msg = completed === 1
-                        ? (window.i18n?.uploadFileSuccess || 'File uploaded successfully.')
-                        : (window.i18n?.uploadFilesSuccess || `${completed} files uploaded successfully.`);
+                    const msg = (window.i18n?.uploadFilesSuccess || '{0} file(s) uploaded successfully.')
+                        .replace('{0}', completed);
                     UIComponents.showSuccess(msg);
                 } else {
                     UIComponents.showError(
-                        window.i18n?.uploadFilesPartial || `${completed} file${completed > 1 ? 's' : ''} uploaded, ${failed} error${failed > 1 ? 's' : ''}.`
+                        (window.i18n?.uploadFilesPartial || '{0} file(s) uploaded, {1} error(s).')
+                            .replace('{0}', completed)
+                            .replace('{1}', failed)
                     );
                 }
 
@@ -1166,12 +1167,12 @@ class EsupFileManager {
         }
 
         UIComponents.showDialog({
-            title: window.i18n?.rename || 'Rename',
+            title: window.i18n?.renameTitle || 'Rename',
             message: `<input type="text" id="newFileName" class="form-control" value="${this.escapeHtml(currentName)}">`,
             buttons: [
                 { text: window.i18n?.deleteConfirmCancel || 'Cancel', type: 'secondary' },
                 {
-                    text: window.i18n?.rename || 'Rename',
+                    text: window.i18n?.renameButton || 'Rename',
                     type: 'primary',
                     action: async () => {
                         const newName = document.getElementById('newFileName')?.value;
@@ -1849,16 +1850,24 @@ class EsupFileManager {
 
         // Titre
         const titleEl = panel.querySelector('#upload-panel-title');
-        if (titleEl) titleEl.textContent = `Uploading (${done}/${total})`;
+        if (titleEl) {
+            titleEl.textContent = (window.i18n?.uploadingProgress || 'Uploading ({0}/{1})')
+                .replace('{0}', done)
+                .replace('{1}', total);
+        }
 
-        // Libellé pied de panneau
+        // Footer label
         const labelEl = panel.querySelector('#upload-total-label');
         if (labelEl) {
-            let text = `${done} / ${total} file${total > 1 ? 's' : ''}`;
+            const progressText = (window.i18n?.uploadProgress || '{0} / {1} file(s)')
+                .replace('{0}', done)
+                .replace('{1}', total);
             if (failed > 0) {
-                labelEl.innerHTML = `${text} — <span class="text-danger">${failed} error${failed > 1 ? 's' : ''}</span>`;
+                const errorText = (window.i18n?.uploadErrors || '{0} error(s)')
+                    .replace('{0}', failed);
+                labelEl.innerHTML = `${progressText} — <span class="text-danger">${errorText}</span>`;
             } else {
-                labelEl.textContent = text;
+                labelEl.textContent = progressText;
             }
         }
 
