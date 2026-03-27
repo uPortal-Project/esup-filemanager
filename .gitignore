@@ -8,3 +8,4 @@
 !pom.xml
 COMMITTERS.md
 !\.gitlab-ci.yml
+src/etc/docker/cas-config/tmp-cas

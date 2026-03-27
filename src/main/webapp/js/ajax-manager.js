@@ -45,9 +45,11 @@ export class AjaxManager {
             }
         } else if (data && method.toUpperCase() === 'GET') {
             // Add parameters to URL for GET
-            const params = new URLSearchParams(
-                typeof data === 'string' ? data : data
-            );
+            let paramsInput = data;
+            if (typeof paramsInput === 'string' && paramsInput.startsWith('?')) {
+                paramsInput = paramsInput.slice(1);
+            }
+            const params = new URLSearchParams(paramsInput);
             const separator = baseUrl.includes('?') ? '&' : '?';
             requestUrl = baseUrl + separator + params.toString();
         }

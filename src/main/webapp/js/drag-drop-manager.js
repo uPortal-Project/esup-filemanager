@@ -47,7 +47,7 @@ export class DragDropManager {
     /**
      * Makes an element droppable
      */
-    makeDroppable(element, options = {}) {
+    makeDroppable(element) {
         element.classList.add('droppable');
 
         element.addEventListener('dragover', (e) => {
