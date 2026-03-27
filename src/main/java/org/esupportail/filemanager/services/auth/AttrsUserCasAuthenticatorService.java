@@ -40,24 +40,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.esupportail.filemanager.services.auth;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apereo.cas.client.validation.Assertion;
 import org.esupportail.filemanager.beans.UserPassword;
-import org.esupportail.filemanager.exceptions.EsupStockException;
 import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
-
-import javax.crypto.Cipher;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.spec.PKCS8EncodedKeySpec;
 
 
 public class AttrsUserCasAuthenticatorService extends FormUserPasswordAuthenticatorService {
