@@ -97,7 +97,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
             if (u.startsWith("ftp://"))   return "FTP";
             if (u.startsWith("ftps://"))  return "FTPS";
             if (u.startsWith("file://"))  return "Local";
-            if (u.startsWith("smb://"))   return "CIFS/SMB";
+            if (u.startsWith("smb://"))   return "SMB";
         }
         return "VFS";
     }

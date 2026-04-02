@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.esupportail.filemanager.services.cifs;
+package org.esupportail.filemanager.services.smb;
 
 import com.hierynomus.msdtyp.AccessMask;
 import com.hierynomus.msdtyp.FileTime;
@@ -51,9 +51,9 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 
-public class CifsAccessImpl extends FsAccess implements DisposableBean {
+public class SmbAccessImpl extends FsAccess implements DisposableBean {
 
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CifsAccessImpl.class);
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SmbAccessImpl.class);
 
     // -----------------------------------------------------------------------
     // SMB connection state
@@ -88,7 +88,7 @@ public class CifsAccessImpl extends FsAccess implements DisposableBean {
 
     @Override
     public String getConnectionType() {
-        return "CIFS/SMB";
+        return "SMB";
     }
 
     // -----------------------------------------------------------------------

@@ -72,7 +72,7 @@
         <property name="password" value="minioadmin"/>
     </bean>
 
-    <bean class="org.esupportail.filemanager.services.cifs.CifsAccessImpl" scope="session" lazy-init="true">
+    <bean class="org.esupportail.filemanager.services.smb.SmbAccessImpl" scope="session" lazy-init="true">
         <property name="driveName" value="samba"/>
         <property name="icon" value="/img/drives/user.png" />
         <property name="uri" value="smb://localhost:1445/testshare/"/>

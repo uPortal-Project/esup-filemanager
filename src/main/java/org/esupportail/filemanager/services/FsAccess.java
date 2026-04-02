@@ -73,7 +73,7 @@ public abstract class FsAccess {
 
     /**
      * Returns a short human-readable label identifying the storage protocol used
-     * by this drive (e.g. "SFTP", "WebDAV", "S3", "CIFS/SMB", "Local", …).
+     * by this drive (e.g. "SFTP", "WebDAV", "S3", "SMB", "Local", …).
      * Subclasses should override this.
      */
     public String getConnectionType() {
