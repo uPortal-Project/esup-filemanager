@@ -76,18 +76,9 @@
         <property name="driveName" value="samba"/>
         <property name="icon" value="/img/drives/user.png" />
         <property name="uri" value="smb://localhost:1445/testshare/"/>
-        <property name="jcifsConfigProperties" ref="cifsProperties" />
         <property name="userAuthenticatorService" ref="samba_crazymax_auth"/>
         <property name="accessRule" value="true or (#userAttributes['eduPersonAffiliation'].contains('member') and !#userAttributes['eduPersonAffiliation'].contains('student'))"/>
     </bean>
-
-    <util:properties id="cifsProperties">
-        <prop key="jcifs.encoding">UTF8</prop>
-        <prop key="jcifs.smb.client.disablePlainTextPasswords">false</prop>
-        <prop key="jcifs.smb.client.responseTimeout">400000</prop>
-        <prop key="jcifs.util.loglevel">3</prop>
-        <prop key="jcifs.smb.client.maxVersion">SMB311</prop>
-    </util:properties>
 
     <bean name="samba_crazymax_auth" class="org.esupportail.filemanager.services.auth.FormUserPasswordAuthenticatorService"
           scope="session">

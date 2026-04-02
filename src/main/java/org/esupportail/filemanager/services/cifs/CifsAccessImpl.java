@@ -15,539 +15,662 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- *
- */
 package org.esupportail.filemanager.services.cifs;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
-
-import io.ByteReader;
+import com.hierynomus.msdtyp.AccessMask;
+import com.hierynomus.msdtyp.FileTime;
+import com.hierynomus.msfscc.FileAttributes;
+import com.hierynomus.msfscc.fileinformation.FileAllInformation;
+import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation;
+import com.hierynomus.mssmb2.SMB2CreateDisposition;
+import com.hierynomus.mssmb2.SMB2ShareAccess;
+import com.hierynomus.mssmb2.SMBApiException;
+import com.hierynomus.smbj.SMBClient;
+import com.hierynomus.smbj.auth.AuthenticationContext;
+import com.hierynomus.smbj.connection.Connection;
+import com.hierynomus.smbj.session.Session;
+import com.hierynomus.smbj.share.Directory;
+import com.hierynomus.smbj.share.DiskShare;
 import jakarta.annotation.Resource;
-import jcifs.ACE;
-import jcifs.CIFSContext;
-import jcifs.CIFSException;
-import jcifs.config.PropertyConfiguration;
-import jcifs.context.BaseContext;
-import jcifs.smb.NtStatus;
-import jcifs.smb.NtlmPasswordAuthenticator;
-import jcifs.smb.SmbAuthException;
-import jcifs.smb.SmbException;
-import jcifs.smb.SmbFile;
-import mslinks.ShellLink;
-import mslinks.ShellLinkException;
 import org.esupportail.filemanager.beans.DownloadFile;
 import org.esupportail.filemanager.beans.JsTreeFile;
 import org.esupportail.filemanager.beans.UploadActionType;
 import org.esupportail.filemanager.beans.UserPassword;
 import org.esupportail.filemanager.exceptions.EsupStockException;
 import org.esupportail.filemanager.exceptions.EsupStockFileExistException;
-import org.esupportail.filemanager.exceptions.EsupStockPermissionDeniedException;
 import org.esupportail.filemanager.services.FsAccess;
 import org.esupportail.filemanager.services.ResourceUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.FileCopyUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.List;
+
 public class CifsAccessImpl extends FsAccess implements DisposableBean {
 
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CifsAccessImpl.class);
 
+    // -----------------------------------------------------------------------
+    // SMB connection state
+    // -----------------------------------------------------------------------
+
+    private SMBClient smbClient;
+    private Connection connection;
+    private Session session;
+    private DiskShare diskShare;
+
+    /** Parsed from the URI (smb://host[:port]/share[/basePath]) */
+    private String smbHost;
+    private int smbPort = SMBClient.DEFAULT_PORT;
+    private String smbShareName;
+    /** Base path inside the share (uses backslash separator, may be empty). */
+    private String smbBasePath;
+
+    // -----------------------------------------------------------------------
+    // Spring wiring
+    // -----------------------------------------------------------------------
+
     @Resource
-    protected ResourceUtils resourceUtils;
+    private ResourceUtils resourceUtils;
 
-    private NtlmPasswordAuthenticator userAuthenticator;
-
-    protected SmbFile root;
-
-    protected boolean jcifsSynchronizeRootListing = false;
-
-    /** CIFS properties */
-    protected Properties jcifsConfigProperties;
-
-    protected CIFSContext cifsContext;
-
-    public void setJcifsConfigProperties(Properties jcifsConfigProperties) {
-        this.jcifsConfigProperties = jcifsConfigProperties;
+    public void setResourceUtils(ResourceUtils resourceUtils) {
+        this.resourceUtils = resourceUtils;
     }
+
+    // -----------------------------------------------------------------------
+    // FsAccess overrides
+    // -----------------------------------------------------------------------
 
     @Override
     public String getConnectionType() {
         return "CIFS/SMB";
     }
 
-    @Override
-    public void open() {
-        super.open();
+    // -----------------------------------------------------------------------
+    // URI parsing helpers
+    // -----------------------------------------------------------------------
 
-        if(!this.isOpened()) {
-            // we set the jcifs properties given in the bean for the drive
-            if (this.jcifsConfigProperties != null && !this.jcifsConfigProperties.isEmpty()) {
-                try {
-                    cifsContext = new BaseContext(new PropertyConfiguration(jcifsConfigProperties));
-                } catch (CIFSException e) {
-                    log.error("Error on opening CIFSContext", e);
-                    throw new EsupStockException(e);
-                }
+    /**
+     * Parses the inherited {@link #uri} field into {@link #smbHost},
+     * {@link #smbPort}, {@link #smbShareName} and {@link #smbBasePath}.
+     * <p>
+     * Expected format: {@code smb://hostname[:port]/sharename[/optional/base/path]}
+     */
+    private void parseUri() {
+        String u = uri;
+        if (u.startsWith("smb://")) {
+            u = u.substring(6);
+        }
+        // Strip trailing slashes
+        while (u.endsWith("/")) {
+            u = u.substring(0, u.length() - 1);
+        }
+
+        int firstSlash = u.indexOf('/');
+        String hostPart;
+        String rest;
+        if (firstSlash < 0) {
+            hostPart = u;
+            smbShareName = "";
+            smbBasePath = "";
+        } else {
+            hostPart = u.substring(0, firstSlash);
+            rest = u.substring(firstSlash + 1);
+            int secondSlash = rest.indexOf('/');
+            if (secondSlash < 0) {
+                smbShareName = rest;
+                smbBasePath = "";
+            } else {
+                smbShareName = rest.substring(0, secondSlash);
+                smbBasePath = rest.substring(secondSlash + 1).replace("/", "\\");
             }
+        }
 
+        // Separate host and optional port
+        int colonIdx = hostPart.lastIndexOf(':');
+        if (colonIdx >= 0) {
+            smbHost = hostPart.substring(0, colonIdx);
             try {
-                if(userAuthenticatorService != null) {
-                    UserPassword userPassword = userAuthenticatorService.getUserPassword();
-                    userAuthenticator = new NtlmPasswordAuthenticator(userPassword.getDomain(), userPassword.getUsername(), userPassword.getPassword()) ;
-                    cifsContext = cifsContext.withCredentials(userAuthenticator);
-                    SmbFile smbFile = new SmbFile(this.getUri(), cifsContext);
-                    if (smbFile.exists()) {
-                        root = smbFile;
-                        notifyConnectionOpened();
-                    }
-                }
-            } catch (MalformedURLException me) {
-                log.error("Error in url", me);
-                throw new EsupStockException(me);
-            } catch (SmbAuthException e) {
-                if (e.getNtStatus() == NtStatus.NT_STATUS_WRONG_PASSWORD) {
-                    log.error("connect :: bad password ");
-                    throw new EsupStockException(e);
-                } else if (e.getNtStatus() == NtStatus.NT_STATUS_LOGON_FAILURE) {
-                    log.error("connect :: bad login ");
-                    throw new EsupStockException(e);
+                smbPort = Integer.parseInt(hostPart.substring(colonIdx + 1));
+            } catch (NumberFormatException e) {
+                log.warn("Unable to parse SMB port from URI '{}', using default 445", uri);
+                smbHost = hostPart;
+                smbPort = SMBClient.DEFAULT_PORT;
+            }
+        } else {
+            smbHost = hostPart;
+            smbPort = SMBClient.DEFAULT_PORT;
+        }
+    }
+
+    /**
+     * Builds the SMB path (backslash-separated, relative to share root) by
+     * combining the base path declared in the URI with the caller-supplied
+     * relative path (which may use forward or backslashes).
+     */
+    private String buildSmbPath(String relativePath) {
+        String base = smbBasePath != null ? smbBasePath : "";
+        if (relativePath == null || relativePath.isEmpty()) {
+            return base;
+        }
+        String rel = relativePath.replace("/", "\\");
+        if (base.isEmpty()) {
+            return rel;
+        }
+        return base + "\\" + rel;
+    }
+
+    // -----------------------------------------------------------------------
+    // Connection lifecycle
+    // -----------------------------------------------------------------------
+
+    @Override
+    protected void open() {
+        super.open();
+        if (!isOpened()) {
+            try {
+                parseUri();
+                smbClient = new SMBClient();
+                connection = smbClient.connect(smbHost, smbPort);
+
+                AuthenticationContext authContext;
+                if (userAuthenticatorService != null) {
+                    UserPassword up = userAuthenticatorService.getUserPassword();
+                    String username = up.getUsername() != null ? up.getUsername() : "";
+                    char[] password = up.getPassword() != null ? up.getPassword().toCharArray() : new char[0];
+                    String domain = up.getDomain() != null ? up.getDomain() : "";
+                    authContext = new AuthenticationContext(username, password, domain);
                 } else {
-                    log.error("connect :: ", e);
-                    throw new EsupStockException(e);
+                    authContext = AuthenticationContext.anonymous();
                 }
-            } catch (SmbException se) {
-                log.error("connect :: ", se);
-                throw new EsupStockException(se);
+
+                session = connection.authenticate(authContext);
+                diskShare = (DiskShare) session.connectShare(smbShareName);
+                notifyConnectionOpened();
+                log.info("SMB connection opened: {}:{}/{}", smbHost, smbPort, smbShareName);
+            } catch (IOException e) {
+                throw new EsupStockException(e);
             }
         }
     }
 
     @Override
     public void close() {
-        log.debug("Closing CIFS connection");
-        if (this.root != null) {
+        if (diskShare != null) {
             notifyConnectionClosed();
-            try {
-                this.root.close();
-            } catch (Exception e) {
-                log.warn("Error closing SmbFile root", e);
-            }
-            this.root = null;
+            try { diskShare.close(); } catch (Exception e) { log.warn("Error closing disk share", e); }
+            diskShare = null;
         }
-        if (this.cifsContext != null) {
-            try {
-                this.cifsContext.close();
-            } catch (CIFSException e) {
-                log.warn("Error closing CIFSContext", e);
-            }
-            this.cifsContext = null;
+        if (session != null) {
+            try { session.close(); } catch (Exception e) { log.warn("Error closing SMB session", e); }
+            session = null;
         }
-        this.userAuthenticator = null;
-    }
-
-
-    /**
-     * @return
-     */
-    @Override
-    public boolean isOpened() {
-        return (this.root != null) ;
-    }
-
-    private SmbFile cd(String path) {
-        try {
-            this.open();
-            if (path == null || path.length() == 0) {
-                return root;
-            }
-            if(!path.startsWith("smb://")) {
-                path = this.getUri() + path;
-            }
-            return new SmbFile( path, cifsContext);
-        } catch (MalformedURLException me) {
-            log.error(me.getMessage());
-            throw new EsupStockException(me);
+        if (connection != null) {
+            try { connection.close(); } catch (Exception e) { log.warn("Error closing SMB connection", e); }
+            connection = null;
         }
-    }
-
-    /**
-     * @param path
-     * @return
-     */
-    @Override
-    public JsTreeFile get(String path, boolean folderDetails, boolean fileDetails) {
-        try {
-            this.open();
-            SmbFile resource = cd(path);
-            return resourceAsJsTreeFile(resource, "", folderDetails, fileDetails);
-        } catch (SmbAuthException sae) {
-            log.error(sae.getMessage());
-            root = null;
-            userAuthenticator = null;
-            throw new EsupStockPermissionDeniedException(sae);
-        } catch(SmbException se) {
-            log.error(se.getMessage());
-            throw new EsupStockException(se);
+        if (smbClient != null) {
+            try { smbClient.close(); } catch (Exception e) { log.warn("Error closing SMB client", e); }
+            smbClient = null;
         }
-    }
-
-    /**
-     * @param path
-     * @return
-     */
-    @Override
-    public List<JsTreeFile> getChildren(String path) {
-        List<JsTreeFile> files = new ArrayList<JsTreeFile>();
-        try {
-            String ppath = path;
-            this.open();
-            if(ppath.endsWith(".lnk")) {
-                if(!ppath.startsWith("smb://")) {
-                    ppath = this.getUri() + ppath;
-                }
-                SmbFile linkSmbFile = new SmbFile(ppath, cifsContext);
-                try {
-                    ByteReader reader = new ByteReader(linkSmbFile.getInputStream());
-                    ShellLink shellLink = new ShellLink(reader);
-                    String netName = shellLink.getLinkInfo().getCommonNetworkRelativeLink().getNetName();
-                    log.debug("netName : {}", netName);
-                    ppath = netName.replaceFirst("^\\\\\\\\", "smb://").replaceAll("\\\\", "/");
-                    log.info("{} -> {}", netName, ppath);
-                } catch (IOException | ShellLinkException e) {
-                   log.error("Error reading link file {}: {}", ppath, e.getMessage(), e);
-                }
-            }
-            if (!ppath.endsWith("/")) {
-                ppath = ppath.concat("/");
-            }
-            if (!ppath.startsWith("smb://")) {
-                ppath = this.getUri() + ppath;
-            }
-             SmbFile resource = new SmbFile(ppath, cifsContext);
-            if (resource.canRead()) {
-                for(SmbFile child: this.listFiles(resource)) {
-                    try {
-                        // on ignore hidden files and links that are not links to directories
-                        if(!child.isHidden() && !(child.getName().endsWith(".lnk") && child.getName().matches(".*\\..*\\.lnk"))) {
-                            files.add(resourceAsJsTreeFile(child, path, false, true));
-                        }
-                    } catch (SmbException se) {
-                        log.warn("The resource isn't accessible and so will be ignored", se);
-                    }
-                }
-            } else {
-                log.warn("The resource can't be read '{}'", resource);
-            }
-            return files;
-        } catch (SmbAuthException sae) {
-            log.error(sae.getMessage());
-            throw new EsupStockPermissionDeniedException(sae);
-        } catch (SmbException | MalformedURLException se) {
-            log.error(se.getMessage());
-            throw new EsupStockException(se);
-        }
-    }
-
-    private JsTreeFile resourceAsJsTreeFile(SmbFile resource, String parentPath, boolean folderDetails, boolean fileDetails) throws SmbException {
-        String lid = resource.getCanonicalPath();
-        String rootPath = root.getCanonicalPath();
-        // lid must be a relative path from rootPath
-        if(lid.startsWith(rootPath)) {
-            lid = lid.substring(rootPath.length());
-        } else {
-            // Fallback: with a non-standard port, jcifs-ng may represent the canonical
-            // path differently for the root and its children (hostname resolution,
-            // port present/absent in the URL...). Compare only the URL path component
-            // to extract the relative path.
-            try {
-                String resourceUrlPath = new java.net.URL(lid).getPath();
-                String rootUrlPath     = new java.net.URL(rootPath).getPath();
-                if (resourceUrlPath.startsWith(rootUrlPath)) {
-                    lid = resourceUrlPath.substring(rootUrlPath.length());
-                } else {
-                    log.warn("Cannot determine relative path for '{}' from root '{}'", lid, rootPath);
-                }
-            } catch (MalformedURLException e) {
-                log.warn("Cannot parse canonical paths '{}' / '{}'", lid, rootPath, e);
-            }
-        }
-        if(lid.startsWith("/"))
-            lid = lid.substring(1);
-
-        String title = "";
-        String type = "drive";
-        if(!"".equals(lid)) {
-            if (resource.isDirectory()) {
-                type = "folder";
-            } else if (resource.isFile()) {
-                if (lid.endsWith(".lnk")) {
-                    type = "link";
-                } else {
-                    type = "file";
-                }
-            } else {
-                type = "imaginary";
-            }
-            title = resource.getName().replace("/", "");
-        }
-        JsTreeFile file = new JsTreeFile(title, lid, parentPath, type);
-        if(fileDetails && "file".equals(type)) {
-            String icon = getResourceUtils().getIcon(title);
-            file.setIcon(icon);
-            file.setSize(resource.length());
-        }
-
-        if(folderDetails && ("folder".equals(type) || "drive".equals(type))) {
-            if (this.listFiles(resource) != null) {
-                long totalSize = 0;
-                long fileCount = 0;
-                long folderCount = 0;
-                for (SmbFile child : this.listFiles(resource)) {
-                    if (!child.isHidden()) {
-                        if (child.isDirectory()) {
-                            ++folderCount;
-                        } else if (child.isFile()) {
-                            ++fileCount;
-                            totalSize += child.length();
-                        }
-                    }
-                }
-                file.setTotalSize(totalSize);
-                file.setFileCount(fileCount);
-                file.setFolderCount(folderCount);
-            }
-        }
-
-        file.setLastModifiedTime(new Date(resource.getLastModified()));
-        file.setHidden(resource.isHidden());
-        boolean resourceWritable = resource.canWrite();
-        if (!resourceWritable) {
-            try {
-                ACE[] ACEs = resource.getSecurity();
-                if (ACEs != null) {
-                    for (ACE ace : ACEs) {
-                        if (this.userAuthenticator.getUsername().equals(ace.getSID().getAccountName())) {
-                            if ((ace.getAccessMask() & ACE.FILE_WRITE_DATA) != 0) {
-                                resourceWritable = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                log.info("Can't get ressource permissions:", e);
-            }
-        }
-
-        file.setWriteable(resourceWritable);
-        file.setReadable(resource.canRead());
-        return file;
     }
 
     @Override
-    public boolean remove(String path) {
-        boolean success = false;
-        SmbFile file;
-        try {
-            file = cd(path);
-            file.delete();
-            success = true;
-        } catch (SmbException e) {
-            log.info("can't delete file because of SmbException:", e);
-            success = false;
-        }
-        log.debug("remove file '{}': {}",path, success);
-        return success;
-    }
-
-    @Override
-    public String createFile(String parentPath, String title, String type) {
-        try {
-            String ppath = parentPath;
-            if (!ppath.isEmpty() && !ppath.endsWith("/")) {
-                ppath = ppath + "/";
-            }
-            // Use cd() to properly resolve the parent folder (relative path or absolute
-            // URL), then getCanonicalPath() to build the target path.
-            // Consistent with putFile/moveCopyFilesIntoDirectory and avoids the double-URL
-            // issue when the SMB port is non-standard (root.getPath() already returned the
-            // full URL, and ppath could contain another one).
-            SmbFile parentFolder = cd(ppath);
-            SmbFile newFile = new SmbFile(parentFolder.getCanonicalPath() + title, this.cifsContext);
-            log.info("newFile : {}", newFile);
-            if ("folder".equals(type)) {
-                newFile.mkdir();
-                log.info("folder '{}' created", title);
-            } else {
-                newFile.createNewFile();
-                log.info("file '{}' created", title);
-            }
-            return newFile.getPath();
-        } catch (SmbException e) {
-            log.info("can't create file because of SmbException:", e);
-        } catch (MalformedURLException e) {
-            log.error("problem in creation file that must not occur:", e);
-        }
-        return null;
-    }
-
-    @Override
-    public boolean renameFile(String path, String title) {
-        try {
-            SmbFile file = cd(path);
-            SmbFile newFile = new SmbFile(file.getParent() + title, this.cifsContext);
-            if (file.exists()) {
-                file.renameTo(newFile);
-                return true;
-            }
-        } catch (SmbException e) {
-            log.info("can't rename file because of SmbException:", e);
-        }  catch (MalformedURLException e) {
-            log.error("problem in renaming file:", e);
-        }
-        return false;
-    }
-
-    @Override
-    public boolean moveCopyFilesIntoDirectory(String dir,
-                                              List<String> filesToCopy, boolean copy) {
-        try {
-            SmbFile folder = cd(dir);
-            for (String fileToCopyPath : filesToCopy) {
-                SmbFile fileToCopy = cd(fileToCopyPath);
-                SmbFile newFile = new SmbFile(folder.getCanonicalPath() + fileToCopy.getName(), this.cifsContext);
-                if (copy) {
-                    fileToCopy.copyTo(newFile);
-                } else {
-                    fileToCopy.copyTo(newFile);
-                    this.remove(fileToCopyPath);
-                }
-
-            }
-            return true;
-        } catch (SmbException e) {
-            log.warn("can't move/copy file because of SmbException: ", e);
-        } catch (MalformedURLException e) {
-            log.error("problem in creation file that must not occur.:", e);
-        }
-        return false;
-    }
-
-    @Override
-    public DownloadFile getFile(String dir) {
-        try {
-            SmbFile file = cd(dir);
-            long size = file.length();
-            InputStream inputStream = file.getInputStream();
-            String contentType = JsTreeFile.getMimeType(file.getName().toLowerCase());
-            DownloadFile dlFile = new DownloadFile(contentType, size, file.getName(), inputStream);
-            return dlFile;
-        } catch (SmbException e) {
-            log.warn("can't download file:" , e);
-        } catch (IOException e) {
-            log.error("problem in downloading file:", e);
-        }
-        return null;
-    }
-
-    /**
-     * @param dir
-     * @param filename
-     * @param inputStream
-     * @return
-     */
-    @Override
-    public boolean putFile(String dir, String filename, InputStream inputStream, UploadActionType uploadOption) {
-
-        boolean success = false;
-        SmbFile newFile = null;
-
-        try {
-            SmbFile folder = cd(dir);
-            newFile = new SmbFile(folder.getCanonicalPath() + "/" + filename, this.cifsContext);
-            if (newFile.exists()) {
-                switch (uploadOption) {
-                    case ERROR :
-                        throw new EsupStockFileExistException();
-                    case OVERRIDE :
-                        newFile.delete();
-                        break;
-                    case RENAME_NEW :
-                        newFile = new SmbFile(folder.getCanonicalPath() + this.getUniqueFilename(filename, "-new-"), this.cifsContext);
-                        break;
-                    case RENAME_OLD :
-                        newFile.renameTo(new SmbFile(newFile.getParent() + this.getUniqueFilename(filename, "-old-"), this.cifsContext));
-                        break;
-                }
-            }
-            newFile.createNewFile();
-
-            OutputStream outstr = newFile.getOutputStream();
-
-            FileCopyUtils.copy(inputStream, outstr);
-
-            success = true;
-
-        } catch (SmbException e) {
-            log.info("can't upload file:", e);
-        } catch (IOException e) {
-            log.warn("can't upload file:", e);
-        }
-
-        if(!success && newFile != null) {
-            // problem when uploading the file -> the file uploaded is corrupted
-            // best is to delete it
-            try {
-                newFile.delete();
-                log.debug("delete corrupted file after bad upload ok ...");
-            } catch(Exception e) {
-                log.debug("can't delete corrupted file after bad upload: ", e);
-            }
-        }
-
-        return success;
-    }
-
-
-    private SmbFile[] listFiles(SmbFile resource) throws SmbException {
-        if(jcifsSynchronizeRootListing && this.root.equals(resource)) {
-            synchronized (this.root.getCanonicalPath()) {
-                return resource.listFiles();
-            }
-        } else {
-            return resource.listFiles();
-        }
+    protected boolean isOpened() {
+        return diskShare != null && diskShare.isConnected();
     }
 
     @Override
     public void destroy() throws Exception {
-        this.close();
+        close();
+    }
+
+    // -----------------------------------------------------------------------
+    // Directory / file metadata helpers
+    // -----------------------------------------------------------------------
+
+    /** Returns {@code true} if the file attribute long has the DIRECTORY bit set. */
+    private static boolean isDirectory(long fileAttributes) {
+        return (fileAttributes & FileAttributes.FILE_ATTRIBUTE_DIRECTORY.getValue()) != 0;
+    }
+
+    /** Converts a smbj {@link FileTime} to a {@link Date}, or {@code null} if unset. */
+    private static Date toDate(FileTime ft) {
+        if (ft == null || ft.getWindowsTimeStamp() == 0) {
+            return null;
+        }
+        long epochMillis = ft.toEpochMillis();
+        return epochMillis > 0 ? new Date(epochMillis) : null;
     }
 
     /**
-     * Getter of attribute resourceUtils
-     * @return <code>ResourceUtils</code> the attribute resourceUtils
+     * Builds a {@link JsTreeFile} for the entry at {@code smbPath} on the share.
+     * When {@code smbPath} is empty the method returns the root ("drive") node.
      */
-    public ResourceUtils getResourceUtils() {
-        return resourceUtils;
+    private JsTreeFile smbPathAsJsTreeFile(String smbPath, String relativePath,
+                                            boolean folderDetails, boolean fileDetails) {
+        if (smbPath.isEmpty()) {
+            // Root of the configured share/base-path → behave as a "drive" node
+            JsTreeFile root = new JsTreeFile("", "", "", "drive");
+            if (folderDetails) {
+                populateFolderDetails(root, smbPath);
+            }
+            return root;
+        }
+
+        try {
+            FileAllInformation info = diskShare.getFileInformation(smbPath);
+            boolean dir = isDirectory(info.getBasicInformation().getFileAttributes());
+            String type = dir ? "folder" : "file";
+
+            // Title = last path component
+            String title = smbPath.contains("\\")
+                    ? smbPath.substring(smbPath.lastIndexOf('\\') + 1)
+                    : smbPath;
+
+            String parentRelPath = relativePath.contains("/")
+                    ? relativePath.substring(0, relativePath.lastIndexOf('/'))
+                    : "";
+
+            JsTreeFile file = new JsTreeFile(title, relativePath, parentRelPath, type);
+
+            if (!dir && resourceUtils != null) {
+                file.setIcon(resourceUtils.getIcon(title));
+                long size = info.getStandardInformation().getEndOfFile();
+                file.setSize(size);
+                file.setOverSizeLimit(size > resourceUtils.getSizeLimit(title));
+            }
+
+            Date lastModified = toDate(info.getBasicInformation().getLastWriteTime());
+            if (lastModified != null) {
+                file.setLastModifiedTime(lastModified);
+            }
+
+            if (folderDetails && dir) {
+                populateFolderDetails(file, smbPath);
+            }
+
+            return file;
+        } catch (SMBApiException e) {
+            throw new EsupStockException(e);
+        }
+    }
+
+    /** Counts children and total size for a directory node. */
+    private void populateFolderDetails(JsTreeFile file, String smbPath) {
+        try {
+            List<FileIdBothDirectoryInformation> children = diskShare.list(smbPath);
+            long totalSize = 0, fileCount = 0, folderCount = 0;
+            for (FileIdBothDirectoryInformation child : children) {
+                String name = child.getFileName();
+                if (".".equals(name) || "..".equals(name)) continue;
+                if (isDirectory(child.getFileAttributes())) {
+                    folderCount++;
+                } else {
+                    fileCount++;
+                    totalSize += child.getEndOfFile();
+                }
+            }
+            file.setTotalSize(totalSize);
+            file.setFileCount(fileCount);
+            file.setFolderCount(folderCount);
+        } catch (Exception e) {
+            log.warn("Error computing folder details for '{}': {}", smbPath, e.getMessage());
+        }
+    }
+
+    // -----------------------------------------------------------------------
+    // FsAccess abstract methods
+    // -----------------------------------------------------------------------
+
+    @Override
+    public JsTreeFile get(String path, boolean folderDetails, boolean fileDetails) {
+        this.open();
+        try {
+            return smbPathAsJsTreeFile(buildSmbPath(path), path, folderDetails, fileDetails);
+        } catch (SMBApiException e) {
+            throw new EsupStockException(e);
+        }
+    }
+
+    @Override
+    public List<JsTreeFile> getChildren(String path) {
+        this.open();
+        List<JsTreeFile> files = new ArrayList<>();
+        try {
+            String smbPath = buildSmbPath(path);
+            List<FileIdBothDirectoryInformation> list = diskShare.list(smbPath);
+            for (FileIdBothDirectoryInformation entry : list) {
+                String name = entry.getFileName();
+                if (".".equals(name) || "..".equals(name)) continue;
+                // Skip hidden files (starting with a dot, Unix convention)
+                if (name.startsWith(".")) continue;
+
+                boolean dir = isDirectory(entry.getFileAttributes());
+                String type = dir ? "folder" : "file";
+                String childRelPath = (path == null || path.isEmpty()) ? name : path + "/" + name;
+                String parentRelPath = path != null ? path : "";
+
+                JsTreeFile jsFile = new JsTreeFile(name, childRelPath, parentRelPath, type);
+
+                if (!dir && resourceUtils != null) {
+                    jsFile.setIcon(resourceUtils.getIcon(name));
+                    long size = entry.getEndOfFile();
+                    jsFile.setSize(size);
+                    jsFile.setOverSizeLimit(size > resourceUtils.getSizeLimit(name));
+                }
+
+                Date lastModified = toDate(entry.getLastWriteTime());
+                if (lastModified != null) {
+                    jsFile.setLastModifiedTime(lastModified);
+                }
+
+                files.add(jsFile);
+            }
+        } catch (SMBApiException e) {
+            throw new EsupStockException(e);
+        }
+        return files;
+    }
+
+    @Override
+    public boolean remove(String path) {
+        this.open();
+        try {
+            String smbPath = buildSmbPath(path);
+            if (diskShare.folderExists(smbPath)) {
+                diskShare.rmdir(smbPath, true);
+            } else {
+                diskShare.rm(smbPath);
+            }
+            log.debug("Removed SMB entry '{}'", path);
+            return true;
+        } catch (Exception e) {
+            log.warn("Cannot remove '{}': {}", path, e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public String createFile(String parentPath, String title, String type) {
+        this.open();
+        try {
+            String parentSmbPath = buildSmbPath(parentPath);
+            String newSmbPath = parentSmbPath.isEmpty() ? title : parentSmbPath + "\\" + title;
+            String newRelPath = (parentPath == null || parentPath.isEmpty()) ? title : parentPath + "/" + title;
+
+            if ("folder".equals(type)) {
+                diskShare.mkdir(newSmbPath);
+                log.info("SMB folder '{}' created", title);
+            } else {
+                try (com.hierynomus.smbj.share.File f = diskShare.openFile(
+                        newSmbPath,
+                        EnumSet.of(AccessMask.GENERIC_WRITE),
+                        EnumSet.of(FileAttributes.FILE_ATTRIBUTE_NORMAL),
+                        EnumSet.of(SMB2ShareAccess.FILE_SHARE_READ, SMB2ShareAccess.FILE_SHARE_WRITE),
+                        SMB2CreateDisposition.FILE_CREATE,
+                        null)) {
+                    // empty file created on close
+                }
+                log.info("SMB file '{}' created", title);
+            }
+            return newRelPath;
+        } catch (Exception e) {
+            log.warn("Cannot create '{}': {}", title, e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public boolean renameFile(String path, String title) {
+        this.open();
+        try {
+            String smbPath = buildSmbPath(path);
+            String parentSmbPath = smbPath.contains("\\")
+                    ? smbPath.substring(0, smbPath.lastIndexOf('\\'))
+                    : "";
+            String newSmbPath = parentSmbPath.isEmpty() ? title : parentSmbPath + "\\" + title;
+
+            EnumSet<AccessMask> accessMask = EnumSet.of(AccessMask.GENERIC_ALL);
+            EnumSet<SMB2ShareAccess> shareAccess = EnumSet.of(
+                    SMB2ShareAccess.FILE_SHARE_DELETE,
+                    SMB2ShareAccess.FILE_SHARE_READ,
+                    SMB2ShareAccess.FILE_SHARE_WRITE);
+
+            if (diskShare.folderExists(smbPath)) {
+                try (Directory dir = diskShare.openDirectory(
+                        smbPath, accessMask, null, shareAccess,
+                        SMB2CreateDisposition.FILE_OPEN, null)) {
+                    dir.rename(newSmbPath);
+                }
+            } else {
+                try (com.hierynomus.smbj.share.File file = diskShare.openFile(
+                        smbPath, accessMask, null, shareAccess,
+                        SMB2CreateDisposition.FILE_OPEN, null)) {
+                    file.rename(newSmbPath);
+                }
+            }
+            log.debug("Renamed SMB '{}' -> '{}'", path, title);
+            return true;
+        } catch (Exception e) {
+            log.warn("Cannot rename '{}' to '{}': {}", path, title, e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean moveCopyFilesIntoDirectory(String dir, List<String> filesToCopy, boolean copy) {
+        this.open();
+        try {
+            String dirSmbPath = buildSmbPath(dir);
+            for (String srcRelPath : filesToCopy) {
+                String srcSmbPath = buildSmbPath(srcRelPath);
+                String name = srcSmbPath.contains("\\")
+                        ? srcSmbPath.substring(srcSmbPath.lastIndexOf('\\') + 1)
+                        : srcSmbPath;
+                String destSmbPath = dirSmbPath.isEmpty() ? name : dirSmbPath + "\\" + name;
+
+                if (copy) {
+                    copySmbEntry(srcSmbPath, destSmbPath);
+                } else {
+                    // Move = rename to destination
+                    EnumSet<AccessMask> accessMask = EnumSet.of(AccessMask.GENERIC_ALL);
+                    EnumSet<SMB2ShareAccess> shareAccess = EnumSet.of(
+                            SMB2ShareAccess.FILE_SHARE_DELETE,
+                            SMB2ShareAccess.FILE_SHARE_READ,
+                            SMB2ShareAccess.FILE_SHARE_WRITE);
+
+                    if (diskShare.folderExists(srcSmbPath)) {
+                        try (Directory d = diskShare.openDirectory(
+                                srcSmbPath, accessMask, null, shareAccess,
+                                SMB2CreateDisposition.FILE_OPEN, null)) {
+                            d.rename(destSmbPath);
+                        }
+                    } else {
+                        try (com.hierynomus.smbj.share.File f = diskShare.openFile(
+                                srcSmbPath, accessMask, null, shareAccess,
+                                SMB2CreateDisposition.FILE_OPEN, null)) {
+                            f.rename(destSmbPath);
+                        }
+                    }
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            log.warn("Cannot move/copy files into '{}': {}", dir, e.getMessage(), e);
+            return false;
+        }
     }
 
     /**
-     * Setter of attribute resourceUtils
-     * @param resourceUtils <code>ResourceUtils</code> the attribute resourceUtils to set
+     * Recursively copies an SMB entry (file or folder) to a new path on the same share.
      */
-    public void setResourceUtils(final ResourceUtils resourceUtils) {
-        this.resourceUtils = resourceUtils;
+    private void copySmbEntry(String srcPath, String destPath) throws IOException {
+        if (diskShare.folderExists(srcPath)) {
+            diskShare.mkdir(destPath);
+            List<FileIdBothDirectoryInformation> children = diskShare.list(srcPath);
+            for (FileIdBothDirectoryInformation child : children) {
+                String name = child.getFileName();
+                if (".".equals(name) || "..".equals(name)) continue;
+                copySmbEntry(srcPath + "\\" + name, destPath + "\\" + name);
+            }
+        } else {
+            EnumSet<AccessMask> readAccess = EnumSet.of(AccessMask.GENERIC_READ);
+            EnumSet<AccessMask> writeAccess = EnumSet.of(AccessMask.GENERIC_WRITE);
+            EnumSet<SMB2ShareAccess> shareAccess = EnumSet.of(SMB2ShareAccess.FILE_SHARE_READ);
+
+            com.hierynomus.smbj.share.File src = diskShare.openFile(
+                    srcPath, readAccess, null, shareAccess,
+                    SMB2CreateDisposition.FILE_OPEN, null);
+            com.hierynomus.smbj.share.File dest = diskShare.openFile(
+                    destPath, writeAccess,
+                    EnumSet.of(FileAttributes.FILE_ATTRIBUTE_NORMAL),
+                    shareAccess,
+                    SMB2CreateDisposition.FILE_CREATE, null);
+            try {
+                FileCopyUtils.copy(src.getInputStream(), dest.getOutputStream());
+            } finally {
+                try { dest.close(); } catch (Exception ignored) { }
+                try { src.close(); } catch (Exception ignored) { }
+            }
+        }
     }
 
-    public void setJcifsSynchronizeRootListing(boolean jcifsSynchronizeRootListing) {
-        this.jcifsSynchronizeRootListing = jcifsSynchronizeRootListing;
+    @Override
+    public DownloadFile getFile(String dir) {
+        this.open();
+        try {
+            String smbPath = buildSmbPath(dir);
+            String baseName = smbPath.contains("\\")
+                    ? smbPath.substring(smbPath.lastIndexOf('\\') + 1)
+                    : smbPath;
+            String contentType = JsTreeFile.getMimeType(baseName.toLowerCase());
+
+            // Keep the File open – wrap InputStream so the File is closed when the stream is closed
+            com.hierynomus.smbj.share.File smbFile = diskShare.openFile(
+                    smbPath,
+                    EnumSet.of(AccessMask.GENERIC_READ),
+                    null,
+                    EnumSet.of(SMB2ShareAccess.FILE_SHARE_READ, SMB2ShareAccess.FILE_SHARE_WRITE),
+                    SMB2CreateDisposition.FILE_OPEN,
+                    null);
+
+            long size = smbFile.getFileInformation(FileAllInformation.class)
+                    .getStandardInformation().getEndOfFile();
+            InputStream inputStream = new SmbFileInputStream(smbFile);
+            return new DownloadFile(contentType, size, baseName, inputStream);
+        } catch (Exception e) {
+            log.warn("Cannot download file '{}': {}", dir, e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public boolean putFile(String dir, String filename, InputStream inputStream, UploadActionType uploadOption) {
+        this.open();
+        boolean success = false;
+        String destSmbPath = null;
+
+        try {
+            String dirSmbPath = buildSmbPath(dir);
+            destSmbPath = dirSmbPath.isEmpty() ? filename : dirSmbPath + "\\" + filename;
+
+            if (diskShare.fileExists(destSmbPath)) {
+                switch (uploadOption) {
+                    case ERROR:
+                        throw new EsupStockFileExistException();
+                    case OVERRIDE:
+                        diskShare.rm(destSmbPath);
+                        break;
+                    case RENAME_NEW:
+                        String newName = getUniqueFilename(filename, "-new-");
+                        destSmbPath = dirSmbPath.isEmpty() ? newName : dirSmbPath + "\\" + newName;
+                        break;
+                    case RENAME_OLD:
+                        String oldName = getUniqueFilename(filename, "-old-");
+                        String oldDestPath = dirSmbPath.isEmpty() ? oldName : dirSmbPath + "\\" + oldName;
+                        try (com.hierynomus.smbj.share.File oldFile = diskShare.openFile(
+                                destSmbPath,
+                                EnumSet.of(AccessMask.GENERIC_ALL),
+                                null,
+                                EnumSet.of(SMB2ShareAccess.FILE_SHARE_DELETE,
+                                        SMB2ShareAccess.FILE_SHARE_READ,
+                                        SMB2ShareAccess.FILE_SHARE_WRITE),
+                                SMB2CreateDisposition.FILE_OPEN,
+                                null)) {
+                            oldFile.rename(oldDestPath);
+                        }
+                        break;
+                }
+            }
+
+            try (com.hierynomus.smbj.share.File newFile = diskShare.openFile(
+                    destSmbPath,
+                    EnumSet.of(AccessMask.GENERIC_WRITE),
+                    EnumSet.of(FileAttributes.FILE_ATTRIBUTE_NORMAL),
+                    EnumSet.of(SMB2ShareAccess.FILE_SHARE_READ),
+                    SMB2CreateDisposition.FILE_CREATE,
+                    null)) {
+                try (OutputStream out = newFile.getOutputStream()) {
+                    FileCopyUtils.copy(inputStream, out);
+                }
+            }
+            success = true;
+
+        } catch (EsupStockFileExistException e) {
+            throw e;
+        } catch (Exception e) {
+            log.warn("Cannot upload file '{}': {}", filename, e.getMessage(), e);
+        }
+
+        if (!success && destSmbPath != null) {
+            try {
+                if (diskShare != null && diskShare.fileExists(destSmbPath)) {
+                    diskShare.rm(destSmbPath);
+                    log.debug("Deleted corrupted upload '{}'", destSmbPath);
+                }
+            } catch (Exception e) {
+                log.debug("Cannot delete corrupted upload '{}': {}", destSmbPath, e.getMessage());
+            }
+        }
+
+        return success;
+    }
+
+    // -----------------------------------------------------------------------
+    // Inner helper – keeps the smbj File handle alive while the stream is read
+    // -----------------------------------------------------------------------
+
+    /**
+     * Wraps the {@link InputStream} returned by a smbj {@link com.hierynomus.smbj.share.File}
+     * and closes the underlying File handle when the stream itself is closed.
+     */
+    private static final class SmbFileInputStream extends InputStream {
+
+        private final com.hierynomus.smbj.share.File smbFile;
+        private final InputStream delegate;
+
+        SmbFileInputStream(com.hierynomus.smbj.share.File smbFile) {
+            this.smbFile = smbFile;
+            this.delegate = smbFile.getInputStream();
+        }
+
+        @Override public int read() throws IOException { return delegate.read(); }
+        @Override public int read(byte[] b, int off, int len) throws IOException { return delegate.read(b, off, len); }
+        @Override public int available() throws IOException { return delegate.available(); }
+
+        @Override
+        public void close() throws IOException {
+            try {
+                delegate.close();
+            } finally {
+                try { smbFile.close(); } catch (Exception ignored) { }
+            }
+        }
     }
 }
