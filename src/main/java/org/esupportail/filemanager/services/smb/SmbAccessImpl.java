@@ -26,12 +26,18 @@ import com.hierynomus.mssmb2.SMB2CreateDisposition;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
 import com.hierynomus.mssmb2.SMBApiException;
 import com.hierynomus.smbj.SMBClient;
+import com.hierynomus.smbj.SmbConfig;
 import com.hierynomus.smbj.auth.AuthenticationContext;
+import com.hierynomus.smbj.auth.GSSAuthenticationContext;
+import com.hierynomus.smbj.auth.SpnegoAuthenticator;
 import com.hierynomus.smbj.connection.Connection;
 import com.hierynomus.smbj.session.Session;
 import com.hierynomus.smbj.share.Directory;
 import com.hierynomus.smbj.share.DiskShare;
 import jakarta.annotation.Resource;
+
+import javax.security.auth.Subject;
+import javax.security.auth.login.LoginException;
 import org.esupportail.filemanager.beans.DownloadFile;
 import org.esupportail.filemanager.beans.JsTreeFile;
 import org.esupportail.filemanager.beans.UploadActionType;
@@ -40,6 +46,7 @@ import org.esupportail.filemanager.exceptions.EsupStockException;
 import org.esupportail.filemanager.exceptions.EsupStockFileExistException;
 import org.esupportail.filemanager.services.FsAccess;
 import org.esupportail.filemanager.services.ResourceUtils;
+import org.esupportail.filemanager.services.auth.KerberosUserAuthenticatorService;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.FileCopyUtils;
 
@@ -81,6 +88,7 @@ public class SmbAccessImpl extends FsAccess implements DisposableBean {
     public void setResourceUtils(ResourceUtils resourceUtils) {
         this.resourceUtils = resourceUtils;
     }
+
 
     // -----------------------------------------------------------------------
     // FsAccess overrides
@@ -175,24 +183,53 @@ public class SmbAccessImpl extends FsAccess implements DisposableBean {
         if (!isOpened()) {
             try {
                 parseUri();
-                smbClient = new SMBClient();
-                connection = smbClient.connect(smbHost, smbPort);
 
-                AuthenticationContext authContext;
-                if (userAuthenticatorService != null) {
-                    UserPassword up = userAuthenticatorService.getUserPassword();
+                if (userAuthenticatorService instanceof KerberosUserAuthenticatorService kerberosAuth) {
+                    // ---- Kerberos / SPNEGO path ----
+                    // The KerberosUserAuthenticatorService owns all Kerberos config and caches
+                    // the JAAS Subject (TGT) for the lifetime of the HTTP session.
+                    UserPassword up = kerberosAuth.getUserPassword();
                     String username = up.getUsername() != null ? up.getUsername() : "";
-                    char[] password = up.getPassword() != null ? up.getPassword().toCharArray() : new char[0];
-                    String domain = up.getDomain() != null ? up.getDomain() : "";
-                    authContext = new AuthenticationContext(username, password, domain);
+                    String domain   = kerberosAuth.getKerberosRealm() != null ? kerberosAuth.getKerberosRealm() : "";
+
+                    Subject kerberosSubject = kerberosAuth.getOrObtainKerberosSubject();
+
+                    SmbConfig smbConfig = SmbConfig.builder()
+                            .withAuthenticators(new SpnegoAuthenticator.Factory())
+                            .build();
+                    smbClient = new SMBClient(smbConfig);
+                    connection = smbClient.connect(smbHost, smbPort);
+
+                    GSSAuthenticationContext authContext =
+                            new GSSAuthenticationContext(username, domain, kerberosSubject, null);
+                    session = connection.authenticate(authContext);
+
                 } else {
-                    authContext = AuthenticationContext.anonymous();
+                    // ---- Classic NTLM path ----
+                    smbClient = new SMBClient();
+                    connection = smbClient.connect(smbHost, smbPort);
+
+                    AuthenticationContext authContext;
+                    if (userAuthenticatorService != null) {
+                        UserPassword up = userAuthenticatorService.getUserPassword();
+                        String username = up.getUsername() != null ? up.getUsername() : "";
+                        char[] password = up.getPassword() != null ? up.getPassword().toCharArray() : new char[0];
+                        String domain   = up.getDomain()    != null ? up.getDomain()    : "";
+                        authContext = new AuthenticationContext(username, password, domain);
+                    } else {
+                        authContext = AuthenticationContext.anonymous();
+                    }
+                    session = connection.authenticate(authContext);
                 }
 
-                session = connection.authenticate(authContext);
                 diskShare = (DiskShare) session.connectShare(smbShareName);
                 notifyConnectionOpened();
-                log.info("SMB connection opened: {}:{}/{}", smbHost, smbPort, smbShareName);
+                log.info("SMB connection opened: {}:{}/{} (kerberos={})",
+                        smbHost, smbPort, smbShareName,
+                        userAuthenticatorService instanceof KerberosUserAuthenticatorService);
+
+            } catch (LoginException e) {
+                throw new EsupStockException("Kerberos authentication failed: " + e.getMessage(), e);
             } catch (IOException e) {
                 throw new EsupStockException(e);
             }
@@ -217,6 +254,9 @@ public class SmbAccessImpl extends FsAccess implements DisposableBean {
         if (smbClient != null) {
             try { smbClient.close(); } catch (Exception e) { log.warn("Error closing SMB client", e); }
             smbClient = null;
+        }
+        if (userAuthenticatorService instanceof KerberosUserAuthenticatorService kerberosAuth) {
+            kerberosAuth.invalidateKerberosSubject();
         }
     }
 
