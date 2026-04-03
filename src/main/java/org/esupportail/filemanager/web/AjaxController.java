@@ -144,7 +144,7 @@ public class AjaxController {
     @PostMapping(value="/fileChildren")
     @ResponseBody
     public List<JsTreeFile> fileChildren(Authentication auth, @RequestParam String dir, @RequestParam(required=false) String hierarchy) {
-        log.info("User authenticated as {}", auth.getName());
+        log.debug("User authenticated as {}", auth.getName());
         log.debug("Requesting fileChildren");
         dir = pathEncodingUtils.decodeDir(dir);
         log.debug("Requesting fileChildren decoded dir is {}", dir);
