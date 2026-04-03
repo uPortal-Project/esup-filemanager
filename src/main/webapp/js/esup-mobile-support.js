@@ -414,6 +414,16 @@
         // Synchroniser les boutons
         syncBtn('mobile-toolbar-download', 'toolbar-download');
         syncBtn('mobile-toolbar-more', 'toolbar-copy');
+
+        // Watch desktop button state changes to keep mobile buttons in sync in real time
+        const observeDesktopBtn = (desktopId, syncFn) => {
+            const desktopBtn = document.getElementById(desktopId);
+            if (desktopBtn) {
+                new MutationObserver(syncFn).observe(desktopBtn, { attributes: true, attributeFilter: ['class', 'disabled'] });
+            }
+        };
+        observeDesktopBtn('toolbar-download', () => syncBtn('mobile-toolbar-download', 'toolbar-download'));
+        observeDesktopBtn('toolbar-copy',     () => syncBtn('mobile-toolbar-more',     'toolbar-copy'));
     }
 
     /**
