@@ -34,25 +34,32 @@
         <div class="audio-playlist-container">
             <div class="playlist-header">
                 <span th:text="#{details.playlist.title}">Playlist audio</span>
-                <span class="playlist-counter" id="playlistCounter"></span>
+                <span class="playlist-counter" id="playlistCounter" aria-live="polite"></span>
             </div>
 
             <div class="media-player-container">
-                <audio id="playlistAudio" controls class="audio-player">
+                <audio id="playlistAudio" controls class="audio-player"
+                       th:attr="aria-label=#{details.playlist.title}">
                     <span th:text="#{details.playlist.unsupported}">Votre navigateur ne supporte pas la lecture audio HTML5.</span>
                 </audio>
             </div>
 
             <div class="playlist-nav">
-                <button id="playlistPrev" class="btn-action" th:text="#{details.playlist.prev}">‹ Précédent</button>
-                <button id="playlistNext" class="btn-action" th:text="#{details.playlist.next}">Suivant ›</button>
+                <button id="playlistPrev" class="btn-action"
+                        th:text="#{details.playlist.prev}"
+                        th:attr="aria-label=#{details.playlist.prev}">‹ Précédent</button>
+                <button id="playlistNext" class="btn-action"
+                        th:text="#{details.playlist.next}"
+                        th:attr="aria-label=#{details.playlist.next}">Suivant ›</button>
             </div>
 
-            <ul class="playlist-tracks" id="playlistTracks">
+            <ul class="playlist-tracks" id="playlistTracks" role="listbox" th:attr="aria-label=#{details.playlist.title}">
                 <li th:each="track, stat : ${audio_tracks}"
                     class="playlist-track"
                     th:classappend="${stat.first} ? ' active' : ''"
-                    th:attr="data-index=${stat.index}"
+                    th:attr="data-index=${stat.index}, aria-selected=${stat.first ? 'true' : 'false'}"
+                    tabindex="0"
+                    role="option"
                     th:text="${track.title}">Piste</li>
             </ul>
         </div>
@@ -67,17 +74,21 @@
 </div>
 
 <!-- Modal du diaporama -->
-<div id="slideshowModal" class="slideshow-modal" style="display: none;">
+<div id="slideshowModal" class="slideshow-modal" style="display: none;"
+     role="dialog" aria-modal="true"
+     th:attr="aria-label=#{aria.slideshow.title}">
     <div class="slideshow-content">
-        <span class="slideshow-close">&times;</span>
-        <button class="slideshow-prev">‹</button>
+        <button type="button" class="slideshow-close" th:attr="aria-label=#{aria.slideshow.close}">&times;</button>
+        <button type="button" class="slideshow-prev" th:attr="aria-label=#{details.playlist.prev}">‹</button>
         <div class="slideshow-image-container">
-            <img id="slideshowImage" alt="Image">
-            <div class="slideshow-counter"><span id="slideCounter"></span></div>
+            <img id="slideshowImage" alt="">
+            <div class="slideshow-counter">
+                <span id="slideCounter" aria-live="polite" aria-atomic="true"></span>
+            </div>
         </div>
-        <button class="slideshow-next">›</button>
+        <button type="button" class="slideshow-next" th:attr="aria-label=#{details.playlist.next}">›</button>
         <div class="slideshow-controls">
-            <button id="slideshowAutoplay" class="btn-autoplay">▶ Lecture auto</button>
+            <button id="slideshowAutoplay" class="btn-autoplay" aria-pressed="false">▶ Lecture auto</button>
         </div>
     </div>
 </div>

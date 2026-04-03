@@ -31,41 +31,44 @@
 <body class="d-flex flex-column min-vh-100">
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom shadow-sm sticky-top">
+<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom shadow-sm sticky-top"
+     aria-labelledby="javaperf-brand-label">
     <div class="container-fluid">
-        <a class="navbar-brand d-inline-flex align-items-center gap-2" th:href="@{/}">
-            <i class="bi bi-folder2-open"></i>
+        <a class="navbar-brand d-inline-flex align-items-center gap-2" th:href="@{/}" id="javaperf-brand-label">
+            <i class="bi bi-folder2-open" aria-hidden="true"></i>
             <span th:text="#{javaperf.nav.brand}">ESUP File Manager</span>
         </a>
         <span class="navbar-text mx-3 text-muted">
-            <i class="bi bi-chevron-right small"></i>
+            <i class="bi bi-chevron-right small" aria-hidden="true"></i>
             <strong th:text="#{javaperf.nav.subtitle}">Java Performance</strong>
         </span>
         <div class="ms-auto d-flex align-items-center gap-2">
-            <a th:href="@{/}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
-                <i class="bi bi-arrow-left"></i>
+            <a th:href="@{/}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1"
+               th:attr="aria-label=#{javaperf.nav.back}">
+                <i class="bi bi-arrow-left" aria-hidden="true"></i>
                 <span class="d-none d-sm-inline" th:text="#{javaperf.nav.back}">Back</span>
             </a>
-            <a th:href="@{/logout}" class="btn btn-sm btn-outline-dark d-inline-flex align-items-center gap-2">
-                <i class="bi bi-person-circle"></i>
+            <a th:href="@{/logout}" class="btn btn-sm btn-outline-dark d-inline-flex align-items-center gap-2"
+               th:attr="aria-label=#{toolbar.logout} + ' – ' + ${#authentication.principal.username}">
+                <i class="bi bi-person-circle" aria-hidden="true"></i>
                 <span th:text="${#authentication.principal.username}" class="d-none d-sm-inline">User</span>
-                <i class="bi bi-box-arrow-right"></i>
+                <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
             </a>
         </div>
     </div>
 </nav>
 
 <!-- Contenu principal -->
-<div class="container-xl py-4">
+<main class="container-xl py-4" id="javaperf-main">
 
-    <h2 class="mb-4 d-flex align-items-center gap-2">
-        <i class="bi bi-speedometer2 text-warning"></i>
+    <h1 class="mb-4 d-flex align-items-center gap-2">
+        <i class="bi bi-speedometer2 text-warning" aria-hidden="true"></i>
         <span th:text="#{javaperf.heading}">Java Performance</span>
-    </h2>
+    </h1>
 
     <!-- Mémoire -->
     <div class="row g-3 mb-4">
-        <h5 class="col-12 mb-0 text-muted"><i class="bi bi-memory me-1"></i><span th:text="#{javaperf.memory.title}">JVM Memory</span></h5>
+        <h2 class="col-12 mb-0 text-muted h5"><i class="bi bi-memory me-1" aria-hidden="true"></i><span th:text="#{javaperf.memory.title}">JVM Memory</span></h2>
 
         <div class="col-6 col-md-3">
             <div class="card text-bg-secondary h-100">
@@ -110,6 +113,10 @@
                 <div class="progress-bar bg-warning"
                      role="progressbar"
                      th:style="'width: ' + ${#numbers.formatDecimal(usedMemoryInMB * 100.0 / maxMemoryInMB, 1, 1)} + '%'"
+                     th:attr="aria-valuenow=${#numbers.formatDecimal(usedMemoryInMB * 100.0 / maxMemoryInMB, 1, 1)},
+                              aria-valuemin=0,
+                              aria-valuemax=100,
+                              aria-label=#{javaperf.memory.usage}"
                      th:text="${#numbers.formatDecimal(usedMemoryInMB * 100.0 / maxMemoryInMB, 1, 1)} + '%'">
                 </div>
             </div>
@@ -118,17 +125,17 @@
 
     <!-- Connexions aux serveurs de stockage -->
     <div class="mb-4">
-        <h5 class="text-muted mb-3">
-            <i class="bi bi-hdd-network me-1"></i><span th:text="#{javaperf.storage.title}">Storage server connections</span>
+        <h2 class="text-muted mb-3 h5">
+            <i class="bi bi-hdd-network me-1" aria-hidden="true"></i><span th:text="#{javaperf.storage.title}">Storage server connections</span>
             <small class="ms-2 text-muted fw-normal" style="font-size:.75rem;"
                    th:text="#{javaperf.storage.subtitle}">(active sessions per drive since startup)</small>
-        </h5>
+        </h2>
 
         <!-- Aucune connexion enregistrée -->
         <div th:if="${#lists.isEmpty(storageStats)}"
              class="alert alert-info d-flex align-items-center gap-2">
-            <i class="bi bi-info-circle-fill fs-5"></i>
-            <span th:text="#{javaperf.storage.empty}">No connections recorded since the server started. Counters are updated as soon as a user opens a session to a storage drive.</span>
+            <i class="bi bi-info-circle-fill fs-5" aria-hidden="true"></i>
+            <span th:text="#{javaperf.storage.empty}">No connections recorded since the server started.</span>
         </div>
 
         <!-- Cartes de jauge par lecteur -->
@@ -163,16 +170,19 @@
                               th:text="#{javaperf.storage.sessions}">session(s)</text>
                     </svg>
 
-                    <!-- Nom du lecteur et protocole -->
+                    <!-- Nom du lecteur, protocole et compteur (accessible) -->
                     <div class="mt-2 px-1">
                         <div class="fw-semibold text-truncate small"
                              th:text="${stat.driveName}"
                              th:title="${stat.driveName}">drive</div>
+                        <!-- Texte caché pour lecteurs d'écran : nombre de sessions -->
+                        <span class="visually-hidden"
+                              th:text="${stat.openConnections} + ' ' + #{javaperf.storage.sessions}"></span>
                         <span class="badge mt-1"
                               th:classappend="'bg-' + ${stat.statusBadgeClass}"
                               th:text="${stat.type}">type</span>
                         <div class="text-muted mt-1" style="font-size:0.72rem;">
-                            <i class="bi bi-graph-up-arrow"></i>
+                            <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
                             <span th:text="#{javaperf.storage.max_connections}">Max&nbsp;:</span>
                             <strong th:text="${stat.maxConnections}">0</strong>
                         </div>
@@ -195,7 +205,7 @@
 
     <!-- Threads -->
     <div class="mb-4">
-        <h5 class="text-muted mb-3"><i class="bi bi-diagram-3 me-1"></i><span th:text="#{javaperf.threads.title}">Threads</span></h5>
+        <h2 class="text-muted mb-3 h5"><i class="bi bi-diagram-3 me-1" aria-hidden="true"></i><span th:text="#{javaperf.threads.title}">Threads</span></h2>
 
         <!-- Résumé par état -->
         <div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
@@ -207,7 +217,7 @@
                 <span class="ms-1 fw-bold" th:text="${entry.value}"></span>
             </span>
             <span class="ms-auto text-muted small">
-                <i class="bi bi-activity"></i>
+                <i class="bi bi-activity" aria-hidden="true"></i>
                 <span th:text="#{javaperf.threads.peak}">Peak:</span>
                 <strong th:text="${javaPerfWrapper.peakThreadCount}"></strong>
                 <span th:text="#{javaperf.threads.peak.unit}">threads</span>
@@ -219,21 +229,22 @@
 
         <!-- Tableau des threads -->
         <div class="table-responsive">
-            <table class="table table-sm table-bordered table-hover thread-table align-middle">
+            <table class="table table-sm table-bordered table-hover thread-table align-middle"
+                   th:attr="aria-label=#{javaperf.threads.title}">
                 <thead class="table-dark sticky-top">
                     <tr>
-                        <th th:text="#{javaperf.threads.table.id}">Id</th>
-                        <th th:text="#{javaperf.threads.table.name}">Name</th>
-                        <th th:text="#{javaperf.threads.table.state}">State</th>
-                        <th>
+                        <th scope="col" th:text="#{javaperf.threads.table.id}">Id</th>
+                        <th scope="col" th:text="#{javaperf.threads.table.name}">Name</th>
+                        <th scope="col" th:text="#{javaperf.threads.table.state}">State</th>
+                        <th scope="col">
                             <span th:text="#{javaperf.threads.table.blocked}">Blocked</span><br>
                             <small class="fw-normal text-muted" th:text="#{javaperf.threads.table.count_ms}">count / ms</small>
                         </th>
-                        <th>
+                        <th scope="col">
                             <span th:text="#{javaperf.threads.table.waited}">Waiting</span><br>
                             <small class="fw-normal text-muted" th:text="#{javaperf.threads.table.count_ms}">count / ms</small>
                         </th>
-                        <th th:text="#{javaperf.threads.table.stacktrace}">Stack trace</th>
+                        <th scope="col" th:text="#{javaperf.threads.table.stacktrace}">Stack trace</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -249,7 +260,10 @@
                                   th:text="${threadInfo.threadState}"></span>
                             <i th:if="${currentThreadId eq threadInfo.threadId}"
                                class="bi bi-arrow-left-circle-fill text-success ms-1"
+                               aria-hidden="true"
                                th:title="#{javaperf.threads.current.marker}"></i>
+                            <span th:if="${currentThreadId eq threadInfo.threadId}"
+                                  class="visually-hidden" th:text="#{javaperf.threads.current.marker}"></span>
                         </td>
                         <td class="small text-center">
                             <span th:text="${threadInfo.blockedCount}"></span>
@@ -273,7 +287,7 @@
             </table>
         </div>
     </div>
-</div>
+</main>
 
 <!-- Footer -->
 <footer class="mt-auto py-2 bg-light border-top text-center text-muted small"

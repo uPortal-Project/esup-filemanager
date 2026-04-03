@@ -5,9 +5,9 @@
     <div class="image-preview-container">
         <img th:src="@{/fetchImage(dir=${file.encPath})}"
              class="details-image"
-             alt="Image preview"
+             th:alt="${file.title}"
              th:attr="data-fullsize=@{/fetchImage(dir=${file.encPath})}" />
-        <div class="image-zoom-icon" title="Cliquer pour agrandir">🔍</div>
+        <div class="image-zoom-icon" aria-hidden="true">🔍</div>
     </div>
 
     <div class="details-spacer"></div>
@@ -39,16 +39,20 @@
     <div class="details-spacer"></div>
 
     <div class="details-actions">
-        <a class="btn-download" th:href="@{/downloadFile(dir=${file.encPath})}" th:text="#{details.download}">Télécharger</a>
+        <a class="btn-download" th:href="@{/downloadFile(dir=${file.encPath})}"
+           th:text="#{details.download}"
+           th:attr="aria-label=#{details.download} + ' ' + ${file.title}">Télécharger</a>
         <button class="btn-view-fullsize" onclick="viewImageFullsize(this)" th:text="#{details.viewimage}">Voir en grand</button>
     </div>
 </div>
 
 <!-- Modal pour affichage en taille réelle -->
-<div id="imageModal" class="image-modal" style="display: none;">
+<div id="imageModal" class="image-modal" style="display: none;"
+     role="dialog" aria-modal="true"
+     th:attr="aria-label=#{aria.image.modal.title}">
     <div class="image-modal-content">
-        <span class="image-modal-close">&times;</span>
-        <img id="modalImage" src="" alt="Image en taille réelle">
+        <button type="button" class="image-modal-close" th:attr="aria-label=#{aria.image.modal.close}">&times;</button>
+        <img id="modalImage" src="" th:attr="alt=#{aria.image.modal.title}">
     </div>
 </div>
 

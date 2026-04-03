@@ -24,9 +24,12 @@
             <dt class="details-label" th:text="#{details.quota}">Quota</dt>
             <dd class="details-value">
                 <div class="quota-info">
-                    <div class="quota-bar">
-                        <div class="quota-fill" th:style="'width: ' + ${quota.usage} + '%'"></div>
-                    </div>
+                        <div class="quota-bar">
+                            <div class="quota-fill"
+                                 role="progressbar"
+                                 th:style="'width: ' + ${quota.usage} + '%'"
+                                 th:attr="aria-valuenow=${quota.usage}, aria-valuemin=0, aria-valuemax=100, aria-label=#{aria.quota.label}"></div>
+                        </div>
                     <div class="quota-text">
                         <span th:text="${quota.usage}"></span>%
                         (<span th:text="${quota.usedSize}"></span>

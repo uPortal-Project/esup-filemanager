@@ -414,7 +414,7 @@ padding: 0;
 
 .esupstock #toolbar-logout {
     padding: 0 0 0 20px;
-    color: red;
+    color: #8b0000; /* Rouge foncé, ratio ≥ 4.5:1 (WCAG 1.4.3) */
     font-weight: bold;
 }
 
@@ -617,7 +617,7 @@ margin-left: 5px;
 
 .esupstock .thumbnail .inner_thumbnail > a {
 	position: absolute;
-	margin: none;
+	margin: 0;
 	display: inline-block;
 	width: 80%;
 	height: 100%;
@@ -654,8 +654,8 @@ margin-left: 5px;
 	display: inline-block;
 	height: 32px;
 	text-align: center;
-	text-wrap: unrestricted;
-	word-wrap: break-word;
+	overflow-wrap: break-word;
+	word-break: break-word;
 }
 
 /* RlM6 = FS: coding in Base64 ... */
@@ -669,7 +669,19 @@ http://code.google.com/p/jstree/issues/detail?id=922&q=IE%20expand&colspec=ID%20
 /*.esupstock li.jstree-closed ul {display:none;}*/
 
 .esupstock .selectable {
-	outline : none;
+    /* Supprimé : outline:none (WCAG 2.4.7 – Focus Visible) */
+}
+
+/* Focus visible sur les lignes sélectionnables (WCAG 2.4.7) */
+.esupstock .selectable:focus-within {
+    outline: 2px solid #0078d4;
+    outline-offset: -2px;
+}
+
+.esupstock .selectable a:focus {
+    outline: 2px solid #0078d4;
+    outline-offset: 2px;
+    border-radius: 2px;
 }
 
 .esupstock .selectable a {

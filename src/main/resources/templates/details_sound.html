@@ -3,7 +3,7 @@
     <h3 class="details-header" th:text="#{details.header}">Détails</h3>
 
     <div class="media-player-container">
-        <audio controls class="audio-player">
+        <audio controls class="audio-player" th:attr="aria-label=${file.title}">
             <source th:src="@{/downloadFile(dir=${file.encPath})}" th:type="${file.mimeType}">
             Votre navigateur ne supporte pas la lecture audio HTML5.
         </audio>
@@ -33,11 +33,14 @@
     <div class="details-spacer"></div>
 
     <div class="details-actions">
-        <a class="btn-download" th:href="@{/downloadFile(dir=${file.encPath})}" th:text="#{details.download}">Télécharger</a>
+        <a class="btn-download" th:href="@{/downloadFile(dir=${file.encPath})}"
+           th:text="#{details.download}"
+           th:attr="aria-label=#{details.download} + ' ' + ${file.title}">Télécharger</a>
     </div>
 </div>
 
 <div class="details-spacer"></div>
 
-<a id="detailsFileForm" th:href="@{/downloadFile(dir=${file.encPath})}" th:text="#{details.download}">
+<!-- Lien caché utilisé par le JS pour récupérer l'URL de téléchargement -->
+<a id="detailsFileForm" th:href="@{/downloadFile(dir=${file.encPath})}" aria-hidden="true" tabindex="-1" style="display:none;">
 </a>

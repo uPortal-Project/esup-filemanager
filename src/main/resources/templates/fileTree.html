@@ -1,41 +1,42 @@
 <!-- src/main/resources/templates/fileTree.html -->
-<div xmlns:th="http://www.thymeleaf.org" class="breadcrumbs">
+<nav xmlns:th="http://www.thymeleaf.org" class="breadcrumbs" th:attr="aria-label=#{aria.breadcrumb}">
     <div class="writeable" th:text="${resource.writeable}"></div>
     <div class="d-inline" th:each="parent, itemStat : ${parentsEncPathes}">
         <th:block th:if="${itemStat.last}">
-            <img th:src="${resource.icon}" alt="icon" />
+            <img th:src="${resource.icon}" alt="" aria-hidden="true" />
             <span id="bigdirectory" th:rel="${resource.encPath}" th:text="${resource.title}"></span>
         </th:block>
         <th:block th:unless="${itemStat.last}">
             <a class="fileTreeRefCrumbs" href="#" th:rel="${parent.key}">
-                <img th:src="${parent.value[1]}" alt="icon" />
+                <img th:src="${parent.value[1]}" alt="" aria-hidden="true" />
                 <span th:text="${parent.value[0]}"></span>
             </a>
         </th:block>
     </div>
-</div>
+</nav>
 
 <div id="thumbnail_mode" style="display:none" th:text="false"></div>
 
 <div id="jqueryFileTree">
     <form th:object="${form}" method="post" id="filesForm">
         <table>
+            <caption class="visually-hidden" th:text="#{aria.files.table}">File listing</caption>
             <thead>
             <tr>
-                <th>
+                <th th:attr="aria-sort=${sortField == 'titleAsc' ? 'ascending' : (sortField == 'titleDesc' ? 'descending' : 'none')}">
                     <a class="sortTable"
                        th:rel="${sortField == 'titleAsc' ? 'titleDesc' : 'titleAsc'}"
                        href="#"
                        th:text="#{browserArea.header.filename}"></a>
                 </th>
-                <th>
+                <th th:attr="aria-sort=${sortField == 'sizeAsc' ? 'ascending' : (sortField == 'sizeDesc' ? 'descending' : 'none')}">
                     <a class="sortTable"
                        th:rel="${sortField == 'sizeAsc' ? 'sizeDesc' : 'sizeAsc'}"
                        href="#"
                        th:text="#{browserArea.header.size}"></a>
                 </th>
                 <th th:text="#{browserArea.header.type}"></th>
-                <th>
+                <th th:attr="aria-sort=${sortField == 'lastModifiedAsc' ? 'ascending' : (sortField == 'lastModifiedDesc' ? 'descending' : 'none')}">
                     <a class="sortTable"
                        th:rel="${sortField == 'lastModifiedAsc' ? 'lastModifiedDesc' : 'lastModifiedAsc'}"
                        href="#"
@@ -52,14 +53,17 @@
                     <div class="readable" th:text="${file.readable}"></div>
                     <div class="writeable" th:text="${file.writeable}"></div>
                     <div class="draggable droppable">
-                        <input type="checkbox" class="browsercheck" th:value="${file.encPath}" name="dirs"/>
+                        <input type="checkbox" class="browsercheck" th:value="${file.encPath}" name="dirs"
+                               th:attr="aria-label=${file.title}"/>
                         <a class="fileTreeRef" href="#" th:title="${file.title}" th:rel="${file.encPath}" th:parent="${file.encParentPath}" onclick="return false;">
-                            <img th:src="${file.icon}" alt="icon" />
+                            <img th:src="${file.icon}" alt="" aria-hidden="true" />
                             <span th:text="${file.title}"></span>
                         </a>
                         <span class="esupHide renameSpan">
-                    <input class="renameInput" type="text" th:value="${file.title}" onKeyPress="return disableEnterKey(event)" />
-                    <a class="renameSubmit" href="#" th:text="#{toolbar.rename}"></a>
+                    <input class="renameInput" type="text" th:value="${file.title}"
+                           th:attr="aria-label=#{dialog.rename.title}"
+                           onKeyPress="return disableEnterKey(event)" />
+                    <button type="button" class="renameSubmit" th:text="#{toolbar.rename}"></button>
                   </span>
                     </div>
                 </td>
@@ -76,7 +80,7 @@
                     <div class="writeable" th:text="${file.writeable}"></div>
                     <div>
                         <a class="fileTreeRef" href="#" th:title="${file.title}" th:rel="${file.encPath}" onclick="return false;">
-                            <img th:src="${file.icon}" alt="icon" />
+                            <img th:src="${file.icon}" alt="" aria-hidden="true" />
                             <span th:text="${file.title}"></span>
                         </a>
                     </div>
@@ -88,7 +92,7 @@
             <tr th:each="file : ${files}" th:if="${file.type == 'drive'}">
                 <td>
                     <div class="droppable">
-                        <img th:src="${file.icon}" alt="icon" />
+                        <img th:src="${file.icon}" alt="" aria-hidden="true" />
                         <a class="fileCatRef" href="#" th:title="${file.title}" th:rel="${file.encPath}" onclick="return false;" th:text="${file.title}"></a>
                     </div>
                 </td>
@@ -99,7 +103,7 @@
             <tr th:each="file : ${files}" th:if="${file.type == 'category'}">
                 <td>
                     <div>
-                        <img th:src="${file.icon}" alt="icon" />
+                        <img th:src="${file.icon}" alt="" aria-hidden="true" />
                         <a class="fileCatRef" href="#" th:title="${file.title}" th:rel="${file.encPath}" onclick="return false;" th:text="${file.title}"></a>
                     </div>
                 </td>
@@ -112,14 +116,17 @@
                     <div class="draggable">
                         <div class="readable" th:text="${file.readable}"></div>
                         <div class="writeable" th:text="${file.writeable}"></div>
-                        <input type="checkbox" class="browsercheck" th:value="${file.encPath}" name="dirs"/>
+                        <input type="checkbox" class="browsercheck" th:value="${file.encPath}" name="dirs"
+                               th:attr="aria-label=${file.title}"/>
                         <a class="file" href="#" th:title="${file.title}" th:rel="${file.encPath}" onclick="return false;">
-                            <img th:src="${file.icon}" alt="icon" />
+                            <img th:src="${file.icon}" alt="" aria-hidden="true" />
                             <span th:text="${file.title}"></span>
                         </a>
                         <span class="esupHide renameSpan">
-                    <input class="renameInput" type="text" th:value="${file.title}" onKeyPress="return disableEnterKey(event)" />
-                    <a class="renameSubmit" href="#" th:text="#{toolbar.rename}"></a>
+                    <input class="renameInput" type="text" th:value="${file.title}"
+                           th:attr="aria-label=#{dialog.rename.title}"
+                           onKeyPress="return disableEnterKey(event)" />
+                    <button type="button" class="renameSubmit" th:text="#{toolbar.rename}"></button>
                   </span>
                     </div>
                 </td>
@@ -133,11 +140,15 @@
             <tr>
                 <td class="browserlist esupHide" id="newDir">
                     <input type="hidden" id="folderOrFileChoice" value="folder" />
-                    <input class="folder" id="newFileOrFolderInput" type="text" onKeyPress="return disableEnterKey(event)" />
-                    <a id="newFileOrFolderSubmit" href="#">OK</a>
+                    <input class="folder" id="newFileOrFolderInput" type="text"
+                           th:attr="aria-label=#{toolbar.create.title}"
+                           th:placeholder="#{dialog.newFolder.placeholder}"
+                           onKeyPress="return disableEnterKey(event)" />
+                    <button type="button" id="newFileOrFolderSubmit">OK</button>
                 </td>
             </tr>
             </tbody>
         </table>
     </form>
 </div>
+

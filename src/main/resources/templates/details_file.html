@@ -28,7 +28,9 @@
     <div class="details-spacer"></div>
 
     <div class="details-actions">
-        <a class="btn-download" th:href="@{/downloadFile(dir=${file.encPath})}" th:text="#{details.download}">Télécharger</a>
+        <a class="btn-download" th:href="@{/downloadFile(dir=${file.encPath})}"
+           th:text="#{details.download}"
+           th:attr="aria-label=#{details.download} + ' ' + ${file.title}">Télécharger</a>
     </div>
 </div>
 

@@ -3,15 +3,20 @@
 
   <form method="post" id="authenticationForm" th:action="@{/authenticate}">
 
-    <div id="auth-error-message" class="auth-error" style="display: none;"></div>
+    <div id="auth-error-message" class="auth-error" style="display: none;"
+         role="alert" aria-live="assertive"></div>
 
     <input type="hidden" id="currentDir" name="dir" th:value="${currentDir}" />
 
-    <label for="username" th:text="#{auth.username}"></label>
-    <input type="text" id="username" name="username" th:value="${username}" required="required" autocomplete="username" />
+    <fieldset>
+      <legend th:text="#{aria.auth.legend}">Authentication</legend>
 
-    <label for="password" th:text="#{auth.password}"></label>
-    <input type="password" id="password" name="password" th:value="${password}" required="required" autocomplete="current-password" />
+      <label for="username" th:text="#{auth.username}"></label>
+      <input type="text" id="username" name="username" th:value="${username}" required="required" autocomplete="username" />
+
+      <label for="password" th:text="#{auth.password}"></label>
+      <input type="password" id="password" name="password" th:value="${password}" required="required" autocomplete="current-password" />
+    </fieldset>
 
     <button type="submit" id="authenticate" th:text="#{auth.submit}"></button>
   </form>

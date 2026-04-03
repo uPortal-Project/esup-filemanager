@@ -64,8 +64,14 @@
 .video-player {
     width: 100%;
     border: 1px solid #bbb;
-    outline: none;
     background: #f5f5f5;
+}
+
+/* Focus visible sur les lecteurs médias (WCAG 2.4.7) */
+.audio-player:focus,
+.video-player:focus {
+    outline: 3px solid #0d6efd;
+    outline-offset: 2px;
 }
 
 .audio-player {
@@ -155,6 +161,7 @@
     border: 2px solid #fff;
 }
 
+/* Bouton fermeture modale image - reset + style (converti de span en button) */
 .image-modal-close {
     position: absolute;
     top: -40px;
@@ -164,10 +171,19 @@
     font-weight: bold;
     cursor: pointer;
     transition: color 0.3s ease;
+    background: none;
+    border: none;
+    padding: 0;
+    line-height: 1;
 }
 
 .image-modal-close:hover {
     color: #cccccc;
+}
+
+.image-modal-close:focus {
+    outline: 3px solid #ffffff;
+    outline-offset: 4px;
 }
 
 /* ==================== Diaporama ==================== */
@@ -222,6 +238,13 @@
     background: rgba(255, 255, 255, 0.4);
 }
 
+.slideshow-prev:focus,
+.slideshow-next:focus {
+    outline: 3px solid #ffffff;
+    outline-offset: 2px;
+}
+
+/* Bouton fermeture diaporama - reset + style (converti de span en button) */
 .slideshow-close {
     position: absolute;
     top: -45px;
@@ -231,10 +254,19 @@
     font-weight: bold;
     cursor: pointer;
     transition: color 0.3s ease;
+    background: none;
+    border: none;
+    padding: 0;
+    line-height: 1;
 }
 
 .slideshow-close:hover {
     color: #cccccc;
+}
+
+.slideshow-close:focus {
+    outline: 3px solid #ffffff;
+    outline-offset: 4px;
 }
 
 .slideshow-counter {
@@ -273,6 +305,11 @@
     background: rgba(255, 255, 255, 0.4);
 }
 
+.btn-autoplay:focus {
+    outline: 3px solid #ffffff;
+    outline-offset: 2px;
+}
+
 .btn-autoplay.playing {
     background: rgba(231, 76, 60, 0.7);
 }
@@ -304,6 +341,14 @@
 .btn-download:hover,
 .btn-view-fullsize:hover,
 .btn-action:hover {
+    background: #e0e0e0;
+}
+
+.btn-download:focus,
+.btn-view-fullsize:focus,
+.btn-action:focus {
+    outline: 3px solid #0d6efd;
+    outline-offset: 2px;
     background: #e0e0e0;
 }
 
@@ -354,7 +399,7 @@
 .details-empty-message {
     padding: 20px 10px;
     text-align: center;
-    color: #666666;
+    color: #595959; /* Ratio ≥ 4.5:1 sur fond #FFFFEE (WCAG 1.4.3) */
 }
 
 /* ==================== Animations ==================== */
@@ -387,7 +432,7 @@
 
 .playlist-counter {
     font-weight: normal;
-    color: #666666;
+    color: #595959; /* Ratio ≥ 4.5:1 sur fond #f3f3f3 (WCAG 1.4.3) */
     font-size: 12px;
 }
 
@@ -427,10 +472,16 @@
     background: #e8e8e8;
 }
 
+.playlist-track:focus {
+    outline: 2px solid #0d6efd;
+    outline-offset: -2px;
+    background: #e8e8e8;
+}
+
 .playlist-track.active {
     background: #d0e8ff;
     font-weight: bold;
-    color: #1a5f9e;
+    color: #104880; /* Ratio ≥ 4.5:1 sur fond #d0e8ff (WCAG 1.4.3) */
 }
 
 .playlist-track.active::before {

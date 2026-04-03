@@ -3,7 +3,7 @@
     <h3 class="details-header" th:text="#{details.header}">Détails</h3>
 
     <div class="media-player-container">
-        <video controls class="video-player">
+        <video controls class="video-player" th:attr="aria-label=${file.title}">
             <source th:src="@{/fetchVideo(dir=${file.encPath})}" th:type="${file.mimeType}">
             Votre navigateur ne supporte pas la lecture de vidéos HTML5.
         </video>
@@ -33,7 +33,9 @@
     <div class="details-spacer"></div>
 
     <div class="details-actions">
-        <a class="btn-download" th:href="@{/downloadFile(dir=${file.encPath})}" th:text="#{details.download}">Télécharger</a>
+        <a class="btn-download" th:href="@{/downloadFile(dir=${file.encPath})}"
+           th:text="#{details.download}"
+           th:attr="aria-label=#{details.download} + ' ' + ${file.title}">Télécharger</a>
     </div>
 </div>
 

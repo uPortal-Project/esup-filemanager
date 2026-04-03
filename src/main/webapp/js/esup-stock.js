@@ -1854,7 +1854,7 @@
             }
         });
 
-        $('#jqueryFileTree a.renameSubmit').bind('click', function () {
+        $('#jqueryFileTree .renameSubmit').bind('click', function () {
             rename(getCurrentDirectory(), getPathFromDomElem(this), $(this).prev().val());
         });
 
