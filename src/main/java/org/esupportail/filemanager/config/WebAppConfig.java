@@ -16,22 +16,22 @@ import java.time.Duration;
 public class WebAppConfig implements WebMvcConfigurer {
 
     /**
-     * Résout la locale depuis un cookie (persistant 1 an).
-     * Quand aucun cookie n'est présent, utilise la locale du navigateur (Accept-Language).
-     * La hiérarchie de fallback Java ResourceBundle assure que fr_CA → messages_fr.properties,
-     * en_US → messages.properties (défaut anglais), de_AT → messages_de.properties, etc.
+     * Resolves the locale from a cookie (persisted for 1 year).
+     * When no cookie is present, uses the browser locale (Accept-Language).
+     * The Java ResourceBundle fallback hierarchy ensures that fr_CA → messages_fr.properties,
+     * en_US → messages.properties (English default), de_AT → messages_de.properties, etc.
      */
     @Bean
     public LocaleResolver localeResolver() {
         CookieLocaleResolver resolver = new CookieLocaleResolver("esup-fm-lang");
         resolver.setCookieMaxAge(Duration.ofDays(365));
-        // Pas de locale par défaut → utilise automatiquement l'en-tête Accept-Language du navigateur
-        // quand le cookie est absent
+        // No default locale → automatically uses the browser's Accept-Language header
+        // when the cookie is absent
         return resolver;
     }
 
     /**
-     * Intercepteur qui change la locale via le paramètre URL ?lang=fr|en|de|es
+     * Interceptor that changes the locale via the URL parameter ?lang=fr|en|de|es
      */
     @Bean
     public LocaleChangeInterceptor localeChangeInterceptor() {

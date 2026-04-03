@@ -185,7 +185,7 @@
                 offcanvas.show();
             }
 
-            // Swipe left (fermer menu)
+            // Swipe left (close menu)
             if (diff < -swipeThreshold) {
                 const offcanvasElement = document.getElementById('mobileMenu');
                 const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
@@ -195,18 +195,18 @@
             }
         }
 
-        // Long press pour afficher actions (alternative au clic droit)
+        // Long press to show actions (alternative to right-click)
         let pressTimer;
         document.addEventListener('touchstart', function(e) {
             const target = e.target.closest('.file-card-mobile, tr.selectable');
             if (!target) return;
 
             pressTimer = setTimeout(function() {
-                // Afficher le bottom sheet d'actions
+                // Show the actions bottom sheet
                 const modal = new bootstrap.Modal(document.getElementById('mobileActionsSheet'));
                 modal.show();
 
-                // Vibration feedback si supporté
+                // Vibration feedback if supported
                 if ('vibrate' in navigator) {
                     navigator.vibrate(50);
                 }
@@ -223,18 +223,18 @@
     }
 
     /**
-     * Comportements responsifs
+     * Responsive behaviors
      */
     function initResponsiveBehaviors() {
-        // Observer les changements de taille d'écran
+        // Listen for screen size changes
         const mediaQuery = window.matchMedia('(max-width: 991.98px)');
 
         function handleMediaChange(e) {
             if (e.matches) {
-                // Mode mobile/tablette
+                // Mobile/tablet mode
                 adaptForMobile();
             } else {
-                // Mode desktop
+                // Desktop mode
                 adaptForDesktop();
             }
         }
@@ -242,7 +242,7 @@
         handleMediaChange(mediaQuery);
         mediaQuery.addListener(handleMediaChange);
 
-        // Adapter les tables pour mobile
+        // Adapt tables for mobile
         if (window.innerWidth < 768) {
             convertTableToCards();
         }
@@ -257,36 +257,36 @@
     }
 
     /**
-     * Adapter l'interface pour mobile
+     * Adapt the interface for mobile
      */
     function adaptForMobile() {
         console.log('Switching to mobile layout');
 
-        // Cacher colonnes non essentielles
+        // Hide non-essential columns
         document.querySelectorAll('table th:nth-child(n+3), table td:nth-child(n+3)').forEach(el => {
             if (!el.classList.contains('essential')) {
                 el.classList.add('d-none-mobile');
             }
         });
 
-        // Ajuster breadcrumbs
+        // Adjust breadcrumbs
         updateMobileBreadcrumbs();
     }
 
     /**
-     * Adapter l'interface pour desktop
+     * Adapt the interface for desktop
      */
     function adaptForDesktop() {
         console.log('Switching to desktop layout');
 
-        // Réafficher toutes les colonnes
+        // Show all columns again
         document.querySelectorAll('.d-none-mobile').forEach(el => {
             el.classList.remove('d-none-mobile');
         });
     }
 
     /**
-     * Convertir table en cards pour mobile
+     * Convert table to cards for mobile
      */
     function convertTableToCards() {
         const table = document.querySelector('#browserArea table');
@@ -310,7 +310,7 @@
                 card.appendChild(checkboxClone);
             }
 
-            // Icon et nom
+            // Icon and name
             const icon = row.querySelector('img');
             const name = row.querySelector('.fileTreeRef, .file');
 
@@ -327,7 +327,7 @@
             fileName.textContent = name ? name.textContent.trim() : '';
             info.appendChild(fileName);
 
-            // Métadonnées (taille, date)
+            // Metadata (size, date)
             const size = cells[1]?.textContent.trim();
             const date = cells[3]?.textContent.trim();
 
@@ -355,7 +355,7 @@
     }
 
     /**
-     * Restaurer layout table
+     * Restore table layout
      */
     function restoreTableLayout() {
         const table = document.querySelector('#browserArea table');
@@ -369,7 +369,7 @@
     }
 
     /**
-     * Synchroniser arborescence mobile
+     * Synchronize mobile tree with desktop
      */
     function syncTreeWithMobile() {
         const desktopTree = document.getElementById('fileTree');
@@ -377,7 +377,7 @@
 
         if (!desktopTree || !mobileTree) return;
 
-        // Observer changements dans l'arborescence desktop
+        // Watch for changes in the desktop tree
         const observer = new MutationObserver(function() {
             mobileTree.innerHTML = desktopTree.innerHTML;
         });
@@ -387,13 +387,13 @@
             subtree: true
         });
 
-        // Synchronisation initiale
+        // Initial synchronization
         mobileTree.innerHTML = desktopTree.innerHTML;
     }
 
 
     /**
-     * Synchroniser état des boutons mobile avec desktop
+     * Synchronize mobile button state with desktop
      */
     function syncMobileToolbarState() {
         const syncBtn = (mobileId, desktopId) => {
@@ -411,7 +411,7 @@
             }
         };
 
-        // Synchroniser les boutons
+        // Synchronize buttons
         syncBtn('mobile-toolbar-download', 'toolbar-download');
         syncBtn('mobile-toolbar-more', 'toolbar-copy');
 
@@ -427,7 +427,7 @@
     }
 
     /**
-     * Synchroniser état des boutons du menu mobile
+     * Synchronize mobile menu button state
      */
     function syncMobileMenuState() {
         const buttons = [
@@ -447,12 +447,12 @@
             }
         });
 
-        // Re-synchroniser régulièrement
+        // Re-synchronize regularly
         setTimeout(syncMobileMenuState, 1000);
     }
 
     /**
-     * Utilitaire debounce
+     * Debounce utility
      */
     function debounce(func, wait) {
         let timeout;
@@ -466,7 +466,7 @@
         };
     }
 
-    // Export pour utilisation globale
+    // Export for global use
     window.EsupMobileSupport = {
         isMobile,
         isTouchDevice,
