@@ -19,6 +19,7 @@ package org.esupportail.filemanager.services.auth;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
@@ -152,6 +153,9 @@ public class KerberosUserAuthenticatorService extends FormUserPasswordAuthentica
             String username = userPassword.getUsername() != null ? userPassword.getUsername() : "";
             String password = userPassword.getPassword() != null ? userPassword.getPassword() : "";
             kerberosSubject = loginWithKerberos(username, password);
+            // we don't keep password in memory and we use only kerberos ticket now
+            // set password to dummy so that form auth will not be displayed
+            userPassword.setPassword("dummy");
         }
         return kerberosSubject;
     }
@@ -163,6 +167,8 @@ public class KerberosUserAuthenticatorService extends FormUserPasswordAuthentica
      */
     public void invalidateKerberosSubject() {
         kerberosSubject = null;
+        // set password to null so that form auth will be displayed
+        userPassword.setPassword(null);
     }
 
     // -----------------------------------------------------------------------
@@ -248,5 +254,6 @@ public class KerberosUserAuthenticatorService extends FormUserPasswordAuthentica
         log.info("Kerberos TGT obtained for principal '{}'", principal);
         return subject;
     }
+
 }
 

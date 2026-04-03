@@ -249,10 +249,8 @@ public abstract class FsAccess {
 
     public boolean formAuthenticationRequired() {
         if (this.userAuthenticatorService != null && this.userAuthenticatorService.formAuthenticationNeeded()) {
-            if (this.userAuthenticatorService.getUserPassword() == null || this.userAuthenticatorService.getUserPassword().getPassword() == null || this.userAuthenticatorService.getUserPassword().getPassword().length() == 0) {
-                this.userAuthenticatorService.initialize();
-                return true;
-            }
+            this.userAuthenticatorService.initialize();
+            return true;
         }
         return false;
     }

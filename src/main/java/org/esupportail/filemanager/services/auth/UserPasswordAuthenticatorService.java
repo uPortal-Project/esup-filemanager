@@ -65,6 +65,7 @@ public class UserPasswordAuthenticatorService implements UserAuthenticatorServic
     public boolean formAuthenticationNeeded() {
         return false;
     }
+
 }
 
 

@@ -17,10 +17,14 @@
  */
 package org.esupportail.filemanager.services.auth;
 
+import org.springframework.util.StringUtils;
+
 public class FormUserPasswordAuthenticatorService extends UserPasswordAuthenticatorService {
 
     @Override
     public boolean formAuthenticationNeeded() {
-        return true;
+        return getUserPassword() == null ||
+                !StringUtils.hasLength(getUserPassword().getUsername())
+                || !StringUtils.hasLength(getUserPassword().getPassword());
     }
 }
