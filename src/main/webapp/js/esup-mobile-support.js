@@ -102,14 +102,8 @@
             });
         }
 
-        // Mobile more actions (bottom sheet)
-        const moreBtn = document.getElementById('mobile-toolbar-more');
-        if (moreBtn) {
-            moreBtn.addEventListener('click', function() {
-                const modal = new bootstrap.Modal(document.getElementById('mobileActionsSheet'));
-                modal.show();
-            });
-        }
+        // Note: le bouton "Menu" (4ème bouton de la barre bas) ouvre l'offcanvas #mobileMenu
+        // directement via data-bs-toggle Bootstrap — aucun handler JS nécessaire.
 
         // Synchronize button disabled state
         syncMobileToolbarState();
@@ -201,10 +195,14 @@
             const target = e.target.closest('.file-card-mobile, tr.selectable');
             if (!target) return;
 
-            pressTimer = setTimeout(function() {
-                // Show the actions bottom sheet
-                const modal = new bootstrap.Modal(document.getElementById('mobileActionsSheet'));
-                modal.show();
+            // Long press → ouvre le menu offcanvas (même comportement que le bouton "Menu")
+        pressTimer = setTimeout(function() {
+                // Ouvrir le menu offcanvas
+                const offcanvasEl = document.getElementById('mobileMenu');
+                if (offcanvasEl) {
+                    const offcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
+                    offcanvas.show();
+                }
 
                 // Vibration feedback if supported
                 if ('vibrate' in navigator) {
@@ -254,6 +252,19 @@
                 restoreTableLayout();
             }
         }, 250));
+    }
+
+    /**
+     * Update mobile breadcrumbs (shorten if needed)
+     */
+    function updateMobileBreadcrumbs() {
+        const breadcrumbs = document.querySelectorAll('.breadcrumb-item');
+        if (breadcrumbs.length > 3) {
+            // Hide intermediate items to save space
+            for (let i = 1; i < breadcrumbs.length - 2; i++) {
+                breadcrumbs[i].classList.add('d-none');
+            }
+        }
     }
 
     /**
@@ -413,7 +424,6 @@
 
         // Synchronize buttons
         syncBtn('mobile-toolbar-download', 'toolbar-download');
-        syncBtn('mobile-toolbar-more', 'toolbar-copy');
 
         // Watch desktop button state changes to keep mobile buttons in sync in real time
         const observeDesktopBtn = (desktopId, syncFn) => {
@@ -423,7 +433,6 @@
             }
         };
         observeDesktopBtn('toolbar-download', () => syncBtn('mobile-toolbar-download', 'toolbar-download'));
-        observeDesktopBtn('toolbar-copy',     () => syncBtn('mobile-toolbar-more',     'toolbar-copy'));
     }
 
     /**

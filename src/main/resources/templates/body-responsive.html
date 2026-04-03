@@ -229,56 +229,27 @@
     <!-- Bottom Toolbar Mobile (Actions rapides) -->
     <div class="d-lg-none bg-light border-top fixed-bottom">
         <div class="btn-group w-100" role="group">
-            <button type="button" class="btn btn-light border-0 py-3" id="mobile-toolbar-upload">
+            <button type="button" class="btn btn-light border-0 py-3" id="mobile-toolbar-upload"
+                    th:title="#{toolbar.upload.title}">
                 <i class="bi bi-cloud-upload fs-5"></i>
-                <div class="small">Upload</div>
+                <div class="small" th:text="#{toolbar.upload}">Upload</div>
             </button>
-            <button type="button" class="btn btn-light border-0 py-3" id="mobile-toolbar-new">
+            <button type="button" class="btn btn-light border-0 py-3" id="mobile-toolbar-new"
+                    th:title="#{toolbar.create.title}">
                 <i class="bi bi-folder-plus fs-5"></i>
-                <div class="small">Nouveau</div>
+                <div class="small" th:text="#{toolbar.create}">Nouveau dossier</div>
             </button>
-            <button type="button" class="btn btn-light border-0 py-3 disabled" id="mobile-toolbar-download">
+            <button type="button" class="btn btn-light border-0 py-3 disabled" id="mobile-toolbar-download"
+                    th:title="#{toolbar.download.title}">
                 <i class="bi bi-download fs-5"></i>
-                <div class="small">Download</div>
+                <div class="small" th:text="#{toolbar.download}">Télécharger</div>
             </button>
-            <button type="button" class="btn btn-light border-0 py-3 disabled" id="mobile-toolbar-more">
-                <i class="bi bi-three-dots fs-5"></i>
-                <div class="small">Plus</div>
+            <button type="button" class="btn btn-light border-0 py-3"
+                    data-bs-toggle="offcanvas" data-bs-target="#mobileMenu"
+                    aria-controls="mobileMenu" th:title="#{treearea.header}">
+                <i class="bi bi-list fs-5"></i>
+                <div class="small">Menu</div>
             </button>
-        </div>
-    </div>
-
-    <!-- Bottom Sheet Actions Mobile (Alternative au menu contextuel) -->
-    <div class="modal fade" id="mobileActionsSheet" tabindex="-1" aria-labelledby="mobileActionsSheetLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-bottom modal-sm">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h6 class="modal-title" id="mobileActionsSheetLabel">Actions</h6>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-0">
-                    <div class="list-group list-group-flush">
-                        <button class="list-group-item list-group-item-action" data-action="download">
-                            <i class="bi bi-download"></i> Télécharger
-                        </button>
-                        <button class="list-group-item list-group-item-action" data-action="copy">
-                            <i class="bi bi-files"></i> Copier
-                        </button>
-                        <button class="list-group-item list-group-item-action" data-action="cut">
-                            <i class="bi bi-scissors"></i> Couper
-                        </button>
-                        <button class="list-group-item list-group-item-action" data-action="paste">
-                            <i class="bi bi-clipboard"></i> Coller
-                        </button>
-                        <button class="list-group-item list-group-item-action" data-action="rename">
-                            <i class="bi bi-pencil"></i> Renommer
-                        </button>
-                        <button class="list-group-item list-group-item-action text-danger" data-action="delete">
-                            <i class="bi bi-trash"></i> Supprimer
-                        </button>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
