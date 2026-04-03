@@ -35,13 +35,15 @@ public class StorageConnectionMonitor {
      * Records that a new connection has been opened for the given drive.
      *
      * @param driveName the logical name of the drive
-     * @param type      a human-readable protocol label ("SFTP", "S3", …)
+     * @param type      a human-readable protocol label ("SFTP", "S3", "SMB 3.1.1", …)
      */
     public void connectionOpened(String driveName, String type) {
-        drives.computeIfAbsent(driveName, k -> new DriveConnectionInfo(driveName, type))
-              .increment();
-        log.debug("Connection opened on drive '{}' (type={}) – open count={}",
-                driveName, type, drives.get(driveName).getOpenConnections());
+        DriveConnectionInfo info = drives.computeIfAbsent(driveName, k -> new DriveConnectionInfo(driveName, type));
+        // Always refresh the type so the most recently negotiated protocol is shown
+        info.updateType(type);
+        info.increment();
+        log.debug("Connection opened on drive '{}' (type={}) – open count={}, max count={}",
+                driveName, type, info.getOpenConnections(), info.getMaxConnections());
     }
 
     /**
@@ -78,16 +80,26 @@ public class StorageConnectionMonitor {
     public static class DriveConnectionInfo {
 
         private final String driveName;
-        private final String type;
+        /** Protocol label – updated on every new connection (e.g. "SMB 3.1.1"). */
+        private volatile String type;
         private final AtomicInteger openConnections = new AtomicInteger(0);
+        /** Peak (maximum) concurrent connections since application startup. */
+        private final AtomicInteger maxConnections  = new AtomicInteger(0);
 
         public DriveConnectionInfo(String driveName, String type) {
             this.driveName = driveName;
             this.type = type;
         }
 
+        public void updateType(String type) {
+            if (type != null && !type.isEmpty()) {
+                this.type = type;
+            }
+        }
+
         public void increment() {
-            openConnections.incrementAndGet();
+            int current = openConnections.incrementAndGet();
+            maxConnections.updateAndGet(max -> Math.max(max, current));
         }
 
         public void decrement() {
@@ -107,6 +119,14 @@ public class StorageConnectionMonitor {
 
         public int getOpenConnections() {
             return openConnections.get();
+        }
+
+        /**
+         * Peak number of simultaneous connections observed on this drive since
+         * the application started (volatile, reset on restart).
+         */
+        public int getMaxConnections() {
+            return maxConnections.get();
         }
 
         /**

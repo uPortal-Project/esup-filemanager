@@ -23,6 +23,7 @@ import com.hierynomus.msfscc.FileAttributes;
 import com.hierynomus.msfscc.fileinformation.FileAllInformation;
 import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation;
 import com.hierynomus.mssmb2.SMB2CreateDisposition;
+import com.hierynomus.mssmb2.SMB2Dialect;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
 import com.hierynomus.mssmb2.SMBApiException;
 import com.hierynomus.smbj.SMBClient;
@@ -31,6 +32,7 @@ import com.hierynomus.smbj.auth.AuthenticationContext;
 import com.hierynomus.smbj.auth.GSSAuthenticationContext;
 import com.hierynomus.smbj.auth.SpnegoAuthenticator;
 import com.hierynomus.smbj.connection.Connection;
+import com.hierynomus.smbj.connection.NegotiatedProtocol;
 import com.hierynomus.smbj.session.Session;
 import com.hierynomus.smbj.share.Directory;
 import com.hierynomus.smbj.share.DiskShare;
@@ -78,6 +80,12 @@ public class SmbAccessImpl extends FsAccess implements DisposableBean {
     /** Base path inside the share (uses backslash separator, may be empty). */
     private String smbBasePath;
 
+    /**
+     * SMB dialect actually negotiated with the server (e.g. "SMB 3.1.1").
+     * Updated each time a connection is established.
+     */
+    private volatile String negotiatedDialect = "SMB";
+
     // -----------------------------------------------------------------------
     // Spring wiring
     // -----------------------------------------------------------------------
@@ -96,7 +104,23 @@ public class SmbAccessImpl extends FsAccess implements DisposableBean {
 
     @Override
     public String getConnectionType() {
-        return "SMB";
+        return negotiatedDialect;
+    }
+
+    /**
+     * Converts an {@link SMB2Dialect} enum value to a human-readable version string.
+     */
+    private static String formatSmbDialect(SMB2Dialect dialect) {
+        if (dialect == null) return "SMB";
+        switch (dialect) {
+            case SMB_2_0_2: return "SMB 2.0.2";
+            case SMB_2_1:   return "SMB 2.1";
+            case SMB_2XX:   return "SMB 2.x";
+            case SMB_3_0:   return "SMB 3.0";
+            case SMB_3_0_2: return "SMB 3.0.2";
+            case SMB_3_1_1: return "SMB 3.1.1";
+            default:        return "SMB";
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -223,6 +247,15 @@ public class SmbAccessImpl extends FsAccess implements DisposableBean {
                 }
 
                 diskShare = (DiskShare) session.connectShare(smbShareName);
+                // Capture the negotiated SMB dialect (e.g. SMB 3.1.1) for monitoring
+                try {
+                    NegotiatedProtocol np = connection.getNegotiatedProtocol();
+                    if (np != null) {
+                        negotiatedDialect = formatSmbDialect(np.getDialect());
+                    }
+                } catch (Exception e) {
+                    log.debug("Could not retrieve negotiated SMB dialect", e);
+                }
                 notifyConnectionOpened();
                 log.info("SMB connection opened: {}:{}/{} (kerberos={})",
                         smbHost, smbPort, smbShareName,

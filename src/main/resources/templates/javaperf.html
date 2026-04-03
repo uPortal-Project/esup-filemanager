@@ -171,6 +171,11 @@
                         <span class="badge mt-1"
                               th:classappend="'bg-' + ${stat.statusBadgeClass}"
                               th:text="${stat.type}">type</span>
+                        <div class="text-muted mt-1" style="font-size:0.72rem;">
+                            <i class="bi bi-graph-up-arrow"></i>
+                            <span th:text="#{javaperf.storage.max_connections}">Max&nbsp;:</span>
+                            <strong th:text="${stat.maxConnections}">0</strong>
+                        </div>
                     </div>
                 </div>
             </div>
