@@ -23,6 +23,7 @@ import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.esupportail.filemanager.beans.CasUser;
+import org.esupportail.filemanager.exceptions.EsupStockLostSessionException;
 import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -61,6 +62,15 @@ public class CrudLogService {
         Map<String, String> userInfos = this.getUserInfos(joinPoint);
         String username = userInfos.get("username");
         String clientIpAddress = userInfos.get("clientIpAddress");
+
+        // EsupStockLostSessionException signals a normal "not yet authenticated" workflow:
+        // log at WARN without stack trace to avoid polluting ERROR logs.
+        if (throwable instanceof EsupStockLostSessionException) {
+            log.warn(MessageFormat.format(AFTER_THROWING, name,
+                    constructArgumentsString(clazz, name, clientIpAddress, username, joinPoint.getArgs()),
+                    throwable.getMessage(), "", ""));
+            return;
+        }
 
         this.logError(clazz, throwable, AFTER_THROWING, name,
                 constructArgumentsString(clazz, name, clientIpAddress, username, joinPoint.getArgs()), throwable.getMessage());

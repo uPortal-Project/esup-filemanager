@@ -46,6 +46,7 @@ import org.esupportail.filemanager.beans.UploadActionType;
 import org.esupportail.filemanager.beans.UserPassword;
 import org.esupportail.filemanager.exceptions.EsupStockException;
 import org.esupportail.filemanager.exceptions.EsupStockFileExistException;
+import org.esupportail.filemanager.exceptions.EsupStockLostSessionException;
 import org.esupportail.filemanager.services.FsAccess;
 import org.esupportail.filemanager.services.ResourceUtils;
 import org.esupportail.filemanager.services.auth.KerberosUserAuthenticatorService;
@@ -215,6 +216,10 @@ public class SmbAccessImpl extends FsAccess implements DisposableBean {
                     UserPassword up = kerberosAuth.getUserPassword();
                     String username = up.getUsername() != null ? up.getUsername() : "";
                     String domain   = kerberosAuth.getKerberosRealm() != null ? kerberosAuth.getKerberosRealm() : "";
+
+                    if (username.isEmpty()) {
+                        throw new EsupStockLostSessionException("Kerberos authentication skipped: user not yet authenticated");
+                    }
 
                     Subject kerberosSubject = kerberosAuth.getOrObtainKerberosSubject();
 

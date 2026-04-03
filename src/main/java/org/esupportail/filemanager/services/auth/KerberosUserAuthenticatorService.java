@@ -152,6 +152,9 @@ public class KerberosUserAuthenticatorService extends FormUserPasswordAuthentica
         if (kerberosSubject == null) {
             String username = userPassword.getUsername() != null ? userPassword.getUsername() : "";
             String password = userPassword.getPassword() != null ? userPassword.getPassword() : "";
+            if (username.isEmpty()) {
+                throw new LoginException("Kerberos authentication skipped: username is empty (user not yet authenticated)");
+            }
             kerberosSubject = loginWithKerberos(username, password);
             // we don't keep password in memory and we use only kerberos ticket now
             // set password to dummy so that form auth will not be displayed
