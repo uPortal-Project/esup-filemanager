@@ -323,6 +323,128 @@
         }
     };
 
+    // ==================== Audio Playlist Manager ====================
+
+    const AudioPlaylistManager = {
+        tracks: [],
+        currentIndex: 0,
+
+        /**
+         * Initializes the audio playlist
+         */
+        init: function() {
+            const audioEl = document.getElementById('playlistAudio');
+            if (!audioEl) return;
+
+            // Load track data
+            this.loadTracks();
+            if (this.tracks.length === 0) return;
+
+            console.log(`Playlist: ${this.tracks.length} track(s) loaded`);
+
+            // Load first track
+            this.loadTrack(0, false);
+
+            // Bind track list click
+            const trackList = document.getElementById('playlistTracks');
+            if (trackList) {
+                const newList = trackList.cloneNode(true);
+                trackList.parentNode.replaceChild(newList, trackList);
+                newList.addEventListener('click', (e) => {
+                    const li = e.target.closest('.playlist-track');
+                    if (li) {
+                        const index = parseInt(li.getAttribute('data-index'), 10);
+                        this.loadTrack(index, true);
+                    }
+                });
+            }
+
+            // Bind prev / next buttons
+            const prevBtn = document.getElementById('playlistPrev');
+            const nextBtn = document.getElementById('playlistNext');
+
+            if (prevBtn) {
+                const newPrev = prevBtn.cloneNode(true);
+                prevBtn.parentNode.replaceChild(newPrev, prevBtn);
+                newPrev.addEventListener('click', () => this.prev());
+            }
+            if (nextBtn) {
+                const newNext = nextBtn.cloneNode(true);
+                nextBtn.parentNode.replaceChild(newNext, nextBtn);
+                newNext.addEventListener('click', () => this.next());
+            }
+
+            // Auto-advance to next track when current ends
+            audioEl.addEventListener('ended', () => this.next());
+        },
+
+        /**
+         * Loads track metadata from hidden DOM elements
+         */
+        loadTracks: function() {
+            const playlistData = document.getElementById('playlistData');
+            if (!playlistData) return;
+
+            const items = playlistData.querySelectorAll('.playlist-track-data');
+            this.tracks = Array.from(items).map(el => ({
+                src:   el.getAttribute('data-src'),
+                title: el.getAttribute('data-title'),
+                mime:  el.getAttribute('data-mime')
+            }));
+        },
+
+        /**
+         * Loads and optionally plays the track at the given index
+         * @param {number} index
+         * @param {boolean} autoplay
+         */
+        loadTrack: function(index, autoplay) {
+            if (index < 0 || index >= this.tracks.length) return;
+            this.currentIndex = index;
+
+            const track = this.tracks[index];
+            const audioEl = document.getElementById('playlistAudio');
+            if (audioEl) {
+                audioEl.src = track.src;
+                if (track.mime) audioEl.type = track.mime;
+                audioEl.load();
+                if (autoplay) audioEl.play().catch(() => {});
+            }
+
+            // Update counter
+            const counter = document.getElementById('playlistCounter');
+            if (counter) {
+                counter.textContent = `${index + 1} / ${this.tracks.length}`;
+            }
+
+            // Highlight active track in list
+            const items = document.querySelectorAll('#playlistTracks .playlist-track');
+            items.forEach((li, i) => {
+                if (i === index) {
+                    li.classList.add('active');
+                } else {
+                    li.classList.remove('active');
+                }
+            });
+        },
+
+        /**
+         * Previous track
+         */
+        prev: function() {
+            const newIndex = this.currentIndex - 1;
+            this.loadTrack(newIndex < 0 ? this.tracks.length - 1 : newIndex, true);
+        },
+
+        /**
+         * Next track
+         */
+        next: function() {
+            const newIndex = this.currentIndex + 1;
+            this.loadTrack(newIndex >= this.tracks.length ? 0 : newIndex, true);
+        }
+    };
+
     // ==================== Zip Download Manager ====================
 
     /**
@@ -389,6 +511,7 @@
         initImageModalClose();
         initImageDimensionDetection();
         SlideshowManager.init();
+        AudioPlaylistManager.init();
         initZipDownload();
         enhanceMediaPlayers();
     }

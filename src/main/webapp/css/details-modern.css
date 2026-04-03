@@ -367,6 +367,89 @@
     }
 }
 
+/* ==================== Playlist audio ==================== */
+.audio-playlist-container {
+    padding: 0;
+}
+
+.playlist-header {
+    background: #f3f3f3;
+    border-top: 1px solid #bbb;
+    border-bottom: 1px solid #bbb;
+    padding: 6px 10px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #333333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.playlist-counter {
+    font-weight: normal;
+    color: #666666;
+    font-size: 12px;
+}
+
+.playlist-nav {
+    padding: 6px 10px;
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.playlist-tracks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 160px;
+    overflow-y: auto;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.playlist-track {
+    padding: 6px 10px;
+    font-size: 12px;
+    color: #333333;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background 0.15s ease;
+}
+
+.playlist-track:last-child {
+    border-bottom: none;
+}
+
+.playlist-track:hover {
+    background: #e8e8e8;
+}
+
+.playlist-track.active {
+    background: #d0e8ff;
+    font-weight: bold;
+    color: #1a5f9e;
+}
+
+.playlist-track.active::before {
+    content: "▶ ";
+    font-size: 10px;
+}
+
+/* ==================== Responsive playlist ==================== */
+@media (max-width: 768px) {
+    .playlist-tracks {
+        max-height: 120px;
+    }
+
+    .playlist-track {
+        font-size: 11px;
+        padding: 5px 8px;
+    }
+}
+
 /* ==================== Responsive ==================== */
 @media (max-width: 768px) {
     .details-header {

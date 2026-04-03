@@ -26,6 +26,44 @@
                  th:attr="data-src=@{/fetchImage(dir=${path})},data-title=${path}"></div>
         </div>
     </div>
+
+    <!-- Playlist audio -->
+    <div th:if="${audio_tracks != null and #lists.size(audio_tracks) > 0}">
+        <div class="details-spacer"></div>
+
+        <div class="audio-playlist-container">
+            <div class="playlist-header">
+                <span th:text="#{details.playlist.title}">Playlist audio</span>
+                <span class="playlist-counter" id="playlistCounter"></span>
+            </div>
+
+            <div class="media-player-container">
+                <audio id="playlistAudio" controls class="audio-player">
+                    <span th:text="#{details.playlist.unsupported}">Votre navigateur ne supporte pas la lecture audio HTML5.</span>
+                </audio>
+            </div>
+
+            <div class="playlist-nav">
+                <button id="playlistPrev" class="btn-action" th:text="#{details.playlist.prev}">‹ Précédent</button>
+                <button id="playlistNext" class="btn-action" th:text="#{details.playlist.next}">Suivant ›</button>
+            </div>
+
+            <ul class="playlist-tracks" id="playlistTracks">
+                <li th:each="track, stat : ${audio_tracks}"
+                    class="playlist-track"
+                    th:classappend="${stat.first} ? ' active' : ''"
+                    th:attr="data-index=${stat.index}"
+                    th:text="${track.title}">Piste</li>
+            </ul>
+        </div>
+
+        <!-- Données cachées pour le JS -->
+        <div id="playlistData" style="display: none;">
+            <div th:each="track : ${audio_tracks}"
+                 class="playlist-track-data"
+                 th:attr="data-src=@{/downloadFile(dir=${track.path})},data-title=${track.title},data-mime=${track.mimeType}"></div>
+        </div>
+    </div>
 </div>
 
 <!-- Modal du diaporama -->

@@ -511,18 +511,25 @@ public class AjaxController {
             // Add data for multiple files details view
             model.put("numselected", pathEncodingUtils.decodeDirs(command.getDirs()).size());
 
-            // Find the resources which are files and add them to the
-            // image_paths array
+            // Find the resources which are images or audio files
             List<String> image_paths = new ArrayList<String>();
+            List<Map<String, String>> audio_tracks = new ArrayList<Map<String, String>>();
 
             for (String filePath : pathEncodingUtils.decodeDirs(command.getDirs())) {
                 JsTreeFile resource = this.serverAccess.get(filePath, false, true);
                 ResourceUtils.Type fileType = resourceUtils.getType(resource.getTitle());
                 if (fileType == Type.IMAGE && !resource.isOverSizeLimit()) {
                     image_paths.add(pathEncodingUtils.encodeDir(filePath));
+                } else if (fileType == Type.AUDIO && !resource.isOverSizeLimit()) {
+                    Map<String, String> trackInfo = new HashMap<String, String>();
+                    trackInfo.put("path", pathEncodingUtils.encodeDir(filePath));
+                    trackInfo.put("title", resource.getTitle());
+                    trackInfo.put("mimeType", resource.getMimeType());
+                    audio_tracks.add(trackInfo);
                 }
             }
             model.put("image_paths", image_paths);
+            model.put("audio_tracks", audio_tracks);
             return new ModelAndView("details_files", model);
         }
 
