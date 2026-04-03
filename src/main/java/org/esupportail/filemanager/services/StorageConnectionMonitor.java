@@ -23,7 +23,7 @@ public class StorageConnectionMonitor {
     private static final double GAUGE_CIRCUMFERENCE = 238.76;
 
     /** Number of connections that corresponds to a full gauge (100 %). */
-    private static final int GAUGE_MAX_CONNECTIONS = 10;
+    private static final int GAUGE_MAX_CONNECTIONS = 200;
 
     private final ConcurrentHashMap<String, DriveConnectionInfo> drives = new ConcurrentHashMap<>();
 
@@ -152,11 +152,11 @@ public class StorageConnectionMonitor {
          */
         public String getGaugeColor() {
             int c = openConnections.get();
-            if (c == 0)  return "#adb5bd"; // gray   – no connections
-            if (c <= 3)  return "#198754"; // green  – low load
-            if (c <= 6)  return "#0d6efd"; // blue   – medium load
-            if (c <= 9)  return "#fd7e14"; // orange – high load
-            return "#dc3545";               // red    – very high load
+            if (c == 0)   return "#adb5bd"; // gray   – no connections
+            if (c < 10)   return "#198754"; // green  – low load    (1–9)
+            if (c <= 50)  return "#0d6efd"; // blue   – medium load (10–50)
+            if (c <= 200) return "#fd7e14"; // orange – high load   (51–200)
+            return "#dc3545";               // red    – very high load (201+)
         }
 
         /**
@@ -164,10 +164,10 @@ public class StorageConnectionMonitor {
          */
         public String getStatusBadgeClass() {
             int c = openConnections.get();
-            if (c == 0)  return "secondary";
-            if (c <= 3)  return "success";
-            if (c <= 6)  return "primary";
-            if (c <= 9)  return "warning";
+            if (c == 0)   return "secondary";
+            if (c < 10)   return "success";
+            if (c <= 50)  return "primary";
+            if (c <= 200) return "warning";
             return "danger";
         }
     }
