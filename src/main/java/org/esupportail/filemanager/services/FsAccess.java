@@ -263,6 +263,11 @@ public abstract class FsAccess {
     }
 
     public boolean authenticate(String username, String password) {
+        // Force-close any existing (possibly stale) connection before re-authenticating.
+        // For Kerberos this also invalidates the cached TGT so a fresh one is obtained
+        // on the next open() call, preventing STATUS_ACCESS_DENIED loops when the TGT
+        // or the SMB session has expired while diskShare still appeared "connected".
+        this.close();
         this.userAuthenticatorService.getUserPassword().setUsername(username);
         this.userAuthenticatorService.getUserPassword().setPassword(password);
         this.manipulateUri(username);
@@ -272,6 +277,8 @@ public abstract class FsAccess {
             // TODO : catch Exception corresponding to an authentication failure ...
             log.warn("Authentication failed: {}", e.getMessage());
             log.info("Full stack of exception occured during authentication which failed ...", e);
+            // Ensure the connection is fully reset so the next authenticate() call starts fresh.
+            this.close();
             this.userAuthenticatorService.getUserPassword().setPassword(null);
             return false;
         }

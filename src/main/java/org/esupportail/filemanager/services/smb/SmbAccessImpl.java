@@ -22,6 +22,7 @@ import com.hierynomus.msdtyp.FileTime;
 import com.hierynomus.msfscc.FileAttributes;
 import com.hierynomus.msfscc.fileinformation.FileAllInformation;
 import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation;
+import com.hierynomus.mserref.NtStatus;
 import com.hierynomus.mssmb2.SMB2CreateDisposition;
 import com.hierynomus.mssmb2.SMB2Dialect;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
@@ -122,6 +123,40 @@ public class SmbAccessImpl extends FsAccess implements DisposableBean {
             case SMB_3_1_1: return "SMB 3.1.1";
             default:        return "SMB";
         }
+    }
+
+    // -----------------------------------------------------------------------
+    // Auth-error detection helpers
+    // -----------------------------------------------------------------------
+
+    /**
+     * Returns {@code true} when the NTSTATUS code signals an authentication or
+     * session-level error (expired Kerberos TGT, invalidated SMB session, …).
+     * In those cases the connection must be torn down so that the next {@link #open()}
+     * call obtains fresh credentials instead of reusing a stale session.
+     */
+    private static boolean isAuthError(SMBApiException e) {
+        NtStatus status = e.getStatus();
+        return status == NtStatus.STATUS_ACCESS_DENIED           // 0xC0000022
+            || status == NtStatus.STATUS_LOGON_FAILURE           // 0xC000006D
+            || status == NtStatus.STATUS_NETWORK_SESSION_EXPIRED // 0xC000035C
+            || status == NtStatus.STATUS_USER_SESSION_DELETED;   // 0xC0000203
+    }
+
+    /**
+     * Wraps an {@link SMBApiException} into an {@link EsupStockException} for rethrowing.
+     * When the exception signals an auth/session error the current SMB connection is
+     * closed first, so that the next {@link #open()} call (triggered e.g. by
+     * {@link org.esupportail.filemanager.services.FsAccess#authenticate}) establishes
+     * a fresh, authenticated connection and obtains a new Kerberos TGT if needed.
+     */
+    private EsupStockException wrapSmbException(SMBApiException e) {
+        if (isAuthError(e)) {
+            log.warn("SMB auth/session error on '{}' (status {}) – closing connection to force re-authentication",
+                    smbHost, e.getStatus());
+            close();
+        }
+        return new EsupStockException(e);
     }
 
     // -----------------------------------------------------------------------
@@ -267,8 +302,10 @@ public class SmbAccessImpl extends FsAccess implements DisposableBean {
                         userAuthenticatorService instanceof KerberosUserAuthenticatorService);
 
             } catch (LoginException e) {
+                close(); // clean up any partially-opened resources
                 throw new EsupStockException("Kerberos authentication failed: " + e.getMessage(), e);
             } catch (IOException e) {
+                close(); // clean up any partially-opened resources
                 throw new EsupStockException(e);
             }
         }
@@ -375,7 +412,7 @@ public class SmbAccessImpl extends FsAccess implements DisposableBean {
 
             return file;
         } catch (SMBApiException e) {
-            throw new EsupStockException(e);
+            throw wrapSmbException(e);
         }
     }
 
@@ -412,7 +449,7 @@ public class SmbAccessImpl extends FsAccess implements DisposableBean {
         try {
             return smbPathAsJsTreeFile(buildSmbPath(path), path, folderDetails, fileDetails);
         } catch (SMBApiException e) {
-            throw new EsupStockException(e);
+            throw wrapSmbException(e);
         }
     }
 
@@ -451,7 +488,7 @@ public class SmbAccessImpl extends FsAccess implements DisposableBean {
                 files.add(jsFile);
             }
         } catch (SMBApiException e) {
-            throw new EsupStockException(e);
+            throw wrapSmbException(e);
         }
         return files;
     }
