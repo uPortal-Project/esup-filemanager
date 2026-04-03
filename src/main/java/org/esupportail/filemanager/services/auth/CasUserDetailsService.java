@@ -18,17 +18,18 @@ public class CasUserDetailsService extends AbstractCasAssertionUserDetailsServic
 
     @Override
     protected UserDetails loadUserDetails(Assertion assertion) {
-        List<GrantedAuthority> grantedAuthorities = new ArrayList();
+        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
         Map<String, Object> attributes = assertion.getPrincipal().getAttributes();
-        if(attributes.get("memberOf") != null) {
+        if (attributes.get("memberOf") != null) {
             Object memberOfAttr = attributes.get("memberOf");
-            if(memberOfAttr instanceof List) {
-                List<String> memberOfs = (List<String>) memberOfAttr;
-                for(String group : memberOfs) {
+            if (memberOfAttr instanceof List<?>) {
+                List<?> memberOfs = (List<?>) memberOfAttr;
+                for (Object groupObj : memberOfs) {
+                    String group = String.valueOf(groupObj);
                     grantedAuthorities.add(() -> "ROLE_" + group);
                 }
-            } else if(memberOfAttr instanceof String) {
-                grantedAuthorities.add(() ->  "ROLE_" + (String) memberOfAttr);
+            } else if (memberOfAttr instanceof String) {
+                grantedAuthorities.add(() -> "ROLE_" + String.valueOf(memberOfAttr));
             }
         }
         log.info("Loading user attributes for CAS user {} ({} attributes: keys={})",
