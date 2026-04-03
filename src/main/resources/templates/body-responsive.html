@@ -1,8 +1,8 @@
 <!-- src/main/resources/templates/body-responsive.html -->
-<!-- Template responsive Bootstrap 5 pour desktop, tablette et mobile -->
+<!-- Responsive Bootstrap 5 template for desktop, tablet and mobile -->
 <div class="container-fluid esupstock p-0" th:fragment="body" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-    <!-- Mobile Header avec burger menu -->
+    <!-- Mobile header with burger menu -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light d-lg-none sticky-top shadow-sm" th:attr="aria-label=#{aria.nav.mobile}">
         <div class="container-fluid">
             <span class="navbar-brand mb-0 h1">
@@ -19,7 +19,7 @@
         </div>
     </nav>
 
-    <!-- Offcanvas Menu Mobile (Actions + Arborescence) -->
+    <!-- Mobile Offcanvas Menu (Actions + File Tree) -->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="mobileMenuLabel">
@@ -28,7 +28,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body p-0">
-            <!-- Actions rapides mobile -->
+            <!-- Mobile quick actions -->
             <div class="list-group list-group-flush">
                 <button class="list-group-item list-group-item-action" id="mobile-upload">
                     <i class="bi bi-cloud-upload" aria-hidden="true"></i> <span th:text="#{toolbar.upload.title}">Upload</span>
@@ -59,14 +59,14 @@
                     <i class="bi bi-trash" aria-hidden="true"></i> <span th:text="#{toolbar.delete.title}">Supprimer</span>
                 </button>
                 <div class="dropdown-divider" role="separator"></div>
-                <!-- Lien Java Perf - Admin uniquement -->
+                <!-- Java Perf link - Admin only -->
                 <a sec:authorize="hasRole(@environment.getProperty('security.role.admin'))"
                    th:href="@{/javaperf}"
                    class="list-group-item list-group-item-action text-warning">
                     <i class="bi bi-speedometer2" aria-hidden="true"></i> Java Performance
                 </a>
                 <div class="dropdown-divider" role="separator"></div>
-                <!-- Sélecteur de langue - Menu Mobile -->
+                <!-- Language selector - Mobile Menu -->
                 <div class="list-group-item d-flex align-items-center gap-2" role="group" th:attr="aria-label=#{aria.lang.select}">
                     <i class="bi bi-translate" aria-hidden="true"></i>
                     <button type="button" onclick="switchLanguage('fr')"
@@ -88,7 +88,7 @@
                 </div>
             </div>
 
-            <!-- Arborescence dans le menu mobile -->
+            <!-- File tree in mobile menu -->
             <div class="p-3 bg-light border-top">
                 <h6 class="text-muted mb-2" th:text="#{treearea.header}">Arborescence</h6>
                 <div id="fileTreeMobile" class="small"></div>
@@ -96,7 +96,7 @@
         </div>
     </div>
 
-    <!-- Toolbar Desktop (caché sur mobile) -->
+    <!-- Desktop Toolbar (hidden on mobile) -->
     <div id="toolbar" class="d-none d-lg-flex bg-light border-bottom p-3 flex-wrap align-items-center shadow-sm">
         <div class="btn-group btn-group-sm me-2 mb-2" role="group">
             <button type="button" class="btn btn-outline-primary" id="toolbar-refresh"
@@ -181,7 +181,7 @@
         </div>
 
         <div class="ms-auto mb-2 d-flex align-items-center gap-2">
-            <!-- Sélecteur de langue - Desktop Toolbar -->
+            <!-- Language selector - Desktop Toolbar -->
             <div class="d-flex align-items-center gap-1 me-2" id="lang-switcher-toolbar" role="group" th:attr="aria-label=#{aria.lang.select}">
                 <button type="button" onclick="switchLanguage('fr')"
                    th:classappend="${#locale.language == 'fr'} ? 'btn btn-sm btn-primary p-1 lh-1' : 'btn btn-sm btn-outline-secondary p-1 lh-1'"
@@ -200,7 +200,7 @@
                    th:attr="aria-pressed=${#locale.language == 'es'}"
                    aria-label="Español"><span class="fi fi-es" aria-hidden="true"></span></button>
             </div>
-            <!-- Lien Java Perf - Admin uniquement -->
+            <!-- Java Perf link - Admin only -->
             <a sec:authorize="hasRole(@environment.getProperty('security.role.admin'))"
                th:href="@{/javaperf}"
                class="btn btn-sm btn-outline-warning d-inline-flex align-items-center gap-1 me-1"
@@ -223,12 +223,12 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
-    <!-- Main Content Area avec splitter moderne -->
+    <!-- Main Content Area with modern splitter -->
     <div class="main-content-wrapper">
-        <!-- Left Panel - Arborescence (Desktop uniquement) -->
+        <!-- Left Panel - File Tree (Desktop only) -->
         <aside id="leftPanel" class="left-panel d-none d-lg-flex" th:attr="aria-label=#{aria.panel.files}">
             <div class="panel-content">
-                <!-- Header Arborescence -->
+                <!-- Tree header -->
                 <div class="panel-header">
                     <h2 class="h6 mb-0">
                         <i class="bi bi-folder-tree me-2" aria-hidden="true"></i>
@@ -236,7 +236,7 @@
                     </h2>
                 </div>
 
-                <!-- Arborescence -->
+                <!-- File Tree -->
                 <div id="arborescentArea" class="panel-body flex-grow-1">
                     <div id="fileTree" th:text="#{error.javascriptengine}">Chargement...</div>
                 </div>
@@ -267,7 +267,7 @@
         </main>
     </div>
 
-    <!-- Bottom Toolbar Mobile (Actions rapides) -->
+    <!-- Mobile Bottom Toolbar (Quick actions) -->
     <div class="d-lg-none bg-light border-top fixed-bottom">
         <div class="btn-group w-100" role="group" th:attr="aria-label=#{aria.bottom.toolbar}">
             <button type="button" class="btn btn-light border-0 py-3" id="mobile-toolbar-upload"
@@ -295,7 +295,7 @@
         </div>
     </div>
 
-    <!-- Dialogs cachés -->
+    <!-- Hidden dialogs -->
     <div id="waitingDialog" class="d-none" th:title="#{ajax.overlay.title}" th:text="#{ajax.overlay.body}"></div>
     <div id="errorDialog" class="d-none" th:title="#{ajax.error.title}">...</div>
     <div id="delete-confirm-ok" class="d-none" th:text="#{delete.confirm.ok}"></div>
@@ -307,7 +307,7 @@
         </p>
     </div>
 
-    <!-- Fonction de changement de langue : ajoute ?lang=xx à l'URL courante -->
+    <!-- Language switch function: appends ?lang=xx to the current URL -->
     <script>
         function switchLanguage(lang) {
             var url = new URL(window.location.href);

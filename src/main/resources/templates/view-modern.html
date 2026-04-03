@@ -22,19 +22,19 @@
 
 </head>
 <body class="d-flex flex-column min-vh-100">
-    <!-- Lien d'évitement WCAG 2.4.1 -->
+    <!-- WCAG 2.4.1 skip link -->
     <a href="#rightPanel" class="visually-hidden-focusable" th:text="#{skip.to.main}">Skip to main content</a>
 
     <script th:inline="javascript">
         /*<![CDATA[*/
-        // Configuration globale
+        // Global configuration
         var fileuploadTemplate = /*[[#{fileupload.template}]]*/ '';
         var fileTemplate = /*[[#{fileupload.fileTemplate}]]*/ '';
         var useDoubleClick = /*[[${useDoubleClick}]]*/ '';
         var useCursorWaitDialog = /*[[${useCursorWaitDialog}]]*/ '';
         var defaultPath = /*[[${defaultPath}]]*/ '';
 
-        // URLs des endpoints
+        // Endpoint URLs
         var htmlFileTreeURL = '/htmlFileTree';
         var uploadFileURL ='/uploadFile';
         var prepareCopyFilesURL = '/prepareCopyFiles';
@@ -50,31 +50,31 @@
         var removeFilesURL = '/removeFiles';
         var authenticateURL = '/authenticate';
 
-        // Messages I18N exposés au JavaScript
+        // I18N messages exposed to JavaScript
         window.i18n = {
-            // Upload - fichier individuel
+            // Upload - individual file
             uploadFileSuccess       : /*[[#{info.uploadFileSuccess}]]*/ 'File "{0}" uploaded successfully.',
             uploadFileFailed        : /*[[#{info.uploadFileFailed}]]*/ 'Error uploading file "{0}".',
-            // Upload - bilan global
+            // Upload - overall summary
             uploadFilesSuccess      : /*[[#{info.uploadFilesSuccess}]]*/ '{0} file(s) uploaded successfully.',
             uploadFilesPartial      : /*[[#{info.uploadFilesPartial}]]*/ '{0} file(s) uploaded, {1} error(s).',
-            // Upload - labels du panneau de progression
+            // Upload - progress panel labels
             uploadingProgress       : /*[[#{info.uploadingProgress}]]*/ 'Uploading ({0}/{1})',
             uploadProgress          : /*[[#{info.uploadProgress}]]*/ '{0} / {1} file(s)',
             uploadErrors            : /*[[#{info.uploadErrors}]]*/ '{0} error(s)',
-            // Copier
+            // Copy
             copyOk                  : /*[[#{ajax.copy.ok}]]*/ '',
             copyFailed              : /*[[#{error.copyFailed}]]*/ 'Copy failed.',
             itemsCopied             : /*[[#{info.itemsCopied}]]*/ '{0} item(s) copied.',
-            // Couper
+            // Cut
             cutOk                   : /*[[#{ajax.cut.ok}]]*/ '',
             cutFailed               : /*[[#{error.cutFailed}]]*/ 'Cut failed.',
             itemsCut                : /*[[#{info.itemsCut}]]*/ '{0} item(s) cut.',
-            // Coller
+            // Paste
             pasteOk                 : /*[[#{ajax.paste.ok}]]*/ '',
             pasteFailed             : /*[[#{ajax.paste.failed}]]*/ '',
             clipboardEmpty          : /*[[#{error.clipboardEmpty}]]*/ 'Clipboard is empty.',
-            // Supprimer
+            // Delete
             removeOk                : /*[[#{ajax.remove.ok}]]*/ '',
             removeFailed            : /*[[#{ajax.remove.failed}]]*/ '',
             deleteConfirmTitle      : /*[[#{delete.confirm.title}]]*/ 'Delete confirmation',
@@ -82,17 +82,17 @@
             deleteConfirmOk         : /*[[#{delete.confirm.ok}]]*/ 'Ok',
             deleteConfirmCancel     : /*[[#{delete.confirm.cancel}]]*/ 'Cancel',
             deleteButton            : /*[[#{toolbar.delete.button}]]*/ 'Delete',
-            // Renommer
+            // Rename
             renameTitle             : /*[[#{dialog.rename.title}]]*/ 'Rename',
             renameButton            : /*[[#{dialog.rename.button}]]*/ 'Rename',
             renameSuccess           : /*[[#{ajax.rename.success}]]*/ '',
             renameFailed            : /*[[#{ajax.rename.failed}]]*/ '',
-            // Créer dossier
+            // Create folder
             createSuccess           : /*[[#{ajax.fileOrFolderCreate.success}]]*/ '',
             createFailed            : /*[[#{ajax.fileOrFolderCreate.failed}]]*/ '',
             createButton            : /*[[#{toolbar.create.button}]]*/ 'Create',
             newFolderPlaceholder    : /*[[#{dialog.newFolder.placeholder}]]*/ 'Folder name',
-            // Libellés toolbar (menus contextuels)
+            // Toolbar labels (context menus)
             refresh                 : /*[[#{toolbar.refresh}]]*/ 'Refresh',
             newFolder               : /*[[#{toolbar.create}]]*/ 'New Folder',
             paste                   : /*[[#{toolbar.paste}]]*/ 'Paste',
@@ -101,12 +101,12 @@
             cut                     : /*[[#{toolbar.cut}]]*/ 'Cut',
             rename                  : /*[[#{toolbar.rename}]]*/ 'Rename',
             delete_                 : /*[[#{toolbar.delete}]]*/ 'Delete',
-            // Authentification
+            // Authentication
             authOk                  : /*[[#{auth.ok}]]*/ '',
             authBad                 : /*[[#{auth.bad}]]*/ '',
             authMissingCredentials  : /*[[#{auth.missingCredentials}]]*/ 'Please enter your username and password.',
             authError               : /*[[#{auth.error}]]*/ 'Authentication error. Please try again.',
-            // Erreurs générales
+            // General errors
             noFileSelected          : /*[[#{error.noFileSelected}]]*/ 'No file selected.',
             directoryLoadingError   : /*[[#{error.directoryLoading}]]*/ 'Error loading directory.',
             refreshFailed           : /*[[#{error.refreshFailed}]]*/ 'Error refreshing view.',
@@ -116,32 +116,32 @@
             cannotRetrieveFileName  : /*[[#{error.cannotRetrieveFileName}]]*/ 'Cannot retrieve file name.',
             enterFolderName         : /*[[#{error.enterFolderName}]]*/ 'Please enter a folder name.',
             enterNewName            : /*[[#{error.enterNewName}]]*/ 'Please enter a new name.',
-            // Infos
+            // Info messages
             viewRefreshed           : /*[[#{info.viewRefreshed}]]*/ 'View refreshed.',
             nameUnchanged           : /*[[#{info.nameUnchanged}]]*/ 'Name has not changed.'
         };
         /*]]>*/
     </script>
 
-    <!-- JS - Bootstrap d'abord -->
+    <!-- JS - Bootstrap first -->
     <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.js}"></script>
 
-    <!-- URL pré-signées S3 -->
+    <!-- S3 pre-signed URLs -->
     <script type="text/javascript" th:src="@{/js/esup-presigned-urls.js}"></script>
 
-    <!-- Support Mobile et Responsive -->
+    <!-- Mobile and Responsive support -->
     <script type="text/javascript" th:src="@{/js/esup-mobile-support.js}"></script>
 
-    <!-- Panel Resizer - Redimensionnement moderne -->
+    <!-- Panel Resizer - Modern resize handling -->
     <script type="text/javascript" th:src="@{/js/panel-resizer.js}"></script>
 
-    <!-- Details Manager - Gestion moderne des blocs de détails -->
+    <!-- Details Manager - Modern details block management -->
     <script type="text/javascript" th:src="@{/js/details-manager.js}"></script>
 
-    <!-- Modules ES6 - Application moderne -->
+    <!-- ES6 Modules - Modern application -->
     <script type="module" th:src="@{/js/esup-stock-modern.js}"></script>
 
-    <!-- Body content responsive -->
+    <!-- Responsive body content -->
     <div th:replace="~{body-responsive :: body}"></div>
 </body>
 </html>

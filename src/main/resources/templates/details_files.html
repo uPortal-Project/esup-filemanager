@@ -19,7 +19,7 @@
         <div class="details-spacer"></div>
         <button id="detail-view-images" class="btn-action" th:text="#{details.images.title}">Voir les images</button>
 
-        <!-- Données pour le diaporama -->
+        <!-- Slideshow data -->
         <div id="slideshowData" style="display: none;">
             <div th:each="path : ${image_paths}"
                  class="slideshow-image-data"
@@ -64,7 +64,7 @@
             </ul>
         </div>
 
-        <!-- Données cachées pour le JS -->
+        <!-- Hidden data for JS -->
         <div id="playlistData" style="display: none;">
             <div th:each="track : ${audio_tracks}"
                  class="playlist-track-data"

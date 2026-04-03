@@ -58,7 +58,7 @@
     </div>
 </nav>
 
-<!-- Contenu principal -->
+<!-- Main content -->
 <main class="container-xl py-4" id="javaperf-main">
 
     <h1 class="mb-4 d-flex align-items-center gap-2">
@@ -66,7 +66,7 @@
         <span th:text="#{javaperf.heading}">Java Performance</span>
     </h1>
 
-    <!-- Mémoire -->
+    <!-- Memory -->
     <div class="row g-3 mb-4">
         <h2 class="col-12 mb-0 text-muted h5"><i class="bi bi-memory me-1" aria-hidden="true"></i><span th:text="#{javaperf.memory.title}">JVM Memory</span></h2>
 
@@ -103,7 +103,7 @@
             </div>
         </div>
 
-        <!-- Barre de progression mémoire -->
+        <!-- Memory progress bar -->
         <div class="col-12">
             <div class="d-flex justify-content-between small text-muted mb-1">
                 <span th:text="#{javaperf.memory.usage}">Memory usage</span>
@@ -131,25 +131,25 @@
                    th:text="#{javaperf.storage.subtitle}">(active sessions per drive since startup)</small>
         </h2>
 
-        <!-- Aucune connexion enregistrée -->
+        <!-- No connections recorded -->
         <div th:if="${#lists.isEmpty(storageStats)}"
              class="alert alert-info d-flex align-items-center gap-2">
             <i class="bi bi-info-circle-fill fs-5" aria-hidden="true"></i>
             <span th:text="#{javaperf.storage.empty}">No connections recorded since the server started.</span>
         </div>
 
-        <!-- Cartes de jauge par lecteur -->
+        <!-- Gauge cards per drive -->
         <div th:unless="${#lists.isEmpty(storageStats)}" class="row g-3">
             <div th:each="stat : ${storageStats}" class="col-6 col-md-4 col-lg-3 col-xl-2">
                 <div class="card shadow-sm h-100 text-center py-3 px-2">
 
-                    <!-- Jauge circulaire SVG (type compteur/speedometer) -->
+                    <!-- Circular SVG gauge (counter/speedometer type) -->
                     <svg viewBox="0 0 100 100" width="110" height="110"
                          class="mx-auto" aria-hidden="true">
-                        <!-- Piste de fond -->
+                         <!-- Background track -->
                         <circle cx="50" cy="50" r="38"
                                 fill="none" stroke="#e9ecef" stroke-width="12"/>
-                        <!-- Arc de progression (200 connexions = plein) -->
+                         <!-- Progress arc (200 connections = full) -->
                         <circle cx="50" cy="50" r="38"
                                 fill="none"
                                 th:attr="stroke=${stat.gaugeColor},
@@ -159,7 +159,7 @@
                                 stroke-dasharray="238.76"
                                 transform="rotate(-90 50 50)"
                                 style="transition: stroke-dashoffset .5s ease;"/>
-                        <!-- Nombre de connexions (valeur centrale) -->
+                         <!-- Number of connections (center value) -->
                         <text x="50" y="46"
                               text-anchor="middle" dominant-baseline="central"
                               font-size="26" font-weight="bold" fill="#212529"
@@ -170,12 +170,12 @@
                               th:text="#{javaperf.storage.sessions}">session(s)</text>
                     </svg>
 
-                    <!-- Nom du lecteur, protocole et compteur (accessible) -->
+                    <!-- Drive name, protocol and counter (accessible) -->
                     <div class="mt-2 px-1">
                         <div class="fw-semibold text-truncate small"
                              th:text="${stat.driveName}"
                              th:title="${stat.driveName}">drive</div>
-                        <!-- Texte caché pour lecteurs d'écran : nombre de sessions -->
+                         <!-- Hidden text for screen readers: number of sessions -->
                         <span class="visually-hidden"
                               th:text="${stat.openConnections} + ' ' + #{javaperf.storage.sessions}"></span>
                         <span class="badge mt-1"
@@ -191,7 +191,7 @@
             </div>
         </div>
 
-        <!-- Légende des couleurs -->
+        <!-- Color legend -->
         <div th:unless="${#lists.isEmpty(storageStats)}"
              class="d-flex flex-wrap gap-3 mt-3 small text-muted align-items-center">
             <span class="fw-semibold" th:text="#{javaperf.storage.legend}">Legend:</span>
@@ -207,7 +207,7 @@
     <div class="mb-4">
         <h2 class="text-muted mb-3 h5"><i class="bi bi-diagram-3 me-1" aria-hidden="true"></i><span th:text="#{javaperf.threads.title}">Threads</span></h2>
 
-        <!-- Résumé par état -->
+        <!-- Summary by state -->
         <div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
             <span class="fw-semibold me-1" th:text="#{javaperf.threads.states}">Thread states:</span>
             <span th:each="entry : ${threadStateCount}"
@@ -227,7 +227,7 @@
             </span>
         </div>
 
-        <!-- Tableau des threads -->
+        <!-- Thread table -->
         <div class="table-responsive">
             <table class="table table-sm table-bordered table-hover thread-table align-middle"
                    th:attr="aria-label=#{javaperf.threads.title}">
