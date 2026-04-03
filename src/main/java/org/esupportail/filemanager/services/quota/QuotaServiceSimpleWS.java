@@ -28,8 +28,17 @@ public class QuotaServiceSimpleWS implements IQuotaService {
     public Quota getQuota(String path) {
         try{
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            CasAuthenticationToken casAuthenticationToken = (CasAuthenticationToken)authentication;
-            CasUser casUser = (CasUser) casAuthenticationToken.getUserDetails();
+            if (!(authentication instanceof CasAuthenticationToken)) {
+                log.error("Failed retrieving quota: authentication is not a CasAuthenticationToken (authentication={})", authentication);
+                return null;
+            }
+            CasAuthenticationToken casAuthenticationToken = (CasAuthenticationToken) authentication;
+            Object userDetails = casAuthenticationToken.getUserDetails();
+            if (!(userDetails instanceof CasUser)) {
+                log.error("Failed retrieving quota: userDetails is not a CasUser (userDetails={})", userDetails);
+                return null;
+            }
+            CasUser casUser = (CasUser) userDetails;
             Map<String, Object> userAttributes = casUser.getAttributes();
             String quotaString = restTemplate.getForObject(webUrl, String.class, userAttributes);
             String[] quotaStrings = quotaString.split(" ");
