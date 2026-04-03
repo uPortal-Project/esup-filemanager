@@ -11,7 +11,7 @@
 * Copy/cut/paste, rename, create folder, upload/download files
 * Copy/cut/paste inter-servers
 * Multiple file systems support via Apache Commons VFS: http://commons.apache.org/vfs/filesystems.html - URIs like file:///home/bob, FTP and SFTP supported
-* CIFS support (with JCIFS-NG)
+* SMB support (with smbj), support kerberos authentication 
 * S3 storage support (with s3fs)
 * Webdav support (with Sardine)
 * Built on Spring Boot 3.5.x and Bootstrap 5
