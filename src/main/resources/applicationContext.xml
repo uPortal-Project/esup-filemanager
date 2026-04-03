@@ -69,7 +69,7 @@
     </property>
 
     <!-- Used in order to limit the size of the filetype.  Any file greater than the size will not allow streaming / slideshow
-    / view in original size functionality -->
+    / view in original size functionality - size is in Mo -->
     <property name="sizeLimitMap">
       <map>
         <entry key="jpg" value="10"/>
