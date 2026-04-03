@@ -31,7 +31,13 @@ public class CasUserDetailsService extends AbstractCasAssertionUserDetailsServic
                 grantedAuthorities.add(() ->  "ROLE_" + (String) memberOfAttr);
             }
         }
-        log.info("Loading user attributes for CAS user {} : {}", assertion.getPrincipal().getName(), attributes);
+        log.info("Loading user attributes for CAS user {} ({} attributes: keys={})",
+                assertion.getPrincipal().getName(),
+                attributes.size(),
+                attributes.keySet());
+        if (log.isDebugEnabled()) {
+            log.debug("Full CAS attributes for user {}: {}", assertion.getPrincipal().getName(), attributes);
+        }
         return new CasUser(assertion.getPrincipal().getName(), "NO_PASSWORD", grantedAuthorities, attributes);
     }
 }
