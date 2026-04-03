@@ -1,12 +1,12 @@
 /*
  * Details Modern Styles
- * Styles adaptés pour les blocs de détails du gestionnaire de fichiers
- * Design harmonisé avec l'interface existante
+ * Adapted styles for the file manager's details blocks
+ * Design harmonized with the existing interface
  */
 
-/* ==================== Carte de détails ==================== */
+/* ==================== Details Card ==================== */
 .details-card {
-    background: #FFFFEE;  /* Même couleur que detailArea */
+    background: #FFFFEE;  /* Same color as detailArea */
     padding: 0;
     margin: 0;
     border: none;
@@ -22,7 +22,7 @@
     border-bottom: 1px solid #bbb;
 }
 
-/* ==================== Informations de détails ==================== */
+/* ==================== Details Information ==================== */
 .details-info {
     padding: 10px;
     margin: 0;
@@ -53,7 +53,7 @@
     height: 10px;
 }
 
-/* ==================== Lecteurs média ==================== */
+/* ==================== Media Players ==================== */
 .media-player-container {
     padding: 10px;
     background: #FFFFEE;
@@ -67,7 +67,7 @@
     background: #f5f5f5;
 }
 
-/* Focus visible sur les lecteurs médias (WCAG 2.4.7) */
+/* Visible focus on media players (WCAG 2.4.7) */
 .audio-player:focus,
 .video-player:focus {
     outline: 3px solid #0d6efd;
@@ -90,7 +90,7 @@
 
 
 
-/* ==================== Aperçu d'image ==================== */
+/* ==================== Image Preview ==================== */
 .image-preview-container {
     position: relative;
     padding: 10px;
@@ -134,7 +134,7 @@
     opacity: 1;
 }
 
-/* ==================== Modal d'image ==================== */
+/* ==================== Image Modal ==================== */
 .image-modal {
     position: fixed;
     z-index: 9999;
@@ -161,7 +161,7 @@
     border: 2px solid #fff;
 }
 
-/* Bouton fermeture modale image - reset + style (converti de span en button) */
+/* Image modal close button - reset + style (converted from span to button) */
 .image-modal-close {
     position: absolute;
     top: -40px;
@@ -186,7 +186,7 @@
     outline-offset: 4px;
 }
 
-/* ==================== Diaporama ==================== */
+/* ==================== Slideshow ==================== */
 .slideshow-modal {
     position: fixed;
     z-index: 9999;
@@ -244,7 +244,7 @@
     outline-offset: 2px;
 }
 
-/* Bouton fermeture diaporama - reset + style (converti de span en button) */
+/* Slideshow close button - reset + style (converted from span to button) */
 .slideshow-close {
     position: absolute;
     top: -45px;
@@ -314,7 +314,7 @@
     background: rgba(231, 76, 60, 0.7);
 }
 
-/* ==================== Boutons d'action ==================== */
+/* ==================== Action Buttons ==================== */
 .details-actions {
     padding: 10px;
     border-top: 1px solid #bbb;
@@ -378,7 +378,7 @@
     transition: width 0.5s ease, background 0.3s ease;
 }
 
-/* Changement de couleur selon le pourcentage */
+/* Color change based on percentage */
 .quota-fill[style*="width: 7"],
 .quota-fill[style*="width: 8"],
 .quota-fill[style*="width: 9"] {
@@ -395,11 +395,11 @@
     text-align: left;
 }
 
-/* ==================== Message vide ==================== */
+/* ==================== Empty Message ==================== */
 .details-empty-message {
     padding: 20px 10px;
     text-align: center;
-    color: #595959; /* Ratio ≥ 4.5:1 sur fond #FFFFEE (WCAG 1.4.3) */
+    color: #595959; /* Ratio ≥ 4.5:1 on background #FFFFEE (WCAG 1.4.3) */
 }
 
 /* ==================== Animations ==================== */
@@ -412,7 +412,7 @@
     }
 }
 
-/* ==================== Playlist audio ==================== */
+/* ==================== Audio Playlist ==================== */
 .audio-playlist-container {
     padding: 0;
 }
@@ -432,7 +432,7 @@
 
 .playlist-counter {
     font-weight: normal;
-    color: #595959; /* Ratio ≥ 4.5:1 sur fond #f3f3f3 (WCAG 1.4.3) */
+    color: #595959; /* Ratio ≥ 4.5:1 on background #f3f3f3 (WCAG 1.4.3) */
     font-size: 12px;
 }
 
@@ -481,7 +481,7 @@
 .playlist-track.active {
     background: #d0e8ff;
     font-weight: bold;
-    color: #104880; /* Ratio ≥ 4.5:1 sur fond #d0e8ff (WCAG 1.4.3) */
+    color: #104880; /* Ratio ≥ 4.5:1 on background #d0e8ff (WCAG 1.4.3) */
 }
 
 .playlist-track.active::before {
@@ -489,7 +489,7 @@
     font-size: 10px;
 }
 
-/* ==================== Responsive playlist ==================== */
+/* ==================== Responsive Playlist ==================== */
 @media (max-width: 768px) {
     .playlist-tracks {
         max-height: 120px;
@@ -538,4 +538,3 @@
         gap: 8px;
     }
 }
-

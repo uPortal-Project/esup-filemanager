@@ -1,14 +1,14 @@
 /**
- * ESUP File Manager - Styles Responsives Bootstrap 5
- * Support Desktop, Tablette et Mobile
- * Layout moderne avec splitter redimensionnable
+ * ESUP File Manager - Bootstrap 5 Responsive Styles
+ * Desktop, Tablet and Mobile support
+ * Modern layout with resizable splitter
  */
 
 /* ===============================================
-   Accessibilité (WCAG 2.1 AA)
+   Accessibility (WCAG 2.1 AA)
    =============================================== */
 
-/* Lien d'évitement (Skip link) — WCAG 2.4.1 */
+/* Skip link — WCAG 2.4.1 */
 .visually-hidden-focusable:not(:focus):not(:focus-within) {
     position: absolute !important;
     width: 1px !important;
@@ -36,14 +36,14 @@
     outline-offset: -3px;
 }
 
-/* Focus visible pour le splitter (WCAG 2.4.7) */
+/* Visible focus for the splitter (WCAG 2.4.7) */
 .panel-splitter:focus {
     outline: 3px solid #0d6efd;
     outline-offset: -3px;
 }
 
 /* ===============================================
-   Variables CSS pour personnalisation
+   CSS Variables for customization
    =============================================== */
 :root {
     --mobile-toolbar-height: 70px;
@@ -55,7 +55,7 @@
     --panel-header-height: 48px;
     --panel-footer-height: auto;
 
-    /* Couleurs */
+    /* Colors */
     --panel-bg: #ffffff;
     --panel-header-bg: #f8f9fa;
     --panel-border: #dee2e6;
@@ -65,7 +65,7 @@
 }
 
 /* ===============================================
-   Layout Général
+   General Layout
    =============================================== */
 body {
     font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -80,7 +80,7 @@ body {
 }
 
 /* ===============================================
-   Toolbar Desktop
+   Desktop Toolbar
    =============================================== */
 #toolbar {
     flex-wrap: wrap;
@@ -92,7 +92,7 @@ body {
     box-shadow: 0 4px 6px rgba(0,0,0,0.2) !important;
 }
 
-/* Suppression des images de fond PNG pour la toolbar responsive */
+/* Remove PNG background images for the responsive toolbar */
 #toolbar .btn,
 #toolbar #file-uploader,
 #toolbar #toolbar-refresh,
@@ -139,7 +139,7 @@ body {
     font-size: 0.875rem;
 }
 
-/* Arrondissement des premiers et derniers boutons du groupe */
+/* Rounding first and last buttons in the group */
 #toolbar .btn-group .btn:first-child {
     border-top-left-radius: 0.5rem;
     border-bottom-left-radius: 0.5rem;
@@ -154,7 +154,7 @@ body {
     border-radius: 0.5rem;
 }
 
-/* État désactivé - Grisé mais LISIBLE */
+/* Disabled state - Grayed out but READABLE */
 #toolbar .btn.disabled {
     cursor: not-allowed;
     background-color: #9ca3af !important;
@@ -167,7 +167,7 @@ body {
     color: white !important;
 }
 
-/* Styles spécifiques par type de bouton - Fonds colorés simples avec texte blanc */
+/* Specific styles by button type - Simple colored backgrounds with white text */
 #toolbar .btn-outline-primary {
     background-color: #3b82f6;
     color: white;
@@ -203,7 +203,7 @@ body {
     color: white;
 }
 
-/* Séparateur visuel entre groupes - Simple */
+/* Visual separator between groups - Simple */
 #toolbar .btn-group {
     position: relative;
 }
@@ -212,12 +212,12 @@ body {
     margin-right: 1rem;
 }
 
-/* Style pour l'uploader dans la toolbar */
+/* Style for the uploader in the toolbar */
 #toolbar #file-uploader {
     cursor: pointer;
 }
 
-/* Style simple pour le bouton logout */
+/* Simple style for the logout button */
 #toolbar #toolbar-logout {
     font-weight: 600;
     padding: 0.5rem 1rem;
@@ -228,7 +228,7 @@ body {
     transition: all 0.2s ease;
 }
 
-/* Responsive - Ajustements pour petits écrans large */
+/* Responsive - Adjustments for large small screens */
 @media (max-width: 1399px) {
     #toolbar .btn {
         padding: 0.4rem 0.75rem;
@@ -241,7 +241,7 @@ body {
 }
 
 /* ===============================================
-   Main Content Wrapper - Layout Flex Moderne
+   Main Content Wrapper - Modern Flex Layout
    =============================================== */
 .main-content-wrapper {
     display: flex;
@@ -251,7 +251,7 @@ body {
 }
 
 /* ===============================================
-   Left Panel - Arborescence
+   Left Panel - File Tree
    =============================================== */
 .left-panel {
     width: var(--left-panel-width);
@@ -277,7 +277,7 @@ body {
     overflow: hidden;
 }
 
-/* Header du panneau */
+/* Panel header */
 .panel-header {
     height: var(--panel-header-height);
     background: var(--panel-header-bg);
@@ -306,7 +306,7 @@ body {
     color: #0d6efd;
 }
 
-/* Body du panneau - Arborescence */
+/* Panel body - File tree */
 .panel-body {
     flex: 1;
     overflow-y: auto;
@@ -331,7 +331,7 @@ body {
     background: #a8a8a8;
 }
 
-/* Footer du panneau - Details */
+/* Panel footer - Details */
 .panel-footer {
     min-height: 150px;
     max-height: 50vh;
@@ -349,7 +349,7 @@ body {
 }
 
 /* ===============================================
-   Splitter / Resize Handle - Moderne et Simple
+   Splitter / Resize Handle - Modern and Simple
    =============================================== */
 .panel-splitter {
     width: var(--splitter-width);
@@ -430,10 +430,10 @@ body {
 
 
 /* ===============================================
-   Responsive - Tablette et Mobile
+   Responsive - Tablet and Mobile
    =============================================== */
 @media (max-width: 991.98px) {
-    /* Masquer le panneau gauche sur tablette/mobile */
+    /* Hide left panel on tablet/mobile */
     .left-panel {
         display: none !important;
     }
@@ -446,21 +446,21 @@ body {
         padding-bottom: calc(var(--mobile-toolbar-height) + 1rem);
     }
 
-    /* Toolbar desktop caché */
+    /* Hidden desktop toolbar */
     #toolbar {
         display: none !important;
     }
 }
 
 @media (max-width: 767.98px) {
-    /* Mobile - Padding réduit */
+    /* Mobile - Reduced padding */
     .browser-content {
         padding: 0.75rem;
     }
 }
 
 /* ===============================================
-   États du panneau gauche
+   Left panel states
    =============================================== */
 #toggleLeftPanel .bi-chevron-left {
     transition: transform 0.3s ease;
@@ -470,7 +470,7 @@ body {
     transform: rotate(180deg);
 }
 
-/* Bouton de réouverture quand panneau fermé */
+/* Reopen button when panel is closed */
 .left-panel.collapsed::after {
     content: '';
     position: absolute;
@@ -486,7 +486,7 @@ body {
 }
 
 /* ===============================================
-   Overlay de redimensionnement
+   Resize Overlay
    =============================================== */
 .resize-overlay {
     position: fixed;
@@ -505,7 +505,7 @@ body {
 }
 
 /* ===============================================
-   Tables et contenu du browserArea - Moderne
+   Tables and browserArea content - Modern
    =============================================== */
 #browserArea table {
     width: 100%;
@@ -574,12 +574,12 @@ body {
         padding: 0.5rem 0.25rem;
     }
 
-    /* Masquer colonnes non essentielles sur petit écran */
+    /* Hide non-essential columns on small screen */
     #browserArea table .d-none-mobile {
         display: none;
     }
 
-    /* Liste de fichiers en mode card sur mobile */
+    /* File list in card mode on mobile */
     .file-card-mobile {
         display: flex;
         align-items: center;
@@ -621,7 +621,7 @@ body {
         margin-left: 0.5rem;
     }
 
-    /* Checkbox plus grande sur mobile */
+    /* Larger checkbox on mobile */
     .file-card-mobile input[type="checkbox"] {
         width: 20px;
         height: 20px;
@@ -630,7 +630,7 @@ body {
 }
 
 /* ===============================================
-   Offcanvas Menu Mobile
+   Offcanvas Mobile Menu
    =============================================== */
 .offcanvas {
     max-width: 85%;
@@ -651,14 +651,14 @@ body {
     margin-right: 0.5rem;
 }
 
-/* Arborescence dans le menu mobile */
+/* File tree in mobile menu */
 #fileTreeMobile {
     max-height: 300px;
     overflow-y: auto;
 }
 
 /* ===============================================
-   Bottom Toolbar Mobile
+   Bottom Mobile Toolbar
    =============================================== */
 .fixed-bottom {
     z-index: 1030;
@@ -691,7 +691,7 @@ body {
 }
 
 /* ===============================================
-   Bottom Sheet Modal (Actions Mobile)
+   Bottom Sheet Modal (Mobile Actions)
    =============================================== */
 .modal-dialog-bottom {
     position: fixed;
@@ -724,7 +724,7 @@ body {
 }
 
 /* ===============================================
-   Navbar Mobile
+   Mobile Navbar
    =============================================== */
 .navbar {
     height: var(--header-height);
@@ -743,14 +743,14 @@ body {
    Touch Gestures
    =============================================== */
 @media (hover: none) and (pointer: coarse) {
-    /* Augmenter zones tactiles sur mobile */
+    /* Increase touch target sizes on mobile */
     .btn,
     .list-group-item,
     .file-card-mobile {
-        min-height: 44px; /* Apple recommandation */
+        min-height: 44px; /* Apple recommendation */
     }
 
-    /* Améliorer le feedback tactile */
+    /* Improve touch feedback */
     .btn:active,
     .list-group-item:active,
     .file-card-mobile:active {
@@ -760,7 +760,7 @@ body {
 }
 
 /* ===============================================
-   Arborescence Responsive
+   Responsive File Tree
    =============================================== */
 .file-tree-root {
     font-size: 0.9rem;
@@ -782,7 +782,7 @@ body {
 }
 
 /* ===============================================
-   Scrollbars Personnalisées (WebKit)
+   Custom Scrollbars (WebKit)
    =============================================== */
 #arborescentArea::-webkit-scrollbar,
 #browserArea::-webkit-scrollbar {
@@ -807,7 +807,7 @@ body {
 }
 
 /* ===============================================
-   Drag & Drop Visuels
+   Drag & Drop Visuals
    =============================================== */
 .dragging {
     opacity: 0.6;
@@ -820,7 +820,7 @@ body {
 }
 
 /* ===============================================
-   Sélection Multiple
+   Multiple Selection
    =============================================== */
 .file-selected {
     background-color: #e7f3ff;
@@ -901,10 +901,10 @@ body {
 }
 
 /* ===============================================
-   Dark Mode Support (Optionnel)
+   Dark Mode Support (Optional)
    =============================================== */
 @media (prefers-color-scheme: dark) {
-    /* Désactivé par défaut, à activer si besoin */
+    /* Disabled by default, enable if needed */
     /*
     body {
         background-color: #1a1a1a;
@@ -927,7 +927,7 @@ body {
 }
 
 /* ===============================================
-   Utilitaires
+   Utilities
    =============================================== */
 .text-truncate-2 {
     display: -webkit-box;
@@ -945,7 +945,7 @@ body {
 }
 
 /* ===============================================
-   Upload - Drag & Drop depuis le bureau
+   Upload - Drag & Drop from desktop
    =============================================== */
 .drag-over-upload {
     position: relative;
@@ -971,7 +971,7 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Barres de progression d'upload (legacy, conservées par compatibilité) */
+/* Upload progress bars (legacy, kept for compatibility) */
 .upload-progress-item {
     min-width: 300px;
     max-width: 500px;
@@ -984,11 +984,11 @@ body {
 }
 
 /* ===============================================
-   Upload - Panneau flottant multi-fichiers
+   Upload - Multi-file floating panel
    =============================================== */
 .upload-panel {
     position: fixed;
-    bottom: 80px; /* au-dessus de la barre mobile */
+    bottom: 80px; /* above the mobile toolbar */
     right: 16px;
     width: 360px;
     max-width: calc(100vw - 32px);
@@ -1003,7 +1003,7 @@ body {
     to   { opacity: 1; transform: translateY(0);    }
 }
 
-/* Sur desktop, décaler vers le haut (pas de barre mobile) */
+/* On desktop, shift upward (no mobile toolbar) */
 @media (min-width: 992px) {
     .upload-panel {
         bottom: 20px;
@@ -1011,7 +1011,7 @@ body {
     }
 }
 
-/* État réduit : masquer le corps et le pied */
+/* Minimized state: hide body and footer */
 .upload-panel.minimized .upload-panel-body,
 .upload-panel.minimized .upload-panel-footer {
     display: none;
@@ -1102,7 +1102,7 @@ body {
 
 #authenticationForm input[type="text"]:focus,
 #authenticationForm input[type="password"]:focus {
-    /* outline:none supprimé (WCAG 2.4.7) – remplacé par outline visible */
+    /* outline:none removed (WCAG 2.4.7) – replaced by visible outline */
     outline: 2px solid #0d6efd;
     outline-offset: 2px;
     border-color: #0d6efd;
