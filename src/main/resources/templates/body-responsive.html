@@ -30,10 +30,10 @@
         <div class="offcanvas-body p-0">
             <!-- Mobile quick actions -->
             <div class="list-group list-group-flush">
-                <button class="list-group-item list-group-item-action" id="mobile-upload">
+                <button class="list-group-item list-group-item-action disabled" id="mobile-upload" aria-disabled="true">
                     <i class="bi bi-cloud-upload" aria-hidden="true"></i> <span th:text="#{toolbar.upload.title}">Upload</span>
                 </button>
-                <button class="list-group-item list-group-item-action" id="mobile-new-folder">
+                <button class="list-group-item list-group-item-action disabled" id="mobile-new-folder" aria-disabled="true">
                     <i class="bi bi-folder-plus" aria-hidden="true"></i> <span th:text="#{toolbar.create.title}">Nouveau dossier</span>
                 </button>
                 <button class="list-group-item list-group-item-action" id="mobile-refresh">
@@ -108,15 +108,17 @@
         </div>
 
         <div class="btn-group btn-group-sm me-2 mb-2" role="group">
-            <button type="button" class="btn btn-outline-success" id="toolbar-upload"
+            <button type="button" class="btn btn-outline-success disabled" id="toolbar-upload"
                     th:title="#{toolbar.upload.title}"
-                    th:attr="aria-label=#{toolbar.upload.title}">
+                    th:attr="aria-label=#{toolbar.upload.title}"
+                    aria-disabled="true">
                 <i class="bi bi-cloud-upload" aria-hidden="true"></i>
                 <span class="d-none d-xl-inline" th:text="#{toolbar.upload}">Upload</span>
             </button>
-            <button type="button" class="btn btn-outline-success" id="toolbar-new_folder"
+            <button type="button" class="btn btn-outline-success disabled" id="toolbar-new_folder"
                     th:title="#{toolbar.create.title}"
-                    th:attr="aria-label=#{toolbar.create.title}">
+                    th:attr="aria-label=#{toolbar.create.title}"
+                    aria-disabled="true">
                 <i class="bi bi-folder-plus" aria-hidden="true"></i>
                 <span class="d-none d-xl-inline" th:text="#{toolbar.create}">Nouveau dossier</span>
             </button>
@@ -270,13 +272,15 @@
     <!-- Mobile Bottom Toolbar (Quick actions) -->
     <div class="d-lg-none bg-light border-top fixed-bottom">
         <div class="btn-group w-100" role="group" th:attr="aria-label=#{aria.bottom.toolbar}">
-            <button type="button" class="btn btn-light border-0 py-3" id="mobile-toolbar-upload"
-                    th:attr="aria-label=#{toolbar.upload.title}">
+            <button type="button" class="btn btn-light border-0 py-3 disabled" id="mobile-toolbar-upload"
+                    th:attr="aria-label=#{toolbar.upload.title}"
+                    aria-disabled="true">
                 <i class="bi bi-cloud-upload fs-5" aria-hidden="true"></i>
                 <div class="small" th:text="#{toolbar.upload}">Upload</div>
             </button>
-            <button type="button" class="btn btn-light border-0 py-3" id="mobile-toolbar-new"
-                    th:attr="aria-label=#{toolbar.create.title}">
+            <button type="button" class="btn btn-light border-0 py-3 disabled" id="mobile-toolbar-new"
+                    th:attr="aria-label=#{toolbar.create.title}"
+                    aria-disabled="true">
                 <i class="bi bi-folder-plus fs-5" aria-hidden="true"></i>
                 <div class="small" th:text="#{toolbar.create}">Nouveau dossier</div>
             </button>

@@ -19,6 +19,7 @@ class EsupFileManager {
         this.currentSortField = 'titleAsc'; // Default sort
         this.currentPath = null; // Memorize current path to avoid depending on DOM
         this.uploadStats = { total: 0, completed: 0, failed: 0 }; // Upload progress tracking
+        this.isInDrive = false; // Whether current location is inside a drive (not root/category)
 
         // Configuration from global variables
         this.config = {
@@ -782,6 +783,13 @@ class EsupFileManager {
                 await this.loadDetailsArea(path, nodeType);
             }
 
+            // Enable/disable upload & new-folder buttons based on drive context
+            if (nodeType !== undefined && nodeType !== null) {
+                const inDrive = nodeType !== 'root' && nodeType !== 'category';
+                this.isInDrive = inDrive;
+                this.updateDriveContextButtons(inDrive);
+            }
+
         } catch (error) {
             console.error('Failed to load directory content:', error);
             UIComponents.showError(window.i18n?.directoryLoadingError || 'Error loading directory.');
@@ -1087,6 +1095,11 @@ class EsupFileManager {
     }
 
     async handleCreateDirectory() {
+        // Guard: folder creation is only available when inside a drive
+        if (!this.isInDrive) {
+            console.warn('Folder creation is not available outside a drive.');
+            return;
+        }
         const currentPath = this.getCurrentPath();
 
         UIComponents.showDialog({
@@ -1535,73 +1548,106 @@ class EsupFileManager {
         }
     }
 
+    /**
+     * Enables or disables selection-dependent toolbar buttons.
+     * Respects isInDrive: buttons stay disabled when outside a drive, regardless of selection.
+     * @param {boolean} hasSelection
+     */
     updateToolbarButtons(hasSelection) {
-        const buttons = ['copy', 'cut', 'delete', 'rename', 'download', 'zip'];
-        buttons.forEach(btnId => {
-            const btn = document.getElementById(`toolbar-${btnId}`);
-            if (btn) {
-                btn.disabled = !hasSelection;
-                if (hasSelection) {
-                    btn.classList.remove('disabled');
-                } else {
-                    btn.classList.add('disabled');
-                }
+        // Buttons can only be active when both a file is selected AND we're inside a drive
+        const canEnable = hasSelection && this.isInDrive;
+
+        const setBtn = (btn, active) => {
+            if (!btn) return;
+            btn.disabled = !active;
+            if (active) {
+                btn.classList.remove('disabled');
+                btn.removeAttribute('aria-disabled');
+            } else {
+                btn.classList.add('disabled');
+                btn.setAttribute('aria-disabled', 'true');
             }
+        };
+
+        // Desktop toolbar
+        ['copy', 'cut', 'delete', 'rename', 'download', 'zip'].forEach(id => {
+            setBtn(document.getElementById(`toolbar-${id}`), canEnable);
         });
 
-        // Also update mobile buttons
-        const mobileButtons = ['download', 'copy', 'cut', 'delete', 'rename'];
-        mobileButtons.forEach(btnId => {
-            const mobileBtn = document.getElementById(`mobile-${btnId}`);
-            if (mobileBtn) {
-                mobileBtn.disabled = !hasSelection;
-                if (hasSelection) {
-                    mobileBtn.classList.remove('disabled');
-                } else {
-                    mobileBtn.classList.add('disabled');
-                }
-            }
-
-            // Mobile toolbar buttons at bottom
-            const mobileToolbarBtn = document.getElementById(`mobile-toolbar-${btnId}`);
-            if (mobileToolbarBtn) {
-                mobileToolbarBtn.disabled = !hasSelection;
-                if (hasSelection) {
-                    mobileToolbarBtn.classList.remove('disabled');
-                } else {
-                    mobileToolbarBtn.classList.add('disabled');
-                }
-            }
+        // Mobile offcanvas + bottom toolbar
+        ['download', 'copy', 'cut', 'delete', 'rename'].forEach(id => {
+            setBtn(document.getElementById(`mobile-${id}`), canEnable);
+            setBtn(document.getElementById(`mobile-toolbar-${id}`), canEnable);
         });
     }
 
+    /**
+     * Enables or disables the paste button.
+     * Respects isInDrive: paste stays disabled when outside a drive.
+     */
     updatePasteButtonState() {
-        // Paste button must be enabled if clipboard contains files
-        const hasClipboardContent = this.clipboard.files.length > 0;
+        // Paste is only available when clipboard has content AND we're inside a drive
+        const canEnable = this.clipboard.files.length > 0 && this.isInDrive;
 
-        // Desktop toolbar button
-        const pasteBtn = document.getElementById('toolbar-paste');
-        if (pasteBtn) {
-            pasteBtn.disabled = !hasClipboardContent;
-            if (hasClipboardContent) {
-                pasteBtn.classList.remove('disabled');
+        const setBtn = (btn, active) => {
+            if (!btn) return;
+            btn.disabled = !active;
+            if (active) {
+                btn.classList.remove('disabled');
+                btn.removeAttribute('aria-disabled');
             } else {
-                pasteBtn.classList.add('disabled');
+                btn.classList.add('disabled');
+                btn.setAttribute('aria-disabled', 'true');
             }
+        };
+
+        setBtn(document.getElementById('toolbar-paste'), canEnable);
+        setBtn(document.getElementById('mobile-paste'), canEnable);
+
+        console.log('Paste button state updated:', canEnable ? 'enabled' : 'disabled');
+    }
+
+    /**
+     * Enables or disables ALL action buttons depending on whether the user is
+     * inside a drive (not at root/category level).
+     *  - false → force-disable everything (upload, new-folder, copy, cut, paste,
+     *             rename, delete, download, zip + mobile equivalents)
+     *  - true  → enable upload/new-folder; restore selection & clipboard states
+     * @param {boolean} enabled
+     */
+    updateDriveContextButtons(enabled) {
+        const setBtn = (btn, active) => {
+            if (!btn) return;
+            btn.disabled = !active;
+            if (active) {
+                btn.classList.remove('disabled');
+                btn.removeAttribute('aria-disabled');
+            } else {
+                btn.classList.add('disabled');
+                btn.setAttribute('aria-disabled', 'true');
+            }
+        };
+
+        // Upload & new-folder: only available inside a drive
+        [
+            'toolbar-upload', 'toolbar-new_folder',
+            'mobile-upload', 'mobile-new-folder',
+            'mobile-toolbar-upload', 'mobile-toolbar-new'
+        ].forEach(id => setBtn(document.getElementById(id), enabled));
+
+        if (enabled) {
+            // Entering a drive: restore selection-based and clipboard-based states
+            const selectedCount = this.getSelectedFilePaths().length;
+            this.updateToolbarButtons(selectedCount > 0);
+            this.updatePasteButtonState();
+        } else {
+            // Leaving a drive: force-disable all remaining action buttons
+            // (updateToolbarButtons/updatePasteButtonState now check isInDrive)
+            this.updateToolbarButtons(false);
+            this.updatePasteButtonState();
         }
 
-        // Mobile button
-        const mobilePasteBtn = document.getElementById('mobile-paste');
-        if (mobilePasteBtn) {
-            mobilePasteBtn.disabled = !hasClipboardContent;
-            if (hasClipboardContent) {
-                mobilePasteBtn.classList.remove('disabled');
-            } else {
-                mobilePasteBtn.classList.add('disabled');
-            }
-        }
-
-        console.log('Paste button state updated:', hasClipboardContent ? 'enabled' : 'disabled');
+        console.log('Drive context buttons:', enabled ? 'enabled' : 'disabled');
     }
 
     selectFolder(link) {
@@ -1646,6 +1692,11 @@ class EsupFileManager {
     }
 
     handleUpload() {
+        // Guard: upload is only available when inside a drive
+        if (!this.isInDrive) {
+            console.warn('Upload is not available outside a drive.');
+            return;
+        }
         // Trigger file selection via button
         if (this.uploadManager) {
             this.uploadManager.triggerFileSelection();

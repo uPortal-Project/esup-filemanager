@@ -87,10 +87,11 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
     }
 
     public FsAccess getFsAccess(String driveName) {
-        if(this.servers.containsKey(driveName) && this.servers.get(driveName).hasAccess()) {
+        if(driveName == null) {
+            throw new IllegalArgumentException("Drive name is null");
+        } else if(this.servers.containsKey(driveName) && this.servers.get(driveName).hasAccess()) {
             return this.servers.get(driveName);
-        }
-        else {
+        } else {
             log.error("pb : restrictedServers does not contain this required drive ?? : '{}'", driveName);
             return null;
         }
@@ -343,8 +344,11 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
         if(dir != null && dir.length() > JsTreeFile.ROOT_DRIVE.length()) {
             dir = dir.substring(JsTreeFile.ROOT_DRIVE.length());
             String[] driveAndDir = dir.split(JsTreeFile.DRIVE_PATH_SEPARATOR, 3);
-            if(driveAndDir.length > 1)
+            if(driveAndDir.length > 1) {
                 drive = driveAndDir[1];
+            }
+        } else {
+            log.warn("Can't get drive because dir is null or too short: '{}'", dir);
         }
         return drive;
     }
