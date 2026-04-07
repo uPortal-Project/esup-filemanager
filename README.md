@@ -23,6 +23,18 @@ This version is a fork of the original esup-filemanager project.
 
 It is now a standalone servlet application powered by Spring Boot 3.5.x and no longer a portlet application.
 
+### Breaking Changes
+
+- The application is **no longer a portlet** and cannot be deployed in a portlet container.
+- The **frontend stack has been fully replaced** (no jQuery, no jQuery Mobile).
+- **Java 21** is required (up from the previous Java version requirement).
+- The application is now a standalone Spring Boot application and can be run directly with `mvn spring-boot:run` or packaged as a WAR file for deployment.
+- CMIS support has been removed in this version.
+- SMB support has been migrated from jcifs(-g) to smbj, including support for Kerberos authentication.
+- S3 support has been implemented using s3fs.
+- Rules for file system access have been simplified and use Spring El Expressions and no more uPortal groups/attributes/preferences evaluators.
+- Configuration is now handled via `application.properties` (Spring Boot) and `drives.xml` ; configuration from older versions is not compatible and must be adapted.
+
 ## Technologies
 
 ### Backend
