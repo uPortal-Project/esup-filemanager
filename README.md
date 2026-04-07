@@ -12,7 +12,7 @@
 * Copy/cut/paste inter-servers
 * Multiple file systems support via Apache Commons VFS: http://commons.apache.org/vfs/filesystems.html - URIs like file:///home/bob, FTP and SFTP supported
 * SMB support (with smbj), support kerberos authentication 
-* S3 storage support (with s3fs)
+* S3 storage support (with s3 from awssdk)
 * Webdav support (with Sardine)
 * Built on Spring Boot 3.5.x and Bootstrap 5
 * Server access configuration via configuration file
@@ -31,7 +31,7 @@ It is now a standalone servlet application powered by Spring Boot 3.5.x and no l
 - The application is now a standalone Spring Boot application and can be run directly with `mvn spring-boot:run` or packaged as a WAR file for deployment.
 - CMIS support has been removed in this version.
 - SMB support has been migrated from jcifs(-g) to smbj, including support for Kerberos authentication.
-- S3 support has been implemented using s3fs.
+- S3 support has been implemented using s3 library from awssdk.
 - Rules for file system access have been simplified and use Spring El Expressions and no more uPortal groups/attributes/preferences evaluators.
 - Configuration is now handled via `application.properties` (Spring Boot) and `drives.xml` ; configuration from older versions is not compatible and must be adapted.
 
