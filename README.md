@@ -93,9 +93,9 @@ Users are :
 
 ## Screenshot
 
-![Esup File Manager Screenshot](https://raw.githubusercontent.com/vbonamy/esup-filemanager/master/src/etc/esup-filemanager-screenshot-1.png)
+![Esup File Manager Screenshot](https://raw.githubusercontent.com/uPortal-Project/esup-filemanager/master/src/etc/esup-filemanager-screenshot-1.png)
 
-![Esup File Manager Screenshot - Mobile](https://raw.githubusercontent.com/vbonamy/esup-filemanager/master/src/etc/esup-filemanager-screenshot-2.png)
+![Esup File Manager Screenshot - Mobile](https://raw.githubusercontent.com/uPortal-Project/esup-filemanager/master/src/etc/esup-filemanager-screenshot-2.png)
 
-![Esup File Manager Screenshot - JavaPerf](https://raw.githubusercontent.com/vbonamy/esup-filemanager/master/src/etc/esup-filemanager-screenshot-3.png)
+![Esup File Manager Screenshot - JavaPerf](https://raw.githubusercontent.com/uPortal-Project/esup-filemanager/master/src/etc/esup-filemanager-screenshot-3.png)
 
