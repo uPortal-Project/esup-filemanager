@@ -28,10 +28,7 @@
     <script th:inline="javascript">
         /*<![CDATA[*/
         // Global configuration
-        var fileuploadTemplate = /*[[#{fileupload.template}]]*/ '';
-        var fileTemplate = /*[[#{fileupload.fileTemplate}]]*/ '';
         var useDoubleClick = /*[[${useDoubleClick}]]*/ '';
-        var useCursorWaitDialog = /*[[${useCursorWaitDialog}]]*/ '';
         var defaultPath = /*[[${defaultPath}]]*/ '';
 
         // Endpoint URLs
@@ -41,14 +38,11 @@
         var prepareCutFilesURL ='/prepareCutFiles';
         var pastFilesURL = '/pastFiles';
         var fileChildrenURL = '/fileChildren';
-        var getParentPathURL = '/getParentPath';
         var detailsAreaURL = '/detailsArea';
-        var toggleThumbnailModeURL = '/toggleThumbnailMode';
         var renameFileURL = '/renameFile';
         var downloadFileURL = '/downloadFile';
         var downloadZipURL = '/downloadZip';
         var removeFilesURL = '/removeFiles';
-        var authenticateURL = '/authenticate';
 
         // I18N messages exposed to JavaScript
         window.i18n = {
