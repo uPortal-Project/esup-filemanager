@@ -1,0 +1,20 @@
+auth:
+  - user: sambauser
+    group: sambauser
+    uid: 1000
+    gid: 1000
+    password: sambapass
+
+global:
+  - "server min protocol = SMB2"
+  - "log level = 1"
+
+share:
+  - name: testshare
+    path: /samba/share
+    browsable: yes
+    readonly: no
+    guestok: no
+    validusers: sambauser
+    writelist: sambauser
+    

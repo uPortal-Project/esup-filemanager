@@ -1,0 +1,192 @@
+/**
+ * Styles pour l'arborescence de fichiers (remplace jsTree)
+ */
+
+.file-tree-root {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-family: 'Open Sans', Arial, sans-serif;
+    font-size: 14px;
+}
+
+.tree-node {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.tree-node-content {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+    min-height: 28px;
+}
+
+.tree-node-content:hover {
+    background-color: #f0f0f0;
+}
+
+.tree-node.selected > .tree-node-content {
+    background-color: #d4e5f7;
+    font-weight: bold;
+}
+
+.tree-toggle {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+    font-size: 12px;
+    line-height: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+    color: #666;
+}
+
+.tree-toggle:hover {
+    color: #333;
+}
+
+.tree-toggle.loading::after {
+    content: '⟳';
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.tree-toggle-spacer {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+}
+
+.tree-node-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+.tree-node-label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 20px;
+}
+
+.tree-node-children {
+    list-style: none;
+    padding-left: 20px;
+    margin: 0;
+}
+
+.tree-node.closed > .tree-node-children {
+    display: none !important;
+}
+
+.tree-node.open > .tree-node-children {
+    display: block !important;
+}
+
+/* Masquer les nœuds root vides (sans titre) */
+.tree-node[data-type="root"] > .tree-node-content {
+    display: none;
+}
+
+.tree-node[data-type="root"] > .tree-node-children {
+    padding-left: 0;
+}
+
+/* Styles pour les différents types */
+.tree-node[data-type="category"] > .tree-node-content {
+    font-weight: 600;
+    color: #333;
+}
+
+.tree-node[data-type="drive"] > .tree-node-content {
+    color: #0066cc;
+}
+
+.tree-node[data-type="folder"] > .tree-node-content {
+    color: #555;
+}
+
+.tree-error {
+    color: #dc3545;
+    padding: 8px;
+    margin: 8px 0;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+}
+
+/* Styles pour le drag & drop */
+.draggable {
+    cursor: move;
+}
+
+.draggable.dragging {
+    opacity: 0.5;
+}
+
+.droppable.drag-over {
+    background-color: #e3f2fd !important;
+    border: 2px dashed #2196f3;
+}
+
+/* Styles pour les menus contextuels */
+.context-menu {
+    min-width: 180px;
+}
+
+.context-menu-item {
+    transition: background-color 0.2s;
+}
+
+/* Compatibilité avec les styles existants */
+.jstree-hovered {
+    background-color: #f0f0f0;
+}
+
+/* Handle de redimensionnement */
+.resize-handle {
+    z-index: 10;
+}
+
+/* Animation d'ouverture/fermeture */
+.tree-node-children {
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Amélioration visuelle */
+.tree-node.has-children.closed > .tree-node-content .tree-toggle::before {
+    content: '▶';
+}
+
+.tree-node.has-children.open > .tree-node-content .tree-toggle::before {
+    content: '▼';
+}
+

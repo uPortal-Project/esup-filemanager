@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{javaperf.page.title}">Java Performance – ESUP File Manager</title>
+
+    <!-- CSS Bootstrap 5 -->
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap-icons/font/bootstrap-icons.min.css}"/>
+
+    <!-- CSS Custom -->
+    <link rel="stylesheet" th:href="@{/css/esup-stock.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/google-open-sans.css}" type="text/css">
+
+    <style>
+        body { background-color: #f8f9fa; }
+        .stack-trace { font-family: monospace; font-size: 0.75rem; max-height: 200px; overflow-y: auto; background: #f1f3f5; border-radius: 4px; padding: 6px; margin: 0; }
+        .thread-table th { white-space: nowrap; }
+        .badge-state-RUNNABLE   { background-color: #ffc107; color: #000; }
+        .badge-state-BLOCKED    { background-color: #dc3545; color: #fff; }
+        .badge-state-WAITING,
+        .badge-state-TIMED_WAITING { background-color: #0dcaf0; color: #000; }
+        .badge-state-NEW        { background-color: #6c757d; color: #fff; }
+        .badge-state-TERMINATED { background-color: #198754; color: #fff; }
+        .row-current { background-color: #d1e7dd !important; }
+        .row-RUNNABLE  { background-color: #fff3cd !important; }
+        .row-BLOCKED   { background-color: #f8d7da !important; }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom shadow-sm sticky-top"
+     aria-labelledby="javaperf-brand-label">
+    <div class="container-fluid">
+        <a class="navbar-brand d-inline-flex align-items-center gap-2" th:href="@{/}" id="javaperf-brand-label">
+            <i class="bi bi-folder2-open" aria-hidden="true"></i>
+            <span th:text="#{javaperf.nav.brand}">ESUP File Manager</span>
+        </a>
+        <span class="navbar-text mx-3 text-muted">
+            <i class="bi bi-chevron-right small" aria-hidden="true"></i>
+            <strong th:text="#{javaperf.nav.subtitle}">Java Performance</strong>
+        </span>
+        <div class="ms-auto d-flex align-items-center gap-2">
+            <a th:href="@{/}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1"
+               th:attr="aria-label=#{javaperf.nav.back}">
+                <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                <span class="d-none d-sm-inline" th:text="#{javaperf.nav.back}">Back</span>
+            </a>
+            <a th:href="@{/logout}" class="btn btn-sm btn-outline-dark d-inline-flex align-items-center gap-2"
+               th:attr="aria-label=#{toolbar.logout} + ' – ' + ${#authentication.principal.username}">
+                <i class="bi bi-person-circle" aria-hidden="true"></i>
+                <span th:text="${#authentication.principal.username}" class="d-none d-sm-inline">User</span>
+                <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- Main content -->
+<main class="container-xl py-4" id="javaperf-main">
+
+    <h1 class="mb-4 d-flex align-items-center gap-2">
+        <i class="bi bi-speedometer2 text-warning" aria-hidden="true"></i>
+        <span th:text="#{javaperf.heading}">Java Performance</span>
+    </h1>
+
+    <!-- Memory -->
+    <div class="row g-3 mb-4">
+        <h2 class="col-12 mb-0 text-muted h5"><i class="bi bi-memory me-1" aria-hidden="true"></i><span th:text="#{javaperf.memory.title}">JVM Memory</span></h2>
+
+        <div class="col-6 col-md-3">
+            <div class="card text-bg-secondary h-100">
+                <div class="card-body text-center">
+                    <div class="fs-2 fw-bold" th:text="${maxMemoryInMB} + ' MB'">– MB</div>
+                    <div class="small" th:text="#{javaperf.memory.max}">Max</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-bg-primary h-100">
+                <div class="card-body text-center">
+                    <div class="fs-2 fw-bold" th:text="${totalMemoryInMB} + ' MB'">– MB</div>
+                    <div class="small" th:text="#{javaperf.memory.allocated}">Allocated</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-bg-success h-100">
+                <div class="card-body text-center">
+                    <div class="fs-2 fw-bold" th:text="${freeMemoryInMB} + ' MB'">– MB</div>
+                    <div class="small" th:text="#{javaperf.memory.free}">Free</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-bg-warning h-100">
+                <div class="card-body text-center">
+                    <div class="fs-2 fw-bold" th:text="${usedMemoryInMB} + ' MB'">– MB</div>
+                    <div class="small" th:text="#{javaperf.memory.used}">Used</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Memory progress bar -->
+        <div class="col-12">
+            <div class="d-flex justify-content-between small text-muted mb-1">
+                <span th:text="#{javaperf.memory.usage}">Memory usage</span>
+                <span th:text="${usedMemoryInMB} + ' / ' + ${maxMemoryInMB} + ' MB'"></span>
+            </div>
+            <div class="progress" style="height: 18px;">
+                <div class="progress-bar bg-warning"
+                     role="progressbar"
+                     th:style="'width: ' + ${#numbers.formatDecimal(usedMemoryInMB * 100.0 / maxMemoryInMB, 1, 1)} + '%'"
+                     th:attr="aria-valuenow=${#numbers.formatDecimal(usedMemoryInMB * 100.0 / maxMemoryInMB, 1, 1)},
+                              aria-valuemin=0,
+                              aria-valuemax=100,
+                              aria-label=#{javaperf.memory.usage}"
+                     th:text="${#numbers.formatDecimal(usedMemoryInMB * 100.0 / maxMemoryInMB, 1, 1)} + '%'">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Connexions aux serveurs de stockage -->
+    <div class="mb-4">
+        <h2 class="text-muted mb-3 h5">
+            <i class="bi bi-hdd-network me-1" aria-hidden="true"></i><span th:text="#{javaperf.storage.title}">Storage server connections</span>
+            <small class="ms-2 text-muted fw-normal" style="font-size:.75rem;"
+                   th:text="#{javaperf.storage.subtitle}">(active sessions per drive since startup)</small>
+        </h2>
+
+        <!-- No connections recorded -->
+        <div th:if="${#lists.isEmpty(storageStats)}"
+             class="alert alert-info d-flex align-items-center gap-2">
+            <i class="bi bi-info-circle-fill fs-5" aria-hidden="true"></i>
+            <span th:text="#{javaperf.storage.empty}">No connections recorded since the server started.</span>
+        </div>
+
+        <!-- Gauge cards per drive -->
+        <div th:unless="${#lists.isEmpty(storageStats)}" class="row g-3">
+            <div th:each="stat : ${storageStats}" class="col-6 col-md-4 col-lg-3 col-xl-2">
+                <div class="card shadow-sm h-100 text-center py-3 px-2">
+
+                    <!-- Circular SVG gauge (counter/speedometer type) -->
+                    <svg viewBox="0 0 100 100" width="110" height="110"
+                         class="mx-auto" aria-hidden="true">
+                         <!-- Background track -->
+                        <circle cx="50" cy="50" r="38"
+                                fill="none" stroke="#e9ecef" stroke-width="12"/>
+                         <!-- Progress arc (200 connections = full) -->
+                        <circle cx="50" cy="50" r="38"
+                                fill="none"
+                                th:attr="stroke=${stat.gaugeColor},
+                                         stroke-dashoffset=${stat.gaugeDashOffset}"
+                                stroke-width="12"
+                                stroke-linecap="round"
+                                stroke-dasharray="238.76"
+                                transform="rotate(-90 50 50)"
+                                style="transition: stroke-dashoffset .5s ease;"/>
+                         <!-- Number of connections (center value) -->
+                        <text x="50" y="46"
+                              text-anchor="middle" dominant-baseline="central"
+                              font-size="26" font-weight="bold" fill="#212529"
+                              th:text="${stat.openConnections}">0</text>
+                        <text x="50" y="67"
+                              text-anchor="middle"
+                              font-size="9" fill="#6c757d"
+                              th:text="#{javaperf.storage.sessions}">session(s)</text>
+                    </svg>
+
+                    <!-- Drive name, protocol and counter (accessible) -->
+                    <div class="mt-2 px-1">
+                        <div class="fw-semibold text-truncate small"
+                             th:text="${stat.driveName}"
+                             th:title="${stat.driveName}">drive</div>
+                         <!-- Hidden text for screen readers: number of sessions -->
+                        <span class="visually-hidden"
+                              th:text="${stat.openConnections} + ' ' + #{javaperf.storage.sessions}"></span>
+                        <span class="badge mt-1"
+                              th:classappend="'bg-' + ${stat.statusBadgeClass}"
+                              th:text="${stat.type}">type</span>
+                        <div class="text-muted mt-1" style="font-size:0.72rem;">
+                            <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
+                            <span th:text="#{javaperf.storage.max_connections}">Max&nbsp;:</span>
+                            <strong th:text="${stat.maxConnections}">0</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Color legend -->
+        <div th:unless="${#lists.isEmpty(storageStats)}"
+             class="d-flex flex-wrap gap-3 mt-3 small text-muted align-items-center">
+            <span class="fw-semibold" th:text="#{javaperf.storage.legend}">Legend:</span>
+            <span><span class="badge bg-secondary">0</span> <span th:text="#{javaperf.storage.legend.inactive}">Inactive</span></span>
+            <span><span class="badge bg-success">1–9</span> <span th:text="#{javaperf.storage.legend.low}">Low load</span></span>
+            <span><span class="badge bg-primary">10–50</span> <span th:text="#{javaperf.storage.legend.medium}">Medium load</span></span>
+            <span><span class="badge bg-warning text-dark">51–200</span> <span th:text="#{javaperf.storage.legend.high}">High load</span></span>
+            <span><span class="badge bg-danger">201+</span> <span th:text="#{javaperf.storage.legend.very_high}">Very high load</span></span>
+        </div>
+    </div>
+
+    <!-- Threads -->
+    <div class="mb-4">
+        <h2 class="text-muted mb-3 h5"><i class="bi bi-diagram-3 me-1" aria-hidden="true"></i><span th:text="#{javaperf.threads.title}">Threads</span></h2>
+
+        <!-- Summary by state -->
+        <div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
+            <span class="fw-semibold me-1" th:text="#{javaperf.threads.states}">Thread states:</span>
+            <span th:each="entry : ${threadStateCount}"
+                  th:classappend="'badge rounded-pill badge-state-' + ${entry.key}"
+                  class="badge rounded-pill fs-6 px-3 py-1">
+                <span th:text="${entry.key}"></span>
+                <span class="ms-1 fw-bold" th:text="${entry.value}"></span>
+            </span>
+            <span class="ms-auto text-muted small">
+                <i class="bi bi-activity" aria-hidden="true"></i>
+                <span th:text="#{javaperf.threads.peak}">Peak:</span>
+                <strong th:text="${javaPerfWrapper.peakThreadCount}"></strong>
+                <span th:text="#{javaperf.threads.peak.unit}">threads</span>
+                &nbsp;|&nbsp;
+                <span th:text="#{javaperf.threads.current}">Current thread:</span>
+                <code th:text="${currentThreadId}"></code>
+            </span>
+        </div>
+
+        <!-- Thread table -->
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered table-hover thread-table align-middle"
+                   th:attr="aria-label=#{javaperf.threads.title}">
+                <thead class="table-dark sticky-top">
+                    <tr>
+                        <th scope="col" th:text="#{javaperf.threads.table.id}">Id</th>
+                        <th scope="col" th:text="#{javaperf.threads.table.name}">Name</th>
+                        <th scope="col" th:text="#{javaperf.threads.table.state}">State</th>
+                        <th scope="col">
+                            <span th:text="#{javaperf.threads.table.blocked}">Blocked</span><br>
+                            <small class="fw-normal text-muted" th:text="#{javaperf.threads.table.count_ms}">count / ms</small>
+                        </th>
+                        <th scope="col">
+                            <span th:text="#{javaperf.threads.table.waited}">Waiting</span><br>
+                            <small class="fw-normal text-muted" th:text="#{javaperf.threads.table.count_ms}">count / ms</small>
+                        </th>
+                        <th scope="col" th:text="#{javaperf.threads.table.stacktrace}">Stack trace</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="threadInfo : ${javaPerfWrapper.threadInfoWrappers}"
+                        th:classappend="${currentThreadId eq threadInfo.threadId ? 'row-current' :
+                                         (threadInfo.threadState eq 'RUNNABLE'  ? 'row-RUNNABLE' :
+                                         (threadInfo.threadState eq 'BLOCKED'   ? 'row-BLOCKED'  : ''))}">
+                        <td th:text="${threadInfo.threadId}" class="text-muted small"></td>
+                        <td th:text="${threadInfo.threadName}" class="small"></td>
+                        <td>
+                            <span class="badge rounded-pill"
+                                  th:classappend="'badge-state-' + ${threadInfo.threadState}"
+                                  th:text="${threadInfo.threadState}"></span>
+                            <i th:if="${currentThreadId eq threadInfo.threadId}"
+                               class="bi bi-arrow-left-circle-fill text-success ms-1"
+                               aria-hidden="true"
+                               th:title="#{javaperf.threads.current.marker}"></i>
+                            <span th:if="${currentThreadId eq threadInfo.threadId}"
+                                  class="visually-hidden" th:text="#{javaperf.threads.current.marker}"></span>
+                        </td>
+                        <td class="small text-center">
+                            <span th:text="${threadInfo.blockedCount}"></span>
+                            /
+                            <span th:text="${threadInfo.blockedTime}"></span>
+                        </td>
+                        <td class="small text-center">
+                            <span th:text="${threadInfo.waitedCount}"></span>
+                            /
+                            <span th:text="${threadInfo.waitedTime}"></span>
+                        </td>
+                        <td>
+                            <pre class="stack-trace mb-0"
+                                 th:if="${threadInfo.stackTrace.length > 0}"><span
+                                    th:each="ste : ${threadInfo.stackTrace}"
+                                    th:text="${ste.toString} + '&#10;'"></span></pre>
+                            <span th:if="${threadInfo.stackTrace.length == 0}" class="text-muted small">—</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="mt-auto py-2 bg-light border-top text-center text-muted small"
+        th:text="#{javaperf.footer}">ESUP File Manager – Java Performance</footer>
+
+<script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.js}"></script>
+</body>
+</html>
+

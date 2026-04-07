@@ -1,0 +1,6 @@
+{
+  "@class" : "org.apereo.cas.services.CasRegisteredService",
+  "serviceId" : ".*",
+  "name" : "Any services",
+  "id" : 1,
+}

@@ -1,5 +1,10 @@
-target
-.classpath
-.project
-.settings
-**/META-INF/*
+*
+!.gitignore
+!src/
+!src/**
+!LICENCE
+!README.md
+!NOTICE
+!pom.xml
+COMMITTERS.md
+!\.gitlab-ci.yml

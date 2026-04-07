@@ -1,506 +1,313 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project>
 
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.esupportail.portlet.filemanager</groupId>
-  <artifactId>esup-filemanager</artifactId>
-  <packaging>war</packaging>
-  <name>esup-filemanager</name>
-  <version>4.0.1-SNAPSHOT</version>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.esupportail.portlet.filemanager</groupId>
+    <artifactId>esup-filemanager</artifactId>
+    <packaging>war</packaging>
+    <name>esup-filemanager-servlet</name>
+    <version>6.0.0-SNAPSHOT</version>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.5.12</version>
+        <relativePath/>
+    </parent>
 
+    <description>Esup File Manager is a servlet that allows users to manage files in their home directories.</description>
+    <url>https://github.com/vbonamy/esup-filemanager</url>
 
-  <description>ESUP File Manager is a JSR286 Portlet. Esup File Manager allows users to perform file management on their HomeDirs.</description>
-  <url>https://wiki.jasig.org/display/PLT/ESUP+File+Manager+Portlet</url>
+    <organization>
+        <name>EsupPortail</name>
+        <url>https://www.esup-portail.org</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
 
-  <organization>
-    <name>EsupPortail</name>
-    <url>https://www.esup-portail.org</url>
-  </organization>
-  <licenses>
-    <license>
-      <name>Apache License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-    </license>
-  </licenses>
+    <developers>
+        <developer>
+            <name>Vincent Bonamy</name>
+            <organization>Université de Rouen</organization>
+        </developer>
+    </developers>
+    <contributors>
+        <contributor>
+            <name>Jean-Pierre Tran</name>
+            <organization>Université de Rouen</organization>
+        </contributor>
+        <contributor>
+            <name>Julien Marchal</name>
+            <organization>Université de Lorraine</organization>
+        </contributor>
+        <contributor>
+            <name>Julien Gribonvald</name>
+            <organization>GIP RECIA</organization>
+        </contributor>
+        <contributor>
+            <name>David Clarke</name>
+            <organization>Australian National University</organization>
+        </contributor>
+        <contributor>
+            <name>Pierre Bouvret</name>
+            <organization>Université de Bordeaux</organization>
+        </contributor>
+        <contributor>
+            <name>Franck Bordinat</name>
+            <organization>Université Jean-François Champollion</organization>
+        </contributor>
+        <contributor>
+            <name>Pascal Rigaux</name>
+            <organization>Université Paris 1 Panthéon - Sorbonne</organization>
+        </contributor>
+        <contributor>
+            <name>Olivier Franco</name>
+            <organization>INSA de Lyon</organization>
+        </contributor>
+        <contributor>
+            <name>Maxime Bossard</name>
+            <organization>GIP RECIA</organization>
+        </contributor>
+        <contributor>
+            <name>Guillaume Colson</name>
+            <organization>Université de Lorraine</organization>
+        </contributor>
+        <contributor>
+            <name>Denis Elbaz</name>
+            <organization>Université de Perpignan</organization>
+        </contributor>
+        <contributor>
+            <name>Dominique Lalot</name>
+            <organization>Aix-Marseille Université</organization>
+        </contributor>
+    </contributors>
 
-  <developers>
-    <developer>
-      <name>Vincent Bonamy</name>
-      <organization>Université de Rouen</organization>
-    </developer>
-  </developers>
-  <contributors>
-    <contributor>
-      <name>Jean-Pierre Tran</name>
-      <organization>Université de Rouen</organization>
-    </contributor>
-    <contributor>
-      <name>Julien Marchal</name>
-      <organization>Université de Lorraine</organization>
-    </contributor>
-    <contributor>
-      <name>Julien Gribonvald</name>
-      <organization>GIP RECIA</organization>
-    </contributor>
-    <contributor>
-      <name>David Clarke</name>
-      <organization>Australian National University</organization>
-    </contributor>
-    <contributor>
-      <name>Pierre Bouvret</name>
-      <organization>Université de Bordeaux</organization>
-    </contributor>
-    <contributor>
-      <name>Franck Bordinat</name>
-      <organization>Université Jean-François Champollion</organization>
-    </contributor>
-    <contributor>
-      <name>Pascal Rigaux</name>
-      <organization>Université Paris 1 Panthéon - Sorbonne</organization>
-    </contributor>
-    <contributor>
-      <name>Olivier Franco</name>
-      <organization>INSA de Lyon</organization>
-    </contributor>
-    <contributor>
-      <name>Maxime Bossard</name>
-      <organization>GIP RECIA</organization>
-    </contributor>
-    <contributor>
-      <name>Guillaume Colson</name>
-      <organization>Université de Lorraine</organization>
-    </contributor>
-    <contributor>
-      <name>Denis Elbaz</name>
-      <organization>Université de Perpignan</organization>
-    </contributor>
-    <contributor>
-      <name>Dominique Lalot</name>
-      <organization>Aix-Marseille Université</organization>
-    </contributor>
-  </contributors>
+    <mailingLists>
+        <mailingList>
+            <name>esup-utilisateurs@esup-portail.org</name>
+            <subscribe>https://listes.esup-portail.org/sympa/info/esup-utilisateurs</subscribe>
+            <archive>https://listes.esup-portail.org/sympa/arc/esup-utilisateurs</archive>
+        </mailingList>
+    </mailingLists>
 
-  <mailingLists>
-    <mailingList>
-      <name>esup-utilisateurs@esup-portail.org</name>
-      <subscribe>https://listes.esup-portail.org/sympa/info/esup-utilisateurs</subscribe>
-      <archive>https://listes.esup-portail.org/sympa/arc/esup-utilisateurs</archive>
-    </mailingList>
-  </mailingLists>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.source>21</project.build.source>
+        <project.build.target>21</project.build.target>
+    </properties>
 
-  <!-- Dependency Version Properties -->
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.build.source>1.8</project.build.source>
-    <project.build.target>1.8</project.build.target>
-    <uportal-libs.version>5.12.0</uportal-libs.version>
-    <commons-vfs.version>2.2</commons-vfs.version>
-    <jackson.version>2.13.4.2</jackson.version>
-    <jcifs-ng.version>2.1.8</jcifs-ng.version>
-    <logback.version>1.3.4</logback.version>
-    <spring.version>4.3.30.RELEASE</spring.version>
-  </properties>
-
-  <scm>
-    <developerConnection>scm:git:ssh://git@github.com/uPortal-Project/esup-filemanager.git</developerConnection>
-    <url>https://github.com/uPortal-Project/esup-filemanager</url>
-    <tag>HEAD</tag>
-  </scm>
-
-  <repositories>
-    <repository>
-      <id>esup</id>
-      <url>https://mvn.esup-portail.org/content/repositories/releases</url>
-    </repository>
-    <repository>
-      <id>esup-third</id>
-      <url>https://mvn.esup-portail.org/content/repositories/thirdparty</url>
-    </repository>
-  </repositories>
-
-  <distributionManagement>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-    <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-  </distributionManagement>
-
-  <dependencyManagement>
     <dependencies>
-      <!-- Provides the PortalPropertySourcesPlaceholderConfigurer
-               that supports global.properties and Jasypt encryption-->
-      <dependency>
-        <groupId>org.jasig.portal</groupId>
-        <artifactId>uPortal-spring</artifactId>
-        <version>${uportal-libs.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.jasig.portal</groupId>
-            <artifactId>uPortal-api-internal</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.jasig.portal</groupId>
-            <artifactId>uPortal-security-core</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.jasig.portal</groupId>
-            <artifactId>uPortal-security-mvc</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.jasig.portal</groupId>
-            <artifactId>uPortal-tools</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>net.oauth.core</groupId>
-            <artifactId>oauth</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
 
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-collections4</artifactId>
-        <version>4.4</version>
-      </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-json</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-cas</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>bcpkix-jdk15on</artifactId>
+                    <groupId>org.bouncycastle</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-springsecurity6</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.angus</groupId>
+            <artifactId>angus-activation</artifactId>
+            <version>2.0.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.mwiede</groupId>
+            <artifactId>jsch</artifactId>
+            <version>2.27.9</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.hierynomus</groupId>
+            <artifactId>smbj</artifactId>
+            <version>0.14.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>1.81</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.vatbub</groupId>
+            <artifactId>mslinks</artifactId>
+            <version>1.0.6.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-vfs2</artifactId>
+            <version>2.10.0</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>3.12.0</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>2.42.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.lookfirst</groupId>
+            <artifactId>sardine</artifactId>
+            <version>5.13</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- Webjars dependencies -->
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>webjars-locator-core</artifactId>
+            <version>0.52</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>bootstrap</artifactId>
+            <version>5.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>bootstrap-icons</artifactId>
+            <version>1.11.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>flag-icons</artifactId>
+            <version>7.5.0</version>
+        </dependency>
+
     </dependencies>
-  </dependencyManagement>
 
-  <dependencies>
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+                    <source>${project.build.source}</source>
+                    <target>${project.build.target}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+            </plugin>
+            <plugin>
+                <groupId>com.mycila.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <version>1.9.0</version>
+                <configuration>
+                    <header>src/etc/header.txt</header>
+                    <includes>
+                        <include>src/main/java/org/esupportail/portlet/filemanager/**</include>
+                        <include>src/main/webapp/WEB-INF/**</include>
+                        <include>src/main/resources/**</include>
+                        <include>src/main/webapp/js/esup-*.js</include>
+                        <include>src/main/webapp/css/esup-*css</include>
+                    </includes>
+                </configuration>
+            </plugin>
 
-    <dependency>
-      <groupId>net.iharder</groupId>
-      <artifactId>base64</artifactId>
-      <version>2.3.9</version>
-    </dependency>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>java</executable>
+                    <mainClass>jcifs.org.esupportail.filemanager.SmbDfsThreadTest</mainClass>
+                    <classpathScope>test</classpathScope>
+                </configuration>
+            </plugin>
 
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>${logback.version}</version>
-    </dependency>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>process-aot</id>
+                        <goals>
+                            <goal>process-aot</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-collections4</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>2.6</version>
-    </dependency>
-
-
-    <!-- ===== Compile Time Dependencies ============================== -->
-    <!-- the slf4j commons-logging replacement -->
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>3.1.0</version>
-      <type>jar</type>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>javax.portlet</groupId>
-      <artifactId>portlet-api</artifactId>
-      <version>2.0</version>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.portals.pluto</groupId>
-      <artifactId>pluto-taglib</artifactId>
-      <version>2.1.0-M3</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymock</artifactId>
-      <version>5.0.1</version>
-      <type>jar</type>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>${jackson.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>commons-httpclient</groupId>
-      <artifactId>commons-httpclient</artifactId>
-      <version>3.1</version>
-    </dependency>
-
-    <dependency>
-      <groupId>commons-fileupload</groupId>
-      <artifactId>commons-fileupload</artifactId>
-      <version>1.4</version>
-    </dependency>
-
-    <dependency>
-      <groupId>commons-net</groupId>
-      <artifactId>commons-net</artifactId>
-      <version>2.2</version>
-    </dependency>
-
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.11.0</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.jcraft</groupId>
-      <artifactId>jsch</artifactId>
-      <version>0.1.55</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jasig.cas.client</groupId>
-      <artifactId>cas-client-core</artifactId>
-      <version>3.6.4</version>
-    </dependency>
-
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <version>2.12.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.chemistry.opencmis</groupId>
-      <artifactId>chemistry-opencmis-client-impl</artifactId>
-      <version>0.6.0</version>
-    </dependency>
-
-    <dependency>
-      <groupId>eu.agno3.jcifs</groupId>
-      <artifactId>jcifs-ng</artifactId>
-      <version>${jcifs-ng.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
-      <version>1.4.7</version>
-    </dependency>
-
-
-    <dependency>
-      <groupId>com.googlecode.sardine</groupId>
-      <artifactId>sardine</artifactId>
-      <version>343</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>4.5.13</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>2.0.3</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>aspectjrt</artifactId>
-      <version>1.7.3</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>aspectjweaver</artifactId>
-      <version>1.7.3</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-webmvc-portlet</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
-      <version>1.1.2</version>
-    </dependency>
-
-    <dependency>
-      <groupId>taglibs</groupId>
-      <artifactId>standard</artifactId>
-      <version>1.1.2</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-vfs2</artifactId>
-      <version>${commons-vfs.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-webdav</artifactId>
-      <version>1.5.2</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jasig.portal</groupId>
-      <artifactId>uPortal-api-search</artifactId>
-      <version>${uportal-libs.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jasig.portal</groupId>
-      <artifactId>uPortal-spring</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.esupportail.portlet.filemanager</groupId>
-      <artifactId>esup-filemanager-api</artifactId>
-      <version>3.0.0-rc1</version>
-    </dependency>
-  </dependencies>
-
-  <build>
-    <finalName>${project.artifactId}</finalName>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.10.1</version>
-        <configuration>
-          <source>${project.build.source}</source>
-          <target>${project.build.target}</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <configuration>
-          <attachClasses>true</attachClasses>
-          <warName>esup-filemanager</warName>
-          <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
-        </configuration>
-        <version>3.3.2</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>3.2.1</version>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <version>2.5.3</version>
-      </plugin>
-      <plugin>
-        <groupId>com.mycila.maven-license-plugin</groupId>
-        <artifactId>maven-license-plugin</artifactId>
-        <version>1.9.0</version>
-        <configuration>
-          <header>src/etc/header.txt</header>
-          <includes>
-            <include>src/main/java/org/esupportail/portlet/filemanager/**</include>
-            <include>src/main/webapp/WEB-INF/**</include>
-            <include>src/main/resources/**</include>
-            <include>src/main/webapp/js/esup-*.js</include>
-            <include>src/main/webapp/css/esup-*css</include>
-          </includes>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>3.1.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>java</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <executable>java</executable>
-          <mainClass>org.esupportail.portlet.filemanager.jcifs.SmbDfsThreadTest</mainClass>
-          <classpathScope>test</classpathScope>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.6.13</version>
-        <extensions>true</extensions>
-        <configuration>
-          <serverId>ossrh</serverId>
-          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-          <autoReleaseAfterClose>false</autoReleaseAfterClose>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
-        <version>3.0.1</version>
-        <executions>
-          <execution>
-            <id>sign-artifacts</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.3.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-            <configuration>
-              <classifier>classes</classifier>
-              <includes>
-                <include>**/*</include>
-              </includes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-    </plugins>
-  </build>
+        </plugins>
+    </build>
 
 </project>

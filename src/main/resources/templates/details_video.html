@@ -1,0 +1,41 @@
+<!-- src/main/resources/templates/details_video.html -->
+<div class="details-card">
+    <h3 class="details-header" th:text="#{details.header}">Détails</h3>
+
+    <div class="media-player-container">
+        <video controls class="video-player" th:attr="aria-label=${file.title}">
+            <source th:src="@{/fetchVideo(dir=${file.encPath})}" th:type="${file.mimeType}">
+            Votre navigateur ne supporte pas la lecture de vidéos HTML5.
+        </video>
+    </div>
+
+    <div class="details-spacer"></div>
+
+    <dl class="details-info">
+        <dt class="details-label" th:text="#{details.title}">Nom</dt>
+        <dd class="details-value">
+            <span th:text="${file.title}"></span>
+        </dd>
+
+        <dt class="details-label" th:text="#{details.size}">Taille</dt>
+        <dd class="details-value">
+            <span th:text="${file.formattedSize.size}"></span>
+            <span th:text="#{|details.${file.formattedSize.unit}|}"></span>
+        </dd>
+
+        <dt class="details-label" th:text="#{details.type}">Type</dt>
+        <dd class="details-value" th:text="${file.mimeType}"></dd>
+
+        <dt class="details-label" th:text="#{details.lastModifiedTime}">Modifié le</dt>
+        <dd class="details-value" th:text="${#dates.format(file.lastModifiedTime, datePattern)}"></dd>
+    </dl>
+
+    <div class="details-spacer"></div>
+
+    <div class="details-actions">
+        <a class="btn-download" th:href="@{/downloadFile(dir=${file.encPath})}"
+           th:text="#{details.download}"
+           th:attr="aria-label=#{details.download} + ' ' + ${file.title}">Télécharger</a>
+    </div>
+</div>
+

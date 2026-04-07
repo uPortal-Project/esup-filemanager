@@ -1,0 +1,44 @@
+dn: ou=people,dc=example,dc=org
+changetype: add
+ou: people
+objectclass: organizationalunit
+
+dn: uid=admin,ou=people,dc=example,dc=org
+changetype: add
+uid: admin
+sn: admin
+cn: admin
+objectClass: inetOrgPerson
+userPassword: pass
+mail: admin@example.org
+
+dn: uid=joe,ou=people,dc=example,dc=org
+changetype: add
+uid: joe
+sn: joe
+cn: joe
+objectClass: inetOrgPerson
+userPassword: pass
+mail: joe@example.org
+
+dn: uid=jack,ou=people,dc=example,dc=org
+changetype: add
+uid: jack
+sn: jack
+cn: jack
+objectClass: inetOrgPerson
+userPassword: pass
+mail: jack@example.org
+
+dn: ou=groups,dc=example,dc=org
+changetype: add
+ou: groups
+objectclass: organizationalunit
+
+dn: cn=admin,ou=groups,dc=example,dc=org
+changetype: add
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: admin
+uniqueMember: uid=joe,ou=people,dc=example,dc=org
+

@@ -1,0 +1,46 @@
+<!-- src/main/resources/templates/details_folder.html -->
+<div class="details-card">
+    <h3 class="details-header" th:text="#{details.header}">Détails</h3>
+
+    <dl class="details-info">
+        <dt class="details-label" th:text="#{details.title}">Nom</dt>
+        <dd class="details-value">
+            <span th:text="${file.title}"></span>
+        </dd>
+
+        <dt class="details-label" th:text="#{details.folders}">Dossiers</dt>
+        <dd class="details-value" th:text="${file.folderCount}"></dd>
+
+        <dt class="details-label" th:text="#{details.files}">Fichiers</dt>
+        <dd class="details-value" th:text="${file.fileCount}"></dd>
+
+        <dt class="details-label" th:text="#{details.totalsize}">Taille totale</dt>
+        <dd class="details-value">
+            <span th:text="${file.formattedTotalSize.size}"></span>
+            <span th:text="#{|details.${file.formattedTotalSize.unit}|}"></span>
+        </dd>
+
+        <th:block th:if="${quota != null}">
+            <dt class="details-label" th:text="#{details.quota}">Quota</dt>
+            <dd class="details-value">
+                <div class="quota-info">
+                        <div class="quota-bar">
+                            <div class="quota-fill"
+                                 role="progressbar"
+                                 th:style="'width: ' + ${quota.usage} + '%'"
+                                 th:attr="aria-valuenow=${quota.usage}, aria-valuemin=0, aria-valuemax=100, aria-label=#{aria.quota.label}"></div>
+                        </div>
+                    <div class="quota-text">
+                        <span th:text="${quota.usage}"></span>%
+                        (<span th:text="${quota.usedSize}"></span>
+                        <span th:text="${quota.usedUnit}"></span>
+                        /
+                        <span th:text="${quota.maxSize}"></span>
+                        <span th:text="${quota.maxUnit}"></span>)
+                    </div>
+                </div>
+            </dd>
+        </th:block>
+    </dl>
+</div>
+

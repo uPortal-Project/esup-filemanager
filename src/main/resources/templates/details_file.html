@@ -1,0 +1,37 @@
+<!-- src/main/resources/templates/details_file.html -->
+<div class="details-card">
+    <h3 class="details-header" th:text="#{details.header}">Détails</h3>
+
+    <div class="details-spacer"></div>
+
+    <dl class="details-info">
+        <dt class="details-label" th:text="#{details.title}">Nom</dt>
+        <dd class="details-value">
+            <span th:text="${file.title}"></span>
+        </dd>
+
+        <dt class="details-label" th:text="#{details.size}">Taille</dt>
+        <dd class="details-value">
+            <span th:text="${file.formattedSize.size}"></span>
+            <span th:text="#{|details.${file.formattedSize.unit}|}"></span>
+        </dd>
+
+        <dt class="details-label" th:text="#{details.type}">Type</dt>
+        <dd class="details-value" th:text="${file.mimeType}"></dd>
+
+        <th:block th:if="${file.lastModifiedTime != null}">
+            <dt class="details-label" th:text="#{details.lastModifiedTime}">Modifié le</dt>
+            <dd class="details-value" th:text="${#dates.format(file.lastModifiedTime, datePattern)}"></dd>
+        </th:block>
+    </dl>
+
+    <div class="details-spacer"></div>
+
+    <div class="details-actions">
+        <a class="btn-download" th:href="@{/downloadFile(dir=${file.encPath})}"
+           th:text="#{details.download}"
+           th:attr="aria-label=#{details.download} + ' ' + ${file.title}">Télécharger</a>
+    </div>
+</div>
+
+

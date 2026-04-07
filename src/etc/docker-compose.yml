@@ -1,0 +1,81 @@
+services:
+
+   openldap:
+     image: osixia/openldap:latest
+     environment:
+       LDAP_DOMAIN: "example.org"
+     command: --copy-service
+     volumes:
+      - ./docker/ldap-config:/container/service/slapd/assets/config/bootstrap/ldif/custom
+
+   cas:
+     image: esupportail/apereo-cas-ldap:7.3.5
+     volumes:
+       - ./docker/cas-config:/etc/cas
+       - ./docker/cas-config/tmp-cas:/tmp/cas
+     ports:
+       - "8081:8080"
+     depends_on:
+       - openldap
+
+   s3:
+     image: quay.io/minio/minio:latest
+     environment:
+       MINIO_ROOT_USER: minioadmin
+       MINIO_ROOT_PASSWORD: minioadmin
+     command: server /data --console-address ":9001"
+     ports:
+       - "9000:9000"
+       - "9001:9001"
+     healthcheck:
+       test: [ "CMD", "mc", "ready", "local" ]
+       interval: 5s
+       timeout: 5s
+       retries: 5
+
+   s3-init:
+     image: quay.io/minio/mc:latest
+     depends_on:
+       s3:
+         condition: service_healthy
+     entrypoint: >
+       /bin/sh -c "
+       mc alias set local http://s3:9000 minioadmin minioadmin &&
+       mc mb --ignore-existing local/esup-files &&
+       echo 'Bucket esup-files créé.'
+       "
+
+   webdav:
+     image: apachewebdav/apachewebdav:latest
+     environment:
+       AUTH_TYPE: Basic
+       USERNAME: webdav
+       PASSWORD: webdav
+     tmpfs:
+       - /var/lib/dav/data:mode=0777
+       - /var/lib/dav:mode=0777
+     ports:
+       - "8888:80"
+
+   samba:
+     image: crazymax/samba:latest
+     cap_add:
+       - CAP_NET_ADMIN
+     tmpfs:
+       - /samba/share:mode=0777
+     volumes:
+       - ./docker/samba-config/samba-config.yml:/data/config.yml:ro
+     ports:
+       - "1445:445"
+
+   sftp:
+     image: hectorm/dropbear:v39
+     environment:
+       DROPBEAR_USERS: |
+         sftpuser:plain:sftppass:1001:1001
+     tmpfs:
+       - /home/sftpuser:mode=0755,uid=1001
+     ports:
+        - "2222:2222"
+
+

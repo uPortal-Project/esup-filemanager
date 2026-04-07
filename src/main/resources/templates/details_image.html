@@ -1,0 +1,59 @@
+<!-- src/main/resources/templates/details_image.html -->
+<div class="details-card">
+    <h3 class="details-header" th:text="#{details.header}">Détails</h3>
+
+    <div class="image-preview-container">
+        <img th:src="@{/fetchImage(dir=${file.encPath})}"
+             class="details-image"
+             th:alt="${file.title}"
+             th:attr="data-fullsize=@{/fetchImage(dir=${file.encPath})}" />
+        <div class="image-zoom-icon" aria-hidden="true">🔍</div>
+    </div>
+
+    <div class="details-spacer"></div>
+
+    <dl class="details-info">
+        <dt class="details-label" th:text="#{details.title}">Nom</dt>
+        <dd class="details-value">
+            <span th:text="${file.title}"></span>
+        </dd>
+
+        <dt class="details-label" th:text="#{details.imagesize}">Dimensions</dt>
+        <dd class="details-value">
+            <span id="image_width"></span>px × <span id="image_height"></span>px
+        </dd>
+
+        <dt class="details-label" th:text="#{details.size}">Taille</dt>
+        <dd class="details-value">
+            <span th:text="${file.formattedSize.size}"></span>
+            <span th:text="#{|details.${file.formattedSize.unit}|}"></span>
+        </dd>
+
+        <dt class="details-label" th:text="#{details.type}">Type</dt>
+        <dd class="details-value" th:text="${file.mimeType}"></dd>
+
+        <dt class="details-label" th:text="#{details.lastModifiedTime}">Modifié le</dt>
+        <dd class="details-value" th:text="${#dates.format(file.lastModifiedTime, datePattern)}"></dd>
+    </dl>
+
+    <div class="details-spacer"></div>
+
+    <div class="details-actions">
+        <a class="btn-download" th:href="@{/downloadFile(dir=${file.encPath})}"
+           th:text="#{details.download}"
+           th:attr="aria-label=#{details.download} + ' ' + ${file.title}">Télécharger</a>
+        <button class="btn-view-fullsize" onclick="viewImageFullsize(this)" th:text="#{details.viewimage}">Voir en grand</button>
+    </div>
+</div>
+
+<!-- Modal for full-size display -->
+<div id="imageModal" class="image-modal" style="display: none;"
+     role="dialog" aria-modal="true"
+     th:attr="aria-label=#{aria.image.modal.title}">
+    <div class="image-modal-content">
+        <button type="button" class="image-modal-close" th:attr="aria-label=#{aria.image.modal.close}">&times;</button>
+        <img id="modalImage" src="" th:attr="alt=#{aria.image.modal.title}">
+    </div>
+</div>
+
+<div class="details-spacer"></div>

@@ -15,6 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+:root {
+    --bs-body-font-family: "Open Sans";
+}
+
 .esupstock table {
 margin-bottom: 1.4em;
 width: 100%;
@@ -47,9 +52,58 @@ font-weight: bold;
 }
 
 .esupstock .breadcrumbs {
-background: #f3f3f3;
-padding: 5px;
-border-bottom: 1px solid #bbb;
+background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+padding: 12px 16px;
+border-bottom: 3px solid #0078d4;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+font-size: 16px;
+font-weight: 500;
+margin-bottom: 8px;
+}
+
+.esupstock .breadcrumbs img {
+vertical-align: middle;
+margin-right: 6px;
+width: 20px;
+height: 20px;
+}
+
+.esupstock .breadcrumbs a {
+color: #0078d4;
+text-decoration: none;
+padding: 4px 8px;
+border-radius: 4px;
+transition: all 0.2s ease;
+font-weight: 500;
+}
+
+.esupstock .breadcrumbs a:hover {
+background-color: #e7f3ff;
+color: #005a9e;
+text-decoration: none;
+}
+
+.esupstock .breadcrumbs a:focus {
+outline: 2px solid #0078d4;
+outline-offset: 2px;
+}
+
+.esupstock .breadcrumbs span {
+color: #333;
+font-weight: 600;
+}
+
+.esupstock .breadcrumbs .d-inline {
+display: inline-block;
+}
+
+.esupstock .breadcrumbs .d-inline:not(:last-child)::after {
+content: "›";
+display: inline-block;
+margin: 0 8px;
+color: #6c757d;
+font-size: 18px;
+font-weight: bold;
 }
 
 .esupstock #toolbar {
@@ -70,39 +124,39 @@ margin: 0px 10px;
 }
 
 .esupstock #toolbar-fullscreen {
-background: url(/esup-filemanager/img/flaticons/Full-Screen-24.png) no-repeat center top;
+background: url(/img/flaticons/Full-Screen-24.png) no-repeat center top;
 }
 
 .esupstock #toolbar-create {
-background: url(/esup-filemanager/img/flaticons/new_folder_24px.png) no-repeat center top;
+background: url(/img/flaticons/new_folder_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-refresh {
-background: url(/esup-filemanager/img/flaticons/refresh_24px.png) no-repeat center top;
+background: url(/img/flaticons/refresh_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-copy {
-background: url(/esup-filemanager/img/flaticons/copy_24px.png) no-repeat center top;
+background: url(/img/flaticons/copy_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-cut {
-background: url(/esup-filemanager/img/flaticons/cut_24px.png) no-repeat center top;
+background: url(/img/flaticons/cut_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-past {
-background: url(/esup-filemanager/img/flaticons/paste_24px.png) no-repeat center top;
+background: url(/img/flaticons/paste_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-rename {
-background: url(/esup-filemanager/img/flaticons/rename_24px.png) no-repeat center top;
+background: url(/img/flaticons/rename_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-delete {
-background: url(/esup-filemanager/img/flaticons/delete_24px.png) no-repeat center top;
+background: url(/img/flaticons/delete_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-zip {
-background: url(/esup-filemanager/img/flaticons/zip_24px.png) no-repeat center top;
+background: url(/img/flaticons/zip_24px.png) no-repeat center top;
 }
 
 .esupstock #info-toolbar span {
@@ -126,7 +180,7 @@ display: none;
 display: block;
 padding: 24px 5px 0px 10px;
 margin-top: -24px;
-background: url(/esup-filemanager/img/flaticons/upload_24px.png) no-repeat top;
+background: url(/img/flaticons/upload_24px.png) no-repeat top;
 }
 
 
@@ -191,6 +245,36 @@ padding: 10px;
 display: block;
 }
 
+.esupstock #authenticationForm button {
+display: block;
+margin-top: 10px;
+padding: 8px 16px;
+background-color: #0066cc;
+color: white;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+font-size: 14px;
+}
+
+.esupstock #authenticationForm button:hover {
+background-color: #0052a3;
+}
+
+.esupstock #authenticationForm button:active {
+background-color: #003d7a;
+}
+
+.esupstock #authenticationForm .auth-error {
+background-color: #fee;
+border: 1px solid #c33;
+color: #c33;
+padding: 10px;
+margin-bottom: 10px;
+border-radius: 4px;
+font-weight: bold;
+}
+
 
 
 .esupstock .container #fileTree,
@@ -228,104 +312,95 @@ cursor: auto;
 }
 
 .esupstock #toolbar-refresh.enabled {
-    background: url(/esup-filemanager/img/flaticons/refresh_24px.png) no-repeat center top;
+    background: url(/img/flaticons/refresh_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-refresh.disabled {
-    background: url(/esup-filemanager/img/flaticons/disabled/refresh_24px.png) no-repeat center top;
+    background: url(/img/flaticons/disabled/refresh_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-thumbnail.enabled {
-    background: url(/esup-filemanager/img/flaticons/thumbnails_24px.png) no-repeat center top;
+    background: url(/img/flaticons/thumbnails_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-thumbnail.disabled {
-    background: url(/esup-filemanager/img/flaticons/disabled/thumbnails_24px.png) no-repeat center top;
+    background: url(/img/flaticons/disabled/thumbnails_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-list.enabled {
-    background: url(/esup-filemanager/img/flaticons/list_24px.png) no-repeat center top;
+    background: url(/img/flaticons/list_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-list.disabled {
-    background: url(/esup-filemanager/img/flaticons/disabled/list_24px.png) no-repeat center top;
+    background: url(/img/flaticons/disabled/list_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-new_folder.enabled {
-	background: url(/esup-filemanager/img/flaticons/new_folder_24px.png) no-repeat center top;
+	background: url(/img/flaticons/new_folder_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-new_folder.disabled {
-	background: url(/esup-filemanager/img/flaticons/disabled/new_folder_24px.png) no-repeat center top;
+	background: url(/img/flaticons/disabled/new_folder_24px.png) no-repeat center top;
 }
-
-.esupstock #toolbar-new_file.enabled {
-	background: url(/esup-filemanager/img/flaticons/new_file_24px.png) no-repeat center top;
-}
-
-.esupstock #toolbar-new_file.disabled {
-	background: url(/esup-filemanager/img/flaticons/disabled/new_file_24px.png) no-repeat center top;
-}
-
 
 .esupstock #toolbar-download.enabled {
-    background: url(/esup-filemanager/img/flaticons/download_24px.png) no-repeat center top;
+    background: url(/img/flaticons/download_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-download.disabled {
-    background: url(/esup-filemanager/img/flaticons/disabled/download_24px.png) no-repeat center top;
+    background: url(/img/flaticons/disabled/download_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-zip.enabled {
-    background: url(/esup-filemanager/img/flaticons/zip_24px.png) no-repeat center top;
+    background: url(/img/flaticons/zip_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-zip.disabled {
-    background: url(/esup-filemanager/img/flaticons/disabled/zip_24px.png) no-repeat center top;
+    background: url(/img/flaticons/disabled/zip_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-copy.enabled {
-    background: url(/esup-filemanager/img/flaticons/copy_24px.png) no-repeat center top;
+    background: url(/img/flaticons/copy_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-copy.disabled {
-    background: url(/esup-filemanager/img/flaticons/disabled/copy_24px.png) no-repeat center top;
+    background: url(/img/flaticons/disabled/copy_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-cut.enabled {
-    background: url(/esup-filemanager/img/flaticons/cut_24px.png) no-repeat center top;
+    background: url(/img/flaticons/cut_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-cut.disabled {
-    background: url(/esup-filemanager/img/flaticons/disabled/cut_24px.png) no-repeat center top;
+    background: url(/img/flaticons/disabled/cut_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-paste.enabled {
-    background: url(/esup-filemanager/img/flaticons/paste_24px.png) no-repeat center top;
+    background: url(/img/flaticons/paste_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-paste.disabled {
-    background: url(/esup-filemanager/img/flaticons/disabled/paste_24px.png) no-repeat center top;
+    background: url(/img/flaticons/disabled/paste_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-rename.enabled {
-    background: url(/esup-filemanager/img/flaticons/rename_24px.png) no-repeat center top;
+    background: url(/img/flaticons/rename_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-rename.disabled {
-    background: url(/esup-filemanager/img/flaticons/disabled/rename_24px.png) no-repeat center top;
+    background: url(/img/flaticons/disabled/rename_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-delete.enabled {
-    background: url(/esup-filemanager/img/flaticons/delete_24px.png) no-repeat center top;
+    background: url(/img/flaticons/delete_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-delete.disabled {
-    background: url(/esup-filemanager/img/flaticons/disabled/delete_24px.png) no-repeat center top;
+    background: url(/img/flaticons/disabled/delete_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-list.enabled {
-    background: url(/esup-filemanager/img/flaticons/list_24px.png) no-repeat center top;
+    background: url(/img/flaticons/list_24px.png) no-repeat center top;
 }
 
 .esupstock .toolbar-logout-div {
@@ -338,9 +413,8 @@ padding: 0;
 }
 
 .esupstock #toolbar-logout {
-    background: url(/esup-filemanager/img/flaticons/disconnect.png) no-repeat;
     padding: 0 0 0 20px;
-    color: red;
+    color: #8b0000; /* Rouge foncé, ratio ≥ 4.5:1 (WCAG 1.4.3) */
     font-weight: bold;
 }
 
@@ -372,11 +446,11 @@ color: #444444;
 }
 
 .esupstock .disabled_upload {
-	background: url(/esup-filemanager/img/flaticons/disabled/upload_24px.png) no-repeat top;
+	background: url(/img/flaticons/disabled/upload_24px.png) no-repeat top;
 }
 
 .esupstock .disabled_upload input {
-cursor: auto !important;                                 
+cursor: auto !important;
 }
 
 /* Common */
@@ -408,7 +482,7 @@ cursor: auto !important;
 
 .esupstock #arborescentArea {
 	background: none repeat scroll 0 0 #FFFFEE;
-	height:320px;
+	height:60vh;
 }
 
 .esupstock .arborescentAreaTitle {
@@ -423,15 +497,15 @@ cursor: auto !important;
 /* Browser Area */
 
 .esupstock #browserArea {
-	width: 67%;
-	float: left;
-	height:420px;
+	float: right;
 	padding-left: 0;
 	padding-right: 0;
+    height: 80vh;
+    overflow-y: auto;
 }
 
 .esupstock .container #browserArea #browserMain {
-	height:420px;
+	height: 100%;
 	display: inline-block;
 }
 
@@ -453,7 +527,9 @@ cursor: auto !important;
 
 .esupstock #detailArea {
 	background:#FFFFEE none repeat scroll 0 0;
-	overflow: hidden;
+	overflow-y: auto;
+	overflow-x: hidden;
+	max-height: 100%;
 }
 
 .esupstock #detailArea h3 {
@@ -479,7 +555,7 @@ margin-left: 5px;
 }
 
 .esupstock #detail-download {
-	background-image: url(/esup-filemanager/img/flaticons/download_16px.png);
+	background-image: url(/img/flaticons/download_16px.png);
 	background-position: left center;
 	background-repeat: no-repeat;
 	padding:2px 0px 2px 30px;
@@ -489,7 +565,7 @@ margin-left: 5px;
 }
 
 .esupstock #detail-view-image {
-	background-image: url(/esup-filemanager/img/flaticons/picture_16px.png);
+	background-image: url(/img/flaticons/picture_16px.png);
 	background-position: left center;
 	background-repeat: no-repeat;
 	padding:4px 0px 4px 30px;
@@ -500,7 +576,7 @@ margin-left: 5px;
 }
 
 .esupstock #detail-view-images {
-	background-image: url(/esup-filemanager/img/flaticons/picture_16px.png);
+	background-image: url(/img/flaticons/picture_16px.png);
 	background-position: left center;
 	background-repeat: no-repeat;
 	padding:4px 0px 4px 30px;
@@ -510,7 +586,7 @@ margin-left: 5px;
 }
 
 .esupstock #detail-zip-download {
-	background-image: url(/esup-filemanager/img/flaticons/zip_16px.png);
+	background-image: url(/img/flaticons/zip_16px.png);
 	background-position: left center;
 	background-repeat: no-repeat;
 	padding:4px 0px 4px 30px;
@@ -541,7 +617,7 @@ margin-left: 5px;
 
 .esupstock .thumbnail .inner_thumbnail > a {
 	position: absolute;
-	margin: none;
+	margin: 0;
 	display: inline-block;
 	width: 80%;
 	height: 100%;
@@ -578,8 +654,8 @@ margin-left: 5px;
 	display: inline-block;
 	height: 32px;
 	text-align: center;
-	text-wrap: unrestricted;
-	word-wrap: break-word;
+	overflow-wrap: break-word;
+	word-break: break-word;
 }
 
 /* RlM6 = FS: coding in Base64 ... */
@@ -593,7 +669,19 @@ http://code.google.com/p/jstree/issues/detail?id=922&q=IE%20expand&colspec=ID%20
 /*.esupstock li.jstree-closed ul {display:none;}*/
 
 .esupstock .selectable {
-	outline : none;
+    /* Supprimé : outline:none (WCAG 2.4.7 – Focus Visible) */
+}
+
+/* Focus visible sur les lignes sélectionnables (WCAG 2.4.7) */
+.esupstock .selectable:focus-within {
+    outline: 2px solid #0078d4;
+    outline-offset: -2px;
+}
+
+.esupstock .selectable a:focus {
+    outline: 2px solid #0078d4;
+    outline-offset: 2px;
+    border-radius: 2px;
 }
 
 .esupstock .selectable a {
