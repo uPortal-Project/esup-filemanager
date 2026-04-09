@@ -434,6 +434,21 @@ class EsupFileManager {
             browserArea.addEventListener('contextmenu', (e) => {
                 if (e.target.closest('.selectable')) {
                     e.preventDefault();
+                    // Business rule: disable Download item when a folder is part of the selection
+                    const hasFolderSel = this.getSelectedFilePaths()
+                        .some(path => this.getFileTypeFromPath(path) === 'folder');
+                    const dlItem = browserMenu.querySelector('.context-menu-item');
+                    if (dlItem) {
+                        if (hasFolderSel) {
+                            dlItem.style.opacity = '0.5';
+                            dlItem.style.cursor = 'not-allowed';
+                            dlItem.setAttribute('aria-disabled', 'true');
+                        } else {
+                            dlItem.style.opacity = '';
+                            dlItem.style.cursor = '';
+                            dlItem.removeAttribute('aria-disabled');
+                        }
+                    }
                     UIComponents.showContextMenu(browserMenu, e.pageX, e.pageY);
                 }
             });
@@ -1233,6 +1248,11 @@ class EsupFileManager {
     }
 
     downloadFile(path) {
+        // Defensive guard: do not download a folder directly.
+        if (this.getFileTypeFromPath(path) === 'folder') {
+            console.warn('downloadFile blocked: path is a folder:', path);
+            return;
+        }
         window.location.href = this.config.downloadFileURL + '?dir=' + encodeURIComponent(path);
     }
 
@@ -1240,6 +1260,13 @@ class EsupFileManager {
         const selectedPaths = this.getSelectedFilePaths();
         if (selectedPaths.length === 0) {
             UIComponents.showError(window.i18n?.noFileSelected || 'No file selected.');
+            return;
+        }
+
+        // Business rule: direct download is not available when a folder is part of the selection.
+        const hasFolderSel = selectedPaths.some(path => this.getFileTypeFromPath(path) === 'folder');
+        if (hasFolderSel) {
+            console.warn('Download blocked: selection contains a folder.');
             return;
         }
 
@@ -1556,6 +1583,9 @@ class EsupFileManager {
     updateToolbarButtons(hasSelection) {
         // Buttons can only be active when both a file is selected AND we're inside a drive
         const canEnable = hasSelection && this.isInDrive;
+        const selectedPaths = hasSelection ? this.getSelectedFilePaths() : [];
+        const hasFolderSelection =
+            selectedPaths.some(path => this.getFileTypeFromPath(path) === 'folder');
 
         const setBtn = (btn, active) => {
             if (!btn) return;
@@ -1570,15 +1600,19 @@ class EsupFileManager {
         };
 
         // Desktop toolbar
-        ['copy', 'cut', 'delete', 'rename', 'download', 'zip'].forEach(id => {
+        ['copy', 'cut', 'delete', 'rename', 'zip'].forEach(id => {
             setBtn(document.getElementById(`toolbar-${id}`), canEnable);
         });
+        // Business rule: direct download is disabled when a folder is part of the selection.
+        setBtn(document.getElementById('toolbar-download'), canEnable && !hasFolderSelection);
 
         // Mobile offcanvas + bottom toolbar
-        ['download', 'copy', 'cut', 'delete', 'rename'].forEach(id => {
+        ['copy', 'cut', 'delete', 'rename'].forEach(id => {
             setBtn(document.getElementById(`mobile-${id}`), canEnable);
             setBtn(document.getElementById(`mobile-toolbar-${id}`), canEnable);
         });
+        setBtn(document.getElementById('mobile-download'), canEnable && !hasFolderSelection);
+        setBtn(document.getElementById('mobile-toolbar-download'), canEnable && !hasFolderSelection);
     }
 
     /**

@@ -436,28 +436,43 @@
     }
 
     /**
-     * Synchronize mobile menu button state
+     * Synchronize mobile menu button state.
+     * Uses MutationObserver (reactive) instead of a polling loop.
      */
     function syncMobileMenuState() {
         const buttons = [
             'download', 'copy', 'cut', 'paste', 'rename', 'delete'
         ];
 
-        buttons.forEach(action => {
+        const syncOne = (action) => {
             const mobileBtn = document.getElementById(`mobile-${action}`);
             const desktopBtn = document.getElementById(`toolbar-${action}`);
 
-            if (mobileBtn && desktopBtn) {
-                if (desktopBtn.classList.contains('disabled')) {
-                    mobileBtn.classList.add('disabled');
-                } else {
-                    mobileBtn.classList.remove('disabled');
-                }
+            if (!mobileBtn || !desktopBtn) return;
+
+            const isDisabled = desktopBtn.classList.contains('disabled') || desktopBtn.disabled;
+            if (isDisabled) {
+                mobileBtn.classList.add('disabled');
+                mobileBtn.disabled = true;
+                mobileBtn.setAttribute('aria-disabled', 'true');
+            } else {
+                mobileBtn.classList.remove('disabled');
+                mobileBtn.disabled = false;
+                mobileBtn.removeAttribute('aria-disabled');
+            }
+        };
+
+        buttons.forEach(action => {
+            // Initial sync
+            syncOne(action);
+
+            // Observe desktop button for attribute changes (reactive, no polling)
+            const desktopBtn = document.getElementById(`toolbar-${action}`);
+            if (desktopBtn) {
+                new MutationObserver(() => syncOne(action))
+                    .observe(desktopBtn, { attributes: true, attributeFilter: ['class', 'disabled'] });
             }
         });
-
-        // Re-synchronize regularly
-        setTimeout(syncMobileMenuState, 1000);
     }
 
     /**
