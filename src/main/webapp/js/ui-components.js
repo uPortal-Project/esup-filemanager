@@ -224,56 +224,6 @@ export class UIComponents {
         if (closeBtn) closeBtn.addEventListener('click', () => alert.remove());
     }
 
-    /**
-     * Makes an element resizable
-     */
-    static makeResizable(element, options = {}) {
-        const {
-            minWidth = 122,
-            maxWidth = 738,
-            minHeight = 122,
-            maxHeight = 600,
-            onResize = () => {}
-        } = options;
-
-        const handle = document.createElement('div');
-        handle.className = 'resize-handle';
-        handle.style.cssText = `
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 15px;
-            height: 15px;
-            cursor: se-resize;
-            background: linear-gradient(135deg, transparent 50%, #999 50%);
-        `;
-
-        element.style.position = 'relative';
-        element.appendChild(handle);
-
-        let isResizing = false;
-        let startX, startY, startWidth, startHeight;
-
-        handle.addEventListener('mousedown', (e) => {
-            isResizing = true;
-            startX = e.clientX;
-            startY = e.clientY;
-            startWidth = element.offsetWidth;
-            startHeight = element.offsetHeight;
-            e.preventDefault();
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (!isResizing) return;
-            const width  = startWidth  + (e.clientX - startX);
-            const height = startHeight + (e.clientY - startY);
-            if (width  >= minWidth  && width  <= maxWidth)  element.style.width  = width  + 'px';
-            if (height >= minHeight && height <= maxHeight) element.style.height = height + 'px';
-            onResize({ width: element.offsetWidth, height: element.offsetHeight });
-        });
-
-        document.addEventListener('mouseup', () => { isResizing = false; });
-    }
 
     /**
      * Creates a context menu (WCAG 2.1.1 – keyboard accessible, 4.1.2 – ARIA roles)

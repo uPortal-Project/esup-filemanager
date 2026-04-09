@@ -585,30 +585,6 @@ class EsupFileManager {
         }
     }
 
-    /*
-     * DEPRECATED - Old resizing system
-     * Now handled by panel-resizer.js
-     */
-    /*
-    initResizable() {
-        const arborescentArea = document.getElementById('arborescentArea');
-        if (!arborescentArea) return;
-
-        UIComponents.makeResizable(arborescentArea.parentElement, {
-            minWidth: 122,
-            maxWidth: 738,
-            minHeight: 122,
-            maxHeight: 600,
-            onResize: (size) => {
-                const browserArea = document.getElementById('browserArea');
-                if (browserArea) {
-                    const totalWidth = document.getElementById('leftArea')?.offsetWidth || 0;
-                    browserArea.style.width = (totalWidth - size.width) + 'px';
-                }
-            }
-        });
-    }
-    */
 
     async loadInitialView() {
         // Use saved path if available, otherwise defaultPath
@@ -1970,13 +1946,6 @@ class EsupFileManager {
         }
     }
 
-    /**
-     * Met à jour la barre de progression d'un fichier individuel
-     */
-    showUploadProgress(file, percent) {
-        // L'item est déjà créé par addFileToUploadPanel ; on passe juste en mode "uploading"
-        this.setUploadItemState(file, 'uploading');
-    }
 
     /**
      * Met à jour le pourcentage affiché pour un fichier
