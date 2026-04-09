@@ -18,7 +18,6 @@
 package org.esupportail.filemanager.web;
 
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletRequest;
 import org.esupportail.filemanager.beans.JsTreeFile;
 import org.esupportail.filemanager.utils.PathEncodingUtils;
 import org.springframework.stereotype.Controller;
@@ -39,7 +38,7 @@ public class HtmlController {
 
 
     @GetMapping
-    public String browse(Model model, @RequestParam(required = false) String dir, HttpServletRequest request) {
+    public String browse(Model model, @RequestParam(required = false) String dir) {
         if(!StringUtils.hasText(dir)) {
             dir = JsTreeFile.ROOT_DRIVE;
             dir = pathEncodingUtils.encodeDir(dir);

@@ -67,9 +67,6 @@ public abstract class PathEncodingUtils {
                 encodeDir(file);
     }
 
-    public LinkedHashMap<String, List<String>> getParentsPathes(JsTreeFile file) {
-        return getParentsPathes(file.getPath(), file.getCategoryIcon(), file.getDriveIcon());
-    }
 
     // Map<path, List<title, icon>>
     public LinkedHashMap<String, List<String>> getParentsPathes(String path, String categoryIcon, String driveIcon) {

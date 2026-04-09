@@ -73,12 +73,6 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
         drivesCategories = applicationContext.getBean("drivesCategories", Map.class);
     }
 
-    public List<String> getRestrictedDrivesGroupsContext() {
-
-        List<String> driveNames = new ArrayList<String>(this.servers.keySet());
-
-        return driveNames;
-    }
 
     public void destroy() throws Exception {
         for(FsAccess server: this.servers.values()) {

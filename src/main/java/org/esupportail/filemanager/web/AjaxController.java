@@ -34,7 +34,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.thymeleaf.util.StringUtils;
@@ -64,17 +63,6 @@ public class AjaxController {
     @Autowired
     protected ApplicationContext context;
 
-    @Autowired(required=false)
-    @Qualifier("useDoubleClickModeServlet")
-    protected Boolean useDoubleClick = true;
-
-    @Autowired(required=false)
-    @Qualifier("useCursorWaitDialogModeServlet")
-    protected Boolean useCursorWaitDialog = false;
-
-    @Autowired(required=false)
-    @Qualifier("showHiddenFilesModeServlet")
-    protected Boolean showHiddenFilesModeServlet = false;
 
     @Autowired(required=false)
     @Qualifier("uploadActionOnExistingFileNameModeServlet")
@@ -234,7 +222,7 @@ public class AjaxController {
 
     @PostMapping(value="/renameFile")
     @ResponseBody
-    public Map renameFile(String parentDir, String dir, String title) {
+    public Map renameFile(String dir, String title) {
         log.debug("Requesting renameFile - dir: '{}', title: '{}'", dir, title);
 
         Locale locale = LocaleContextHolder.getLocale();
@@ -567,7 +555,7 @@ public class AjaxController {
      */
     @GetMapping(value="/getPresignedDownloadUrl")
     @ResponseBody
-    public Map<String, Object> getPresignedDownloadUrl(@RequestParam String dir, HttpServletRequest request) {
+    public Map<String, Object> getPresignedDownloadUrl(@RequestParam String dir) {
         log.debug("Requesting presigned download URL for: {}", dir);
         Map<String, Object> response = new HashMap<>();
 

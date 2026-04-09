@@ -19,46 +19,11 @@ package org.esupportail.filemanager.beans;
 
 public enum UploadActionType {
 	/** To override the same filename. */
-	OVERRIDE(0),
+	OVERRIDE,
 	/** To automatically rename the file uploaded. */
-	RENAME_NEW(1),
-	/** To rautomatically ename the file already on the server before upload. */
-	RENAME_OLD(2),
+	RENAME_NEW,
+	/** To automatically rename the file already on the server before upload. */
+	RENAME_OLD,
 	/** To throw an "existingFileException" and return success=false with a specific message and to manage in the UI with user action. */
-	ERROR(3);
-
-	/** Int value of the action type*/
-	private int code;
-
-	/**
-	 * Contructor of the object UploadActionType.java.
-	 * @param code an int
-	 */
-	private UploadActionType(final int code) {
-		this.code = code;
-	}
-
-	/**
-	 * Contructor of the object UploadActionType.java.
-	 * @param code a String
-	 */
-	private UploadActionType(final String code) {
-		this.code = Integer.parseInt(code);
-	}
-
-	/**
-	 * Getter of member code.
-	 * @return <code>int</code> the attribute code
-	 */
-	public int getCode() {
-		return code;
-	}
-
-	/**
-	 * Setter of attribute code.
-	 * @param code the attribute code to set
-	 */
-	public void setCode(final int code) {
-		this.code = code;
-	}
+	ERROR;
 }

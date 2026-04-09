@@ -252,12 +252,6 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		this.type = type;
 	}
 
-	public Map<String, String> getData() {
-		Map<String, String> data = new HashMap<String, String>();
-		data.put("title", title);
-		data.put("icon", icon);
-		return data;
-	}
 
 	/**
 	 * Used by the JSTree to set the icon for the nodes
@@ -278,43 +272,11 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		this.icon = icon;
 	}
 
-	/*
-	 * Used by JSTree to populate the nodes as well as some of the getters
-	 * to retrieve data.
-	 */
-	public Map<String, String> getAttr() {
-		Map<String, String> attr = new HashMap<String, String>();
-
-		String id = this.getEncPath();
-		attr.put("id", id);
-
-		//Use rel which to store the type of node for the js tree
-		attr.put("rel", getType());
-
-        //Use parent which to store the parent path for the js tree
-        attr.put("parent", this.getEncParentPath());
-
-		return attr;
-	}
 
     public String getEncParentPath() {
         return this.encParentPath;
     }
 
-    /**
-	 * The JSON plugin in JSTree will use this to populate jQuery.data.  This allows us to store extra
-	 * data without worrying about html constraints or limits.
-	 *
-	 * @return
-	 */
-	public Map<String, String> getMetadata() {
-		Map<String, String> attr = new HashMap<String, String>();
-		String encPath =  getEncPath();
-		attr.put("encPath", encPath);
-		attr.put("type", getType());
-        attr.put("parent", getEncParentPath());
-		return attr;
-	}
 
 	public String getState() {
 		return state;
@@ -377,20 +339,6 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		return this.title;
 	}
 
-	private static int TRUNCATED_MAX_LENGTH = 25;
-	private static String TRUNCATED_EXTENTION = "...";
-
-	/**
-	 * Added for GIP Recia : In thumbnail mode, we use a trunctated title
-	 * @return A truncated title to use in thumbnail mode
-	 */
-	public String getTruncatedTitle() {
-		if (title != null && title.length() > TRUNCATED_MAX_LENGTH) {
-			return title.substring(0, TRUNCATED_MAX_LENGTH - TRUNCATED_EXTENTION.length()) + TRUNCATED_EXTENTION;
-		} else {
-			return this.title;
-		}
-	}
 
 	public String getPath() {
 		String path = ROOT_DRIVE;
@@ -474,7 +422,7 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 
 	static {
 
-		Comparator titleComparatorAsc = new Comparator<JsTreeFile>() {
+		Comparator<JsTreeFile> titleComparatorAsc = new Comparator<JsTreeFile>() {
 			public int compare(JsTreeFile file1, JsTreeFile file2) {
 				if(file1.getType().equals("folder") &&
 						file2.getType().equals("file"))
@@ -486,7 +434,7 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 			}
 		};
 
-		Comparator titleComparatorDesc = new Comparator<JsTreeFile>() {
+		Comparator<JsTreeFile> titleComparatorDesc = new Comparator<JsTreeFile>() {
 			public int compare(JsTreeFile file1, JsTreeFile file2) {
 				if(file1.getType().equals("folder") &&
 						file2.getType().equals("file"))
@@ -498,7 +446,7 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 			}
 		};
 
-		Comparator sizeComparatorAsc = new Comparator<JsTreeFile>() {
+		Comparator<JsTreeFile> sizeComparatorAsc = new Comparator<JsTreeFile>() {
 			public int compare(JsTreeFile file1, JsTreeFile file2) {
 				if(file1.getType().equals("folder") &&
 						file2.getType().equals("file"))
@@ -510,7 +458,7 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 			}
 		};
 
-		Comparator sizeComparatorDesc = new Comparator<JsTreeFile>() {
+		Comparator<JsTreeFile> sizeComparatorDesc = new Comparator<JsTreeFile>() {
 			public int compare(JsTreeFile file1, JsTreeFile file2) {
 				if(file1.getType().equals("folder") &&
 						file2.getType().equals("file"))
@@ -523,7 +471,7 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 		};
 
 
-		Comparator lastModifiedComparatorAsc = new Comparator<JsTreeFile>() {
+		Comparator<JsTreeFile> lastModifiedComparatorAsc = new Comparator<JsTreeFile>() {
 			public int compare(JsTreeFile file1, JsTreeFile file2) {
 				if(file1.getType().equals("folder") &&
 						file2.getType().equals("file"))
@@ -535,7 +483,7 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 			}
 		};
 
-		Comparator lastModifiedComparatorDesc = new Comparator<JsTreeFile>() {
+		Comparator<JsTreeFile> lastModifiedComparatorDesc = new Comparator<JsTreeFile>() {
 			public int compare(JsTreeFile file1, JsTreeFile file2) {
 				if(file1.getType().equals("folder") &&
 						file2.getType().equals("file"))

@@ -23,8 +23,6 @@ import java.io.Serializable;
 
 public class DownloadFile implements Serializable {
 
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DownloadFile.class);
-
     private long size;
 
     private String contentType;
@@ -62,46 +60,15 @@ public class DownloadFile implements Serializable {
         return size;
     }
 
-    public void setSize(long size) {
-        this.size = size;
-    }
-
     public String getContentType() {
         return contentType;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
     }
 
     public String getBaseName() {
         return baseName;
     }
 
-    public void setBaseName(String baseName) {
-        this.baseName = baseName;
-    }
-
     public InputStream getInputStream() {
         return inputStream;
-    }
-
-    public void setInputStream(InputStream inputStream) {
-        this.inputStream = inputStream;
-    }
-
-    /*
-     * Even if we call tmpFile.deleteOnExit on ServerAccessService.getZip
-     * We're trying here to delete tmpfile via garbage collector
-     * @see java.lang.Object#finalize()
-     */
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        if(tmpFile != null) {
-            if(tmpFile.delete()) {
-                log.debug("tmpFile '{}' has been deleted vi GC call to DownloadFile.finalize method", tmpFile);
-            }
-        }
     }
 }

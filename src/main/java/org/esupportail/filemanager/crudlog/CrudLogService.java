@@ -30,7 +30,6 @@ import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 @Aspect
 @Component
@@ -67,13 +66,13 @@ public class CrudLogService {
         // log at WARN without stack trace to avoid polluting ERROR logs.
         if (throwable instanceof EsupStockLostSessionException) {
             log.warn(MessageFormat.format(AFTER_THROWING, name,
-                    constructArgumentsString(clazz, name, clientIpAddress, username, joinPoint.getArgs()),
+                    constructArgumentsString(name, clientIpAddress, username, joinPoint.getArgs()),
                     throwable.getMessage(), "", ""));
             return;
         }
 
-        this.logError(clazz, throwable, AFTER_THROWING, name,
-                constructArgumentsString(clazz, name, clientIpAddress, username, joinPoint.getArgs()), throwable.getMessage());
+        this.logError(throwable, AFTER_THROWING, name,
+                constructArgumentsString(name, clientIpAddress, username, joinPoint.getArgs()), throwable.getMessage());
     }
 
     @AfterReturning(value = "@annotation(loggable)", returning = "returnValue",
@@ -86,7 +85,6 @@ public class CrudLogService {
         if( CrudLogLevel.DEBUG.equals(logLevel) && log.isDebugEnabled() ||
                 CrudLogLevel.INFO.equals(logLevel) && log.isInfoEnabled() ) {
 
-            Class<? extends Object> clazz = joinPoint.getTarget().getClass();
             String name = joinPoint.getSignature().getName();
 
             Map<String, String> userInfos = this.getUserInfos(joinPoint);
@@ -98,20 +96,20 @@ public class CrudLogService {
                         .getSignature();
                 Class<?> returnType = signature.getReturnType();
                 if (returnType.getName().compareTo("void") == 0) {
-                    this.log(logLevel, clazz, AFTER_RETURNING_VOID,
-                            name, clientIpAddress, username, constructArgumentsString(clazz, joinPoint.getArgs()), constructArgumentsString(clazz, returnValue));
+                    this.log(logLevel, AFTER_RETURNING_VOID,
+                            name, clientIpAddress, username, constructArgumentsString(joinPoint.getArgs()), constructArgumentsString(returnValue));
 
                     return;
                 }
             }
 
-            this.log(logLevel, clazz, AFTER_RETURNING, name, clientIpAddress, username, constructArgumentsString(clazz, joinPoint.getArgs()),
-                    constructArgumentsString(clazz, returnValue));
+            this.log(logLevel, AFTER_RETURNING, name, clientIpAddress, username, constructArgumentsString(joinPoint.getArgs()),
+                    constructArgumentsString(returnValue));
         }
     }
 
 
-    private String constructArgumentsString(Class<?> clazz, Object... arguments) {
+    private String constructArgumentsString(Object... arguments) {
 
         StringBuffer buffer = new StringBuffer();
         for (Object object : arguments) {
@@ -121,7 +119,7 @@ public class CrudLogService {
         return buffer.toString();
     }
 
-    private void log(CrudLogLevel logLevel, Class<?> clazz,
+    private void log(CrudLogLevel logLevel,
                      String pattern,
                      Object... arguments) {
         String message = MessageFormat.format(pattern, arguments);
@@ -131,8 +129,7 @@ public class CrudLogService {
             log.info(message);
     }
 
-    private void logError(Class<?> clazz,
-                          Throwable throwable,  String pattern,
+    private void logError(Throwable throwable, String pattern,
                           Object... arguments) {
         String message = MessageFormat.format(pattern, arguments);
         log.error(message, throwable);
@@ -140,21 +137,9 @@ public class CrudLogService {
 
     private Map<String, String> getUserInfos(JoinPoint joinPoint) {
 
-        Object[] args = joinPoint.getArgs();
-        Object target = joinPoint.getTarget();
         String username = "undefined";
         String clientIpAddress = "undefined";
 
-        if(args.length > 0) {
-            String dir = null;
-            if (args[0] instanceof String)
-                dir = (String) args[0];
-            if (args[0] instanceof List) {
-                Object argList0 = ((List) args[0]).get(0);
-                if (argList0 instanceof String)
-                    dir = (String) argList0;
-            }
-        }
 
         Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
         if(authentication instanceof CasAuthenticationToken casAuthenticationToken) {

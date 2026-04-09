@@ -77,9 +77,6 @@ public class PresignedUrl {
         this.filename = filename;
     }
 
-    public boolean isExpired() {
-        return expirationTime != null && Instant.now().isAfter(expirationTime);
-    }
 
     public long getSecondsUntilExpiration() {
         if (expirationTime == null) {
