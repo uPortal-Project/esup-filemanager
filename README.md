@@ -19,9 +19,7 @@
 
 ## This version of esup-filemanager is now a standalone servlet application with Spring Boot
 
-This version is a fork of the original esup-filemanager project. 
-
-It is now a standalone servlet application powered by Spring Boot 3.5.x and no longer a portlet application.
+Since April 2026, esup-filemanager is now a standalone servlet application powered by Spring Boot 3.5.x and no longer a portlet application.
 
 ### Breaking Changes
 
