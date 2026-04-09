@@ -63,6 +63,12 @@ public abstract class FsAccess {
 
     String accessRule = null;
 
+    /** SpEL parser – thread-safe, shared across all instances. */
+    private static final ExpressionParser SPEL_PARSER = new SpelExpressionParser();
+
+    /** Pre-parsed SpEL expression; computed once in {@link #setAccessRule(String)}. */
+    private Expression cachedAccessExpression = null;
+
     /** Injected by Spring (optional – may be null in test contexts). */
     @Autowired(required = false)
     protected StorageConnectionMonitor storageConnectionMonitor;
@@ -130,6 +136,9 @@ public abstract class FsAccess {
 
     public void setAccessRule(String accessRule) {
         this.accessRule = accessRule;
+        this.cachedAccessExpression = (accessRule != null && !accessRule.isEmpty())
+                ? SPEL_PARSER.parseExpression(accessRule)
+                : null;
     }
 
     public void setUserAuthenticatorService(
@@ -303,17 +312,15 @@ public abstract class FsAccess {
             log.warn("No authentication found, access denied");
             return false;
         }
-        if(this.accessRule != null && !this.accessRule.isEmpty()) {
+        if(this.cachedAccessExpression != null) {
             CasAuthenticationToken casAuthenticationToken = (CasAuthenticationToken)authentication;
             CasUser casUser = (CasUser) casAuthenticationToken.getUserDetails();
-            ExpressionParser parser = new SpelExpressionParser();
-            Expression exp = parser.parseExpression(accessRule);
-            EvaluationContext context = new StandardEvaluationContext();
             Map<String, Object> userAttributes = casUser.getAttributes();
+            EvaluationContext context = new StandardEvaluationContext();
             context.setVariable("userAttributes",  userAttributes);
             log.debug("Evaluation of {} -> {} hasAccess for {} (userAttributes : {})", accessRule, authentication, driveName, userAttributes);
             try {
-                Boolean hasAccess = (Boolean) exp.getValue(context);
+                Boolean hasAccess = (Boolean) cachedAccessExpression.getValue(context);
                 log.debug("Evaluation of {} -> {} hasAccess for {} : {} (userAttributes : {})", accessRule, authentication, driveName, hasAccess, userAttributes);
                 return BooleanUtils.isTrue(hasAccess);
             } catch (Exception e) {
