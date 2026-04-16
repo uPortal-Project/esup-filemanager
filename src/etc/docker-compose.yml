@@ -78,4 +78,24 @@ services:
      ports:
         - "2222:2222"
 
+   esup-file-manager-run:
+       image: maven:3.9-eclipse-temurin-21
+       profiles: ["with-esup-filemanager"]
+       working_dir: /app
+       volumes:
+         - ../..:/app
+         - maven-cache:/root/.m2
+       ports:
+         - "8080:8080"
+       network_mode: host
+       command: mvn spring-boot:run
+       depends_on:
+         - s3
+         - webdav
+         - samba
+         - sftp
+         - openldap
+         - cas
 
+volumes:
+  maven-cache:

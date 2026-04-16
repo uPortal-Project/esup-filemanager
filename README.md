@@ -88,6 +88,21 @@ Users are :
 * joe / pass
 * jack / pass
 
+With this and the command 'mvn spring-boot:run', you can access esup-filemanager on http://localhost:8080/ 
+
+## Testing environment with Docker
+
+If you want that esup-filemanager run with docker containers also, just run docker compose with the profile 'with-esup-filemanager' :
+
+```
+docker compose -f src/etc/docker-compose.yml --profile with-esup-filemanager up
+```
+
+This will start esup-filemanager and all the servers it needs to run (CAS, openldap, s3, webdav, samba, sftp).
+
+No need to run 'mvn spring-boot:run' in this case and no need to hava java, just docker and docker compose are required.
+
+Go to http://localhost:8080/ and login with joe/pass or jack/pass to access esup-filemanager.
 
 ## Screenshot
 
