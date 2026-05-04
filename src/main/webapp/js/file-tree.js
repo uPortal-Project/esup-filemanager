@@ -65,7 +65,7 @@ export class FileTree {
         const nodeId = node.attr?.id || encPath;  // Unique node ID
         const nodeType = node.type || node.attr?.rel || 'folder';
         const nodeTitle = node.title || node.data?.title || node.data || '';
-        const nodeIcon = node.icon || node.data?.icon || '/img/folder.png';
+        const nodeIcon = node.icon || node.data?.icon || './img/folder.png';
 
         li.dataset.path = node.path || encPath;
         li.dataset.encPath = encPath;

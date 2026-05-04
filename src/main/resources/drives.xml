@@ -31,7 +31,7 @@
     <util:map id="drivesCategories">
         <entry key="Stockage">
             <bean class="org.esupportail.filemanager.beans.DrivesCategory">
-                <property name="icon" value="/img/drives/drive_user.png" />
+                <property name="icon" value="./img/drives/drive_user.png" />
                 <property name="drives">
                     <list>
                         <value>tmp</value>
@@ -50,14 +50,14 @@
     -->
     <bean class="org.esupportail.filemanager.services.vfs.VfsAccessImpl" lazy-init="true">
         <property name="driveName" value="tmp"/>
-        <property name="icon" value="/img/drives/tux.png" />
+        <property name="icon" value="./img/drives/tux.png" />
         <property name="uri" value="file:///tmp"/>
         <property name="accessRule" value="#userAttributes['uid']=='joe'"/>
     </bean>
 
     <bean class="org.esupportail.filemanager.services.s3.S3AccessImpl" scope="session" lazy-init="true">
         <property name="driveName" value="s3"/>
-        <property name="icon" value="/img/drives/drive_user.png" />
+        <property name="icon" value="./img/drives/drive_user.png" />
         <property name="bucketName" value="esup-files"/>
         <property name="uri" value="http://localhost:9000"/>
         <property name="pathStyleAccessEnabled" value="true"/>
@@ -74,7 +74,7 @@
 
     <bean class="org.esupportail.filemanager.services.smb.SmbAccessImpl" scope="session" lazy-init="true">
         <property name="driveName" value="samba"/>
-        <property name="icon" value="/img/drives/user.png" />
+        <property name="icon" value="./img/drives/user.png" />
         <property name="uri" value="smb://localhost:1445/testshare/"/>
         <property name="userAuthenticatorService" ref="samba_crazymax_auth"/>
         <property name="accessRule" value="true or (#userAttributes['eduPersonAffiliation'].contains('member') and !#userAttributes['eduPersonAffiliation'].contains('student'))"/>
@@ -88,7 +88,7 @@
 
     <bean class="org.esupportail.filemanager.services.sardine.SardineAccessImpl" scope="session" lazy-init="true">
         <property name="driveName" value="webdav"/>
-        <property name="icon" value="/img/drives/group.png" />
+        <property name="icon" value="./img/drives/group.png" />
         <property name="uri" value="http://localhost:8888"/>
         <property name="userAuthenticatorService" ref="webdav_auth"/>
         <property name="accessRule" value="true or (#userAttributes['eduPersonAffiliation'].contains('member'))"/>
@@ -103,7 +103,7 @@
 
     <bean class="org.esupportail.filemanager.services.vfs.VfsAccessImpl" scope="session" lazy-init="true">
         <property name="driveName" value="sftp"/>
-        <property name="icon" value="/img/drives/group.png" />
+        <property name="icon" value="./img/drives/group.png" />
         <property name="uri" value="sftp://localhost:2222"/>
         <property name="userAuthenticatorService" ref="sftp_auth"/>
         <property name="jschConfigProperties">

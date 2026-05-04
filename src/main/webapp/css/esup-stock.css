@@ -124,39 +124,39 @@ margin: 0px 10px;
 }
 
 .esupstock #toolbar-fullscreen {
-background: url(/img/flaticons/Full-Screen-24.png) no-repeat center top;
+background: url(./img/flaticons/Full-Screen-24.png) no-repeat center top;
 }
 
 .esupstock #toolbar-create {
-background: url(/img/flaticons/new_folder_24px.png) no-repeat center top;
+background: url(./img/flaticons/new_folder_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-refresh {
-background: url(/img/flaticons/refresh_24px.png) no-repeat center top;
+background: url(./img/flaticons/refresh_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-copy {
-background: url(/img/flaticons/copy_24px.png) no-repeat center top;
+background: url(./img/flaticons/copy_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-cut {
-background: url(/img/flaticons/cut_24px.png) no-repeat center top;
+background: url(./img/flaticons/cut_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-past {
-background: url(/img/flaticons/paste_24px.png) no-repeat center top;
+background: url(./img/flaticons/paste_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-rename {
-background: url(/img/flaticons/rename_24px.png) no-repeat center top;
+background: url(./img/flaticons/rename_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-delete {
-background: url(/img/flaticons/delete_24px.png) no-repeat center top;
+background: url(./img/flaticons/delete_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-zip {
-background: url(/img/flaticons/zip_24px.png) no-repeat center top;
+background: url(./img/flaticons/zip_24px.png) no-repeat center top;
 }
 
 .esupstock #info-toolbar span {
@@ -180,7 +180,7 @@ display: none;
 display: block;
 padding: 24px 5px 0px 10px;
 margin-top: -24px;
-background: url(/img/flaticons/upload_24px.png) no-repeat top;
+background: url(./img/flaticons/upload_24px.png) no-repeat top;
 }
 
 
@@ -312,95 +312,95 @@ cursor: auto;
 }
 
 .esupstock #toolbar-refresh.enabled {
-    background: url(/img/flaticons/refresh_24px.png) no-repeat center top;
+    background: url(./img/flaticons/refresh_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-refresh.disabled {
-    background: url(/img/flaticons/disabled/refresh_24px.png) no-repeat center top;
+    background: url(./img/flaticons/disabled/refresh_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-thumbnail.enabled {
-    background: url(/img/flaticons/thumbnails_24px.png) no-repeat center top;
+    background: url(./img/flaticons/thumbnails_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-thumbnail.disabled {
-    background: url(/img/flaticons/disabled/thumbnails_24px.png) no-repeat center top;
+    background: url(./img/flaticons/disabled/thumbnails_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-list.enabled {
-    background: url(/img/flaticons/list_24px.png) no-repeat center top;
+    background: url(./img/flaticons/list_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-list.disabled {
-    background: url(/img/flaticons/disabled/list_24px.png) no-repeat center top;
+    background: url(./img/flaticons/disabled/list_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-new_folder.enabled {
-	background: url(/img/flaticons/new_folder_24px.png) no-repeat center top;
+	background: url(./img/flaticons/new_folder_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-new_folder.disabled {
-	background: url(/img/flaticons/disabled/new_folder_24px.png) no-repeat center top;
+	background: url(./img/flaticons/disabled/new_folder_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-download.enabled {
-    background: url(/img/flaticons/download_24px.png) no-repeat center top;
+    background: url(./img/flaticons/download_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-download.disabled {
-    background: url(/img/flaticons/disabled/download_24px.png) no-repeat center top;
+    background: url(./img/flaticons/disabled/download_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-zip.enabled {
-    background: url(/img/flaticons/zip_24px.png) no-repeat center top;
+    background: url(./img/flaticons/zip_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-zip.disabled {
-    background: url(/img/flaticons/disabled/zip_24px.png) no-repeat center top;
+    background: url(./img/flaticons/disabled/zip_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-copy.enabled {
-    background: url(/img/flaticons/copy_24px.png) no-repeat center top;
+    background: url(./img/flaticons/copy_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-copy.disabled {
-    background: url(/img/flaticons/disabled/copy_24px.png) no-repeat center top;
+    background: url(./img/flaticons/disabled/copy_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-cut.enabled {
-    background: url(/img/flaticons/cut_24px.png) no-repeat center top;
+    background: url(./img/flaticons/cut_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-cut.disabled {
-    background: url(/img/flaticons/disabled/cut_24px.png) no-repeat center top;
+    background: url(./img/flaticons/disabled/cut_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-paste.enabled {
-    background: url(/img/flaticons/paste_24px.png) no-repeat center top;
+    background: url(./img/flaticons/paste_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-paste.disabled {
-    background: url(/img/flaticons/disabled/paste_24px.png) no-repeat center top;
+    background: url(./img/flaticons/disabled/paste_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-rename.enabled {
-    background: url(/img/flaticons/rename_24px.png) no-repeat center top;
+    background: url(./img/flaticons/rename_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-rename.disabled {
-    background: url(/img/flaticons/disabled/rename_24px.png) no-repeat center top;
+    background: url(./img/flaticons/disabled/rename_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-delete.enabled {
-    background: url(/img/flaticons/delete_24px.png) no-repeat center top;
+    background: url(./img/flaticons/delete_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-delete.disabled {
-    background: url(/img/flaticons/disabled/delete_24px.png) no-repeat center top;
+    background: url(./img/flaticons/disabled/delete_24px.png) no-repeat center top;
 }
 
 .esupstock #toolbar-list.enabled {
-    background: url(/img/flaticons/list_24px.png) no-repeat center top;
+    background: url(./img/flaticons/list_24px.png) no-repeat center top;
 }
 
 .esupstock .toolbar-logout-div {
@@ -446,7 +446,7 @@ color: #444444;
 }
 
 .esupstock .disabled_upload {
-	background: url(/img/flaticons/disabled/upload_24px.png) no-repeat top;
+	background: url(./img/flaticons/disabled/upload_24px.png) no-repeat top;
 }
 
 .esupstock .disabled_upload input {
@@ -555,7 +555,7 @@ margin-left: 5px;
 }
 
 .esupstock #detail-download {
-	background-image: url(/img/flaticons/download_16px.png);
+	background-image: url(./img/flaticons/download_16px.png);
 	background-position: left center;
 	background-repeat: no-repeat;
 	padding:2px 0px 2px 30px;
@@ -565,7 +565,7 @@ margin-left: 5px;
 }
 
 .esupstock #detail-view-image {
-	background-image: url(/img/flaticons/picture_16px.png);
+	background-image: url(./img/flaticons/picture_16px.png);
 	background-position: left center;
 	background-repeat: no-repeat;
 	padding:4px 0px 4px 30px;
@@ -576,7 +576,7 @@ margin-left: 5px;
 }
 
 .esupstock #detail-view-images {
-	background-image: url(/img/flaticons/picture_16px.png);
+	background-image: url(./img/flaticons/picture_16px.png);
 	background-position: left center;
 	background-repeat: no-repeat;
 	padding:4px 0px 4px 30px;
@@ -586,7 +586,7 @@ margin-left: 5px;
 }
 
 .esupstock #detail-zip-download {
-	background-image: url(/img/flaticons/zip_16px.png);
+	background-image: url(./img/flaticons/zip_16px.png);
 	background-position: left center;
 	background-repeat: no-repeat;
 	padding:4px 0px 4px 30px;
