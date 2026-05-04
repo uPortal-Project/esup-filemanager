@@ -26,11 +26,11 @@
 
         // API endpoints
         endpoints: {
-            supportsPresignedUrls: '/supportsPresignedUrls',
-            getPresignedDownloadUrl: '/getPresignedDownloadUrl',
-            getPresignedUploadUrl: '/getPresignedUploadUrl',
-            downloadFile: '/downloadFile',
-            uploadFile: '/uploadFile'
+            supportsPresignedUrls: './supportsPresignedUrls',
+            getPresignedDownloadUrl: './getPresignedDownloadUrl',
+            getPresignedUploadUrl: './getPresignedUploadUrl',
+            downloadFile: './downloadFile',
+            uploadFile: './uploadFile'
         }
     };
 

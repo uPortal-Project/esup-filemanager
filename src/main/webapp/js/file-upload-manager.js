@@ -5,14 +5,14 @@
 export class FileUploadManager {
     constructor(options = {}) {
         this.options = {
-            uploadUrl: options.uploadUrl || '/uploadFile',
+            uploadUrl: options.uploadUrl || './uploadFile',
             onUploadStart: options.onUploadStart || (() => {}),
             onUploadProgress: options.onUploadProgress || (() => {}),
             onUploadComplete: options.onUploadComplete || (() => {}),
             onUploadError: options.onUploadError || (() => {}),
             onAllUploadsComplete: options.onAllUploadsComplete || (() => {}),
             onFilesQueued: options.onFilesQueued || (() => {}),
-            getCurrentPath: options.getCurrentPath || (() => '/'),
+            getCurrentPath: options.getCurrentPath || (() => './'),
             maxFileSize: options.maxFileSize || null, // null = pas de limite
             allowedExtensions: options.allowedExtensions || null, // null = toutes les extensions
             maxConcurrentUploads: options.maxConcurrentUploads || 3, // uploads simultanés

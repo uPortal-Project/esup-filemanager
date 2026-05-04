@@ -23,19 +23,19 @@ class EsupFileManager {
 
         // Configuration from global variables
         this.config = {
-            defaultPath: window.defaultPath || '/',
-            htmlFileTreeURL: window.htmlFileTreeURL || '/htmlFileTree',
-            fileChildrenURL: window.fileChildrenURL || '/fileChildren',
-            uploadFileURL: window.uploadFileURL || '/uploadFile',
-            prepareCopyFilesURL: window.prepareCopyFilesURL || '/prepareCopyFiles',
-            prepareCutFilesURL: window.prepareCutFilesURL || '/prepareCutFiles',
-            pastFilesURL: window.pastFilesURL || '/pastFiles',
-            detailsAreaURL: window.detailsAreaURL || '/detailsArea',
-            createFileURL: window.createFileURL || '/createFile',
-            renameFileURL: window.renameFileURL || '/renameFile',
-            downloadFileURL: window.downloadFileURL || '/downloadFile',
-            downloadZipURL: window.downloadZipURL || '/downloadZip',
-            removeFilesURL: window.removeFilesURL || '/removeFiles',
+            defaultPath: window.defaultPath || './',
+            htmlFileTreeURL: window.htmlFileTreeURL || './htmlFileTree',
+            fileChildrenURL: window.fileChildrenURL || './fileChildren',
+            uploadFileURL: window.uploadFileURL || './uploadFile',
+            prepareCopyFilesURL: window.prepareCopyFilesURL || './prepareCopyFiles',
+            prepareCutFilesURL: window.prepareCutFilesURL || './prepareCutFiles',
+            pastFilesURL: window.pastFilesURL || './pastFiles',
+            detailsAreaURL: window.detailsAreaURL || './detailsArea',
+            createFileURL: window.createFileURL || './createFile',
+            renameFileURL: window.renameFileURL || './renameFile',
+            downloadFileURL: window.downloadFileURL || './downloadFile',
+            downloadZipURL: window.downloadZipURL || './downloadZip',
+            removeFilesURL: window.removeFilesURL || './removeFiles',
             useDoubleClick: window.useDoubleClick === 'true'
         };
 
@@ -490,7 +490,7 @@ class EsupFileManager {
                 
                 try {
                     // Send authentication request
-                    const response = await fetch('/authenticate', {
+                    const response = await fetch('./authenticate', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'

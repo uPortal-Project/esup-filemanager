@@ -9,8 +9,8 @@ export class FileTree {
     constructor(containerId, options = {}) {
         this.container = document.getElementById(containerId);
         this.options = {
-            ajaxUrl: options.ajaxUrl || '/fileChildren',
-            defaultPath: options.defaultPath || '/',
+            ajaxUrl: options.ajaxUrl || './fileChildren',
+            defaultPath: options.defaultPath || './',
             onSelect: options.onSelect || (() => {}),
             onOpen: options.onOpen || (() => {}),
             onLoad: options.onLoad || (() => {}),
