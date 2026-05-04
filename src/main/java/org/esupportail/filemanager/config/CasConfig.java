@@ -41,6 +41,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import java.util.List;
 
@@ -121,6 +122,10 @@ public class CasConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, CasAuthenticationFilter casAuthenticationFilter) throws Exception {
+
+        CookieCsrfTokenRepository cookieCsrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+        cookieCsrfTokenRepository.setCookieName("XSRF-TOKEN");
+
         http
                 .exceptionHandling()
                 .authenticationEntryPoint(casAuthenticationEntryPoint())
@@ -132,9 +137,7 @@ public class CasConfig {
                         .logoutSuccessUrl(url + "/logout?service=" + service)
                 )
                 .addFilter(casAuthenticationFilter)
-                // TODO : enable CSRF
-                .csrf().disable();
-
+                .csrf(csrf -> csrf.csrfTokenRepository(cookieCsrfTokenRepository));
         return http.build();
     }
 

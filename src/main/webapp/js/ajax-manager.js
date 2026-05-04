@@ -30,6 +30,10 @@ export class AjaxManager {
 
         // Data conversion for POST
         if (data && (method.toUpperCase() === 'POST' || method.toUpperCase() === 'PUT')) {
+            const csrf = this.getCsrf()
+            if (csrf) {
+                config.headers['X-XSRF-TOKEN'] = csrf
+            }
             if (typeof data === 'string') {
                 config.body = data;
             } else if (data instanceof FormData) {
@@ -98,11 +102,18 @@ export class AjaxManager {
             url,
             method: data ? 'POST' : 'GET',
             data,
-            headers: {
+            headers: data ?  {
+                'Accept': 'text/html',
+                'X-XSRF-TOKEN': this.getCsrf()
+            } : {
                 'Accept': 'text/html'
             }
         });
         return html;
+    }
+
+    static getCsrf() {
+        return document.querySelector('meta[name="_csrf"]').content;
     }
 }
 

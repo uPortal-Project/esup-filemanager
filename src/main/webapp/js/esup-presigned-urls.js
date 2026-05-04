@@ -87,7 +87,8 @@
         fetch(config.endpoints.supportsPresignedUrls, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-XSRF-TOKEN': getCsrf()
             },
             body: formData.toString()
         })
@@ -158,7 +159,8 @@
         fetch(config.endpoints.getPresignedDownloadUrl, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-XSRF-TOKEN': getCsrf()
             },
             body: formData.toString()
         })
@@ -277,7 +279,8 @@
         fetch(config.endpoints.getPresignedUploadUrl, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-XSRF-TOKEN': getCsrf()
             },
             body: formData.toString()
         })
@@ -377,6 +380,7 @@
         // Set Content-Type
         const contentType = file.type || 'application/octet-stream';
         xhr.setRequestHeader('Content-Type', contentType);
+        xhr.setRequestHeader('X-XSRF-TOKEN', getCsrf())
 
         // Send file
         xhr.send(file);
@@ -448,6 +452,7 @@
         });
 
         xhr.open('POST', config.endpoints.uploadFile, true);
+        xhr.setRequestHeader('X-XSRF-TOKEN', getCsrf())
         xhr.send(formData);
 
         // Save xhr to allow cancellation
@@ -500,6 +505,10 @@
 
     // Initialization
     logger.log('ESUP Presigned URLs module loaded, version', window.EsupPresignedUrls.version);
+
+    function getCsrf() {
+        return document.querySelector('meta[name="_csrf"]').content;
+    }
 
 })();
 
