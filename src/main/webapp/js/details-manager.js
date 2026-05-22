@@ -10,18 +10,22 @@
 
     /**
      * Validates that a URL is safe to use as an image source.
-     * Only allows relative paths and http/https URLs to prevent javascript: injection.
+     * Uses the URL API for robust protocol validation — prevents javascript: injection.
+     * CodeQL-compliant: only http/https protocols are allowed.
      * @param {string} url
-     * @returns {string|null} The sanitized URL or null if unsafe
+     * @returns {string|null} The sanitized absolute URL or null if unsafe
      */
     function sanitizeImageUrl(url) {
         if (!url || typeof url !== 'string') return null;
-        const trimmed = url.trim();
-        // Allow only relative paths (starting with /) or http/https URLs
-        if (/^(\/[^/]|https?:\/\/)/.test(trimmed)) {
-            return trimmed;
+        try {
+            const parsed = new URL(url.trim(), window.location.href);
+            if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+                return parsed.href;
+            }
+            return null;
+        } catch (e) {
+            return null;
         }
-        return null;
     }
 
     /**
@@ -38,7 +42,8 @@
 
         if (modal && modalImg) {
             modal.style.display = 'flex';
-            modalImg.src = sanitizeImageUrl(img.getAttribute('data-fullsize')) || sanitizeImageUrl(img.src) || '';
+            const safeUrl = sanitizeImageUrl(img.getAttribute('data-fullsize'));
+            if (safeUrl) modalImg.src = safeUrl;
             document.body.style.overflow = 'hidden';
         }
     };
@@ -57,7 +62,8 @@
 
                     if (modal && modalImg) {
                         modal.style.display = 'flex';
-                        modalImg.src = sanitizeImageUrl(img.getAttribute('data-fullsize')) || sanitizeImageUrl(img.src) || '';
+                        const safeUrl = sanitizeImageUrl(img.getAttribute('data-fullsize'));
+                        if (safeUrl) modalImg.src = safeUrl;
                         document.body.style.overflow = 'hidden';
                     }
                 }
@@ -543,4 +549,6 @@
     window.reinitDetailsManager = init;
 
 })();
+
+
 
