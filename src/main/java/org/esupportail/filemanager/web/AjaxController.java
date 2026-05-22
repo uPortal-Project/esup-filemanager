@@ -34,6 +34,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.thymeleaf.util.StringUtils;
@@ -529,7 +530,7 @@ public class AjaxController {
 
     }
 
-    @PostMapping(value="/getParentPath")
+    @PostMapping(value="/getParentPath", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
     public String getParentPath(String dir) throws UnsupportedEncodingException {
         log.debug("Requesting getParentPath");

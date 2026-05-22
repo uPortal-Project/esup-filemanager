@@ -9,6 +9,22 @@
     // ==================== Image Viewer ====================
 
     /**
+     * Validates that a URL is safe to use as an image source.
+     * Only allows relative paths and http/https URLs to prevent javascript: injection.
+     * @param {string} url
+     * @returns {string|null} The sanitized URL or null if unsafe
+     */
+    function sanitizeImageUrl(url) {
+        if (!url || typeof url !== 'string') return null;
+        const trimmed = url.trim();
+        // Allow only relative paths (starting with /) or http/https URLs
+        if (/^(\/[^/]|https?:\/\/)/.test(trimmed)) {
+            return trimmed;
+        }
+        return null;
+    }
+
+    /**
      * Handler for displaying images in full size
      */
     window.viewImageFullsize = function(button) {
@@ -22,7 +38,7 @@
 
         if (modal && modalImg) {
             modal.style.display = 'flex';
-            modalImg.src = img.getAttribute('data-fullsize') || img.src;
+            modalImg.src = sanitizeImageUrl(img.getAttribute('data-fullsize')) || sanitizeImageUrl(img.src) || '';
             document.body.style.overflow = 'hidden';
         }
     };
@@ -41,7 +57,7 @@
 
                     if (modal && modalImg) {
                         modal.style.display = 'flex';
-                        modalImg.src = img.getAttribute('data-fullsize') || img.src;
+                        modalImg.src = sanitizeImageUrl(img.getAttribute('data-fullsize')) || sanitizeImageUrl(img.src) || '';
                         document.body.style.overflow = 'hidden';
                     }
                 }
