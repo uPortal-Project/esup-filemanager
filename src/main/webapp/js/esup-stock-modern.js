@@ -23,19 +23,19 @@ class EsupFileManager {
 
         // Configuration from global variables
         this.config = {
-            defaultPath: window.defaultPath || '/',
-            htmlFileTreeURL: window.htmlFileTreeURL || '/htmlFileTree',
-            fileChildrenURL: window.fileChildrenURL || '/fileChildren',
-            uploadFileURL: window.uploadFileURL || '/uploadFile',
-            prepareCopyFilesURL: window.prepareCopyFilesURL || '/prepareCopyFiles',
-            prepareCutFilesURL: window.prepareCutFilesURL || '/prepareCutFiles',
-            pastFilesURL: window.pastFilesURL || '/pastFiles',
-            detailsAreaURL: window.detailsAreaURL || '/detailsArea',
-            createFileURL: window.createFileURL || '/createFile',
-            renameFileURL: window.renameFileURL || '/renameFile',
-            downloadFileURL: window.downloadFileURL || '/downloadFile',
-            downloadZipURL: window.downloadZipURL || '/downloadZip',
-            removeFilesURL: window.removeFilesURL || '/removeFiles',
+            defaultPath: window.defaultPath || './',
+            htmlFileTreeURL: window.htmlFileTreeURL || './htmlFileTree',
+            fileChildrenURL: window.fileChildrenURL || './fileChildren',
+            uploadFileURL: window.uploadFileURL || './uploadFile',
+            prepareCopyFilesURL: window.prepareCopyFilesURL || './prepareCopyFiles',
+            prepareCutFilesURL: window.prepareCutFilesURL || './prepareCutFiles',
+            pastFilesURL: window.pastFilesURL || './pastFiles',
+            detailsAreaURL: window.detailsAreaURL || './detailsArea',
+            createFileURL: window.createFileURL || './createFile',
+            renameFileURL: window.renameFileURL || './renameFile',
+            downloadFileURL: window.downloadFileURL || './downloadFile',
+            downloadZipURL: window.downloadZipURL || './downloadZip',
+            removeFilesURL: window.removeFilesURL || './removeFiles',
             useDoubleClick: window.useDoubleClick === 'true'
         };
 
@@ -372,18 +372,18 @@ class EsupFileManager {
             const treeMenu = UIComponents.createContextMenu([
                 {
                     label: window.i18n?.refresh || 'Refresh',
-                    icon: '/img/flaticons/refresh_16px.png',
+                    icon: './img/flaticons/refresh_16px.png',
                     action: () => this.refreshTree()
                 },
                 { separator: true },
                 {
                     label: window.i18n?.newFolder || 'New Folder',
-                    icon: '/img/flaticons/new_folder_16px.png',
+                    icon: './img/flaticons/new_folder_16px.png',
                     action: () => this.handleCreateDirectory()
                 },
                 {
                     label: window.i18n?.paste || 'Paste',
-                    icon: '/img/flaticons/paste_16px.png',
+                    icon: './img/flaticons/paste_16px.png',
                     action: () => this.pasteFiles()
                 }
             ]);
@@ -400,33 +400,33 @@ class EsupFileManager {
             const browserMenu = UIComponents.createContextMenu([
                 {
                     label: window.i18n?.download || 'Download',
-                    icon: '/img/flaticons/download_16px.png',
+                    icon: './img/flaticons/download_16px.png',
                     action: () => this.downloadSelectedFiles()
                 },
                 {
                     label: window.i18n?.copy || 'Copy',
-                    icon: '/img/flaticons/copy_16px.png',
+                    icon: './img/flaticons/copy_16px.png',
                     action: () => this.copyFiles()
                 },
                 {
                     label: window.i18n?.cut || 'Cut',
-                    icon: '/img/flaticons/cut_16px.png',
+                    icon: './img/flaticons/cut_16px.png',
                     action: () => this.cutFiles()
                 },
                 {
                     label: window.i18n?.paste || 'Paste',
-                    icon: '/img/flaticons/paste_16px.png',
+                    icon: './img/flaticons/paste_16px.png',
                     action: () => this.pasteFiles()
                 },
                 { separator: true },
                 {
                     label: window.i18n?.rename || 'Rename',
-                    icon: '/img/flaticons/rename_16px.png',
+                    icon: './img/flaticons/rename_16px.png',
                     action: () => this.handleRename()
                 },
                 {
                     label: window.i18n?.delete_ || 'Delete',
-                    icon: '/img/flaticons/delete_16px.png',
+                    icon: './img/flaticons/delete_16px.png',
                     action: () => this.deleteFiles()
                 }
             ]);
@@ -490,7 +490,7 @@ class EsupFileManager {
                 
                 try {
                     // Send authentication request
-                    const response = await fetch('/authenticate', {
+                    const response = await fetch('./authenticate', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',

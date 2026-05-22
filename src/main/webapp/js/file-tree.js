@@ -9,8 +9,8 @@ export class FileTree {
     constructor(containerId, options = {}) {
         this.container = document.getElementById(containerId);
         this.options = {
-            ajaxUrl: options.ajaxUrl || '/fileChildren',
-            defaultPath: options.defaultPath || '/',
+            ajaxUrl: options.ajaxUrl || './fileChildren',
+            defaultPath: options.defaultPath || './',
             onSelect: options.onSelect || (() => {}),
             onOpen: options.onOpen || (() => {}),
             onLoad: options.onLoad || (() => {}),
@@ -65,7 +65,7 @@ export class FileTree {
         const nodeId = node.attr?.id || encPath;  // Unique node ID
         const nodeType = node.type || node.attr?.rel || 'folder';
         const nodeTitle = node.title || node.data?.title || node.data || '';
-        const nodeIcon = node.icon || node.data?.icon || '/img/folder.png';
+        const nodeIcon = node.icon || node.data?.icon || './img/folder.png';
 
         li.dataset.path = node.path || encPath;
         li.dataset.encPath = encPath;
