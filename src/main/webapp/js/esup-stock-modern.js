@@ -493,7 +493,8 @@ class EsupFileManager {
                     const response = await fetch('/authenticate', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                            'X-XSRF-TOKEN': getCsrf()
                         },
                         body: new URLSearchParams({
                             dir: currentDir,
@@ -1524,7 +1525,8 @@ class EsupFileManager {
             const response = await fetch(this.config.detailsAreaURL, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                    'X-XSRF-TOKEN': getCsrf()
                 },
                 body: params.toString()
             });
@@ -1995,6 +1997,10 @@ if (document.readyState === 'loading') {
     });
 } else {
     window.esupFileManager = new EsupFileManager();
+}
+
+function getCsrf() {
+    return document.querySelector('meta[name="_csrf"]').content;
 }
 
 export default EsupFileManager;

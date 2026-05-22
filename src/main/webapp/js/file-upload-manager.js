@@ -306,6 +306,7 @@ export class FileUploadManager {
             });
 
             xhr.open('POST', this.options.uploadUrl, true);
+            xhr.setRequestHeader('X-XSRF-TOKEN', this.getCsrf())
             xhr.send(formData);
 
             // Sauvegarder l'XHR pour pouvoir l'annuler
@@ -337,6 +338,10 @@ export class FileUploadManager {
             upload.xhr.abort();
             this.activeUploads = this.activeUploads.filter(u => u !== upload);
         }
+    }
+
+    getCsrf() {
+        return document.querySelector('meta[name="_csrf"]').content;
     }
 }
 
