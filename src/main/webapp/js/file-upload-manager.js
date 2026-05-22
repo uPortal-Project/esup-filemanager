@@ -12,6 +12,7 @@ export class FileUploadManager {
             onUploadError: options.onUploadError || (() => {}),
             onAllUploadsComplete: options.onAllUploadsComplete || (() => {}),
             onFilesQueued: options.onFilesQueued || (() => {}),
+            onFileExists: options.onFileExists || (() => {}),
             getCurrentPath: options.getCurrentPath || (() => './'),
             maxFileSize: options.maxFileSize || null, // null = pas de limite
             allowedExtensions: options.allowedExtensions || null, // null = toutes les extensions
@@ -23,6 +24,7 @@ export class FileUploadManager {
         this.uploadQueue = [];
         this.isUploading = false;
         this.concurrentCount = 0; // nombre d'uploads en cours
+        this.conflictFiles = []; // files returned with fileExists=true
 
         this.init();
     }
@@ -202,7 +204,14 @@ export class FileUploadManager {
                     if (this.concurrentCount === 0 && this.uploadQueue.length === 0) {
                         // Tous les uploads sont terminés
                         this.isUploading = false;
-                        this.options.onAllUploadsComplete();
+                        // If some files triggered a conflict, resolve them before signalling completion
+                        if (this.conflictFiles.length > 0) {
+                            const conflicts = [...this.conflictFiles];
+                            this.conflictFiles = [];
+                            this.options.onFileExists(conflicts);
+                        } else {
+                            this.options.onAllUploadsComplete();
+                        }
                     } else if (this.uploadQueue.length > 0) {
                         // Il reste des fichiers en attente, lancer le suivant
                         this.processQueue();
@@ -222,30 +231,48 @@ export class FileUploadManager {
 
             console.log(`Uploading ${file.name} to ${currentPath}`);
 
-            // Notifier le début de l'upload
             this.options.onUploadStart(file, currentPath);
 
-            // Utiliser le module EsupPresignedUrls si disponible
             if (window.EsupPresignedUrls) {
                 window.EsupPresignedUrls.uploadFile(currentPath, file, {
                     onProgress: (percentComplete, loaded, total) => {
                         this.options.onUploadProgress(file, percentComplete, loaded, total);
                     },
                     onSuccess: (result) => {
-                        console.log(`Upload successful for ${file.name}`, result);
-                        this.options.onUploadComplete(file, result);
-                        resolve(result);
+                        // Classic fallback inside EsupPresignedUrls: check fileExists in inner response
+                        if (result && result.response && result.response.fileExists) {
+                            console.log(`File conflict detected (classic fallback) for ${file.name}`);
+                            this.conflictFiles.push({ file, dir: currentPath });
+                            resolve({ fileExists: true });
+                        } else {
+                            console.log(`Upload successful for ${file.name}`, result);
+                            this.options.onUploadComplete(file, result);
+                            resolve(result);
+                        }
                     },
                     onError: (error) => {
                         console.error(`Upload failed for ${file.name}`, error);
                         this.options.onUploadError(file, error);
                         reject(error);
+                    },
+                    onFileExists: () => {
+                        // Presigned URL path (S3): file exists detected server-side before upload
+                        console.log(`File conflict detected (presigned/S3) for ${file.name}`);
+                        this.conflictFiles.push({ file, dir: currentPath });
+                        resolve({ fileExists: true });
                     }
                 });
             } else {
-                // Fallback vers upload classique direct
+                // Direct classic upload (no EsupPresignedUrls module)
                 this.uploadFileClassic(file, currentPath)
-                    .then(resolve)
+                    .then(result => {
+                        if (result && result.fileExists) {
+                            // File conflict: accumulate for later confirmation dialog
+                            console.log(`File conflict detected (classic) for ${file.name}`);
+                            this.conflictFiles.push({ file, dir: currentPath });
+                        }
+                        resolve(result);
+                    })
                     .catch(reject);
             }
         });
@@ -254,15 +281,17 @@ export class FileUploadManager {
     /**
      * Upload classique sans presigned URLs
      */
-    uploadFileClassic(file, dir) {
+    uploadFileClassic(file, dir, uploadOption) {
         return new Promise((resolve, reject) => {
             const formData = new FormData();
             formData.append('dir', dir);
             formData.append('qqfile', file);
+            if (uploadOption) {
+                formData.append('uploadOption', uploadOption);
+            }
 
             const xhr = new XMLHttpRequest();
 
-            // Progression
             if (xhr.upload) {
                 xhr.upload.addEventListener('progress', (e) => {
                     if (e.lengthComputable) {
@@ -272,13 +301,17 @@ export class FileUploadManager {
                 });
             }
 
-            // Succès
             xhr.addEventListener('load', () => {
                 if (xhr.status >= 200 && xhr.status < 300) {
                     try {
                         const response = JSON.parse(xhr.responseText);
-                        this.options.onUploadComplete(file, response);
-                        resolve(response);
+                        if (response.fileExists) {
+                            // File already exists – do not call onUploadError, let caller handle
+                            resolve({ fileExists: true, response });
+                        } else {
+                            this.options.onUploadComplete(file, response);
+                            resolve(response);
+                        }
                     } catch (e) {
                         const error = new Error('Error parsing response');
                         this.options.onUploadError(file, error);
@@ -291,14 +324,12 @@ export class FileUploadManager {
                 }
             });
 
-            // Erreur réseau
             xhr.addEventListener('error', () => {
                 const error = new Error('Network error during upload');
                 this.options.onUploadError(file, error);
                 reject(error);
             });
 
-            // Annulation
             xhr.addEventListener('abort', () => {
                 const error = new Error('Upload aborted');
                 this.options.onUploadError(file, error);
@@ -306,11 +337,55 @@ export class FileUploadManager {
             });
 
             xhr.open('POST', this.options.uploadUrl, true);
-            xhr.setRequestHeader('X-XSRF-TOKEN', this.getCsrf())
+            xhr.setRequestHeader('X-XSRF-TOKEN', this.getCsrf());
             xhr.send(formData);
 
-            // Sauvegarder l'XHR pour pouvoir l'annuler
             this.activeUploads.push({ file, xhr });
+        });
+    }
+
+    /**
+     * Re-upload a list of conflict files with OVERRIDE option.
+     * Calls onAllUploadsComplete when all done.
+     */
+    reuploadConflictsWithOverride(conflictEntries) {
+        if (!conflictEntries || conflictEntries.length === 0) {
+            this.options.onAllUploadsComplete();
+            return;
+        }
+
+        let remaining = conflictEntries.length;
+
+        conflictEntries.forEach(({ file, dir }) => {
+            this.options.onUploadStart(file, dir);
+
+            if (window.EsupPresignedUrls) {
+                window.EsupPresignedUrls.uploadFile(dir, file, {
+                    uploadOption: 'OVERRIDE',
+                    onProgress: (percentComplete, loaded, total) => {
+                        this.options.onUploadProgress(file, percentComplete, loaded, total);
+                    },
+                    onSuccess: (result) => {
+                        this.options.onUploadComplete(file, result);
+                        if (--remaining === 0) this.options.onAllUploadsComplete();
+                    },
+                    onError: (error) => {
+                        this.options.onUploadError(file, error);
+                        if (--remaining === 0) this.options.onAllUploadsComplete();
+                    }
+                    // No onFileExists here: we sent OVERRIDE so the server won't block
+                });
+            } else {
+                this.uploadFileClassic(file, dir, 'OVERRIDE')
+                    .then(result => {
+                        this.options.onUploadComplete(file, result || {});
+                        if (--remaining === 0) this.options.onAllUploadsComplete();
+                    })
+                    .catch((error) => {
+                        this.options.onUploadError(file, error);
+                        if (--remaining === 0) this.options.onAllUploadsComplete();
+                    });
+            }
         });
     }
 
@@ -325,6 +400,7 @@ export class FileUploadManager {
         });
         this.activeUploads = [];
         this.uploadQueue = [];
+        this.conflictFiles = [];
         this.isUploading = false;
         console.log('All uploads cancelled');
     }
@@ -344,4 +420,3 @@ export class FileUploadManager {
         return document.querySelector('meta[name="_csrf"]').content;
     }
 }
-

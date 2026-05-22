@@ -680,6 +680,22 @@ public class S3AccessImpl extends FsAccess implements DisposableBean {
             return false;
         }
     }
+    @Override
+    public boolean existsFile(String dir, String filename) {
+        try {
+            open();
+            String parentKey = getS3Key(dir);
+            if (!parentKey.isEmpty() && !parentKey.endsWith("/")) {
+                parentKey += "/";
+            }
+            String s3Key = parentKey + filename;
+            return objectExists(s3Key);
+        } catch (Exception e) {
+            log.warn("Could not check S3 object existence for {}/{}: {}", dir, filename, e.getMessage());
+            return false;
+        }
+    }
+
     private boolean objectExists(String s3Key) {
         try {
             HeadObjectRequest headRequest = HeadObjectRequest.builder()

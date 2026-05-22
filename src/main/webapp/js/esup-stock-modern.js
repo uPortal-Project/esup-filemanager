@@ -15,11 +15,12 @@ class EsupFileManager {
         this.dragDropManager = null;
         this.uploadManager = null;
         this.selectedFiles = [];
-        this.clipboard = { files: [], operation: null }; // 'copy' or 'cut'
-        this.currentSortField = 'titleAsc'; // Default sort
-        this.currentPath = null; // Memorize current path to avoid depending on DOM
-        this.uploadStats = { total: 0, completed: 0, failed: 0 }; // Upload progress tracking
-        this.isInDrive = false; // Whether current location is inside a drive (not root/category)
+        this.clipboard = { files: [], operation: null };
+        this.currentSortField = 'titleAsc';
+        this.currentPath = null;
+        this.uploadStats = { total: 0, completed: 0, failed: 0 };
+        this.isInDrive = false;
+        this.pendingConflicts = []; // files awaiting overwrite confirmation
 
         // Configuration from global variables
         this.config = {
@@ -125,13 +126,13 @@ class EsupFileManager {
 
     initUploadManager() {
         this.uploadStats = { total: 0, completed: 0, failed: 0 };
+        this.pendingConflicts = [];
 
         this.uploadManager = new FileUploadManager({
             uploadUrl: this.config.uploadFileURL,
             getCurrentPath: () => this.getCurrentPath(),
             maxConcurrentUploads: 3,
             onFilesQueued: (files) => {
-                // Afficher tous les fichiers en attente dans le panneau
                 this.uploadStats.total += files.length;
                 files.forEach(file => this.addFileToUploadPanel(file));
                 this.showUploadPanel();
@@ -159,34 +160,97 @@ class EsupFileManager {
                     (window.i18n?.uploadFileFailed || 'Error uploading file "{0}".').replace('{0}', file.name)
                 );
             },
-            onAllUploadsComplete: () => {
+            onFileExists: (conflicts) => {
+                // Called when all current uploads are done and some files have conflicts
+                conflicts.forEach(({ file }) => {
+                    this.uploadStats.total--; // don't count yet – will be re-added on re-upload
+                    this.setUploadItemState(file, 'conflict');
+                });
+                this.pendingConflicts = conflicts;
                 this.updateUploadPanelStats();
-
-                const { total, completed, failed } = this.uploadStats;
-                if (failed === 0) {
-                    const msg = (window.i18n?.uploadFilesSuccess || '{0} file(s) uploaded successfully.')
-                        .replace('{0}', completed);
-                    UIComponents.showSuccess(msg);
-                } else {
-                    UIComponents.showError(
-                        (window.i18n?.uploadFilesPartial || '{0} file(s) uploaded, {1} error(s).')
-                            .replace('{0}', completed)
-                            .replace('{1}', failed)
-                    );
-                }
-
-                // Réinitialiser les stats pour le prochain lot
-                this.uploadStats = { total: 0, completed: 0, failed: 0 };
-
-                // Fermer automatiquement le panneau après 4 secondes
-                setTimeout(() => this.closeUploadPanel(), 4000);
-
-                // Rafraîchir le contenu sans toucher à l'arborescence
-                this.refreshCurrentView(true, false, false);
+                this.showUploadConflictDialog(conflicts);
+            },
+            onAllUploadsComplete: () => {
+                this._finalizeAllUploads();
             }
         });
 
         console.log('Upload manager initialized');
+    }
+
+    /**
+     * Called after all uploads (including possible re-uploads) are done.
+     * Shows the summary message, refreshes the view and closes the panel.
+     */
+    _finalizeAllUploads() {
+        this.updateUploadPanelStats();
+
+        const { total, completed, failed } = this.uploadStats;
+        if (failed === 0) {
+            const msg = (window.i18n?.uploadFilesSuccess || '{0} file(s) uploaded successfully.')
+                .replace('{0}', completed);
+            UIComponents.showSuccess(msg);
+        } else {
+            UIComponents.showError(
+                (window.i18n?.uploadFilesPartial || '{0} file(s) uploaded, {1} error(s).')
+                    .replace('{0}', completed)
+                    .replace('{1}', failed)
+            );
+        }
+
+        this.uploadStats = { total: 0, completed: 0, failed: 0 };
+        this.pendingConflicts = [];
+
+        setTimeout(() => this.closeUploadPanel(), 4000);
+        this.refreshCurrentView(true, false, false);
+    }
+
+    /**
+     * Shows a dialog listing all conflicting files and asks the user to overwrite or cancel.
+     * @param {Array<{file: File, dir: string}>} conflicts
+     */
+    showUploadConflictDialog(conflicts) {
+        const fileListHtml = '<ul class="mb-0 ps-3">' +
+            conflicts.map(({ file }) =>
+                `<li class="small text-truncate" title="${this.escapeHtml(file.name)}">${this.escapeHtml(file.name)}</li>`
+            ).join('') +
+            '</ul>';
+
+        const message =
+            `<p>${window.i18n?.uploadConflictMessage || 'The following file(s) already exist on the server. Do you want to overwrite them?'}</p>` +
+            fileListHtml;
+
+        UIComponents.showDialog({
+            title: window.i18n?.uploadConflictTitle || 'File(s) already exist',
+            message,
+            buttons: [
+                {
+                    text: window.i18n?.uploadConflictCancel || 'Cancel',
+                    type: 'secondary',
+                    action: () => {
+                        // Mark conflicts as failed/skipped
+                        conflicts.forEach(({ file }) => {
+                            this.uploadStats.failed++;
+                            this.setUploadItemState(file, 'error');
+                        });
+                        this._finalizeAllUploads();
+                    }
+                },
+                {
+                    text: window.i18n?.uploadConflictOverwrite || 'Overwrite',
+                    type: 'danger',
+                    action: () => {
+                        // Re-add to stats
+                        this.uploadStats.total += conflicts.length;
+                        conflicts.forEach(({ file }) => {
+                            this.setUploadItemState(file, 'uploading');
+                        });
+                        this.updateUploadPanelStats();
+                        this.uploadManager.reuploadConflictsWithOverride(conflicts);
+                    }
+                }
+            ]
+        });
     }
 
     initEventListeners() {
@@ -1891,6 +1955,12 @@ class EsupFileManager {
                 bar.style.width = '100%';
                 bar.setAttribute('aria-valuenow', 100);
                 if (pct) pct.innerHTML = '<i class="bi bi-check-circle-fill text-success"></i>';
+                break;
+            case 'conflict':
+                bar.className = 'progress-bar bg-warning';
+                bar.style.width = '100%';
+                bar.setAttribute('aria-valuenow', 100);
+                if (pct) pct.innerHTML = '<i class="bi bi-exclamation-circle-fill text-warning"></i>';
                 break;
             case 'error':
                 bar.className = 'progress-bar bg-danger';

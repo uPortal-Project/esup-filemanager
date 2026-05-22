@@ -259,7 +259,6 @@
             }
         }, function(error) {
             logger.error('Upload error:', error);
-            // Fallback to classic method
             uploadClassic(dir, file, options);
         });
     }
@@ -271,10 +270,13 @@
     function uploadWithPresignedUrl(dir, file, options) {
         logger.info('Uploading with presigned URL:', file.name);
 
-        // Step 1: Get presigned URL
         const formData = new URLSearchParams();
         formData.append('dir', dir);
         formData.append('filename', file.name);
+        // Pass uploadOption so the server can skip the existence check on override
+        if (options.uploadOption) {
+            formData.append('uploadOption', options.uploadOption);
+        }
 
         fetch(config.endpoints.getPresignedUploadUrl, {
             method: 'POST',
@@ -291,10 +293,19 @@
             return response.json();
         })
         .then(response => {
+            // File already exists and the caller did not request OVERRIDE
+            if (response.fileExists) {
+                logger.info('File already exists (presigned path):', file.name);
+                if (options.onFileExists) {
+                    options.onFileExists(file.name);
+                } else if (options.onError) {
+                    options.onError(new Error('File already exists'));
+                }
+                return;
+            }
             if (response.success && response.url) {
                 logger.info('Got presigned upload URL, expires in', response.expiresIn, 'seconds');
 
-                // Step 2: Direct upload to S3
                 uploadToS3(response.url, file, {
                     onProgress: options.onProgress,
                     onXhrCreated: options.onXhrCreated,
@@ -307,19 +318,16 @@
                     },
                     onError: function(error) {
                         logger.warn('S3 upload failed, falling back to classic:', error);
-                        // Fallback to classic method
                         uploadClassic(dir, file, options);
                     }
                 });
             } else {
                 logger.warn('Failed to get presigned upload URL:', response.error);
-                // Fallback to classic method
                 uploadClassic(dir, file, options);
             }
         })
         .catch(error => {
             logger.error('Error getting presigned upload URL:', error);
-            // Fallback to classic method
             uploadClassic(dir, file, options);
         });
     }

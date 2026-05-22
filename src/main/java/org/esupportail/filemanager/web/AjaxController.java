@@ -21,12 +21,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.esupportail.filemanager.beans.*;
 import org.esupportail.filemanager.exceptions.EsupStockException;
+import org.esupportail.filemanager.exceptions.EsupStockFileExistException;
 import org.esupportail.filemanager.services.IServersAccessService;
 import org.esupportail.filemanager.services.ResourceUtils;
 import org.esupportail.filemanager.services.ResourceUtils.Type;
 import org.esupportail.filemanager.utils.PathEncodingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
@@ -63,10 +63,6 @@ public class AjaxController {
     @Autowired
     protected ApplicationContext context;
 
-
-    @Autowired(required=false)
-    @Qualifier("uploadActionOnExistingFileNameModeServlet")
-    protected UploadActionType uploadActionOnExistingFileNameServlet = UploadActionType.OVERRIDE;
 
 
     //GP Added in order to detect file type (image / sound / etc)
@@ -401,7 +397,8 @@ public class AjaxController {
         log.debug("Requesting uploadFile");
         dir = pathEncodingUtils.decodeDir(dir);
 
-        UploadActionType option = this.uploadActionOnExistingFileNameServlet;
+        // Default: ERROR → the client must confirm overwrite explicitly
+        UploadActionType option = UploadActionType.ERROR;
         if (uploadOption != null) {
             option = uploadOption;
         }
@@ -433,11 +430,17 @@ public class AjaxController {
                 uploadResponse.setSuccess(false);
                 log.info("error uploading file '{}' in '{}'", filename, dir);
             }
+        } catch (EsupStockFileExistException e) {
+            log.info("file '{}' already exists in '{}'", filename, dir);
+            uploadResponse.setSuccess(false);
+            uploadResponse.setFileExists(true);
+            String msg = context.getMessage("ajax.upload.fileExists", null, locale);
+            uploadResponse.setMsg(msg);
         } catch (Exception e) {
             log.error("error uploading file '{}' in '{}", filename, dir, e);
             uploadResponse.setSuccess(false);
         }
-        if(!uploadResponse.isSuccess()) {
+        if(!uploadResponse.isSuccess() && !uploadResponse.isFileExists()) {
             String msg = context.getMessage("ajax.upload.failed", null, locale);
             uploadResponse.setMsg(msg);
         }
@@ -590,12 +593,14 @@ public class AjaxController {
     }
 
     /**
-     * Get a presigned upload URL for direct S3 access
+     * Get a presigned upload URL for direct S3 access.
+     * If uploadOption is not OVERRIDE, checks file existence first.
      */
     @RequestMapping(value="/getPresignedUploadUrl")
     @ResponseBody
     public Map<String, Object> getPresignedUploadUrl(@RequestParam String dir,
-                                                       @RequestParam String filename) {
+                                                       @RequestParam String filename,
+                                                       @RequestParam(required = false) UploadActionType uploadOption) {
         log.debug("Requesting presigned upload URL for: {}/{}", dir, filename);
         Map<String, Object> response = new HashMap<>();
 
@@ -606,6 +611,24 @@ public class AjaxController {
                 response.put("success", false);
                 response.put("error", "Presigned URLs are not supported for this directory");
                 return response;
+            }
+
+            // Default: check existence (ERROR mode) unless the client explicitly asks to override
+            if (uploadOption != UploadActionType.OVERRIDE) {
+                try {
+                    boolean exists = this.serverAccess.fileExists(dir, filename);
+                    if (exists) {
+                        // File already exists – ask for confirmation before issuing the presigned URL
+                        response.put("success", false);
+                        response.put("fileExists", true);
+                        Locale locale = LocaleContextHolder.getLocale();
+                        response.put("msg", context.getMessage("ajax.upload.fileExists", null, locale));
+                        log.info("Presigned upload blocked – file already exists: {}/{}", dir, filename);
+                        return response;
+                    }
+                } catch (Exception e) {
+                    log.warn("Could not determine existence of {}/{}, proceeding with upload: {}", dir, filename, e.getMessage());
+                }
             }
 
             PresignedUrl presignedUrl = this.serverAccess.getPresignedUploadUrl(dir, filename);

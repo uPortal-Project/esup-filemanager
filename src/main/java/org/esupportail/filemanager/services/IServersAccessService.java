@@ -54,6 +54,15 @@ public interface IServersAccessService {
 	public abstract boolean putFile(String dir, String filename,
 			InputStream inputStream, UploadActionType uploadOption);
 
+	/**
+	 * Check whether a file already exists in the given directory, without side-effects.
+	 *
+	 * @param dir      full internal directory path (FS:category~drive~localdir)
+	 * @param filename name of the file to check
+	 * @return true if the file already exists
+	 */
+	public abstract boolean fileExists(String dir, String filename);
+
 	public abstract JsTreeFile getJsTreeFileRoot();
 
 	public abstract List<JsTreeFile> getJsTreeFileRoots(

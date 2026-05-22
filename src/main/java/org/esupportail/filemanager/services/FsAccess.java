@@ -221,6 +221,19 @@ public abstract class FsAccess {
     public abstract boolean putFile(String dir, String filename,
                                     InputStream inputStream, UploadActionType uploadOption);
 
+    /**
+     * Check whether a file exists in the given directory without any side-effect.
+     * Implementations should use the same existence check mechanism as putFile().
+     *
+     * @param dir      local directory path (drive-relative)
+     * @param filename name of the file to test
+     * @return true if the file already exists
+     */
+    public boolean existsFile(String dir, String filename) {
+        // Default: safe fallback – assume unknown → let the upload proceed
+        return false;
+    }
+
     public boolean supportIntraCopyPast() {
         return true;
     }

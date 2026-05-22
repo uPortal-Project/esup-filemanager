@@ -7,6 +7,8 @@ public class UploadResponse {
 
     String msg = "";
 
+    boolean fileExists = false;
+
     public boolean isSuccess() {
         return success;
     }
@@ -21,5 +23,13 @@ public class UploadResponse {
 
     public void setMsg(String msg) {
         this.msg = msg;
+    }
+
+    public boolean isFileExists() {
+        return fileExists;
+    }
+
+    public void setFileExists(boolean fileExists) {
+        this.fileExists = fileExists;
     }
 }

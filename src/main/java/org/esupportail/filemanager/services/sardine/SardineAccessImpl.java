@@ -350,6 +350,20 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
     }
 
     @Override
+    public boolean existsFile(String dir, String filename) {
+        try {
+            this.open();
+            if (!dir.endsWith("/"))
+                dir = dir + "/";
+            String file = this.uri + dir + URLEncoder.encode(filename, StandardCharsets.UTF_8);
+            return root.exists(file);
+        } catch (Exception e) {
+            log.warn("Could not check WebDAV file existence for {}/{}: {}", dir, filename, e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
     public boolean putFile(String dir, String filename, InputStream inputStream, UploadActionType uploadOption) {
         try {
             this.open();

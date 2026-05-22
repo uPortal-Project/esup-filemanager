@@ -246,6 +246,10 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
         return this.getFsAccess(getDrive(dir)).putFile(getLocalDir(dir), filename, inputStream, uploadOption);
     }
 
+    public boolean fileExists(String dir, String filename) {
+        return this.getFsAccess(getDrive(dir)).existsFile(getLocalDir(dir), filename);
+    }
+
     public JsTreeFile getJsTreeFileRoot() {
         JsTreeFile jsFileRoot = new JsTreeFile(JsTreeFile.ROOT_DRIVE_NAME, null, "", "root");
         jsFileRoot.setIcon(JsTreeFile.ROOT_ICON_PATH);

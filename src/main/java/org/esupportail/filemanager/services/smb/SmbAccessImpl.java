@@ -686,6 +686,19 @@ public class SmbAccessImpl extends FsAccess implements DisposableBean {
     }
 
     @Override
+    public boolean existsFile(String dir, String filename) {
+        try {
+            this.open();
+            String dirSmbPath = buildSmbPath(dir);
+            String destSmbPath = dirSmbPath.isEmpty() ? filename : dirSmbPath + "\\" + filename;
+            return diskShare.fileExists(destSmbPath);
+        } catch (Exception e) {
+            log.warn("Could not check SMB file existence for {}/{}: {}", dir, filename, e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
     public boolean putFile(String dir, String filename, InputStream inputStream, UploadActionType uploadOption) {
         this.open();
         boolean success = false;

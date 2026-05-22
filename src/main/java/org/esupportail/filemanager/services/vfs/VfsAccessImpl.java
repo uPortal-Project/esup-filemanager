@@ -408,6 +408,17 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
     }
 
     @Override
+    public boolean existsFile(String dir, String filename) {
+        try {
+            FileObject folder = cd(dir);
+            FileObject newFile = folder.resolveFile(filename);
+            return newFile.exists();
+        } catch (Exception e) {
+            log.warn("Could not check VFS file existence for {}/{}: {}", dir, filename, e.getMessage());
+            return false;
+        }
+    }
+
     public boolean putFile(String dir, String filename, InputStream inputStream, UploadActionType uploadOption) {
 
         boolean success = false;
