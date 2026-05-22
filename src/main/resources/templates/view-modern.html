@@ -139,6 +139,24 @@
     <!-- Details Manager - Modern details block management -->
     <script type="text/javascript" th:src="@{/js/details-manager.js}"></script>
 
+    <!-- Import map: maps canonical module paths to their cache-busted (content-hashed) URLs.
+         This is required because ES6 `import` statements inside JS files are static strings
+         that bypass Thymeleaf/Spring resource versioning.
+         Keys are the absolute paths that the browser resolves each specifier to (e.g. from
+         /js/esup-stock-modern-<hash>.js the specifier "./ajax-manager.js" resolves to
+         /js/ajax-manager.js). Thymeleaf @{} replaces each value with the versioned URL. -->
+    <script type="importmap" th:inline="javascript">
+    {
+      "imports": {
+        "./js/ajax-manager.js":        [[@{/js/ajax-manager.js}]],
+        "./js/file-tree.js":           [[@{/js/file-tree.js}]],
+        "./js/drag-drop-manager.js":   [[@{/js/drag-drop-manager.js}]],
+        "./js/ui-components.js":       [[@{/js/ui-components.js}]],
+        "./js/file-upload-manager.js": [[@{/js/file-upload-manager.js}]]
+      }
+    }
+    </script>
+
     <!-- ES6 Modules - Modern application -->
     <script type="module" th:src="@{/js/esup-stock-modern.js}"></script>
 
