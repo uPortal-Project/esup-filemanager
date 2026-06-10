@@ -14,7 +14,7 @@ services:
        - ./docker/cas-config:/etc/cas
        - ./docker/cas-config/tmp-cas:/tmp/cas
      ports:
-       - "8081:8080"
+       - "127.0.0.1:8081:8080"
      depends_on:
        - openldap
 
@@ -25,8 +25,8 @@ services:
        MINIO_ROOT_PASSWORD: minioadmin
      command: server /data --console-address ":9001"
      ports:
-       - "9000:9000"
-       - "9001:9001"
+       - "127.0.0.1:9000:9000"
+       - "127.0.0.1:9001:9001"
      healthcheck:
        test: [ "CMD", "mc", "ready", "local" ]
        interval: 5s
@@ -55,7 +55,7 @@ services:
        - /var/lib/dav/data:mode=0777
        - /var/lib/dav:mode=0777
      ports:
-       - "8888:80"
+       - "127.0.0.1:8888:80"
 
    samba:
      image: crazymax/samba:latest
@@ -66,7 +66,7 @@ services:
      volumes:
        - ./docker/samba-config/samba-config.yml:/data/config.yml:ro
      ports:
-       - "1445:445"
+       - "127.0.0.1:1445:445"
 
    sftp:
      image: hectorm/dropbear:v39
@@ -76,7 +76,7 @@ services:
      tmpfs:
        - /home/sftpuser:mode=0755,uid=1001
      ports:
-        - "2222:2222"
+        - "127.0.0.1:2222:2222"
 
    esup-file-manager-run:
        image: maven:3.9-eclipse-temurin-21
@@ -86,7 +86,7 @@ services:
          - ../..:/app
          - maven-cache:/root/.m2
        ports:
-         - "8080:8080"
+         - "127.0.0.1:8080:8080"
        network_mode: host
        command: mvn spring-boot:run
        depends_on:
