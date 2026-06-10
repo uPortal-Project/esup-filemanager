@@ -101,13 +101,6 @@
 
     <dependencies>
 
-        <!-- Enables JSP compilation support in embedded Tomcat (WAR deployment).
-             ⚠️ CANDIDATE FOR REMOVAL: no JSP files found in the project; only Thymeleaf templates are used. -->
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-jasper</artifactId>
-            <scope>provided</scope>
-        </dependency>
 
         <!-- Provides embedded Tomcat server; marked "provided" so the external container is used at runtime. -->
         <dependency>
@@ -126,13 +119,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
-
-        <!-- Jackson JSON serialization/deserialization support.
-             ⚠️ CANDIDATE FOR REMOVAL: already included transitively by spring-boot-starter-web. -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-json</artifactId>
         </dependency>
 
         <!-- Development-time tools: automatic restart, LiveReload, relaxed configuration. -->
@@ -171,13 +157,6 @@
             <artifactId>thymeleaf-extras-springsecurity6</artifactId>
         </dependency>
 
-        <!-- Logback logging framework implementation (SLF4J backend).
-             ⚠️ CANDIDATE FOR REMOVAL: already included transitively by spring-boot-starter. -->
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-        </dependency>
-
         <!-- Jakarta Activation API: MIME type mapping used via MimetypesFileTypeMap. -->
         <dependency>
             <groupId>jakarta.activation</groupId>
@@ -205,19 +184,11 @@
             <version>0.14.0</version>
         </dependency>
 
-        <!-- BouncyCastle cryptography provider required by smbj for SMB encryption. -->
+        <!-- BouncyCastle crypto provider (Java 8+); pulled transitively by smbj — pinned here to enforce the latest patched version. -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk18on</artifactId>
             <version>1.84</version>
-        </dependency>
-
-        <!-- Parses Windows .lnk shortcut files.
-             ⚠️ CANDIDATE FOR REMOVAL: no usages found anywhere in the source code. -->
-        <dependency>
-            <groupId>com.github.vatbub</groupId>
-            <artifactId>mslinks</artifactId>
-            <version>1.0.6.2</version>
         </dependency>
 
         <!-- Apache Commons VFS: unified virtual file system API (local, FTP, SFTP…). -->
@@ -231,14 +202,14 @@
         <dependency>
             <groupId>commons-net</groupId>
             <artifactId>commons-net</artifactId>
-            <version>3.12.0</version>
+            <version>3.13.0</version>
         </dependency>
 
         <!-- AWS SDK v2 S3 client for accessing Amazon S3-compatible object storage. -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3</artifactId>
-            <version>2.42.1</version>
+            <version>2.46.5</version>
         </dependency>
 
         <!-- Sardine: WebDAV client library for accessing WebDAV file shares. -->
@@ -287,7 +258,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>3.15.0</version>
                 <configuration>
                     <source>${project.build.source}</source>
                     <target>${project.build.target}</target>
@@ -296,7 +267,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
+                <version>3.3.1</version>
             </plugin>
             <plugin>
                 <groupId>com.mycila.maven-license-plugin</groupId>
