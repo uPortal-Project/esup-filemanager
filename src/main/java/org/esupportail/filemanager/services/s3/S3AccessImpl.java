@@ -45,6 +45,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 /**
@@ -52,6 +53,9 @@ import java.util.List;
  */
 public class S3AccessImpl extends FsAccess implements DisposableBean {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(S3AccessImpl.class);
+
+    /** Chunk size for S3 multipart upload. S3 minimum per part is 5 MB (except the last). */
+    private static final int MULTIPART_CHUNK_SIZE = 8 * 1024 * 1024; // 8 MB
     @Resource
     ResourceUtils resourceUtils;
 
@@ -656,19 +660,15 @@ public class S3AccessImpl extends FsAccess implements DisposableBean {
                         break;
                 }
             }
-            // Read the entire input stream into memory
-            // Note: For large files, consider using multipart upload
-            byte[] content = inputStream.readAllBytes();
+            // Stream the upload in fixed-size chunks via S3 multipart upload.
+            // This avoids loading the entire file into memory and supports files up to 500 MB
+            // (or beyond) without risking an OutOfMemoryError.
             String contentType = JsTreeFile.getMimeType(filename.toLowerCase());
-            PutObjectRequest putRequest = PutObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(s3Key)
-                    .contentType(contentType)
-                    .contentLength((long) content.length)
-                    .build();
-            s3Client.putObject(putRequest, RequestBody.fromBytes(content));
+            uploadMultipart(s3Key, contentType, inputStream);
             log.info("File uploaded to S3: {}", s3Key);
             return true;
+        } catch (EsupStockFileExistException e) {
+            throw e;
         } catch (S3Exception e) {
             log.error("Error uploading file to S3", e);
             if (e.statusCode() == 403) {
@@ -680,6 +680,102 @@ public class S3AccessImpl extends FsAccess implements DisposableBean {
             return false;
         }
     }
+
+    /**
+     * Uploads an InputStream to S3 using multipart upload, reading at most
+     * {@link #MULTIPART_CHUNK_SIZE} bytes at a time to keep memory usage bounded.
+     * The multipart upload is aborted automatically if any error occurs mid-transfer.
+     *
+     * @param s3Key       destination object key
+     * @param contentType MIME type of the object
+     * @param inputStream source data (not closed by this method)
+     * @throws IOException if reading from the stream fails
+     * @throws S3Exception if any S3 operation fails
+     */
+    private void uploadMultipart(String s3Key, String contentType, InputStream inputStream)
+            throws IOException {
+        CreateMultipartUploadRequest createRequest = CreateMultipartUploadRequest.builder()
+                .bucket(bucketName)
+                .key(s3Key)
+                .contentType(contentType)
+                .build();
+        CreateMultipartUploadResponse createResponse = s3Client.createMultipartUpload(createRequest);
+        String uploadId = createResponse.uploadId();
+
+        List<CompletedPart> completedParts = new ArrayList<>();
+        byte[] buffer = new byte[MULTIPART_CHUNK_SIZE];
+        int partNumber = 1;
+
+        try {
+            while (true) {
+                // Fill the buffer as completely as possible before sending a part.
+                int offset = 0;
+                int remaining = buffer.length;
+                while (remaining > 0) {
+                    int n = inputStream.read(buffer, offset, remaining);
+                    if (n == -1) break;
+                    offset += n;
+                    remaining -= n;
+                }
+                if (offset == 0) break; // Stream exhausted
+
+                byte[] chunk = Arrays.copyOf(buffer, offset);
+                UploadPartRequest uploadPartRequest = UploadPartRequest.builder()
+                        .bucket(bucketName)
+                        .key(s3Key)
+                        .uploadId(uploadId)
+                        .partNumber(partNumber)
+                        .contentLength((long) chunk.length)
+                        .build();
+                UploadPartResponse uploadPartResponse =
+                        s3Client.uploadPart(uploadPartRequest, RequestBody.fromBytes(chunk));
+                completedParts.add(CompletedPart.builder()
+                        .partNumber(partNumber)
+                        .eTag(uploadPartResponse.eTag())
+                        .build());
+                log.debug("Uploaded part {} ({} bytes) for {}", partNumber, chunk.length, s3Key);
+                partNumber++;
+
+                if (offset < buffer.length) break; // Last (possibly partial) chunk
+            }
+
+            if (completedParts.isEmpty()) {
+                // Empty file: abort multipart and fall back to a zero-byte PutObject.
+                s3Client.abortMultipartUpload(AbortMultipartUploadRequest.builder()
+                        .bucket(bucketName).key(s3Key).uploadId(uploadId).build());
+                s3Client.putObject(PutObjectRequest.builder()
+                        .bucket(bucketName).key(s3Key)
+                        .contentType(contentType).contentLength(0L).build(),
+                        RequestBody.empty());
+                log.debug("Empty file uploaded via PutObject for {}", s3Key);
+                return;
+            }
+
+            s3Client.completeMultipartUpload(CompleteMultipartUploadRequest.builder()
+                    .bucket(bucketName)
+                    .key(s3Key)
+                    .uploadId(uploadId)
+                    .multipartUpload(CompletedMultipartUpload.builder()
+                            .parts(completedParts)
+                            .build())
+                    .build());
+            log.info("Multipart upload completed for {} ({} part(s))", s3Key, completedParts.size());
+
+        } catch (Exception e) {
+            // Always abort an incomplete multipart upload to avoid incurring storage costs.
+            try {
+                s3Client.abortMultipartUpload(AbortMultipartUploadRequest.builder()
+                        .bucket(bucketName).key(s3Key).uploadId(uploadId).build());
+                log.warn("Multipart upload aborted for {} after error", s3Key);
+            } catch (S3Exception abortEx) {
+                log.error("Failed to abort multipart upload for {}", s3Key, abortEx);
+            }
+            if (e instanceof IOException) throw (IOException) e;
+            if (e instanceof S3Exception) throw (S3Exception) e;
+            throw new EsupStockException("Multipart upload failed", e);
+        }
+    }
+
     @Override
     public boolean existsFile(String dir, String filename) {
         try {
