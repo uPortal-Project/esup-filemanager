@@ -15,7 +15,7 @@
       <input type="text" id="username" name="username" th:value="${username}" required="required" autocomplete="username" />
 
       <label for="password" th:text="#{auth.password}"></label>
-      <input type="password" id="password" name="password" th:value="${password}" required="required" autocomplete="current-password" />
+      <input type="password" id="password" name="password" required="required" autocomplete="current-password" />
     </fieldset>
 
     <button type="submit" id="authenticate" th:text="#{auth.submit}"></button>

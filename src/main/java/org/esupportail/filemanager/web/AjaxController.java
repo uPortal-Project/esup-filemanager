@@ -89,7 +89,6 @@ public class AjaxController {
         if(this.serverAccess.formAuthenticationRequired(dir)) {
             model = new ModelMap("currentDir", pathEncodingUtils.encodeDir(dir));
             model.put("username", this.serverAccess.getUserPassword(dir).getUsername());
-            model.put("password", this.serverAccess.getUserPassword(dir).getPassword());
             return new ModelAndView("authenticationForm", model);
         }
 
