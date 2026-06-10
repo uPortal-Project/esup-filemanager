@@ -27,7 +27,7 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -63,7 +63,11 @@ public abstract class FsAccess {
 
     String accessRule = null;
 
-    /** SpEL parser – thread-safe, shared across all instances. */
+    /** SpEL parser – thread-safe, shared across all instances.
+     *  Security note: SpEL restrictions are enforced at *evaluation* time via
+     *  {@link SimpleEvaluationContext} in {@link #hasAccess()}, not at parse time.
+     *  This parser only builds the AST; dangerous constructs (T(...), new, reflection)
+     *  are blocked when getValue(context) is called. */
     private static final ExpressionParser SPEL_PARSER = new SpelExpressionParser();
 
     /** Pre-parsed SpEL expression; computed once in {@link #setAccessRule(String)}. */
@@ -329,7 +333,10 @@ public abstract class FsAccess {
             CasAuthenticationToken casAuthenticationToken = (CasAuthenticationToken)authentication;
             CasUser casUser = (CasUser) casAuthenticationToken.getUserDetails();
             Map<String, Object> userAttributes = casUser.getAttributes();
-            EvaluationContext context = new StandardEvaluationContext();
+            // Use SimpleEvaluationContext (read-only) to prevent SpEL injection / RCE.
+            // StandardEvaluationContext gives full access to reflection, Spring beans
+            // and the classpath — a compromised CAS attribute could lead to RCE.
+            EvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().build();
             context.setVariable("userAttributes",  userAttributes);
             log.debug("Evaluation of {} -> {} hasAccess for {} (userAttributes : {})", accessRule, authentication, driveName, userAttributes);
             try {
