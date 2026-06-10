@@ -241,7 +241,7 @@ public class AjaxController {
         return jsonMsg;
     }
 
-    @RequestMapping(value="/prepareCopyFiles")
+    @PostMapping(value="/prepareCopyFiles")
     @ResponseBody
     public Map prepareCopyFiles(FormCommand command) {
         log.debug("Requesting prepareCopyFiles");
@@ -269,7 +269,7 @@ public class AjaxController {
         return jsonMsg;
     }
 
-    @RequestMapping(value="/pastFiles")
+    @PostMapping(value="/pastFiles")
     @ResponseBody
     public Map pastFiles(String dir) {
         log.debug("Requesting pastFiles");
@@ -671,7 +671,7 @@ public class AjaxController {
      * Get a presigned upload URL for direct S3 access.
      * If uploadOption is not OVERRIDE, checks file existence first.
      */
-    @RequestMapping(value="/getPresignedUploadUrl")
+    @GetMapping(value="/getPresignedUploadUrl")
     @ResponseBody
     public Map<String, Object> getPresignedUploadUrl(@RequestParam String dir,
                                                        @RequestParam String filename,
@@ -740,7 +740,7 @@ public class AjaxController {
     /**
      * Check if presigned URLs are supported for a given path
      */
-    @RequestMapping(value="/supportsPresignedUrls")
+    @GetMapping(value="/supportsPresignedUrls")
     @ResponseBody
     public Map<String, Object> supportsPresignedUrls(@RequestParam String dir) {
         log.debug("Checking if presigned URLs are supported for: {}", dir);
