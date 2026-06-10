@@ -42,6 +42,7 @@ import org.thymeleaf.util.StringUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Paths;
 import java.util.*;
 import org.springframework.context.i18n.LocaleContextHolder;
 
@@ -388,6 +389,68 @@ public class AjaxController {
     }
 
 
+    /**
+     * Validates and normalizes a filename to prevent Path Traversal attacks.
+     * <ul>
+     *   <li>Extracts only the basename component (removes all directory separators)</li>
+     *   <li>Rejects empty, null, or names containing {@code ..} sequences</li>
+     *   <li>Rejects absolute paths (starting with {@code /}, {@code \} or a Windows drive letter)</li>
+     *   <li>Rejects control characters and dangerous shell special characters</li>
+     * </ul>
+     *
+     * @param filename the raw filename provided by the client
+     * @return the cleaned and safe basename
+     * @throws IllegalArgumentException if the name is invalid or potentially malicious
+     */
+    private String sanitizeFilename(String filename) {
+        if (filename == null || filename.trim().isEmpty()) {
+            throw new IllegalArgumentException("Filename is empty or null");
+        }
+
+        // Normalize Windows separators to Unix separators
+        String normalized = filename.replace('\\', '/');
+
+        // Extract only the basename (last component of the path)
+        String basename = Paths.get(normalized).getFileName() != null
+                ? Paths.get(normalized).getFileName().toString()
+                : normalized;
+
+        // Reject empty names after normalization
+        if (basename.trim().isEmpty()) {
+            throw new IllegalArgumentException("Filename is empty after normalization: " + filename);
+        }
+
+        // Reject path traversal sequences
+        if (basename.contains("..")) {
+            throw new IllegalArgumentException("Forbidden filename ('..' sequence detected): " + filename);
+        }
+
+        // Reject residual absolute paths
+        if (basename.startsWith("/") || basename.startsWith("\\")) {
+            throw new IllegalArgumentException("Forbidden filename (absolute path): " + filename);
+        }
+        // Reject Windows-style absolute paths (e.g. C:)
+        if (basename.length() >= 2 && Character.isLetter(basename.charAt(0)) && basename.charAt(1) == ':') {
+            throw new IllegalArgumentException("Forbidden filename (Windows absolute path): " + filename);
+        }
+
+        // Reject control characters (0x00-0x1F, 0x7F)
+        for (char c : basename.toCharArray()) {
+            if (c < 0x20 || c == 0x7F) {
+                throw new IllegalArgumentException("Forbidden filename (control character detected): " + filename);
+            }
+        }
+
+        // Reject dangerous special characters for shell and filesystems
+        // Allowed: letters, digits, hyphens, underscores, dots, parentheses, spaces, @, +, =, ~, #, ,, !
+        if (!basename.matches("^[\\w\\-. ()@+=~#,!]+$")) {
+            throw new IllegalArgumentException("Forbidden filename (unauthorized special characters): " + filename);
+        }
+
+        log.debug("Filename validated and normalized: '{}' -> '{}'", filename, basename);
+        return basename;
+    }
+
     // thanks to use BindingResult if FileUpload failed because of XHR request (and not multipart)
     // this method is called anyway
     @PostMapping(value="/uploadFile")
@@ -415,6 +478,18 @@ public class AjaxController {
             filename = request.getParameter("qqfile");
             inputStream = request.getInputStream();
         }
+
+        // Validate and normalize filename (Path Traversal prevention)
+        try {
+            filename = sanitizeFilename(filename);
+        } catch (IllegalArgumentException e) {
+            log.warn("uploadFile rejected – invalid filename: {}", e.getMessage());
+            UploadResponse rejection = new UploadResponse();
+            rejection.setSuccess(false);
+            rejection.setMsg(context.getMessage("ajax.upload.failed", null, LocaleContextHolder.getLocale()));
+            return rejection;
+        }
+
         return upload(dir, filename, inputStream, LocaleContextHolder.getLocale(), option);
     }
 
@@ -606,6 +681,16 @@ public class AjaxController {
 
         try {
             dir = pathEncodingUtils.decodeDir(dir);
+
+            // Validate and normalize filename (Path Traversal prevention)
+            try {
+                filename = sanitizeFilename(filename);
+            } catch (IllegalArgumentException e) {
+                log.warn("getPresignedUploadUrl rejected – invalid filename: {}", e.getMessage());
+                response.put("success", false);
+                response.put("error", "Invalid filename: " + e.getMessage());
+                return response;
+            }
 
             if (!this.serverAccess.supportsPresignedUrls(dir)) {
                 response.put("success", false);
