@@ -68,8 +68,8 @@
 
     <bean name="s3_minio_auth" class="org.esupportail.filemanager.services.auth.FormUserPasswordAuthenticatorService"
           scope="session">
-        <property name="username" value="minioadmin"/>
-        <property name="password" value="minioadmin"/>
+        <property name="username" value="${s3.username}"/>
+        <property name="password" value="${s3.password}"/>
     </bean>
 
     <bean class="org.esupportail.filemanager.services.smb.SmbAccessImpl" scope="session" lazy-init="true">
@@ -82,8 +82,8 @@
 
     <bean name="samba_crazymax_auth" class="org.esupportail.filemanager.services.auth.FormUserPasswordAuthenticatorService"
           scope="session">
-        <property name="username" value="sambauser"/>
-        <property name="password" value="sambapass"/>
+        <property name="username" value="${samba.username}"/>
+        <property name="password" value="${samba.password}"/>
     </bean>
 
     <bean class="org.esupportail.filemanager.services.sardine.SardineAccessImpl" scope="session" lazy-init="true">
@@ -96,8 +96,8 @@
 
     <bean name="webdav_auth" class="org.esupportail.filemanager.services.auth.FormUserPasswordAuthenticatorService"
           scope="session">
-        <property name="username" value="webdav"/>
-        <property name="password" value="webdav"/>
+        <property name="username" value="${webdav.username}"/>
+        <property name="password" value="${webdav.password}"/>
     </bean>
 
 
@@ -117,8 +117,8 @@
 
     <bean name="sftp_auth" class="org.esupportail.filemanager.services.auth.FormUserPasswordAuthenticatorService"
           scope="session">
-        <property name="username" value="sftpuser"/>
-        <property name="password" value="sftppass"/>
+        <property name="username" value="${sftp.username}"/>
+        <property name="password" value="${sftp.password}"/>
     </bean>
 
     <bean name="form_auth" class="org.esupportail.filemanager.services.auth.AttrsUserCasAuthenticatorService"
