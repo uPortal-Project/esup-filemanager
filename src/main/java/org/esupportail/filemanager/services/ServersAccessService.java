@@ -346,7 +346,7 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
                 drive = driveAndDir[1];
             }
         } else {
-            log.warn("Can't get drive because dir is null or too short: '{}'", dir);
+            log.debug("Can't get drive because dir is null or too short: '{}'", dir);
         }
         return drive;
     }
