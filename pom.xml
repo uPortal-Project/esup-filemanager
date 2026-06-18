@@ -133,6 +133,13 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+        <!-- Bucket4j: token-bucket rate limiting for sensitive endpoints. -->
+        <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j-core</artifactId>
+            <version>8.10.1</version>
+        </dependency>
+
         <!-- CAS (Central Authentication Service) SSO integration for Spring Security. -->
         <dependency>
             <groupId>org.springframework.security</groupId>

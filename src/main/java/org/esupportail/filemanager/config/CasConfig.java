@@ -24,7 +24,11 @@ import org.apereo.cas.client.validation.Cas20ServiceTicketValidator;
 import org.apereo.cas.client.validation.TicketValidator;
 
 import org.esupportail.filemanager.services.auth.CasUserDetailsService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -47,6 +51,7 @@ import java.util.List;
 
 @Configuration
 @ConfigurationProperties(prefix="cas")
+@EnableConfigurationProperties(AuthenticationRateLimitProperties.class)
 @EnableWebSecurity
 public class CasConfig {
 
@@ -121,7 +126,9 @@ public class CasConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, CasAuthenticationFilter casAuthenticationFilter) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http,
+                                           CasAuthenticationFilter casAuthenticationFilter,
+                                           SecondaryAuthenticationRateLimitFilter secondaryAuthenticationRateLimitFilter) throws Exception {
 
         CookieCsrfTokenRepository cookieCsrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
         cookieCsrfTokenRepository.setCookieName("XSRF-TOKEN");
@@ -137,8 +144,25 @@ public class CasConfig {
                         .logoutSuccessUrl(url + "/logout?service=" + service)
                 )
                 .addFilter(casAuthenticationFilter)
+                .addFilterAfter(secondaryAuthenticationRateLimitFilter, CasAuthenticationFilter.class)
                 .csrf(csrf -> csrf.csrfTokenRepository(cookieCsrfTokenRepository));
         return http.build();
+    }
+
+    @Bean
+    public SecondaryAuthenticationRateLimitFilter secondaryAuthenticationRateLimitFilter(
+            AuthenticationRateLimitProperties properties,
+            MessageSource messageSource,
+            ObjectMapper objectMapper) {
+        return new SecondaryAuthenticationRateLimitFilter(properties, messageSource, objectMapper);
+    }
+
+    @Bean
+    public FilterRegistrationBean<SecondaryAuthenticationRateLimitFilter> secondaryAuthenticationRateLimitFilterRegistration(
+            SecondaryAuthenticationRateLimitFilter filter) {
+        FilterRegistrationBean<SecondaryAuthenticationRateLimitFilter> registration = new FilterRegistrationBean<>(filter);
+        registration.setEnabled(false);
+        return registration;
     }
 
     @Bean
