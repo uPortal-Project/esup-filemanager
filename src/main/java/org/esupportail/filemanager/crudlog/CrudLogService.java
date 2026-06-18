@@ -17,6 +17,7 @@
  */
 package org.esupportail.filemanager.crudlog;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -27,6 +28,9 @@ import org.esupportail.filemanager.exceptions.EsupStockLostSessionException;
 import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -41,15 +45,9 @@ public class CrudLogService {
 
     private static String AFTER_RETURNING_VOID = "{0} - {1} - {2} - params [ {3}]";
 
+    private static final String X_FORWARDED_FOR_HEADER = "X-Forwarded-For";
+
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CrudLogService.class);
-
-
-	/*
-	@Before(value = "@annotation(loggable)", argNames = "joinPoint, loggable")
-	public void before(JoinPoint joinPoint, CrudLoggable loggable) {
-	}
-	*/
-
 
     @AfterThrowing(value = "@annotation(loggable)",
             throwing = "throwable", argNames = "joinPoint, loggable, throwable")
@@ -138,17 +136,13 @@ public class CrudLogService {
     private Map<String, String> getUserInfos(JoinPoint joinPoint) {
 
         String username = "undefined";
-        String clientIpAddress = "undefined";
+        String clientIpAddress = getClientIpAddress();
 
 
         Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
         if(authentication instanceof CasAuthenticationToken casAuthenticationToken) {
             CasUser casUser = (CasUser) casAuthenticationToken.getUserDetails();
             username = casUser.getUsername();
-            Object clientIpAddressAttr = casUser.getAttributes().get("clientIpAddress");
-            if (clientIpAddressAttr instanceof String) {
-                clientIpAddress = (String)clientIpAddressAttr;
-            }
         }
 
         Map<String, String> userInfos = new HashMap<String, String>();
@@ -157,5 +151,27 @@ public class CrudLogService {
 
         return userInfos;
     }
-}
 
+    private String getClientIpAddress() {
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        if (!(requestAttributes instanceof ServletRequestAttributes servletRequestAttributes)) {
+            return "undefined";
+        }
+
+        HttpServletRequest request = servletRequestAttributes.getRequest();
+        String forwardedFor = request.getHeader(X_FORWARDED_FOR_HEADER);
+        if (forwardedFor != null && !forwardedFor.isBlank()) {
+            String clientIpAddress = forwardedFor.split(",", 2)[0].trim();
+            if (!clientIpAddress.isEmpty()) {
+                return clientIpAddress;
+            }
+        }
+
+        String remoteAddr = request.getRemoteAddr();
+        if (remoteAddr != null && !remoteAddr.isBlank()) {
+            return remoteAddr;
+        }
+
+        return "undefined";
+    }
+}
