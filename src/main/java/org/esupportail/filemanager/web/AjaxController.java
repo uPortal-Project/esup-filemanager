@@ -170,7 +170,7 @@ public class AjaxController {
         Locale locale = LocaleContextHolder.getLocale();
         long allOk = 1;
         String msg = context.getMessage("ajax.remove.ok", null, locale);
-        Map jsonMsg = new HashMap();
+        Map<String, Object> jsonMsg = new HashMap<>();
         for(String dir: pathEncodingUtils.decodeDirs(command.getDirs())) {
             if(!this.serverAccess.remove(dir)) {
                 msg = context.getMessage("ajax.remove.failed", null, locale);
@@ -189,7 +189,7 @@ public class AjaxController {
         log.debug("Requesting createFile - parentDir: '{}', title: '{}', type: '{}'", parentDir, title, type);
 
         Locale locale = LocaleContextHolder.getLocale();
-        Map jsonMsg = new HashMap();
+        Map<String, Object> jsonMsg = new HashMap<>();
 
         // Validate parentDir
         if(parentDir == null || parentDir.isEmpty()) {
@@ -225,7 +225,7 @@ public class AjaxController {
         log.debug("Requesting renameFile - dir: '{}', title: '{}'", dir, title);
 
         Locale locale = LocaleContextHolder.getLocale();
-        Map jsonMsg = new HashMap();
+        Map<String, Object> jsonMsg = new HashMap<>();
 
         dir = pathEncodingUtils.decodeDir(dir);
 
@@ -250,7 +250,7 @@ public class AjaxController {
         Locale locale = LocaleContextHolder.getLocale();
         basketSession.setDirsToCopy(pathEncodingUtils.decodeDirs(command.getDirs()));
         basketSession.setGoal("copy");
-        Map jsonMsg = new HashMap();
+        Map<String, Object> jsonMsg = new HashMap<>();
         jsonMsg.put("status", 1);
         String msg = context.getMessage("ajax.copy.ok", null, locale);
         jsonMsg.put("msg", msg);
@@ -264,7 +264,7 @@ public class AjaxController {
         Locale locale = LocaleContextHolder.getLocale();
         basketSession.setDirsToCopy(pathEncodingUtils.decodeDirs(command.getDirs()));
         basketSession.setGoal("cut");
-        Map jsonMsg = new HashMap();
+        Map<String, Object> jsonMsg = new HashMap<>();
         jsonMsg.put("status", 1);
         String msg = context.getMessage("ajax.cut.ok", null, locale);
         jsonMsg.put("msg", msg);
@@ -277,7 +277,7 @@ public class AjaxController {
         log.debug("Requesting pastFiles");
         Locale locale = LocaleContextHolder.getLocale();
         dir = pathEncodingUtils.decodeDir(dir);
-        Map jsonMsg = new HashMap();
+        Map<String, Object> jsonMsg = new HashMap<>();
         if(this.serverAccess.moveCopyFilesIntoDirectory(dir, basketSession.getDirsToCopy(), "copy".equals(basketSession.getGoal()))) {
             jsonMsg.put("status", 1);
             String msg = context.getMessage("ajax.paste.ok", null, locale);
@@ -297,7 +297,7 @@ public class AjaxController {
         log.debug("Requesting authenticate");
         Locale locale = LocaleContextHolder.getLocale();
         dir = pathEncodingUtils.decodeDir(dir);
-        Map jsonMsg = new HashMap();
+        Map<String, Object> jsonMsg = new HashMap<>();
         if(this.serverAccess.authenticate(dir, username, password)) {
             jsonMsg.put("status", 1);
             String msg = context.getMessage("auth.ok", null, locale);
@@ -319,7 +319,6 @@ public class AjaxController {
     public void fetchImage(@RequestParam("dir") String dir, HttpServletResponse response) throws IOException {
         log.debug("Requesting fetchImage");
         dir = pathEncodingUtils.decodeDir(dir);
-        //this.serverAccess.updateUserParameters(dir);
         DownloadFile file = this.serverAccess.getFile(dir);
         response.setContentType(file.getContentType());
         if(file.getSize() > 0) {

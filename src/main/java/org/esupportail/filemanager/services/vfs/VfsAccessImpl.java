@@ -126,6 +126,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
                 }
 
                 if(!strictHostKeyChecking) {
+                    log.warn("strictHostKeyChecking is set to false, this is not secure and should be used only for testing purpose !");
                     SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(fsOptions, "no");
                 }
 
