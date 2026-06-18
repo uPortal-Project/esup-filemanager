@@ -334,9 +334,11 @@ public abstract class FsAccess {
             CasUser casUser = (CasUser) casAuthenticationToken.getUserDetails();
             Map<String, Object> userAttributes = casUser.getAttributes();
             // Use SimpleEvaluationContext (read-only) to prevent SpEL injection / RCE.
-            // StandardEvaluationContext gives full access to reflection, Spring beans
-            // and the classpath — a compromised CAS attribute could lead to RCE.
-            EvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().build();
+            // Keep instance methods enabled so existing collection-based rules such as
+            // "#userAttributes['eduPersonAffiliation'].contains('member')" still work.
+            EvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding()
+                    .withInstanceMethods()
+                    .build();
             context.setVariable("userAttributes",  userAttributes);
             log.debug("Evaluation of {} -> {} hasAccess for {} (userAttributes : {})", accessRule, authentication, driveName, userAttributes);
             try {
