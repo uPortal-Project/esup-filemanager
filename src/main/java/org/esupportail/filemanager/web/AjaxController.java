@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.ContentDisposition;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -42,6 +43,7 @@ import org.thymeleaf.util.StringUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.*;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -375,7 +377,10 @@ public class AjaxController {
         if(file.getSize() > 0) {
             response.setContentLength((int)file.getSize());
         }
-        response.setHeader("Content-Disposition","attachment; filename=\"" + file.getBaseName() +"\"");
+        response.setHeader("Content-Disposition", ContentDisposition.builder("attachment")
+                .filename(file.getBaseName(), StandardCharsets.UTF_8)
+                .build()
+                .toString());
         FileCopyUtils.copy(file.getInputStream(), response.getOutputStream());
     }
 
