@@ -17,6 +17,7 @@
  */
 package org.esupportail.filemanager.beans;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.springframework.context.annotation.Scope;
@@ -24,7 +25,9 @@ import org.springframework.stereotype.Service;
 
 @Service("basketSession")
 @Scope("session")
-public class BasketSession {
+public class BasketSession implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private List<String> dirsToCopy;
 
