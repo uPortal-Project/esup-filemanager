@@ -419,23 +419,18 @@ public class AjaxController {
                 ? Paths.get(normalized).getFileName().toString()
                 : normalized;
 
-        // Reject empty names after normalization
-        if (basename.trim().isEmpty()) {
-            throw new IllegalArgumentException("Filename is empty after normalization: " + filename);
-        }
-
         // Reject path traversal sequences
         if (basename.contains("..")) {
-            throw new IllegalArgumentException("Forbidden filename ('..' sequence detected): " + filename);
+            basename = basename.replaceAll("\\.\\.", "");
         }
 
         // Reject residual absolute paths
         if (basename.startsWith("/") || basename.startsWith("\\")) {
-            throw new IllegalArgumentException("Forbidden filename (absolute path): " + filename);
+            basename = basename.replaceAll("^[\\\\/]+", "");
         }
         // Reject Windows-style absolute paths (e.g. C:)
         if (basename.length() >= 2 && Character.isLetter(basename.charAt(0)) && basename.charAt(1) == ':') {
-            throw new IllegalArgumentException("Forbidden filename (Windows absolute path): " + filename);
+            basename = basename.substring(2);
         }
 
         // Reject control characters (0x00-0x1F, 0x7F)
@@ -446,9 +441,12 @@ public class AjaxController {
         }
 
         // Reject dangerous special characters for shell and filesystems
-        // Allowed: letters, digits, hyphens, underscores, dots, parentheses, spaces, @, +, =, ~, #, ,, !
-        if (!basename.matches("^[\\w\\-. ()@+=~#,!]+$")) {
-            throw new IllegalArgumentException("Forbidden filename (unauthorized special characters): " + filename);
+        // Allowed: letters, digits, hyphens, underscores, dots, parentheses, spaces, @, +, =, ~, #, ,, !, accents, single quotes
+        basename = basename.replaceAll("[^a-zA-Z0-9._@+\\-=~#,! ()'áàäâéèëêíìïîóòöôúùüûçÁÀÄÂÉÈËÊÍÌÏÎÓÒÖÔÚÙÜÛÇ]", "_");
+
+        // Reject empty names after normalization
+        if (basename.trim().isEmpty()) {
+            basename = "_blank_";
         }
 
         log.debug("Filename validated and normalized: '{}' -> '{}'", filename, basename);
