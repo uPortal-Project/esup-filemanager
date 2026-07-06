@@ -35,9 +35,9 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 
 	public static String ROOT_DRIVE_NAME = "";
 
-	public static String FOLDER_ICON_PATH = "./img/folder.png";
+	public static String FOLDER_ICON_PATH = "./webjars/file-icon-vectors/dist/icons/vivid/folder.svg";
 
-    public static String LINK_ICON_PATH = "./img/link.png";
+    public static String LINK_ICON_PATH = "./webjars/file-icon-vectors/dist/icons/vivid/lnk.svg";
 
 	public static String ROOT_ICON_PATH = "./img/drives/drive_network.png";
 

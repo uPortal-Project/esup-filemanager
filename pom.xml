@@ -248,7 +248,14 @@
         <dependency>
             <groupId>org.webjars.npm</groupId>
             <artifactId>bootstrap-icons</artifactId>
-            <version>1.11.3</version>
+            <version>1.13.1</version>
+        </dependency>
+
+        <!-- Colored file type SVG icon set served as a Webjar. -->
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>file-icon-vectors</artifactId>
+            <version>1.0.0</version>
         </dependency>
 
         <!-- Country flag icons CSS library served as a Webjar. -->

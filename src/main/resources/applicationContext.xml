@@ -30,20 +30,32 @@
         <entry key="tif" value="image"/>
         <entry key="dia" value="image"/>
         <entry key="gif" value="image"/>
+        <entry key="bmp" value="image"/>
+        <entry key="png" value="image"/>
+        <entry key="webp" value="image"/>
+        <entry key="svg" value="image"/>
         <entry key="ppt" value="odp"/>
         <entry key="pot" value="odp"/>
+        <entry key="pptx" value="pptx"/>
+        <entry key="potx" value="odp"/>
         <entry key="htm" value="html"/>
         <entry key="mov" value="quicktime"/>
         <entry key="wmv" value="avi"/>
-        <entry key="mp4" value="avi"/>
-        <entry key="mp3" value="audio"/>
+        <entry key="mp4" value="mp4"/>
+        <entry key="m4v" value="avi"/>
+        <entry key="webm" value="webm"/>
+        <entry key="mp3" value="mp3"/>
+        <entry key="m4a" value="audio"/>
+        <entry key="flac" value="audio"/>
         <entry key="ogg" value="audio"/>
         <entry key="wma" value="audio"/>
         <entry key="gz" value="tar"/>
         <entry key="mid" value="midi"/>
-        <entry key="xml" value="txt"/>
-        <entry key="csv" value="xls"/>
-        <entry key="docx" value="doc"/>
+        <entry key="xml" value="xml"/>
+        <entry key="csv" value="csv"/>
+        <entry key="docx" value="docx"/>
+        <entry key="xlsx" value="xlsx"/>
+        <entry key="odf" value="odt"/>
       </map>
     </property>
 
