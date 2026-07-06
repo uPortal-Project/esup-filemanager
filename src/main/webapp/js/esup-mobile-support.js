@@ -22,6 +22,7 @@
         initTouchGestures();
         initResponsiveBehaviors();
         syncTreeWithMobile();
+        observeDynamicContent();
 
         console.log('Mobile/Responsive support initialized', {
             isMobile,
@@ -45,13 +46,17 @@
 
         // Viewport height fix for mobile (URL bar issue)
         const setVH = () => {
-            const vh = window.innerHeight * 0.01;
+            const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+            const vh = viewportHeight * 0.01;
             document.documentElement.style.setProperty('--vh', `${vh}px`);
         };
 
         setVH();
         window.addEventListener('resize', setVH);
         window.addEventListener('orientationchange', setVH);
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', setVH);
+        }
 
         // Prevent double-tap zoom on iOS
         let lastTouchEnd = 0;
@@ -238,20 +243,28 @@
         }
 
         handleMediaChange(mediaQuery);
-        mediaQuery.addListener(handleMediaChange);
-
-        // Adapt tables for mobile
-        if (window.innerWidth < 768) {
-            convertTableToCards();
+        if (mediaQuery.addEventListener) {
+            mediaQuery.addEventListener('change', handleMediaChange);
+        } else {
+            mediaQuery.addListener(handleMediaChange);
         }
 
+        applyResponsiveLayout();
+
         window.addEventListener('resize', debounce(function() {
-            if (window.innerWidth < 768) {
-                convertTableToCards();
-            } else {
-                restoreTableLayout();
-            }
+            applyResponsiveLayout();
         }, 250));
+    }
+
+    /**
+     * Apply responsive transformations for the current viewport.
+     */
+    function applyResponsiveLayout() {
+        if (window.matchMedia('(max-width: 767.98px)').matches) {
+            convertTableToCards();
+        } else {
+            restoreTableLayout();
+        }
     }
 
     /**
@@ -304,6 +317,14 @@
         if (!table || table.dataset.mobileConverted === 'true') return;
 
         const rows = table.querySelectorAll('tbody tr');
+        if (!rows.length) return;
+
+        const oldMobileList = Array.from(table.parentNode.children)
+            .find(child => child.classList.contains('mobile-file-list'));
+        if (oldMobileList) {
+            oldMobileList.remove();
+        }
+
         const container = document.createElement('div');
         container.className = 'mobile-file-list';
 
@@ -318,12 +339,16 @@
             const checkbox = row.querySelector('input[type="checkbox"]');
             if (checkbox) {
                 const checkboxClone = checkbox.cloneNode(true);
+                checkboxClone.addEventListener('change', function() {
+                    checkbox.checked = checkboxClone.checked;
+                    checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+                });
                 card.appendChild(checkboxClone);
             }
 
             // Icon and name
             const icon = row.querySelector('img');
-            const name = row.querySelector('.fileTreeRef, .file');
+            const name = row.querySelector('.fileTreeRef, .file, a');
 
             if (icon) {
                 const iconClone = icon.cloneNode(true);
@@ -350,11 +375,35 @@
             }
 
             card.appendChild(info);
+            card.addEventListener('click', function(event) {
+                if (event.target.closest('input, button, a')) return;
+
+                if (name) {
+                    name.dispatchEvent(new MouseEvent('click', {
+                        bubbles: true,
+                        cancelable: true,
+                        view: window
+                    }));
+                } else {
+                    row.dispatchEvent(new MouseEvent('click', {
+                        bubbles: true,
+                        cancelable: true,
+                        view: window
+                    }));
+                }
+            });
 
             // Actions
             const actions = document.createElement('div');
             actions.className = 'file-actions';
             actions.innerHTML = '<i class="bi bi-three-dots-vertical"></i>';
+            actions.addEventListener('click', function(event) {
+                event.stopPropagation();
+                const offcanvasEl = document.getElementById('mobileMenu');
+                if (offcanvasEl && window.bootstrap) {
+                    bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl).show();
+                }
+            });
             card.appendChild(actions);
 
             container.appendChild(card);
@@ -377,6 +426,33 @@
             mobileList.remove();
             delete table.dataset.mobileConverted;
         }
+    }
+
+    /**
+     * Browser content is injected by AJAX after DOMContentLoaded. Keep the
+     * mobile layout in sync so the first rendered state is already correct.
+     */
+    function observeDynamicContent() {
+        const browserMain = document.getElementById('browserMain');
+        const browserArea = document.getElementById('browserArea');
+        const target = browserMain || browserArea;
+
+        if (!target) return;
+
+        let pending = false;
+        const observer = new MutationObserver(function() {
+            if (pending) return;
+            pending = true;
+            window.requestAnimationFrame(function() {
+                pending = false;
+                applyResponsiveLayout();
+            });
+        });
+
+        observer.observe(target, {
+            childList: true,
+            subtree: true
+        });
     }
 
     /**
@@ -496,10 +572,10 @@
         isTouchDevice,
         updateMobileBreadcrumbs,
         syncMobileToolbarState,
+        applyResponsiveLayout,
         convertTableToCards,
         restoreTableLayout
     };
 
     console.log('ESUP Mobile Support loaded');
 })();
-
