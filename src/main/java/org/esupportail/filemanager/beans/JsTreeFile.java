@@ -39,7 +39,7 @@ public class JsTreeFile implements Serializable, Comparable<JsTreeFile> {
 
     public static String LINK_ICON_PATH = "./webjars/file-icon-vectors/dist/icons/vivid/lnk.svg";
 
-	public static String ROOT_ICON_PATH = "./img/drives/drive_network.png";
+	public static String ROOT_ICON_PATH = "./webjars/bootstrap-icons/icons/hdd-network.svg";
 
 	public static String PATH_SPLIT = "/";
 
