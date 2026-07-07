@@ -132,20 +132,6 @@
     border-radius: 4px;
 }
 
-/* Styles pour le drag & drop */
-.draggable {
-    cursor: move;
-}
-
-.draggable.dragging {
-    opacity: 0.5;
-}
-
-.droppable.drag-over {
-    background-color: #e3f2fd !important;
-    border: 2px dashed #2196f3;
-}
-
 /* Styles pour les menus contextuels */
 .context-menu {
     min-width: 180px;
@@ -189,4 +175,3 @@
 .tree-node.has-children.open > .tree-node-content .tree-toggle::before {
     content: '▼';
 }
-

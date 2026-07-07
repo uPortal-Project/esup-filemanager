@@ -5,14 +5,12 @@
 
 import { AjaxManager } from './ajax-manager.js';
 import { FileTree } from './file-tree.js';
-import { DragDropManager } from './drag-drop-manager.js';
 import { UIComponents } from './ui-components.js';
 import { FileUploadManager } from './file-upload-manager.js';
 
 class EsupFileManager {
     constructor() {
         this.fileTree = null;
-        this.dragDropManager = null;
         this.uploadManager = null;
         this.selectedFiles = [];
         this.clipboard = { files: [], operation: null };
@@ -52,9 +50,6 @@ class EsupFileManager {
         // Initialize file tree
         this.initFileTree();
 
-        // Initialize drag & drop
-        this.initDragDrop();
-
         // Initialize upload manager
         this.initUploadManager();
 
@@ -90,38 +85,6 @@ class EsupFileManager {
         });
 
         console.log('File tree initialized');
-    }
-
-    initDragDrop() {
-        this.dragDropManager = new DragDropManager({
-            onDragStart: (data) => {
-                console.log('Drag started:', data);
-            },
-            onDrop: (sourceData, targetPath, targetElement) => {
-                this.handleFileDrop(sourceData, targetPath);
-            },
-            validateDrop: (sourceData, targetPath) => {
-                return this.isValidPaste(sourceData.path, targetPath);
-            }
-        });
-
-        // Apply drag & drop to existing elements
-        this.refreshDragDrop();
-    }
-
-    refreshDragDrop() {
-        // Make folders draggable and droppable
-        const folders = document.querySelectorAll('.fileTreeRef, [rel="folder"]');
-        folders.forEach(folder => {
-            this.dragDropManager.makeDraggable(folder);
-            this.dragDropManager.makeDroppable(folder);
-        });
-
-        // Make files draggable
-        const files = document.querySelectorAll('.file');
-        files.forEach(file => {
-            this.dragDropManager.makeDraggable(file);
-        });
     }
 
     initUploadManager() {
@@ -691,13 +654,10 @@ class EsupFileManager {
 
     async handleTreeNodeOpen(node, data) {
         console.log('Tree node opened:', node);
-        // Apply drag & drop to new elements
-        this.refreshDragDrop();
     }
 
     handleTreeLoad(data) {
         console.log('Tree loaded:', data);
-        this.refreshDragDrop();
 
         // Auto-select first drive or category
         setTimeout(() => {
@@ -829,9 +789,6 @@ class EsupFileManager {
             if (syncTree && this.fileTree) {
                 await this.syncTreeWithPath(path);
             }
-
-            // Refresh drag & drop after loading content
-            this.refreshDragDrop();
 
             // Also load details in detailArea if not root or category
             const nodeType = this.fileTree?.selectedNode?.dataset?.type;
@@ -1332,23 +1289,6 @@ class EsupFileManager {
             selectedPaths.map(p => encodeURIComponent(p)).join(',');
     }
 
-    handleFileDrop(sourceData, targetPath) {
-        console.log('File dropped:', sourceData, 'to', targetPath);
-
-        this.clipboard = {
-            files: [sourceData.path],
-            operation: 'cut'
-        };
-
-        // Simulate paste on target directory
-        const currentPath = this.getCurrentPath();
-        this.navigateToPath(targetPath).then(() => {
-            this.pasteFiles().then(() => {
-                this.navigateToPath(currentPath);
-            });
-        });
-    }
-
     // Utilities
 
     getSelectedFilePaths() {
@@ -1814,7 +1754,6 @@ class EsupFileManager {
                 });
             }
 
-            this.refreshDragDrop();
         } catch (error) {
             console.error('Sort failed:', error);
             UIComponents.showError(window.i18n?.sortFailed || 'Error sorting files.');

@@ -864,19 +864,6 @@ body {
 }
 
 /* ===============================================
-   Drag & Drop Visuals
-   =============================================== */
-.dragging {
-    opacity: 0.6;
-    cursor: move;
-}
-
-.drag-over {
-    background-color: #e3f2fd;
-    border: 2px dashed #2196f3;
-}
-
-/* ===============================================
    Multiple Selection
    =============================================== */
 .file-selected {

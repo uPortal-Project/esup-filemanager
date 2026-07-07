@@ -688,10 +688,6 @@ http://code.google.com/p/jstree/issues/detail?id=922&q=IE%20expand&colspec=ID%20
     text-decoration: none;
 }
 
-/* uPortal Respondr/Bootstrap Theme fix ...*/
-.esupstock .ui-droppable {
-    min-height: 0;
-}
 .esupstock .container {
     width: auto;
 }

@@ -52,7 +52,7 @@
                 <td class="checkbox">
                     <div class="readable" th:text="${file.readable}"></div>
                     <div class="writeable" th:text="${file.writeable}"></div>
-                    <div class="draggable droppable">
+                    <div>
                         <input type="checkbox" class="browsercheck" th:value="${file.encPath}" name="dirs"
                                th:attr="aria-label=${file.title}"/>
                         <a class="fileTreeRef" href="#" th:title="${file.title}" th:rel="${file.encPath}" th:parent="${file.encParentPath}" onclick="return false;">
@@ -91,7 +91,7 @@
             </tr>
             <tr th:each="file : ${files}" th:if="${file.type == 'drive'}">
                 <td>
-                    <div class="droppable">
+                    <div>
                         <img th:src="${file.icon}" alt="" aria-hidden="true" />
                         <a class="fileCatRef" href="#" th:title="${file.title}" th:rel="${file.encPath}" onclick="return false;" th:text="${file.title}"></a>
                     </div>
@@ -113,7 +113,7 @@
             </tr>
             <tr th:each="file : ${files}" th:if="${file.type != 'folder' and file.type != 'link' and file.type != 'drive' and file.type != 'category'}" class="selectable">
                 <td class="checkbox">
-                    <div class="draggable">
+                    <div>
                         <div class="readable" th:text="${file.readable}"></div>
                         <div class="writeable" th:text="${file.writeable}"></div>
                         <input type="checkbox" class="browsercheck" th:value="${file.encPath}" name="dirs"
@@ -151,4 +151,3 @@
         </table>
     </form>
 </div>
-
