@@ -207,6 +207,10 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
             allIsOk = this.putFile(newDir, file.getBaseName(), file.getInputStream(), UploadActionType.ERROR);
         } else {
             String localDirParent = this.createFile(newDir, ref.getTitle(), ref.getType());
+            if(localDirParent == null) {
+                log.info("Can't move/copy '{}' into '{}' because target '{}' could not be created", refDir, newDir, ref.getTitle());
+                return false;
+            }
             String dirParent = JsTreeFile.ROOT_DRIVE.concat(getDriveCategory(newDir)).concat(JsTreeFile.DRIVE_PATH_SEPARATOR).concat(getDrive(newDir)).concat(JsTreeFile.DRIVE_PATH_SEPARATOR).concat(localDirParent);
             for(JsTreeFile child: this.getChildren(refDir)) {
                 allIsOk = allIsOk && this.interMoveCopyFile(dirParent, child.getPath(), copy);
@@ -228,8 +232,6 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
             boolean allIsOk = true;
             for(String fileToCopy: filesToCopy) {
                 boolean isOk = this.interMoveCopyFile(dir, fileToCopy, copy);
-                if(isOk && !copy)
-                    this.remove(fileToCopy);
                 allIsOk = allIsOk && isOk;
             }
             return allIsOk;
