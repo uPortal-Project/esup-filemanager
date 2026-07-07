@@ -19,6 +19,7 @@ class EsupFileManager {
         this.uploadStats = { total: 0, completed: 0, failed: 0 };
         this.isInDrive = false;
         this.pendingConflicts = []; // files awaiting overwrite confirmation
+        this.hasRestoredPath = false;
 
         // Configuration from global variables
         this.config = {
@@ -384,7 +385,7 @@ class EsupFileManager {
                 this.handleRename();
             }
 
-            // Enter: Open/download
+            // Enter: open folders; keep files selected in the details panel
             if (e.key === 'Enter') {
                 e.preventDefault();
                 this.handleEnterKey();
@@ -659,6 +660,11 @@ class EsupFileManager {
     handleTreeLoad(data) {
         console.log('Tree loaded:', data);
 
+        if (this.hasRestoredPath) {
+            console.log('Skipping tree auto-selection because a saved path is being restored:', this.currentPath);
+            return;
+        }
+
         // Auto-select first drive or category
         setTimeout(() => {
             const firstNode = this.fileTree.container.querySelector('.tree-node[data-type="drive"], .tree-node[data-type="category"]');
@@ -711,10 +717,10 @@ class EsupFileManager {
             } else {
                 clearTimeout(link.dataset.clickTimeout);
                 link.dataset.clicks = 0;
-                this.downloadFile(path);
+                this.selectFile(link, false);
             }
         } else {
-            this.downloadFile(path);
+            this.selectFile(link, false);
         }
     }
 
@@ -1251,7 +1257,7 @@ class EsupFileManager {
             console.warn('downloadFile blocked: path is a folder:', path);
             return;
         }
-        window.location.href = this.config.downloadFileURL + '?dir=' + encodeURIComponent(path);
+        this.triggerDownload(this.config.downloadFileURL + '?dir=' + encodeURIComponent(path));
     }
 
     downloadSelectedFiles() {
@@ -1272,8 +1278,8 @@ class EsupFileManager {
             this.downloadFile(selectedPaths[0]);
         } else {
             // Download as ZIP
-            window.location.href = this.config.downloadZipURL + '?dirs=' +
-                selectedPaths.map(p => encodeURIComponent(p)).join(',');
+            this.triggerDownload(this.config.downloadZipURL + '?dirs=' +
+                selectedPaths.map(p => encodeURIComponent(p)).join(','));
         }
     }
 
@@ -1285,8 +1291,21 @@ class EsupFileManager {
         }
 
         // Always download as ZIP
-        window.location.href = this.config.downloadZipURL + '?dirs=' +
-            selectedPaths.map(p => encodeURIComponent(p)).join(',');
+        this.triggerDownload(this.config.downloadZipURL + '?dirs=' +
+            selectedPaths.map(p => encodeURIComponent(p)).join(','));
+    }
+
+    triggerDownload(url) {
+        if (!url) return;
+
+        const iframe = document.createElement('iframe');
+        iframe.hidden = true;
+        iframe.setAttribute('aria-hidden', 'true');
+        iframe.tabIndex = -1;
+        iframe.src = url;
+        document.body.appendChild(iframe);
+
+        setTimeout(() => iframe.remove(), 60000);
     }
 
     // Utilities
@@ -1416,6 +1435,7 @@ class EsupFileManager {
         const savedPath = this.getSavedPath();
         if (savedPath) {
             this.currentPath = savedPath;
+            this.hasRestoredPath = savedPath !== this.config.defaultPath;
             console.log('✅ Path restored on startup:', savedPath);
         }
     }
@@ -1678,13 +1698,13 @@ class EsupFileManager {
         }
     }
 
-    selectFile(link) {
+    selectFile(link, toggle = true) {
         // Visually select file
         const tr = link.closest('tr');
         if (tr) {
             const checkbox = tr.querySelector('.browsercheck');
             if (checkbox) {
-                checkbox.checked = !checkbox.checked;
+                checkbox.checked = toggle ? !checkbox.checked : true;
                 this.handleFileSelection();
             }
         }
@@ -1702,7 +1722,7 @@ class EsupFileManager {
             if (isFolder) {
                 this.navigateToPath(path);
             } else {
-                this.downloadFile(path);
+                this.handleFileSelection();
             }
         }
     }

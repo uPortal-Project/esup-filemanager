@@ -24,6 +24,7 @@ export class FileTree {
     init() {
         this.container.innerHTML = '<ul class="file-tree-root"></ul>';
         this.rootList = this.container.querySelector('.file-tree-root');
+        this.rootList.setAttribute('role', 'tree');
         this.loadRootNodes();
     }
 
@@ -59,6 +60,7 @@ export class FileTree {
     createNodeElement(node, parentPath, autoExpand = false) {
         const li = document.createElement('li');
         li.className = 'tree-node';
+        li.setAttribute('role', 'none');
 
         // Store node information
         const encPath = node.encPath || node.metadata?.encPath || node.attr?.id;
@@ -100,20 +102,27 @@ export class FileTree {
         // Create node content
         const content = document.createElement('div');
         content.className = 'tree-node-content';
+        content.setAttribute('role', 'treeitem');
+        content.setAttribute('tabindex', '0');
+        content.setAttribute('aria-selected', 'false');
+        content.setAttribute('aria-label', nodeTitle);
 
         // Toggle for nodes with children
         if (hasChildren) {
             const toggle = document.createElement('span');
             toggle.className = 'tree-toggle';
+            toggle.setAttribute('aria-hidden', 'true');
             toggle.onclick = (e) => {
                 e.stopPropagation();
                 this.toggleNode(li);
             };
             content.appendChild(toggle);
+            content.setAttribute('aria-expanded', li.classList.contains('open') ? 'true' : 'false');
         } else {
             // Spacer for alignment
             const spacer = document.createElement('span');
             spacer.className = 'tree-toggle-spacer';
+            spacer.setAttribute('aria-hidden', 'true');
             content.appendChild(spacer);
         }
 
@@ -121,7 +130,8 @@ export class FileTree {
         const icon = document.createElement('img');
         icon.src = nodeIcon;
         icon.className = 'tree-node-icon';
-        icon.alt = 'icon';
+        icon.alt = '';
+        icon.setAttribute('aria-hidden', 'true');
         content.appendChild(icon);
 
         // Label
@@ -136,6 +146,7 @@ export class FileTree {
         if (hasChildren) {
             const childrenContainer = document.createElement('ul');
             childrenContainer.className = 'tree-node-children';
+            childrenContainer.setAttribute('role', 'group');
 
             // If we already have children in response, display them
             if (node.children && Array.isArray(node.children)) {
@@ -155,9 +166,34 @@ export class FileTree {
         // Event listener for selection (except for invisible root)
         if (nodeType !== 'root' || nodeTitle) {
             content.onclick = () => this.selectNode(li);
+            content.addEventListener('keydown', (e) => this.handleNodeKeydown(e, li));
         }
 
         return li;
+    }
+
+    handleNodeKeydown(event, nodeElement) {
+        switch (event.key) {
+            case 'Enter':
+            case ' ':
+                event.preventDefault();
+                this.selectNode(nodeElement);
+                break;
+            case 'ArrowRight':
+                if (nodeElement.classList.contains('has-children')) {
+                    event.preventDefault();
+                    this.openNode(nodeElement);
+                }
+                break;
+            case 'ArrowLeft':
+                if (nodeElement.classList.contains('open')) {
+                    event.preventDefault();
+                    this.closeNode(nodeElement);
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     async toggleNode(nodeElement) {
@@ -213,6 +249,7 @@ export class FileTree {
         nodeElement.classList.remove('closed');
         nodeElement.classList.add('open');
         childrenContainer.style.display = 'block';
+        this.updateExpandedState(nodeElement);
     }
 
     closeNode(nodeElement) {
@@ -220,14 +257,28 @@ export class FileTree {
         nodeElement.classList.add('closed');
         const childrenContainer = nodeElement.querySelector('.tree-node-children');
         if (childrenContainer) childrenContainer.style.display = 'none';
+        this.updateExpandedState(nodeElement);
     }
 
     selectNode(nodeElement) {
-        if (this.selectedNode) this.selectedNode.classList.remove('selected');
+        if (this.selectedNode) {
+            this.selectedNode.classList.remove('selected');
+            const previousContent = this.selectedNode.querySelector(':scope > .tree-node-content');
+            if (previousContent) previousContent.setAttribute('aria-selected', 'false');
+        }
         nodeElement.classList.add('selected');
+        const content = nodeElement.querySelector(':scope > .tree-node-content');
+        if (content) content.setAttribute('aria-selected', 'true');
         this.selectedNode = nodeElement;
         const path = nodeElement.dataset.encPath;
         this.options.onSelect(nodeElement, path);
+    }
+
+    updateExpandedState(nodeElement) {
+        const content = nodeElement.querySelector(':scope > .tree-node-content');
+        if (content && nodeElement.classList.contains('has-children')) {
+            content.setAttribute('aria-expanded', nodeElement.classList.contains('open') ? 'true' : 'false');
+        }
     }
 
     refresh(nodeElement = null) {
@@ -296,4 +347,3 @@ export class FileTree {
         }
     }
 }
-

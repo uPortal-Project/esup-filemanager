@@ -174,21 +174,7 @@
             if (data.success && data.url) {
                 logger.info('Got presigned URL, expires in', data.expiresIn, 'seconds');
 
-                // Start download via presigned URL
-                if (options.iframe) {
-                    // Download via iframe (to avoid leaving the page)
-                    const iframe = document.createElement('iframe');
-                    iframe.src = data.url;
-                    iframe.style.display = 'none';
-                    document.body.appendChild(iframe);
-
-                    setTimeout(() => {
-                        iframe.remove();
-                    }, 10000); // Clean up after 10 seconds
-                } else {
-                    // Direct download
-                    window.location.href = data.url;
-                }
+                triggerDownload(data.url);
 
                 if (options.onSuccess) {
                     options.onSuccess({
@@ -219,18 +205,7 @@
 
         const url = config.endpoints.downloadFile + '?dir=' + encodeURIComponent(dir);
 
-        if (options.iframe) {
-            const iframe = document.createElement('iframe');
-            iframe.src = url;
-            iframe.style.display = 'none';
-            document.body.appendChild(iframe);
-
-            setTimeout(() => {
-                iframe.remove();
-            }, 10000);
-        } else {
-            window.location.href = url;
-        }
+        triggerDownload(url);
 
         if (options.onSuccess) {
             options.onSuccess({
@@ -238,6 +213,24 @@
                 url: url
             });
         }
+    }
+
+    function triggerDownload(url) {
+        if (!url) return;
+
+        if (window.esupFileManager?.triggerDownload) {
+            window.esupFileManager.triggerDownload(url);
+            return;
+        }
+
+        const iframe = document.createElement('iframe');
+        iframe.hidden = true;
+        iframe.setAttribute('aria-hidden', 'true');
+        iframe.tabIndex = -1;
+        iframe.src = url;
+        document.body.appendChild(iframe);
+
+        setTimeout(() => iframe.remove(), 60000);
     }
 
     /**
@@ -519,4 +512,3 @@
     }
 
 })();
-

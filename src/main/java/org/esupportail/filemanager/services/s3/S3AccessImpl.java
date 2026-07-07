@@ -27,6 +27,7 @@ import org.esupportail.filemanager.exceptions.EsupStockFileExistException;
 import org.esupportail.filemanager.exceptions.EsupStockPermissionDeniedException;
 import org.esupportail.filemanager.services.FsAccess;
 import org.esupportail.filemanager.services.ResourceUtils;
+import org.springframework.http.ContentDisposition;
 import org.springframework.beans.factory.DisposableBean;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -43,6 +44,7 @@ import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignReques
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -984,6 +986,10 @@ public class S3AccessImpl extends FsAccess implements DisposableBean {
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket(bucketName)
                     .key(s3Key)
+                    .responseContentDisposition(ContentDisposition.builder("attachment")
+                            .filename(filename, StandardCharsets.UTF_8)
+                            .build()
+                            .toString())
                     .build();
 
             // Create presign request with expiration

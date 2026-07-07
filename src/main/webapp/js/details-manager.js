@@ -126,6 +126,32 @@
         }
     }
 
+    function initDownloadLinks() {
+        document.querySelectorAll('.btn-download').forEach(link => {
+            const newLink = link.cloneNode(true);
+            link.parentNode.replaceChild(newLink, link);
+
+            newLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+                if (!href) return;
+
+                if (window.esupFileManager?.triggerDownload) {
+                    window.esupFileManager.triggerDownload(href);
+                    return;
+                }
+
+                const iframe = document.createElement('iframe');
+                iframe.hidden = true;
+                iframe.setAttribute('aria-hidden', 'true');
+                iframe.tabIndex = -1;
+                iframe.src = href;
+                document.body.appendChild(iframe);
+                setTimeout(() => iframe.remove(), 60000);
+            });
+        });
+    }
+
     // ==================== Slideshow Manager ====================
 
     const SlideshowManager = {
@@ -532,6 +558,7 @@
         initImagePreviewClick();
         initImageModalClose();
         initImageDimensionDetection();
+        initDownloadLinks();
         SlideshowManager.init();
         AudioPlaylistManager.init();
         initZipDownload();
@@ -549,6 +576,5 @@
     window.reinitDetailsManager = init;
 
 })();
-
 
 

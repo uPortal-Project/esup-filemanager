@@ -19,34 +19,49 @@
 .tree-node-content {
     display: flex;
     align-items: center;
-    padding: 4px 8px;
+    padding: 8px 10px;
     cursor: pointer;
     user-select: none;
-    border-radius: 3px;
+    border-radius: 4px;
     transition: background-color 0.2s;
-    min-height: 28px;
+    min-height: 44px;
+    outline: none;
+    touch-action: manipulation;
 }
 
 .tree-node-content:hover {
     background-color: #f0f0f0;
 }
 
+.tree-node-content:focus-visible {
+    outline: 3px solid #0d6efd;
+    outline-offset: 2px;
+}
+
 .tree-node.selected > .tree-node-content {
     background-color: #d4e5f7;
     font-weight: bold;
+    box-shadow: inset 4px 0 0 #0d6efd;
+}
+
+.tree-node-content[aria-selected="true"] {
+    background-color: #d4e5f7;
+    font-weight: bold;
+    box-shadow: inset 4px 0 0 #0d6efd;
 }
 
 .tree-toggle {
     display: inline-block;
-    width: 16px;
-    height: 16px;
+    width: 24px;
+    height: 24px;
     margin-right: 4px;
     font-size: 12px;
-    line-height: 16px;
+    line-height: 24px;
     text-align: center;
     cursor: pointer;
     transition: transform 0.2s;
     color: #666;
+    flex-shrink: 0;
 }
 
 .tree-toggle:hover {
@@ -65,14 +80,15 @@
 
 .tree-toggle-spacer {
     display: inline-block;
-    width: 16px;
-    height: 16px;
+    width: 24px;
+    height: 24px;
     margin-right: 4px;
+    flex-shrink: 0;
 }
 
 .tree-node-icon {
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
     margin-right: 6px;
     vertical-align: middle;
     flex-shrink: 0;
@@ -88,7 +104,7 @@
 
 .tree-node-children {
     list-style: none;
-    padding-left: 20px;
+    padding-left: 16px;
     margin: 0;
 }
 
@@ -121,6 +137,25 @@
 
 .tree-node[data-type="folder"] > .tree-node-content {
     color: #555;
+}
+
+@media (min-width: 992px) {
+    .tree-node-content {
+        min-height: 32px;
+        padding: 5px 8px;
+    }
+
+    .tree-toggle,
+    .tree-toggle-spacer {
+        width: 18px;
+        height: 18px;
+        line-height: 18px;
+    }
+
+    .tree-node-icon {
+        width: 16px;
+        height: 16px;
+    }
 }
 
 .tree-error {
