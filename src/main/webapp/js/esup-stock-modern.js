@@ -21,22 +21,24 @@ class EsupFileManager {
         this.pendingConflicts = []; // files awaiting overwrite confirmation
         this.hasRestoredPath = false;
 
-        // Configuration from global variables
+        const appConfig = window.esupFileManagerConfig || {};
+
+        // Configuration from server-rendered data attributes
         this.config = {
-            defaultPath: window.defaultPath || './',
-            htmlFileTreeURL: window.htmlFileTreeURL || './htmlFileTree',
-            fileChildrenURL: window.fileChildrenURL || './fileChildren',
-            uploadFileURL: window.uploadFileURL || './uploadFile',
-            prepareCopyFilesURL: window.prepareCopyFilesURL || './prepareCopyFiles',
-            prepareCutFilesURL: window.prepareCutFilesURL || './prepareCutFiles',
-            pastFilesURL: window.pastFilesURL || './pastFiles',
-            detailsAreaURL: window.detailsAreaURL || './detailsArea',
-            createFileURL: window.createFileURL || './createFile',
-            renameFileURL: window.renameFileURL || './renameFile',
-            downloadFileURL: window.downloadFileURL || './downloadFile',
-            downloadZipURL: window.downloadZipURL || './downloadZip',
-            removeFilesURL: window.removeFilesURL || './removeFiles',
-            useDoubleClick: window.useDoubleClick === 'true'
+            defaultPath: appConfig.defaultPath || './',
+            htmlFileTreeURL: appConfig.htmlFileTreeURL || './htmlFileTree',
+            fileChildrenURL: appConfig.fileChildrenURL || './fileChildren',
+            uploadFileURL: appConfig.uploadFileURL || './uploadFile',
+            prepareCopyFilesURL: appConfig.prepareCopyFilesURL || './prepareCopyFiles',
+            prepareCutFilesURL: appConfig.prepareCutFilesURL || './prepareCutFiles',
+            pastFilesURL: appConfig.pastFilesURL || './pastFiles',
+            detailsAreaURL: appConfig.detailsAreaURL || './detailsArea',
+            createFileURL: appConfig.createFileURL || './createFile',
+            renameFileURL: appConfig.renameFileURL || './renameFile',
+            downloadFileURL: appConfig.downloadFileURL || './downloadFile',
+            downloadZipURL: appConfig.downloadZipURL || './downloadZip',
+            removeFilesURL: appConfig.removeFilesURL || './removeFiles',
+            useDoubleClick: appConfig.useDoubleClick === true
         };
 
         // Restore path from URL or localStorage
@@ -333,6 +335,12 @@ class EsupFileManager {
         browserArea.addEventListener('change', (e) => {
             if (e.target.classList.contains('browsercheck')) {
                 this.handleFileSelection();
+            }
+        });
+
+        browserArea.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.target.matches('.renameInput, #newFileOrFolderInput')) {
+                e.preventDefault();
             }
         });
     }

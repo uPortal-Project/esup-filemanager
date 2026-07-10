@@ -27,102 +27,79 @@
     <!-- WCAG 2.4.1 skip link -->
     <a href="#rightPanel" class="visually-hidden-focusable" th:text="#{skip.to.main}">Skip to main content</a>
 
-    <script th:inline="javascript">
-        /*<![CDATA[*/
-        // Global configuration
-        var useDoubleClick = /*[[${useDoubleClick}]]*/ '';
-        var defaultPath = /*[[${defaultPath}]]*/ '';
-
-        // Endpoint URLs
-        var htmlFileTreeURL = './htmlFileTree';
-        var uploadFileURL ='./uploadFile';
-        var prepareCopyFilesURL = './prepareCopyFiles';
-        var prepareCutFilesURL ='./prepareCutFiles';
-        var pastFilesURL = './pastFiles';
-        var fileChildrenURL = './fileChildren';
-        var detailsAreaURL = './detailsArea';
-        var renameFileURL = './renameFile';
-        var downloadFileURL = './downloadFile';
-        var downloadZipURL = './downloadZip';
-        var removeFilesURL = './removeFiles';
-
-        // I18N messages exposed to JavaScript
-        window.i18n = {
-            // Upload - individual file
-            uploadFileSuccess       : /*[[#{info.uploadFileSuccess}]]*/ 'File "{0}" uploaded successfully.',
-            uploadFileFailed        : /*[[#{info.uploadFileFailed}]]*/ 'Error uploading file "{0}".',
-            // Upload - overall summary
-            uploadFilesSuccess      : /*[[#{info.uploadFilesSuccess}]]*/ '{0} file(s) uploaded successfully.',
-            uploadFilesPartial      : /*[[#{info.uploadFilesPartial}]]*/ '{0} file(s) uploaded, {1} error(s).',
-            // Upload - progress panel labels
-            uploadingProgress       : /*[[#{info.uploadingProgress}]]*/ 'Uploading ({0}/{1})',
-            uploadProgress          : /*[[#{info.uploadProgress}]]*/ '{0} / {1} file(s)',
-            uploadErrors            : /*[[#{info.uploadErrors}]]*/ '{0} error(s)',
-            // Copy
-            copyOk                  : /*[[#{ajax.copy.ok}]]*/ '',
-            copyFailed              : /*[[#{error.copyFailed}]]*/ 'Copy failed.',
-            itemsCopied             : /*[[#{info.itemsCopied}]]*/ '{0} item(s) copied.',
-            // Cut
-            cutOk                   : /*[[#{ajax.cut.ok}]]*/ '',
-            cutFailed               : /*[[#{error.cutFailed}]]*/ 'Cut failed.',
-            itemsCut                : /*[[#{info.itemsCut}]]*/ '{0} item(s) cut.',
-            // Paste
-            pasteOk                 : /*[[#{ajax.paste.ok}]]*/ '',
-            pasteFailed             : /*[[#{ajax.paste.failed}]]*/ '',
-            clipboardEmpty          : /*[[#{error.clipboardEmpty}]]*/ 'Clipboard is empty.',
-            // Delete
-            removeOk                : /*[[#{ajax.remove.ok}]]*/ '',
-            removeFailed            : /*[[#{ajax.remove.failed}]]*/ '',
-            deleteConfirmTitle      : /*[[#{delete.confirm.title}]]*/ 'Delete confirmation',
-            deleteConfirmMessage    : /*[[#{delete.confirm.message}]]*/ 'These items will be deleted permanently. Are you sure?',
-            deleteConfirmOk         : /*[[#{delete.confirm.ok}]]*/ 'Ok',
-            deleteConfirmCancel     : /*[[#{delete.confirm.cancel}]]*/ 'Cancel',
-            deleteButton            : /*[[#{toolbar.delete.button}]]*/ 'Delete',
-            // Rename
-            renameTitle             : /*[[#{dialog.rename.title}]]*/ 'Rename',
-            renameButton            : /*[[#{dialog.rename.button}]]*/ 'Rename',
-            renameSuccess           : /*[[#{ajax.rename.success}]]*/ '',
-            renameFailed            : /*[[#{ajax.rename.failed}]]*/ '',
-            // Create folder
-            createSuccess           : /*[[#{ajax.fileOrFolderCreate.success}]]*/ '',
-            createFailed            : /*[[#{ajax.fileOrFolderCreate.failed}]]*/ '',
-            createButton            : /*[[#{toolbar.create.button}]]*/ 'Create',
-            newFolderPlaceholder    : /*[[#{dialog.newFolder.placeholder}]]*/ 'Folder name',
-            // Toolbar labels (context menus)
-            refresh                 : /*[[#{toolbar.refresh}]]*/ 'Refresh',
-            newFolder               : /*[[#{toolbar.create}]]*/ 'New Folder',
-            paste                   : /*[[#{toolbar.paste}]]*/ 'Paste',
-            download                : /*[[#{toolbar.download}]]*/ 'Download',
-            copy                    : /*[[#{toolbar.copy}]]*/ 'Copy',
-            cut                     : /*[[#{toolbar.cut}]]*/ 'Cut',
-            rename                  : /*[[#{toolbar.rename}]]*/ 'Rename',
-            delete_                 : /*[[#{toolbar.delete}]]*/ 'Delete',
-            // Authentication
-            authOk                  : /*[[#{auth.ok}]]*/ '',
-            authBad                 : /*[[#{auth.bad}]]*/ '',
-            authMissingCredentials  : /*[[#{auth.missingCredentials}]]*/ 'Please enter your username and password.',
-            authError               : /*[[#{auth.error}]]*/ 'Authentication error. Please try again.',
-            // General errors
-            noFileSelected          : /*[[#{error.noFileSelected}]]*/ 'No file selected.',
-            directoryLoadingError   : /*[[#{error.directoryLoading}]]*/ 'Error loading directory.',
-            refreshFailed           : /*[[#{error.refreshFailed}]]*/ 'Error refreshing view.',
-            sortFailed              : /*[[#{error.sortFailed}]]*/ 'Error sorting files.',
-            selectOneItem           : /*[[#{error.selectOneItem}]]*/ 'Please select exactly one item.',
-            cannotFindFile          : /*[[#{error.cannotFindFile}]]*/ 'Cannot find selected file.',
-            cannotRetrieveFileName  : /*[[#{error.cannotRetrieveFileName}]]*/ 'Cannot retrieve file name.',
-            enterFolderName         : /*[[#{error.enterFolderName}]]*/ 'Please enter a folder name.',
-            enterNewName            : /*[[#{error.enterNewName}]]*/ 'Please enter a new name.',
-            // Info messages
-            viewRefreshed           : /*[[#{info.viewRefreshed}]]*/ 'View refreshed.',
-            nameUnchanged           : /*[[#{info.nameUnchanged}]]*/ 'Name has not changed.',
-            // Upload conflict dialog
-            uploadConflictTitle     : /*[[#{dialog.upload.conflict.title}]]*/ 'File(s) already exist',
-            uploadConflictMessage   : /*[[#{dialog.upload.conflict.message}]]*/ 'The following file(s) already exist on the server. Do you want to overwrite them?',
-            uploadConflictOverwrite : /*[[#{dialog.upload.conflict.overwrite}]]*/ 'Overwrite',
-            uploadConflictCancel    : /*[[#{dialog.upload.conflict.cancel}]]*/ 'Cancel'
-        };
-        /*]]>*/
-    </script>
+    <div id="esup-app-config" hidden
+         data-html-file-tree-url="./htmlFileTree"
+         data-upload-file-url="./uploadFile"
+         data-prepare-copy-files-url="./prepareCopyFiles"
+         data-prepare-cut-files-url="./prepareCutFiles"
+         data-past-files-url="./pastFiles"
+         data-file-children-url="./fileChildren"
+         data-details-area-url="./detailsArea"
+         data-rename-file-url="./renameFile"
+         data-download-file-url="./downloadFile"
+         data-download-zip-url="./downloadZip"
+         data-remove-files-url="./removeFiles"
+         th:attr="data-use-double-click=${useDoubleClick},
+                  data-default-path=${defaultPath},
+                  data-i18n-upload-file-success=#{info.uploadFileSuccess},
+                  data-i18n-upload-file-failed=#{info.uploadFileFailed},
+                  data-i18n-upload-files-success=#{info.uploadFilesSuccess},
+                  data-i18n-upload-files-partial=#{info.uploadFilesPartial},
+                  data-i18n-uploading-progress=#{info.uploadingProgress},
+                  data-i18n-upload-progress=#{info.uploadProgress},
+                  data-i18n-upload-errors=#{info.uploadErrors},
+                  data-i18n-copy-ok=#{ajax.copy.ok},
+                  data-i18n-copy-failed=#{error.copyFailed},
+                  data-i18n-items-copied=#{info.itemsCopied},
+                  data-i18n-cut-ok=#{ajax.cut.ok},
+                  data-i18n-cut-failed=#{error.cutFailed},
+                  data-i18n-items-cut=#{info.itemsCut},
+                  data-i18n-paste-ok=#{ajax.paste.ok},
+                  data-i18n-paste-failed=#{ajax.paste.failed},
+                  data-i18n-clipboard-empty=#{error.clipboardEmpty},
+                  data-i18n-remove-ok=#{ajax.remove.ok},
+                  data-i18n-remove-failed=#{ajax.remove.failed},
+                  data-i18n-delete-confirm-title=#{delete.confirm.title},
+                  data-i18n-delete-confirm-message=#{delete.confirm.message},
+                  data-i18n-delete-confirm-ok=#{delete.confirm.ok},
+                  data-i18n-delete-confirm-cancel=#{delete.confirm.cancel},
+                  data-i18n-delete-button=#{toolbar.delete.button},
+                  data-i18n-rename-title=#{dialog.rename.title},
+                  data-i18n-rename-button=#{dialog.rename.button},
+                  data-i18n-rename-success=#{ajax.rename.success},
+                  data-i18n-rename-failed=#{ajax.rename.failed},
+                  data-i18n-create-success=#{ajax.fileOrFolderCreate.success},
+                  data-i18n-create-failed=#{ajax.fileOrFolderCreate.failed},
+                  data-i18n-create-button=#{toolbar.create.button},
+                  data-i18n-new-folder-placeholder=#{dialog.newFolder.placeholder},
+                  data-i18n-refresh=#{toolbar.refresh},
+                  data-i18n-new-folder=#{toolbar.create},
+                  data-i18n-paste=#{toolbar.paste},
+                  data-i18n-download=#{toolbar.download},
+                  data-i18n-copy=#{toolbar.copy},
+                  data-i18n-cut=#{toolbar.cut},
+                  data-i18n-rename=#{toolbar.rename},
+                  data-i18n-delete=#{toolbar.delete},
+                  data-i18n-auth-ok=#{auth.ok},
+                  data-i18n-auth-bad=#{auth.bad},
+                  data-i18n-auth-missing-credentials=#{auth.missingCredentials},
+                  data-i18n-auth-error=#{auth.error},
+                  data-i18n-no-file-selected=#{error.noFileSelected},
+                  data-i18n-directory-loading-error=#{error.directoryLoading},
+                  data-i18n-refresh-failed=#{error.refreshFailed},
+                  data-i18n-sort-failed=#{error.sortFailed},
+                  data-i18n-select-one-item=#{error.selectOneItem},
+                  data-i18n-cannot-find-file=#{error.cannotFindFile},
+                  data-i18n-cannot-retrieve-file-name=#{error.cannotRetrieveFileName},
+                  data-i18n-enter-folder-name=#{error.enterFolderName},
+                  data-i18n-enter-new-name=#{error.enterNewName},
+                  data-i18n-view-refreshed=#{info.viewRefreshed},
+                  data-i18n-name-unchanged=#{info.nameUnchanged},
+                  data-i18n-upload-conflict-title=#{dialog.upload.conflict.title},
+                  data-i18n-upload-conflict-message=#{dialog.upload.conflict.message},
+                  data-i18n-upload-conflict-overwrite=#{dialog.upload.conflict.overwrite},
+                  data-i18n-upload-conflict-cancel=#{dialog.upload.conflict.cancel}">
+    </div>
 
     <!-- JS - Bootstrap first -->
     <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.js}"></script>
@@ -139,22 +116,8 @@
     <!-- Details Manager - Modern details block management -->
     <script type="text/javascript" th:src="@{/js/details-manager.js}"></script>
 
-    <!-- Import map: maps canonical module paths to their cache-busted (content-hashed) URLs.
-         This is required because ES6 `import` statements inside JS files are static strings
-         that bypass Thymeleaf/Spring resource versioning.
-         Keys are the absolute paths that the browser resolves each specifier to (e.g. from
-         /js/esup-stock-modern-<hash>.js the specifier "./ajax-manager.js" resolves to
-         /js/ajax-manager.js). Thymeleaf @{} replaces each value with the versioned URL. -->
-    <script type="importmap" th:inline="javascript">
-    {
-      "imports": {
-        "./js/ajax-manager.js":        [[@{/js/ajax-manager.js}]],
-        "./js/file-tree.js":           [[@{/js/file-tree.js}]],
-        "./js/ui-components.js":       [[@{/js/ui-components.js}]],
-        "./js/file-upload-manager.js": [[@{/js/file-upload-manager.js}]]
-      }
-    }
-    </script>
+    <!-- Application configuration exposed through data-* attributes -->
+    <script type="text/javascript" th:src="@{/js/esup-app-config.js}"></script>
 
     <!-- ES6 Modules - Modern application -->
     <script type="module" th:src="@{/js/esup-stock-modern.js}"></script>

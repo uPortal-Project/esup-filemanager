@@ -69,19 +69,19 @@
                 <!-- Language selector - Mobile Menu -->
                 <div class="list-group-item d-flex align-items-center gap-2" role="group" th:attr="aria-label=#{aria.lang.select}">
                     <i class="bi bi-translate" aria-hidden="true"></i>
-                    <button type="button" onclick="switchLanguage('fr')"
+                    <button type="button" class="js-language-switch" data-lang="fr"
                        th:classappend="${#locale.language == 'fr'} ? 'btn btn-sm btn-primary p-1 lh-1' : 'btn btn-sm btn-outline-secondary p-1 lh-1'"
                        th:attr="aria-pressed=${#locale.language == 'fr'}"
                        aria-label="Français"><span class="fi fi-fr" aria-hidden="true"></span></button>
-                    <button type="button" onclick="switchLanguage('en')"
+                    <button type="button" class="js-language-switch" data-lang="en"
                        th:classappend="${#locale.language == 'en'} ? 'btn btn-sm btn-primary p-1 lh-1' : 'btn btn-sm btn-outline-secondary p-1 lh-1'"
                        th:attr="aria-pressed=${#locale.language == 'en'}"
                        aria-label="English"><span class="fi fi-gb" aria-hidden="true"></span></button>
-                    <button type="button" onclick="switchLanguage('de')"
+                    <button type="button" class="js-language-switch" data-lang="de"
                        th:classappend="${#locale.language == 'de'} ? 'btn btn-sm btn-primary p-1 lh-1' : 'btn btn-sm btn-outline-secondary p-1 lh-1'"
                        th:attr="aria-pressed=${#locale.language == 'de'}"
                        aria-label="Deutsch"><span class="fi fi-de" aria-hidden="true"></span></button>
-                    <button type="button" onclick="switchLanguage('es')"
+                    <button type="button" class="js-language-switch" data-lang="es"
                        th:classappend="${#locale.language == 'es'} ? 'btn btn-sm btn-primary p-1 lh-1' : 'btn btn-sm btn-outline-secondary p-1 lh-1'"
                        th:attr="aria-pressed=${#locale.language == 'es'}"
                        aria-label="Español"><span class="fi fi-es" aria-hidden="true"></span></button>
@@ -185,19 +185,19 @@
         <div class="ms-auto mb-2 d-flex align-items-center gap-2">
             <!-- Language selector - Desktop Toolbar -->
             <div class="d-flex align-items-center gap-1 me-2" id="lang-switcher-toolbar" role="group" th:attr="aria-label=#{aria.lang.select}">
-                <button type="button" onclick="switchLanguage('fr')"
+                <button type="button" class="js-language-switch" data-lang="fr"
                    th:classappend="${#locale.language == 'fr'} ? 'btn btn-sm btn-primary p-1 lh-1' : 'btn btn-sm btn-outline-secondary p-1 lh-1'"
                    th:attr="aria-pressed=${#locale.language == 'fr'}"
                    aria-label="Français"><span class="fi fi-fr" aria-hidden="true"></span></button>
-                <button type="button" onclick="switchLanguage('en')"
+                <button type="button" class="js-language-switch" data-lang="en"
                    th:classappend="${#locale.language == 'en'} ? 'btn btn-sm btn-primary p-1 lh-1' : 'btn btn-sm btn-outline-secondary p-1 lh-1'"
                    th:attr="aria-pressed=${#locale.language == 'en'}"
                    aria-label="English"><span class="fi fi-gb" aria-hidden="true"></span></button>
-                <button type="button" onclick="switchLanguage('de')"
+                <button type="button" class="js-language-switch" data-lang="de"
                    th:classappend="${#locale.language == 'de'} ? 'btn btn-sm btn-primary p-1 lh-1' : 'btn btn-sm btn-outline-secondary p-1 lh-1'"
                    th:attr="aria-pressed=${#locale.language == 'de'}"
                    aria-label="Deutsch"><span class="fi fi-de" aria-hidden="true"></span></button>
-                <button type="button" onclick="switchLanguage('es')"
+                <button type="button" class="js-language-switch" data-lang="es"
                    th:classappend="${#locale.language == 'es'} ? 'btn btn-sm btn-primary p-1 lh-1' : 'btn btn-sm btn-outline-secondary p-1 lh-1'"
                    th:attr="aria-pressed=${#locale.language == 'es'}"
                    aria-label="Español"><span class="fi fi-es" aria-hidden="true"></span></button>
@@ -299,14 +299,4 @@
         </div>
     </div>
 
-
-    <!-- Language switch function: appends ?lang=xx to the current URL -->
-    <script>
-        function switchLanguage(lang) {
-            var url = new URL(window.location.href);
-            url.searchParams.set('lang', lang);
-            window.location.replace(url.toString());
-        }
-    </script>
 </div>
-

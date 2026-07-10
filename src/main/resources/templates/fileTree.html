@@ -55,14 +55,13 @@
                     <div>
                         <input type="checkbox" class="browsercheck" th:value="${file.encPath}" name="dirs"
                                th:attr="aria-label=${file.title}"/>
-                        <a class="fileTreeRef" href="#" th:title="${file.title}" th:rel="${file.encPath}" th:parent="${file.encParentPath}" onclick="return false;">
+                        <a class="fileTreeRef" href="#" th:title="${file.title}" th:rel="${file.encPath}" th:parent="${file.encParentPath}">
                             <img th:src="${file.icon}" alt="" aria-hidden="true" />
                             <span th:text="${file.title}"></span>
                         </a>
                         <span class="esupHide renameSpan">
                     <input class="renameInput" type="text" th:value="${file.title}"
-                           th:attr="aria-label=#{dialog.rename.title}"
-                           onKeyPress="return disableEnterKey(event)" />
+                           th:attr="aria-label=#{dialog.rename.title}" />
                     <button type="button" class="renameSubmit" th:text="#{toolbar.rename}"></button>
                   </span>
                     </div>
@@ -79,7 +78,7 @@
                     <div class="readable" th:text="${file.readable}"></div>
                     <div class="writeable" th:text="${file.writeable}"></div>
                     <div>
-                        <a class="fileTreeRef" href="#" th:title="${file.title}" th:rel="${file.encPath}" onclick="return false;">
+                        <a class="fileTreeRef" href="#" th:title="${file.title}" th:rel="${file.encPath}">
                             <img th:src="${file.icon}" alt="" aria-hidden="true" />
                             <span th:text="${file.title}"></span>
                         </a>
@@ -93,7 +92,7 @@
                 <td>
                     <div>
                         <img th:src="${file.icon}" alt="" aria-hidden="true" />
-                        <a class="fileCatRef" href="#" th:title="${file.title}" th:rel="${file.encPath}" onclick="return false;" th:text="${file.title}"></a>
+                        <a class="fileCatRef" href="#" th:title="${file.title}" th:rel="${file.encPath}" th:text="${file.title}"></a>
                     </div>
                 </td>
                 <td></td>
@@ -104,7 +103,7 @@
                 <td>
                     <div>
                         <img th:src="${file.icon}" alt="" aria-hidden="true" />
-                        <a class="fileCatRef" href="#" th:title="${file.title}" th:rel="${file.encPath}" onclick="return false;" th:text="${file.title}"></a>
+                        <a class="fileCatRef" href="#" th:title="${file.title}" th:rel="${file.encPath}" th:text="${file.title}"></a>
                     </div>
                 </td>
                 <td></td>
@@ -118,14 +117,13 @@
                         <div class="writeable" th:text="${file.writeable}"></div>
                         <input type="checkbox" class="browsercheck" th:value="${file.encPath}" name="dirs"
                                th:attr="aria-label=${file.title}"/>
-                        <a class="file" href="#" th:title="${file.title}" th:rel="${file.encPath}" onclick="return false;">
+                        <a class="file" href="#" th:title="${file.title}" th:rel="${file.encPath}">
                             <img th:src="${file.icon}" alt="" aria-hidden="true" />
                             <span th:text="${file.title}"></span>
                         </a>
                         <span class="esupHide renameSpan">
                     <input class="renameInput" type="text" th:value="${file.title}"
-                           th:attr="aria-label=#{dialog.rename.title}"
-                           onKeyPress="return disableEnterKey(event)" />
+                           th:attr="aria-label=#{dialog.rename.title}" />
                     <button type="button" class="renameSubmit" th:text="#{toolbar.rename}"></button>
                   </span>
                     </div>
@@ -142,8 +140,7 @@
                     <input type="hidden" id="folderOrFileChoice" value="folder" />
                     <input class="folder" id="newFileOrFolderInput" type="text"
                            th:attr="aria-label=#{toolbar.create.title}"
-                           th:placeholder="#{dialog.newFolder.placeholder}"
-                           onKeyPress="return disableEnterKey(event)" />
+                           th:placeholder="#{dialog.newFolder.placeholder}" />
                     <button type="button" id="newFileOrFolderSubmit">OK</button>
                 </td>
             </tr>

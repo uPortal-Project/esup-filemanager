@@ -42,7 +42,7 @@
         <a class="btn-download" th:href="@{/downloadFile(dir=${file.encPath})}"
            th:text="#{details.download}"
            th:attr="aria-label=#{details.download} + ' ' + ${file.title}">Télécharger</a>
-        <button class="btn-view-fullsize" onclick="viewImageFullsize(this)" th:text="#{details.viewimage}">Voir en grand</button>
+        <button type="button" class="btn-view-fullsize" th:text="#{details.viewimage}">Voir en grand</button>
     </div>
 </div>
 

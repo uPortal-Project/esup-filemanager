@@ -69,6 +69,13 @@
                 }
             });
         }
+
+        const fullSizeButton = document.querySelector('.btn-view-fullsize');
+        if (fullSizeButton) {
+            fullSizeButton.addEventListener('click', function() {
+                window.viewImageFullsize(this);
+            });
+        }
     }
 
     /**
@@ -576,5 +583,4 @@
     window.reinitDetailsManager = init;
 
 })();
-
 
