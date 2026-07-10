@@ -29,10 +29,15 @@ public class JavaPerfController {
 		long totalMemoryInMB = runtime.totalMemory() / 1024 / 1024;
 		long freeMemoryInMB = runtime.freeMemory() / 1024 / 1024;
 		long usedMemoryInMB = totalMemoryInMB - freeMemoryInMB;
+        double memoryUsagePercent = maxMemoryInMB > 0 ? usedMemoryInMB * 100.0 / maxMemoryInMB : 0;
+        int memoryUsageClassPercent = (int) Math.round(memoryUsagePercent / 5.0) * 5;
+        memoryUsageClassPercent = Math.max(0, Math.min(100, memoryUsageClassPercent));
 		uiModel.addAttribute("maxMemoryInMB", maxMemoryInMB);
 		uiModel.addAttribute("totalMemoryInMB", totalMemoryInMB);
 		uiModel.addAttribute("freeMemoryInMB", freeMemoryInMB);
 		uiModel.addAttribute("usedMemoryInMB", usedMemoryInMB);
+        uiModel.addAttribute("memoryUsagePercent", memoryUsagePercent);
+        uiModel.addAttribute("memoryUsageClass", "javaperf-progress-pct-" + memoryUsageClassPercent);
 
 
 		ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();

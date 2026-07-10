@@ -1,0 +1,94 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.stack-trace {
+    font-family: monospace;
+    font-size: 0.75rem;
+    max-height: 200px;
+    overflow-y: auto;
+    background: #f1f3f5;
+    border-radius: 4px;
+    padding: 6px;
+    margin: 0;
+}
+
+.thread-table th {
+    white-space: nowrap;
+}
+
+.badge-state-RUNNABLE {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.badge-state-BLOCKED {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.badge-state-WAITING,
+.badge-state-TIMED_WAITING {
+    background-color: #0dcaf0;
+    color: #000;
+}
+
+.badge-state-NEW {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.badge-state-TERMINATED {
+    background-color: #198754;
+    color: #fff;
+}
+
+.row-current {
+    background-color: #d1e7dd !important;
+}
+
+.row-RUNNABLE {
+    background-color: #fff3cd !important;
+}
+
+.row-BLOCKED {
+    background-color: #f8d7da !important;
+}
+
+.javaperf-memory-progress {
+    height: 18px;
+}
+
+.javaperf-storage-subtitle {
+    font-size: 0.75rem;
+}
+
+.javaperf-gauge-progress {
+    transition: stroke-dashoffset 0.5s ease;
+}
+
+.javaperf-storage-max {
+    font-size: 0.72rem;
+}
+
+.javaperf-progress-pct-0 { width: 0%; }
+.javaperf-progress-pct-5 { width: 5%; }
+.javaperf-progress-pct-10 { width: 10%; }
+.javaperf-progress-pct-15 { width: 15%; }
+.javaperf-progress-pct-20 { width: 20%; }
+.javaperf-progress-pct-25 { width: 25%; }
+.javaperf-progress-pct-30 { width: 30%; }
+.javaperf-progress-pct-35 { width: 35%; }
+.javaperf-progress-pct-40 { width: 40%; }
+.javaperf-progress-pct-45 { width: 45%; }
+.javaperf-progress-pct-50 { width: 50%; }
+.javaperf-progress-pct-55 { width: 55%; }
+.javaperf-progress-pct-60 { width: 60%; }
+.javaperf-progress-pct-65 { width: 65%; }
+.javaperf-progress-pct-70 { width: 70%; }
+.javaperf-progress-pct-75 { width: 75%; }
+.javaperf-progress-pct-80 { width: 80%; }
+.javaperf-progress-pct-85 { width: 85%; }
+.javaperf-progress-pct-90 { width: 90%; }
+.javaperf-progress-pct-95 { width: 95%; }
+.javaperf-progress-pct-100 { width: 100%; }

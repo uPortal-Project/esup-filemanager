@@ -12,21 +12,7 @@
     <!-- CSS Custom -->
     <link rel="stylesheet" th:href="@{/css/esup-stock.css}" type="text/css">
     <link rel="stylesheet" th:href="@{/css/google-open-sans.css}" type="text/css">
-
-    <style>
-        body { background-color: #f8f9fa; }
-        .stack-trace { font-family: monospace; font-size: 0.75rem; max-height: 200px; overflow-y: auto; background: #f1f3f5; border-radius: 4px; padding: 6px; margin: 0; }
-        .thread-table th { white-space: nowrap; }
-        .badge-state-RUNNABLE   { background-color: #ffc107; color: #000; }
-        .badge-state-BLOCKED    { background-color: #dc3545; color: #fff; }
-        .badge-state-WAITING,
-        .badge-state-TIMED_WAITING { background-color: #0dcaf0; color: #000; }
-        .badge-state-NEW        { background-color: #6c757d; color: #fff; }
-        .badge-state-TERMINATED { background-color: #198754; color: #fff; }
-        .row-current { background-color: #d1e7dd !important; }
-        .row-RUNNABLE  { background-color: #fff3cd !important; }
-        .row-BLOCKED   { background-color: #f8d7da !important; }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/javaperf.css}" type="text/css">
 </head>
 <body class="d-flex flex-column min-vh-100">
 
@@ -109,15 +95,15 @@
                 <span th:text="#{javaperf.memory.usage}">Memory usage</span>
                 <span th:text="${usedMemoryInMB} + ' / ' + ${maxMemoryInMB} + ' MB'"></span>
             </div>
-            <div class="progress" style="height: 18px;">
+            <div class="progress javaperf-memory-progress">
                 <div class="progress-bar bg-warning"
                      role="progressbar"
-                     th:style="'width: ' + ${#numbers.formatDecimal(usedMemoryInMB * 100.0 / maxMemoryInMB, 1, 1)} + '%'"
-                     th:attr="aria-valuenow=${#numbers.formatDecimal(usedMemoryInMB * 100.0 / maxMemoryInMB, 1, 1)},
+                     th:classappend="${memoryUsageClass}"
+                     th:attr="aria-valuenow=${#numbers.formatDecimal(memoryUsagePercent, 1, 1)},
                               aria-valuemin=0,
                               aria-valuemax=100,
                               aria-label=#{javaperf.memory.usage}"
-                     th:text="${#numbers.formatDecimal(usedMemoryInMB * 100.0 / maxMemoryInMB, 1, 1)} + '%'">
+                     th:text="${#numbers.formatDecimal(memoryUsagePercent, 1, 1)} + '%'">
                 </div>
             </div>
         </div>
@@ -127,7 +113,7 @@
     <div class="mb-4">
         <h2 class="text-muted mb-3 h5">
             <i class="bi bi-hdd-network me-1" aria-hidden="true"></i><span th:text="#{javaperf.storage.title}">Storage server connections</span>
-            <small class="ms-2 text-muted fw-normal" style="font-size:.75rem;"
+            <small class="ms-2 text-muted fw-normal javaperf-storage-subtitle"
                    th:text="#{javaperf.storage.subtitle}">(active sessions per drive since startup)</small>
         </h2>
 
@@ -158,7 +144,7 @@
                                 stroke-linecap="round"
                                 stroke-dasharray="238.76"
                                 transform="rotate(-90 50 50)"
-                                style="transition: stroke-dashoffset .5s ease;"/>
+                                class="javaperf-gauge-progress"/>
                          <!-- Number of connections (center value) -->
                         <text x="50" y="46"
                               text-anchor="middle" dominant-baseline="central"
@@ -181,7 +167,7 @@
                         <span class="badge mt-1"
                               th:classappend="'bg-' + ${stat.statusBadgeClass}"
                               th:text="${stat.type}">type</span>
-                        <div class="text-muted mt-1" style="font-size:0.72rem;">
+                        <div class="text-muted mt-1 javaperf-storage-max">
                             <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
                             <span th:text="#{javaperf.storage.max_connections}">Max&nbsp;:</span>
                             <strong th:text="${stat.maxConnections}">0</strong>
@@ -296,4 +282,3 @@
 <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.js}"></script>
 </body>
 </html>
-
