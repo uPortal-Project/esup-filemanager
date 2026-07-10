@@ -1116,6 +1116,37 @@ body {
     border-top: 1px solid #dee2e6;
 }
 
+.upload-progress-thin {
+    height: 5px;
+}
+
+.upload-progress-tiny {
+    height: 3px;
+}
+
+.upload-progress-pct-0 { width: 0%; }
+.upload-progress-pct-1 { width: 1%; }
+.upload-progress-pct-5 { width: 5%; }
+.upload-progress-pct-10 { width: 10%; }
+.upload-progress-pct-15 { width: 15%; }
+.upload-progress-pct-20 { width: 20%; }
+.upload-progress-pct-25 { width: 25%; }
+.upload-progress-pct-30 { width: 30%; }
+.upload-progress-pct-35 { width: 35%; }
+.upload-progress-pct-40 { width: 40%; }
+.upload-progress-pct-45 { width: 45%; }
+.upload-progress-pct-50 { width: 50%; }
+.upload-progress-pct-55 { width: 55%; }
+.upload-progress-pct-60 { width: 60%; }
+.upload-progress-pct-65 { width: 65%; }
+.upload-progress-pct-70 { width: 70%; }
+.upload-progress-pct-75 { width: 75%; }
+.upload-progress-pct-80 { width: 80%; }
+.upload-progress-pct-85 { width: 85%; }
+.upload-progress-pct-90 { width: 90%; }
+.upload-progress-pct-95 { width: 95%; }
+.upload-progress-pct-100 { width: 100%; }
+
 /* ===============================================
    Authentication Form Styles
    =============================================== */

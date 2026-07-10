@@ -60,6 +60,12 @@
     border-bottom: 1px solid #e0e0e0;
 }
 
+.media-error {
+    color: #f44336;
+    padding: 10px;
+    text-align: center;
+}
+
 .audio-player,
 .video-player {
     width: 100%;
@@ -135,6 +141,10 @@
 }
 
 /* ==================== Image Modal ==================== */
+body.modal-open {
+    overflow: hidden;
+}
+
 .image-modal {
     position: fixed;
     z-index: 9999;

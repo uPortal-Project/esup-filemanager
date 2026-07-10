@@ -609,7 +609,7 @@ class EsupFileManager {
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = message;
             errorDiv.textContent = tempDiv.textContent || tempDiv.innerText || message;
-            errorDiv.style.display = 'block';
+            errorDiv.hidden = false;
         }
     }
 
@@ -618,7 +618,7 @@ class EsupFileManager {
      */
     hideAuthError(errorDiv) {
         if (errorDiv) {
-            errorDiv.style.display = 'none';
+            errorDiv.hidden = true;
         }
     }
 
@@ -1821,11 +1821,10 @@ class EsupFileManager {
                 <ul class="list-group list-group-flush" id="upload-file-list" aria-label="File list"></ul>
             </div>
             <div class="upload-panel-footer card-footer py-2 px-3">
-                <div class="progress mb-1" style="height:5px;" role="progressbar"
+                <div class="progress upload-progress-thin mb-1" role="progressbar"
                      aria-label="Overall progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                     <div id="upload-total-progress-bar"
-                         class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
-                         style="width:0%"></div>
+                         class="progress-bar progress-bar-striped progress-bar-animated bg-primary upload-progress-pct-0"></div>
                 </div>
                 <div class="text-muted small text-center" id="upload-total-label">0 / 0 file</div>
             </div>
@@ -1860,7 +1859,6 @@ class EsupFileManager {
     showUploadPanel() {
         const panel = this.getUploadPanel();
         panel.classList.remove('d-none', 'minimized');
-        panel.style.display = '';
     }
 
     /**
@@ -1891,11 +1889,13 @@ class EsupFileManager {
                       title="${this.escapeHtml(file.name)}">${this.escapeHtml(file.name)}</span>
                 <span class="upload-percent small text-muted">Pending…</span>
             </div>
-            <div class="progress" style="height:3px;">
+            <div class="progress upload-progress-tiny">
                 <div class="progress-bar bg-secondary" role="progressbar"
-                     style="width:0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
         `;
+        const bar = item.querySelector('.progress-bar');
+        if (bar) this.setProgressBarPercent(bar, 0);
         list.appendChild(item);
     }
 
@@ -1914,25 +1914,22 @@ class EsupFileManager {
         switch (state) {
             case 'uploading':
                 bar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-primary';
-                bar.style.width = '1%';
+                this.setProgressBarPercent(bar, 1);
                 if (pct) { pct.textContent = '0%'; pct.className = 'upload-percent small text-primary'; }
                 break;
             case 'complete':
                 bar.className = 'progress-bar bg-success';
-                bar.style.width = '100%';
-                bar.setAttribute('aria-valuenow', 100);
+                this.setProgressBarPercent(bar, 100);
                 if (pct) pct.innerHTML = '<i class="bi bi-check-circle-fill text-success"></i>';
                 break;
             case 'conflict':
                 bar.className = 'progress-bar bg-warning';
-                bar.style.width = '100%';
-                bar.setAttribute('aria-valuenow', 100);
+                this.setProgressBarPercent(bar, 100);
                 if (pct) pct.innerHTML = '<i class="bi bi-exclamation-circle-fill text-warning"></i>';
                 break;
             case 'error':
                 bar.className = 'progress-bar bg-danger';
-                bar.style.width = '100%';
-                bar.setAttribute('aria-valuenow', 100);
+                this.setProgressBarPercent(bar, 100);
                 if (pct) pct.innerHTML = '<i class="bi bi-x-circle-fill text-danger"></i>';
                 break;
         }
@@ -1975,8 +1972,7 @@ class EsupFileManager {
         const totalBar = panel.querySelector('#upload-total-progress-bar');
         if (totalBar && total > 0) {
             const percent = Math.round((done / total) * 100);
-            totalBar.style.width = `${percent}%`;
-            totalBar.setAttribute('aria-valuenow', percent);
+            this.setProgressBarPercent(totalBar, percent);
             if (done === total) {
                 totalBar.classList.remove('progress-bar-animated');
                 totalBar.classList.add(failed > 0 ? 'bg-warning' : 'bg-success');
@@ -1997,10 +1993,19 @@ class EsupFileManager {
         const pct = item.querySelector('.upload-percent');
 
         if (bar) {
-            bar.style.width = `${percent}%`;
-            bar.setAttribute('aria-valuenow', Math.round(percent));
+            this.setProgressBarPercent(bar, percent);
         }
         if (pct) pct.textContent = `${Math.round(percent)}%`;
+    }
+
+    setProgressBarPercent(bar, percent) {
+        const roundedPercent = Math.max(0, Math.min(100, Math.round(percent)));
+        const classPercent = roundedPercent <= 1 ? roundedPercent : Math.round(roundedPercent / 5) * 5;
+        Array.from(bar.classList)
+            .filter(className => className.startsWith('upload-progress-pct-'))
+            .forEach(className => bar.classList.remove(className));
+        bar.classList.add(`upload-progress-pct-${classPercent}`);
+        bar.setAttribute('aria-valuenow', roundedPercent);
     }
 
     /**

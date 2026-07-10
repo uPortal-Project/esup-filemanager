@@ -409,7 +409,7 @@
             container.appendChild(card);
         });
 
-        table.style.display = 'none';
+        table.classList.add('d-none');
         table.after(container);
         table.dataset.mobileConverted = 'true';
     }
@@ -422,7 +422,7 @@
         const mobileList = document.querySelector('.mobile-file-list');
 
         if (table && mobileList) {
-            table.style.display = '';
+            table.classList.remove('d-none');
             mobileList.remove();
             delete table.dataset.mobileConverted;
         }
@@ -464,9 +464,22 @@
 
         if (!desktopTree || !mobileTree) return;
 
+        const copyDesktopTree = function() {
+            const fragment = document.createDocumentFragment();
+            desktopTree.childNodes.forEach(node => {
+                const clone = node.cloneNode(true);
+                if (clone.nodeType === Node.ELEMENT_NODE) {
+                    clone.removeAttribute('style');
+                    clone.querySelectorAll('[style]').forEach(el => el.removeAttribute('style'));
+                }
+                fragment.appendChild(clone);
+            });
+            mobileTree.replaceChildren(fragment);
+        };
+
         // Watch for changes in the desktop tree
         const observer = new MutationObserver(function() {
-            mobileTree.innerHTML = desktopTree.innerHTML;
+            copyDesktopTree();
         });
 
         observer.observe(desktopTree, {
@@ -475,7 +488,7 @@
         });
 
         // Initial synchronization
-        mobileTree.innerHTML = desktopTree.innerHTML;
+        copyDesktopTree();
     }
 
 

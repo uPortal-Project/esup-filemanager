@@ -20,7 +20,7 @@
         <button id="detail-view-images" class="btn-action" th:text="#{details.images.title}">Voir les images</button>
 
         <!-- Slideshow data -->
-        <div id="slideshowData" style="display: none;">
+        <div id="slideshowData" hidden>
             <div th:each="path : ${image_paths}"
                  class="slideshow-image-data"
                  th:attr="data-src=@{/fetchImage(dir=${path})},data-title=${path}"></div>
@@ -65,7 +65,7 @@
         </div>
 
         <!-- Hidden data for JS -->
-        <div id="playlistData" style="display: none;">
+        <div id="playlistData" hidden>
             <div th:each="track : ${audio_tracks}"
                  class="playlist-track-data"
                  th:attr="data-src=@{/downloadFile(dir=${track.path})},data-title=${track.title},data-mime=${track.mimeType}"></div>
@@ -74,7 +74,7 @@
 </div>
 
 <!-- Modal du diaporama -->
-<div id="slideshowModal" class="slideshow-modal" style="display: none;"
+<div id="slideshowModal" class="slideshow-modal" hidden
      role="dialog" aria-modal="true"
      th:attr="aria-label=#{aria.slideshow.title}">
     <div class="slideshow-content">

@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,13 +48,35 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Configuration
 @ConfigurationProperties(prefix="cas")
 @EnableConfigurationProperties(AuthenticationRateLimitProperties.class)
 @EnableWebSecurity
 public class CasConfig {
+
+    private final String cspExtraConnectSrc;
+
+    private final String cspExtraFrameSrc;
+
+    private final String cspReportUri;
+
+    private final boolean cspReportOnly;
+
+    public CasConfig(@Value("${security.csp.extra-connect-src:}") String cspExtraConnectSrc,
+                     @Value("${security.csp.extra-frame-src:}") String cspExtraFrameSrc,
+                     @Value("${security.csp.report-uri:}") String cspReportUri,
+                     @Value("${security.csp.report-only:true}") boolean cspReportOnly) {
+        this.cspExtraConnectSrc = cspExtraConnectSrc;
+        this.cspExtraFrameSrc = cspExtraFrameSrc;
+        this.cspReportUri = cspReportUri;
+        this.cspReportOnly = cspReportOnly;
+    }
 
     String url;
 
@@ -143,10 +166,69 @@ public class CasConfig {
                 .logout(logout -> logout
                         .logoutSuccessUrl(url + "/logout?service=" + service)
                 )
+                .headers(headers -> headers
+                        .contentSecurityPolicy(csp -> {
+                            csp.policyDirectives(buildContentSecurityPolicy());
+                            if (cspReportOnly) {
+                                csp.reportOnly();
+                            }
+                        })
+                )
                 .addFilter(casAuthenticationFilter)
                 .addFilterAfter(secondaryAuthenticationRateLimitFilter, CasAuthenticationFilter.class)
-                .csrf(csrf -> csrf.csrfTokenRepository(cookieCsrfTokenRepository));
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(cookieCsrfTokenRepository)
+                        .ignoringRequestMatchers("/csp-report")
+                );
         return http.build();
+    }
+
+    private String buildContentSecurityPolicy() {
+        String connectSrc = sources("'self'", cspExtraConnectSrc);
+        String frameSrc = sources("'self'", cspExtraFrameSrc);
+
+        String directives = "default-src 'self'; "
+                + "base-uri 'self'; "
+                + "object-src 'none'; "
+                + "script-src 'self'; "
+                + "style-src 'self'; "
+                + "img-src 'self' data: blob:; "
+                + "font-src 'self'; "
+                + "media-src 'self' blob:; "
+                + "connect-src " + connectSrc + "; "
+                + "frame-src " + frameSrc + "; "
+                + "form-action 'self'; "
+                + "frame-ancestors 'self'";
+
+        String reportUri = sanitizeCspSource(cspReportUri);
+        if (!reportUri.isBlank()) {
+            directives += "; report-uri " + reportUri;
+        }
+
+        return directives;
+    }
+
+    private String sources(String defaultSource, String extraSources) {
+        Set<String> sources = new LinkedHashSet<>();
+        sources.add(defaultSource);
+        sources.addAll(Arrays.stream(extraSources.split("[,\\s]+"))
+                .map(this::sanitizeCspSource)
+                .filter(source -> !source.isBlank())
+                .collect(Collectors.toList()));
+        return String.join(" ", sources);
+    }
+
+    private String sanitizeCspSource(String source) {
+        if (source == null) {
+            return "";
+        }
+
+        String trimmed = source.trim();
+        if (trimmed.isEmpty() || trimmed.contains(";") || trimmed.contains("\r") || trimmed.contains("\n")) {
+            return "";
+        }
+
+        return trimmed;
     }
 
     @Bean

@@ -3,7 +3,7 @@
 
   <form method="post" id="authenticationForm" th:action="@{/authenticate}">
 
-    <div id="auth-error-message" class="auth-error" style="display: none;"
+    <div id="auth-error-message" class="auth-error" hidden
          role="alert" aria-live="assertive"></div>
 
     <input type="hidden" id="currentDir" name="dir" th:value="${currentDir}" />

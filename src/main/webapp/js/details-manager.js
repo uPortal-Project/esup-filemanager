@@ -41,10 +41,10 @@
         const modalImg = document.getElementById('modalImage');
 
         if (modal && modalImg) {
-            modal.style.display = 'flex';
+            modal.hidden = false;
             const safeUrl = sanitizeImageUrl(img.getAttribute('data-fullsize'));
             if (safeUrl) modalImg.src = safeUrl;
-            document.body.style.overflow = 'hidden';
+            document.body.classList.add('modal-open');
         }
     };
 
@@ -61,10 +61,10 @@
                     const modalImg = document.getElementById('modalImage');
 
                     if (modal && modalImg) {
-                        modal.style.display = 'flex';
+                        modal.hidden = false;
                         const safeUrl = sanitizeImageUrl(img.getAttribute('data-fullsize'));
                         if (safeUrl) modalImg.src = safeUrl;
-                        document.body.style.overflow = 'hidden';
+                        document.body.classList.add('modal-open');
                     }
                 }
             });
@@ -89,24 +89,24 @@
 
         if (closeBtn) {
             closeBtn.addEventListener('click', function() {
-                modal.style.display = 'none';
-                document.body.style.overflow = '';
+                modal.hidden = true;
+                document.body.classList.remove('modal-open');
             });
         }
 
         // Close on click outside image
         modal.addEventListener('click', function(e) {
             if (e.target === modal) {
-                modal.style.display = 'none';
-                document.body.style.overflow = '';
+                modal.hidden = true;
+                document.body.classList.remove('modal-open');
             }
         });
 
         // Close with Escape key
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && modal.style.display === 'flex') {
-                modal.style.display = 'none';
-                document.body.style.overflow = '';
+            if (e.key === 'Escape' && !modal.hidden) {
+                modal.hidden = true;
+                document.body.classList.remove('modal-open');
             }
         });
     }
@@ -222,8 +222,8 @@
             if (!modal) return;
 
             this.currentIndex = 0;
-            modal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
+            modal.hidden = false;
+            document.body.classList.add('modal-open');
             this.showImage(0);
         },
 
@@ -233,8 +233,8 @@
         close: function() {
             const modal = document.getElementById('slideshowModal');
             if (modal) {
-                modal.style.display = 'none';
-                document.body.style.overflow = '';
+                modal.hidden = true;
+                document.body.classList.remove('modal-open');
                 this.stopAutoplay();
             }
         },
@@ -357,7 +357,7 @@
 
             // Keyboard navigation
             document.addEventListener('keydown', (e) => {
-                if (modal.style.display !== 'flex') return;
+                if (modal.hidden) return;
 
                 switch(e.key) {
                     case 'Escape':
@@ -543,7 +543,6 @@
                 if (container) {
                     const errorMsg = document.createElement('div');
                     errorMsg.className = 'media-error';
-                    errorMsg.style.cssText = 'color: #f44336; padding: 10px; text-align: center;';
                     errorMsg.textContent = 'Media file playback error';
                     container.appendChild(errorMsg);
                 }
@@ -583,4 +582,3 @@
     window.reinitDetailsManager = init;
 
 })();
-
