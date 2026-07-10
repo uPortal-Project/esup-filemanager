@@ -48,6 +48,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -187,25 +188,27 @@ public class CasConfig {
         String connectSrc = sources("'self'", cspExtraConnectSrc);
         String frameSrc = sources("'self'", cspExtraFrameSrc);
 
-        String directives = "default-src 'self'; "
-                + "base-uri 'self'; "
-                + "object-src 'none'; "
-                + "script-src 'self'; "
-                + "style-src 'self'; "
-                + "img-src 'self' data: blob:; "
-                + "font-src 'self'; "
-                + "media-src 'self' blob:; "
-                + "connect-src " + connectSrc + "; "
-                + "frame-src " + frameSrc + "; "
-                + "form-action 'self'; "
-                + "frame-ancestors 'self'";
+        List<String> directives = new ArrayList<>(List.of(
+                "default-src 'self'",
+                "base-uri 'self'",
+                "object-src 'none'",
+                "script-src 'self'",
+                "style-src 'self'",
+                "img-src 'self' data: blob:",
+                "font-src 'self'",
+                "media-src 'self' blob:",
+                "connect-src " + connectSrc,
+                "frame-src " + frameSrc,
+                "form-action 'self'",
+                "frame-ancestors 'self'"
+        ));
 
         String reportUri = sanitizeCspSource(cspReportUri);
         if (!reportUri.isBlank()) {
-            directives += "; report-uri " + reportUri;
+            directives.add("report-uri " + reportUri);
         }
 
-        return directives;
+        return String.join("; ", directives);
     }
 
     private String sources(String defaultSource, String extraSources) {
