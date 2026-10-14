@@ -15,13 +15,15 @@ export class AjaxManager {
             url: baseUrl,
             method = 'GET',
             data = null,
-            headers = {}
+            headers = {},
+            signal
         } = options;
 
         let requestUrl = baseUrl;
 
         const config = {
             method: method.toUpperCase(),
+            signal,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 ...headers
@@ -36,6 +38,8 @@ export class AjaxManager {
             }
             if (typeof data === 'string') {
                 config.body = data;
+            } else if (data instanceof URLSearchParams) {
+                config.body = data.toString();
             } else if (data instanceof FormData) {
                 delete config.headers['Content-Type']; // Let browser set it with boundary
                 config.body = data;
@@ -75,7 +79,9 @@ export class AjaxManager {
                 return await response.text();
             }
         } catch (error) {
-            console.error('AJAX request failed:', error);
+            if (!signal?.aborted && error.name !== 'AbortError') {
+                console.error('AJAX request failed:', error);
+            }
             throw error;
         }
     }
@@ -97,19 +103,14 @@ export class AjaxManager {
     /**
      * Loads an HTML fragment
      */
-    static async loadHTML(url, data = null) {
-        const html = await this.request({
+    static loadHTML(url, data = null, signal) {
+        return this.request({
             url,
             method: data ? 'POST' : 'GET',
             data,
-            headers: data ?  {
-                'Accept': 'text/html',
-                'X-XSRF-TOKEN': this.getCsrf()
-            } : {
-                'Accept': 'text/html'
-            }
+            signal,
+            headers: { 'Accept': 'text/html' }
         });
-        return html;
     }
 
     static getCsrf() {

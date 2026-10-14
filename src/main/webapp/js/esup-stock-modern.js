@@ -751,6 +751,9 @@ class EsupFileManager {
         try {
             // Memorize current path
             this.currentPath = path;
+            const selectedType = this.fileTree?.selectedNode?.dataset?.type;
+            const isCategory = !syncTree && (selectedType === 'root' || selectedType === 'category');
+            this.loadDetailsArea(isCategory ? [] : [path]);
 
             // Save path for next session
             this.saveCurrentPath(path);
@@ -772,6 +775,7 @@ class EsupFileManager {
                 sortField: this.currentSortField || 'titleAsc'
             });
 
+            if (this.currentPath !== path) return;
             console.log('Received HTML content, length:', html?.length);
 
             // Insert content into browserMain (which is inside browserArea)
@@ -804,11 +808,8 @@ class EsupFileManager {
                 await this.syncTreeWithPath(path);
             }
 
-            // Also load details in detailArea if not root or category
+            if (this.currentPath !== path) return;
             const nodeType = this.fileTree?.selectedNode?.dataset?.type;
-            if (nodeType && nodeType !== 'root' && nodeType !== 'category') {
-                await this.loadDetailsArea(path, nodeType);
-            }
 
             // Enable/disable upload & new-folder buttons based on drive context
             if (nodeType !== undefined && nodeType !== null) {
@@ -823,23 +824,45 @@ class EsupFileManager {
         }
     }
 
-    async loadDetailsArea(path, type) {
+    async loadDetailsArea(paths) {
+        this.detailsRequest?.abort();
+        const request = new AbortController();
+        this.detailsRequest = request;
+        const detailArea = document.getElementById('detailArea');
+        if (!detailArea) return;
+
+        const params = new URLSearchParams();
+        (Array.isArray(paths) ? paths : [paths]).forEach(path => params.append('dirs', path));
+
+        // Clear the previous selection, including any active media, immediately.
+        window.detailsManager?.destroy();
+        const status = document.createElement('p');
+        status.className = 'text-muted mb-0';
+        status.setAttribute('role', 'status');
+        status.textContent = window.i18n?.detailsLoading || 'Loading details…';
+        detailArea.replaceChildren(status);
+        detailArea.setAttribute('aria-busy', 'true');
+
         try {
-            const html = await AjaxManager.loadHTML(this.config.detailsAreaURL, {
-                dirs: path,
-                type: type
-            });
-
-            const detailArea = document.getElementById('detailArea');
-            if (detailArea) {
-                window.detailsManager?.destroy();
-                detailArea.innerHTML = html;
-                window.detailsManager?.mount(detailArea);
-
-                console.log('Details loaded into detailArea');
-            }
+            const html = await AjaxManager.loadHTML(this.config.detailsAreaURL, params, request.signal);
+            // Cancellation alone cannot exclude a response already being processed.
+            if (this.detailsRequest !== request || request.signal.aborted) return;
+            window.detailsManager?.destroy();
+            detailArea.innerHTML = html;
+            window.detailsManager?.mount(detailArea);
         } catch (error) {
-            console.error('Failed to load details:', error);
+            if (this.detailsRequest !== request || request.signal.aborted || error.name === 'AbortError') return;
+            status.textContent = window.i18n?.detailsLoadingError || 'Unable to load details.';
+            const retry = document.createElement('button');
+            retry.type = 'button';
+            retry.className = 'btn btn-outline-secondary';
+            retry.textContent = window.i18n?.detailsRetry || 'Retry';
+            retry.addEventListener('click', () => {
+                if (this.detailsRequest === request) this.loadDetailsArea(paths);
+            }, { once: true });
+            detailArea.append(retry);
+        } finally {
+            if (this.detailsRequest === request) detailArea.removeAttribute('aria-busy');
         }
     }
 
@@ -1498,24 +1521,7 @@ class EsupFileManager {
         this.updateToolbarButtons(selectedCount > 0);
 
         // Update details
-        await this.updateDetailsForSelection(selectedPaths);
-    }
-
-    async updateDetailsForSelection(selectedPaths) {
-        const selectedCount = selectedPaths.length;
-
-        if (selectedCount === 0) {
-            // No selection: display details_empty
-            await this.loadDetailsArea('', 'empty');
-        } else if (selectedCount === 1) {
-            // Single item: determine its type
-            const path = selectedPaths[0];
-            const type = this.getFileTypeFromPath(path);
-            await this.loadDetailsArea(path, type);
-        } else {
-            // Multiple items: display details_files
-            await this.loadDetailsAreaMultiple(selectedPaths);
-        }
+        await this.loadDetailsArea(selectedPaths);
     }
 
     getFileTypeFromPath(path) {
@@ -1536,47 +1542,6 @@ class EsupFileManager {
         }
 
         return 'file';
-    }
-
-    async loadDetailsAreaMultiple(paths) {
-        try {
-            console.log('Loading details for multiple files:', paths.length, paths);
-
-            // Create URLSearchParams with all paths
-            const params = new URLSearchParams();
-            paths.forEach(path => {
-                params.append('dirs', path);
-            });
-
-            console.log('POST params:', params.toString());
-
-            // Use fetch with URLSearchParams for POST
-            const response = await fetch(this.config.detailsAreaURL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                    'X-XSRF-TOKEN': getCsrf()
-                },
-                body: params.toString()
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const html = await response.text();
-
-            const detailArea = document.getElementById('detailArea');
-            if (detailArea) {
-                window.detailsManager?.destroy();
-                detailArea.innerHTML = html;
-                window.detailsManager?.mount(detailArea);
-
-                console.log('Multiple details loaded into detailArea');
-            }
-        } catch (error) {
-            console.error('Failed to load multiple details:', error);
-        }
     }
 
     /**
