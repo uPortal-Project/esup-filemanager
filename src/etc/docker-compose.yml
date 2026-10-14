@@ -19,7 +19,7 @@ services:
        - openldap
 
    s3:
-     image: quay.io/minio/minio:latest
+     image: cgr.dev/chainguard/minio:latest
      environment:
        MINIO_ROOT_USER: minioadmin
        MINIO_ROOT_PASSWORD: minioadmin
@@ -34,7 +34,7 @@ services:
        retries: 5
 
    s3-init:
-     image: quay.io/minio/mc:latest
+     image: cgr.dev/chainguard/minio-client:latest-dev
      depends_on:
        s3:
          condition: service_healthy
