@@ -56,6 +56,11 @@ drives.xml let you configure the drives you want to access.
 
 This project requires Java 21 and Maven to build.
 
+JavaScript URLs share a version prefix, including relative ES module imports.
+The version changes automatically on application restart, while browser caching stays enabled.
+For a deployment with several application instances, set `ESUP_ASSETS_VERSION` to the same
+release identifier on every instance and change it for each new release.
+
 ## Package
 
 To have the war file, you have to run the maven command : 
