@@ -9,25 +9,13 @@
    =============================================== */
 
 /* Skip link — WCAG 2.4.1 */
-.visually-hidden-focusable:not(:focus):not(:focus-within) {
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    padding: 0 !important;
-    margin: -1px !important;
-    overflow: hidden !important;
-    clip: rect(0, 0, 0, 0) !important;
-    white-space: nowrap !important;
-    border: 0 !important;
-}
-
 .visually-hidden-focusable:focus {
     position: fixed !important;
     top: 0;
     left: 0;
     z-index: 99999;
     padding: 0.5rem 1rem;
-    background: #0d6efd;
+    background: var(--ui-accent);
     color: #fff;
     font-weight: 700;
     text-decoration: none;
@@ -38,7 +26,7 @@
 
 /* Visible focus for the splitter (WCAG 2.4.7) */
 .panel-splitter:focus {
-    outline: 3px solid #0d6efd;
+    outline: 3px solid var(--ui-accent);
     outline-offset: -3px;
 }
 
@@ -46,6 +34,14 @@
    CSS Variables for customization
    =============================================== */
 :root {
+    --bs-body-font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --ui-accent: #0d6efd;
+    --ui-text: #333333;
+    --ui-muted: #595959;
+    --details-bg: #ffffee;
+    --ui-space: 10px;
+    --ui-radius: 4px;
+    --ui-overlay: 9999;
     --mobile-toolbar-height: 70px;
     --header-height: 56px;
     --left-panel-width: 280px;
@@ -60,7 +56,7 @@
     --panel-header-bg: #f8f9fa;
     --panel-border: #dee2e6;
     --splitter-bg: #e9ecef;
-    --splitter-hover-bg: #0d6efd;
+    --splitter-hover-bg: var(--ui-accent);
     --splitter-active-bg: #0b5ed7;
 }
 
@@ -68,7 +64,7 @@
    General Layout
    =============================================== */
 body {
-    font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--bs-body-font-family);
     overflow-x: hidden;
     min-height: 100vh;
     min-height: calc(var(--vh, 1vh) * 100);
@@ -90,25 +86,10 @@ body {
     flex-wrap: wrap;
     gap: 0.5rem;
     flex-shrink: 0;
-    background: linear-gradient(180deg, #4a5568 0%, #2d3748 100%) !important;
-    border-bottom: 3px solid #1a202c !important;
-    padding: 0.75rem 1rem !important;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2) !important;
-}
-
-/* Remove PNG background images for the responsive toolbar */
-#toolbar .btn,
-#toolbar #file-uploader,
-#toolbar #toolbar-refresh,
-#toolbar #toolbar-new_folder,
-#toolbar #toolbar-download,
-#toolbar #toolbar-zip,
-#toolbar #toolbar-copy,
-#toolbar #toolbar-cut,
-#toolbar #toolbar-paste,
-#toolbar #toolbar-rename,
-#toolbar #toolbar-delete {
-    background-image: none !important;
+    background: linear-gradient(180deg, #4a5568 0%, #2d3748 100%);
+    border-bottom: 3px solid #1a202c;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
 }
 
 #toolbar .btn-group {
@@ -161,14 +142,14 @@ body {
 /* Disabled state - Grayed out but READABLE */
 #toolbar .btn.disabled {
     cursor: not-allowed;
-    background-color: #9ca3af !important;
-    color: white !important;
+    background-color: #9ca3af;
+    color: white;
     opacity: 0.6;
 }
 
 #toolbar .btn.disabled i,
 #toolbar .btn.disabled span {
-    color: white !important;
+    color: white;
 }
 
 /* Specific styles by button type - Simple colored backgrounds with white text */
@@ -309,7 +290,7 @@ body {
 }
 
 .panel-header .btn-link:hover {
-    color: #0d6efd;
+    color: var(--ui-accent);
 }
 
 /* Panel body - File tree */
@@ -345,7 +326,7 @@ body {
     border-top: 1px solid var(--panel-border);
     padding: 0.75rem;
     font-size: 0.875rem;
-    overflow-y: auto !important;
+    overflow-y: auto;
     overflow-x: hidden;
     flex-shrink: 0;
 }
@@ -456,13 +437,9 @@ body {
         width: 100%;
     }
 
-    /* Hide left panel on tablet/mobile */
+    /* Hidden panels do not take part in layout, even with a resized width. */
     .left-panel {
-        display: none !important;
-        width: 0 !important;
-        min-width: 0 !important;
-        max-width: none !important;
-        flex: 0 0 0 !important;
+        display: none;
     }
 
     .right-panel {
@@ -523,7 +500,7 @@ body {
     right: 0;
     bottom: 0;
     cursor: ew-resize;
-    z-index: 9999;
+    z-index: var(--ui-overlay);
     background: transparent;
     display: none;
 }
@@ -538,6 +515,7 @@ body {
 #browserArea table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
     font-size: 0.9375rem;
 }
 
@@ -559,7 +537,7 @@ body {
     background-color: #f8f9fa;
 }
 
-#browserArea table tbody tr.selected {
+#browserArea table tbody tr:has(.browsercheck:checked) {
     background-color: #e7f3ff;
 }
 
@@ -574,13 +552,18 @@ body {
     margin-right: 0.5rem;
 }
 
+#browserArea table th:first-child {
+    width: 50%;
+}
+
 #browserArea table a {
     color: #212529;
     text-decoration: none;
+    overflow-wrap: anywhere;
 }
 
 #browserArea table a:hover {
-    color: #0d6efd;
+    color: var(--ui-accent);
 }
 
 #browserArea table input[type="checkbox"] {
@@ -594,83 +577,84 @@ body {
    Responsive - Mobile
    =============================================== */
 @media (max-width: 767.98px) {
-    #browserArea table {
-        font-size: 0.85rem;
+    /* Navigation changes at 992px; only listing density changes at 768px.
+       Keep the table, links and checkboxes: selection needs no DOM copies. */
+    #browserArea table,
+    #browserArea table thead,
+    #browserArea table tbody {
+        display: block;
     }
 
-    #browserArea table th,
-    #browserArea table td {
-        padding: 0.5rem 0.25rem;
+    #browserArea table thead tr,
+    #browserArea table tbody tr {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 0.25rem 0.75rem;
+        padding: 0.75rem;
     }
 
-    /* Hide non-essential columns on small screen */
-    #browserArea table .d-none-mobile {
+    #browserArea table thead tr {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        background: var(--panel-header-bg);
+    }
+
+    #browserArea table thead th,
+    #browserArea table tbody td {
+        padding: 0;
+        border: 0;
+        white-space: normal;
+        width: auto;
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    #browserArea table th:nth-child(3),
+    #browserArea table td:nth-child(3) {
         display: none;
     }
 
-    /* File list in card mode on mobile */
-    .file-card-mobile {
+    #browserArea table td:first-child {
+        grid-column: 1 / -1;
+    }
+
+    #browserArea .file-entry {
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        padding: 0.75rem;
-        border-bottom: 1px solid #dee2e6;
-        cursor: pointer;
-        transition: background-color 0.2s;
         min-width: 0;
     }
 
-    .file-card-mobile:hover {
-        background-color: #f8f9fa;
+    #browserArea .file-entry a,
+    #browserArea table thead a {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+        overflow-wrap: anywhere;
     }
 
-    .file-card-mobile img {
-        width: 24px;
-        height: 24px;
-        margin-right: 0;
-        flex: 0 0 auto;
-    }
-
-    .file-card-mobile .file-actions i {
-        display: block;
-        width: 24px;
-        height: 24px;
-        font-size: 24px;
-        line-height: 24px;
-        text-align: center;
-        -webkit-font-smoothing: antialiased;
-        text-rendering: geometricPrecision;
-    }
-
-    .file-card-mobile .file-info {
+    #browserArea .file-entry a {
         flex: 1;
         min-width: 0;
     }
 
-    .file-card-mobile .file-name {
-        font-weight: 500;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+    #browserArea .file-entry img {
+        flex-shrink: 0;
     }
 
-    .file-card-mobile .file-meta {
-        font-size: 0.75rem;
-        color: #6c757d;
-        margin-top: 0.25rem;
+    #browserArea table input[type="checkbox"] {
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+        margin: 10px 0;
     }
 
-    .file-card-mobile .file-actions {
-        margin-left: 0.5rem;
-        flex: 0 0 auto;
+    #browserArea table td:not(:first-child) {
+        font-size: 0.8125rem;
+        color: var(--ui-muted);
     }
 
-    /* Larger checkbox on mobile */
-    .file-card-mobile input[type="checkbox"] {
-        width: 20px;
-        height: 20px;
-        margin-right: 0;
-        flex: 0 0 auto;
+    .esupstock .breadcrumbs .d-inline:not(:first-of-type):not(:nth-last-child(-n+2)) {
+        display: none;
     }
 }
 
@@ -720,6 +704,7 @@ body {
     justify-content: center;
     height: var(--mobile-toolbar-height);
     min-width: 0;
+    /* Bootstrap gives grouped buttons different corner radii. */
     border-radius: 0 !important;
 }
 
@@ -732,7 +717,7 @@ body {
     width: 24px;
     height: 24px;
     margin-bottom: 0.25rem;
-    font-size: 24px !important;
+    font-size: 24px;
     line-height: 24px;
     text-align: center;
     -webkit-font-smoothing: antialiased;
@@ -804,14 +789,14 @@ body {
     /* Increase touch target sizes on mobile */
     .btn,
     .list-group-item,
-    .file-card-mobile {
+    #browserArea .file-entry a {
         min-height: 44px; /* Apple recommendation */
     }
 
     /* Improve touch feedback */
     .btn:active,
     .list-group-item:active,
-    .file-card-mobile:active {
+    #browserArea .file-entry a:active {
         background-color: #e9ecef;
         transition: background-color 0.1s;
     }
@@ -946,32 +931,6 @@ body {
 }
 
 /* ===============================================
-   Dark Mode Support (Optional)
-   =============================================== */
-@media (prefers-color-scheme: dark) {
-    /* Disabled by default, enable if needed */
-    /*
-    body {
-        background-color: #1a1a1a;
-        color: #e0e0e0;
-    }
-
-    .bg-white {
-        background-color: #2a2a2a !important;
-        color: #e0e0e0;
-    }
-
-    .bg-light {
-        background-color: #333 !important;
-    }
-
-    .border {
-        border-color: #444 !important;
-    }
-    */
-}
-
-/* ===============================================
    Utilities
    =============================================== */
 .text-truncate-2 {
@@ -994,7 +953,7 @@ body {
    =============================================== */
 .drag-over-upload {
     position: relative;
-    outline: 3px dashed #0d6efd;
+    outline: 3px dashed var(--ui-accent);
     outline-offset: -10px;
     background-color: rgba(13, 110, 253, 0.05);
 }
@@ -1012,7 +971,7 @@ body {
     font-size: 1.2rem;
     font-weight: 600;
     pointer-events: none;
-    z-index: 9999;
+    z-index: var(--ui-overlay);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -1063,7 +1022,7 @@ body {
 }
 
 .upload-panel-header {
-    background: #0d6efd;
+    background: var(--ui-accent);
     color: white;
     user-select: none;
 }
@@ -1179,9 +1138,9 @@ body {
 #authenticationForm input[type="text"]:focus,
 #authenticationForm input[type="password"]:focus {
     /* outline:none removed (WCAG 2.4.7) – replaced by visible outline */
-    outline: 2px solid #0d6efd;
+    outline: 2px solid var(--ui-accent);
     outline-offset: 2px;
-    border-color: #0d6efd;
+    border-color: var(--ui-accent);
     box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
 }
 
@@ -1190,7 +1149,7 @@ body {
     width: 100%;
     margin-top: 15px;
     padding: 10px 16px;
-    background-color: #0d6efd;
+    background-color: var(--ui-accent);
     color: white;
     border: none;
     border-radius: 4px;
@@ -1230,6 +1189,74 @@ body {
     }
 
     #browserArea {
-        width: 100% !important;
+        width: 100%;
     }
+}
+
+/* Shared listing navigation, on desktop and mobile. */
+.esupstock .breadcrumbs {
+    background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+    padding: 12px 16px;
+    border-bottom: 3px solid var(--ui-accent);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.esupstock .breadcrumbs img {
+    vertical-align: middle;
+    margin-right: 6px;
+    width: 20px;
+    height: 20px;
+}
+
+.esupstock .breadcrumbs a {
+    color: var(--ui-accent);
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.esupstock .breadcrumbs a:hover {
+    background-color: #e7f3ff;
+    color: #005a9e;
+    text-decoration: none;
+}
+
+.esupstock .breadcrumbs a:focus {
+    outline: 2px solid var(--ui-accent);
+    outline-offset: 2px;
+}
+
+.esupstock .breadcrumbs span {
+    color: var(--ui-text);
+    font-weight: 600;
+}
+
+.esupstock .breadcrumbs .d-inline {
+    display: inline-block;
+}
+
+.esupstock .breadcrumbs .d-inline:not(:last-child)::after {
+    content: "›";
+    display: inline-block;
+    margin: 0 8px;
+    color: var(--ui-muted);
+    font-size: 18px;
+    font-weight: bold;
+}
+
+
+#browserArea :is(a, input, button):focus-visible {
+    outline: 2px solid var(--ui-accent);
+    outline-offset: 2px;
+    border-radius: var(--ui-radius);
+}
+
+#browserArea tr:focus-within {
+    outline: 2px solid var(--ui-accent);
+    outline-offset: -2px;
 }

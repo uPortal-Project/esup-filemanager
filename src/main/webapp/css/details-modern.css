@@ -1,3 +1,8 @@
+#detailArea {
+    background: var(--details-bg);
+    overflow: auto;
+}
+
 /*
  * Details Modern Styles
  * Adapted styles for the file manager's details blocks
@@ -6,7 +11,7 @@
 
 /* ==================== Details Card ==================== */
 .details-card {
-    background: #FFFFEE;  /* Same color as detailArea */
+    background: var(--details-bg);  /* Same color as detailArea */
     padding: 0;
     margin: 0;
     border: none;
@@ -14,8 +19,8 @@
 
 .details-header {
     background: #f3f3f3;
-    color: #333333;
-    padding: 10px;
+    color: var(--ui-text);
+    padding: var(--ui-space);
     margin: 0;
     font-size: 14px;
     font-weight: bold;
@@ -24,7 +29,7 @@
 
 /* ==================== Details Information ==================== */
 .details-info {
-    padding: 10px;
+    padding: var(--ui-space);
     margin: 0;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
@@ -33,38 +38,39 @@
 
 .details-label {
     font-weight: bold;
-    color: #333333;
-    font-size: 13px;
-    margin: 0;
 }
 
 .details-label::after {
     content: " :";
 }
 
+.details-label,
 .details-value {
-    color: #333333;
+    color: var(--ui-text);
     font-size: 13px;
     margin: 0;
+}
+
+.details-value {
     word-break: break-word;
 }
 
 .details-card > :not(.details-header) {
-    margin-block: 10px;
+    margin-block: var(--ui-space);
 }
 
 /* ==================== Media Players ==================== */
 .media-player-container {
-    padding: 10px;
-    background: #FFFFEE;
+    padding: var(--ui-space);
+    background: var(--details-bg);
     border-bottom: 1px solid #e0e0e0;
 }
 
 .details-media-status {
-    padding: 10px;
+    padding: var(--ui-space);
     text-align: center;
     color: #333;
-    background: #FFFFEE;
+    background: var(--details-bg);
     overflow-wrap: anywhere;
 }
 
@@ -88,6 +94,7 @@ img[data-state]:not([data-state="ready"]) {
 .audio-player,
 .video-player {
     width: 100%;
+    max-width: 100%;
     border: 1px solid #bbb;
     background: #f5f5f5;
 }
@@ -95,24 +102,20 @@ img[data-state]:not([data-state="ready"]) {
 /* Visible focus on media players (WCAG 2.4.7) */
 .audio-player:focus,
 .video-player:focus {
-    outline: 3px solid #0d6efd;
+    outline: 3px solid var(--ui-accent);
     outline-offset: 2px;
 }
 
 .audio-player {
-    max-width: 100%;
     height: 48px;
 }
 
 .video-player {
-    max-width: 100%;
     max-height: 35vh;
-    width: 100%;
     height: auto;
     aspect-ratio: 16 / 9;
     object-fit: contain;
 }
-
 
 
 /* ==================== Image Preview ==================== */
@@ -121,8 +124,8 @@ img[data-state]:not([data-state="ready"]) {
     display: block;
     width: 100%;
     border: 0;
-    padding: 10px;
-    background: #FFFFEE;
+    padding: var(--ui-space);
+    background: var(--details-bg);
     border-bottom: 1px solid #e0e0e0;
     text-align: center;
     cursor: pointer;
@@ -301,7 +304,7 @@ body.modal-open {
     grid-column: 1 / -1;
     justify-content: center;
     display: flex;
-    gap: 10px;
+    gap: var(--ui-space);
 }
 
 .btn-autoplay {
@@ -330,10 +333,10 @@ body.modal-open {
 
 /* ==================== Action Buttons ==================== */
 .details-actions {
-    padding: 10px;
+    padding: var(--ui-space);
     border-top: 1px solid #bbb;
     display: flex;
-    gap: 10px;
+    gap: var(--ui-space);
     flex-wrap: wrap;
 }
 
@@ -341,7 +344,7 @@ body.modal-open {
 .btn-view-fullsize,
 .btn-action {
     background: #f3f3f3;
-    color: #333333;
+    color: var(--ui-text);
     border: 1px solid #bbb;
     padding: 6px 12px;
     cursor: pointer;
@@ -361,7 +364,7 @@ body.modal-open {
 .btn-download:focus,
 .btn-view-fullsize:focus,
 .btn-action:focus {
-    outline: 3px solid #0d6efd;
+    outline: 3px solid var(--ui-accent);
     outline-offset: 2px;
     background: #e0e0e0;
 }
@@ -404,7 +407,7 @@ body.modal-open {
 }
 
 .quota-text {
-    color: #333333;
+    color: var(--ui-text);
     font-size: 12px;
     text-align: left;
 }
@@ -413,7 +416,7 @@ body.modal-open {
 .details-empty-message {
     padding: 20px 10px;
     text-align: center;
-    color: #595959; /* Ratio ≥ 4.5:1 on background #FFFFEE (WCAG 1.4.3) */
+    color: var(--ui-muted);
 }
 
 /* ==================== Audio Playlist ==================== */
@@ -428,7 +431,7 @@ body.modal-open {
     padding: 6px 10px;
     font-size: 13px;
     font-weight: bold;
-    color: #333333;
+    color: var(--ui-text);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -436,7 +439,7 @@ body.modal-open {
 
 .playlist-counter {
     font-weight: normal;
-    color: #595959; /* Ratio ≥ 4.5:1 on background #f3f3f3 (WCAG 1.4.3) */
+    color: var(--ui-muted);
     font-size: 12px;
 }
 
@@ -465,7 +468,7 @@ body.modal-open {
     padding: 6px 10px;
     font: inherit;
     font-size: 12px;
-    color: #333333;
+    color: var(--ui-text);
     cursor: pointer;
     border-bottom: 1px solid #f0f0f0;
     white-space: nowrap;
@@ -483,7 +486,7 @@ body.modal-open {
 }
 
 .playlist-track:focus {
-    outline: 2px solid #0d6efd;
+    outline: 2px solid var(--ui-accent);
     outline-offset: -2px;
     background: #e8e8e8;
 }
@@ -499,15 +502,15 @@ body.modal-open {
     font-size: 10px;
 }
 
+.playlist-track,
+.details-actions > *,
+.playlist-nav > * {
+    min-height: 44px;
+    font-size: 14px;
+}
+
 /* Details use the navigation breakpoint; cards switch below 768px. */
 @media (max-width: 991.98px) {
-    .playlist-track,
-    .details-actions > *,
-    .playlist-nav > * {
-        min-height: 44px;
-        font-size: 14px;
-    }
-
     .slideshow-prev,
     .slideshow-next {
         font-size: 28px;
@@ -524,7 +527,7 @@ body.modal-open {
     margin: 0;
     padding: 0;
     border: 0;
-    background: #FFFFEE;
+    background: var(--details-bg);
 }
 
 #mobileDetails[open] {

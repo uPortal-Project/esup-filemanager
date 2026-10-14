@@ -9,7 +9,6 @@
     /**
      * Device type detection
      */
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 
     /**
@@ -21,30 +20,13 @@
         initMobileDetails();
         initMobileMenu();
         initTouchGestures();
-        initResponsiveBehaviors();
         syncTreeWithMobile();
-        observeDynamicContent();
-
-        console.log('Mobile/Responsive support initialized', {
-            isMobile,
-            isTouchDevice,
-            screenWidth: window.innerWidth
-        });
     });
 
     /**
      * Mobile-specific adaptations
      */
     function initMobileAdaptations() {
-        // Add class for CSS detection
-        if (isMobile) {
-            document.body.classList.add('is-mobile');
-        }
-
-        if (isTouchDevice) {
-            document.body.classList.add('is-touch');
-        }
-
         // Viewport height fix for mobile (URL bar issue)
         const setVH = () => {
             const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
@@ -100,9 +82,6 @@
 
         // Note: le bouton "Menu" (4ème bouton de la barre bas) ouvre l'offcanvas #mobileMenu
         // directement via data-bs-toggle Bootstrap — aucun handler JS nécessaire.
-
-        // Synchronize button disabled state
-        syncMobileToolbarState();
     }
 
     function initMobileDetails() {
@@ -175,9 +154,6 @@
                 });
             }
         });
-
-        // Synchronize button state
-        syncMobileMenuState();
     }
 
     /**
@@ -224,11 +200,11 @@
         // Long press to show actions (alternative to right-click)
         let pressTimer;
         document.addEventListener('touchstart', function(e) {
-            const target = e.target.closest('.file-card-mobile, tr.selectable');
+            const target = e.target.closest('tr.selectable');
             if (!target) return;
 
             // Long press → ouvre le menu offcanvas (même comportement que le bouton "Menu")
-        pressTimer = setTimeout(function() {
+            pressTimer = setTimeout(function() {
                 // Ouvrir le menu offcanvas
                 const offcanvasEl = document.getElementById('mobileMenu');
                 if (offcanvasEl) {
@@ -249,236 +225,6 @@
 
         document.addEventListener('touchmove', function() {
             clearTimeout(pressTimer);
-        });
-    }
-
-    /**
-     * Responsive behaviors
-     */
-    function initResponsiveBehaviors() {
-        // Listen for screen size changes
-        const mediaQuery = window.matchMedia('(max-width: 991.98px)');
-
-        function handleMediaChange(e) {
-            if (e.matches) {
-                // Mobile/tablet mode
-                adaptForMobile();
-            } else {
-                // Desktop mode
-                adaptForDesktop();
-            }
-        }
-
-        handleMediaChange(mediaQuery);
-        if (mediaQuery.addEventListener) {
-            mediaQuery.addEventListener('change', handleMediaChange);
-        } else {
-            mediaQuery.addListener(handleMediaChange);
-        }
-
-        applyResponsiveLayout();
-
-        window.addEventListener('resize', debounce(function() {
-            applyResponsiveLayout();
-        }, 250));
-    }
-
-    /**
-     * Apply responsive transformations for the current viewport.
-     */
-    function applyResponsiveLayout() {
-        if (window.matchMedia('(max-width: 767.98px)').matches) {
-            convertTableToCards();
-        } else {
-            restoreTableLayout();
-        }
-    }
-
-    /**
-     * Update mobile breadcrumbs (shorten if needed)
-     */
-    function updateMobileBreadcrumbs() {
-        const breadcrumbs = document.querySelectorAll('.breadcrumb-item');
-        if (breadcrumbs.length > 3) {
-            // Hide intermediate items to save space
-            for (let i = 1; i < breadcrumbs.length - 2; i++) {
-                breadcrumbs[i].classList.add('d-none');
-            }
-        }
-    }
-
-    /**
-     * Adapt the interface for mobile
-     */
-    function adaptForMobile() {
-        console.log('Switching to mobile layout');
-
-        // Hide non-essential columns
-        document.querySelectorAll('table th:nth-child(n+3), table td:nth-child(n+3)').forEach(el => {
-            if (!el.classList.contains('essential')) {
-                el.classList.add('d-none-mobile');
-            }
-        });
-
-        // Adjust breadcrumbs
-        updateMobileBreadcrumbs();
-    }
-
-    /**
-     * Adapt the interface for desktop
-     */
-    function adaptForDesktop() {
-        console.log('Switching to desktop layout');
-
-        // Show all columns again
-        document.querySelectorAll('.d-none-mobile').forEach(el => {
-            el.classList.remove('d-none-mobile');
-        });
-    }
-
-    /**
-     * Convert table to cards for mobile
-     */
-    function convertTableToCards() {
-        const table = document.querySelector('#browserArea table');
-        if (!table || table.dataset.mobileConverted === 'true') return;
-
-        const rows = table.querySelectorAll('tbody tr');
-        if (!rows.length) return;
-
-        const oldMobileList = Array.from(table.parentNode.children)
-            .find(child => child.classList.contains('mobile-file-list'));
-        if (oldMobileList) {
-            oldMobileList.remove();
-        }
-
-        const container = document.createElement('div');
-        container.className = 'mobile-file-list';
-
-        rows.forEach(row => {
-            const cells = row.querySelectorAll('td');
-            if (cells.length === 0) return;
-
-            const card = document.createElement('div');
-            card.className = 'file-card-mobile';
-
-            // Checkbox
-            const checkbox = row.querySelector('input[type="checkbox"]');
-            if (checkbox) {
-                const checkboxClone = checkbox.cloneNode(true);
-                checkboxClone.addEventListener('change', function() {
-                    checkbox.checked = checkboxClone.checked;
-                    checkbox.dispatchEvent(new Event('change', { bubbles: true }));
-                });
-                card.appendChild(checkboxClone);
-            }
-
-            // Icon and name
-            const icon = row.querySelector('img');
-            const name = row.querySelector('.fileTreeRef, .file, a');
-
-            if (icon) {
-                const iconClone = icon.cloneNode(true);
-                card.appendChild(iconClone);
-            }
-
-            const info = document.createElement('div');
-            info.className = 'file-info';
-
-            const fileName = document.createElement('div');
-            fileName.className = 'file-name';
-            fileName.textContent = name ? name.textContent.trim() : '';
-            info.appendChild(fileName);
-
-            // Metadata (size, date)
-            const size = cells[1]?.textContent.trim();
-            const date = cells[3]?.textContent.trim();
-
-            if (size || date) {
-                const meta = document.createElement('div');
-                meta.className = 'file-meta';
-                meta.textContent = [size, date].filter(Boolean).join(' • ');
-                info.appendChild(meta);
-            }
-
-            card.appendChild(info);
-            card.addEventListener('click', function(event) {
-                if (event.target.closest('input, button, a')) return;
-
-                if (name) {
-                    name.dispatchEvent(new MouseEvent('click', {
-                        bubbles: true,
-                        cancelable: true,
-                        view: window
-                    }));
-                } else {
-                    row.dispatchEvent(new MouseEvent('click', {
-                        bubbles: true,
-                        cancelable: true,
-                        view: window
-                    }));
-                }
-            });
-
-            // Actions
-            const actions = document.createElement('div');
-            actions.className = 'file-actions';
-            actions.innerHTML = '<i class="bi bi-three-dots-vertical"></i>';
-            actions.addEventListener('click', function(event) {
-                event.stopPropagation();
-                const offcanvasEl = document.getElementById('mobileMenu');
-                if (offcanvasEl && window.bootstrap) {
-                    bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl).show();
-                }
-            });
-            card.appendChild(actions);
-
-            container.appendChild(card);
-        });
-
-        table.classList.add('d-none');
-        table.after(container);
-        table.dataset.mobileConverted = 'true';
-    }
-
-    /**
-     * Restore table layout
-     */
-    function restoreTableLayout() {
-        const table = document.querySelector('#browserArea table');
-        const mobileList = document.querySelector('.mobile-file-list');
-
-        if (table && mobileList) {
-            table.classList.remove('d-none');
-            mobileList.remove();
-            delete table.dataset.mobileConverted;
-        }
-    }
-
-    /**
-     * Browser content is injected by AJAX after DOMContentLoaded. Keep the
-     * mobile layout in sync so the first rendered state is already correct.
-     */
-    function observeDynamicContent() {
-        const browserMain = document.getElementById('browserMain');
-        const browserArea = document.getElementById('browserArea');
-        const target = browserMain || browserArea;
-
-        if (!target) return;
-
-        let pending = false;
-        const observer = new MutationObserver(function() {
-            if (pending) return;
-            pending = true;
-            window.requestAnimationFrame(function() {
-                pending = false;
-                applyResponsiveLayout();
-            });
-        });
-
-        observer.observe(target, {
-            childList: true,
-            subtree: true
         });
     }
 
@@ -519,103 +265,4 @@
     }
 
 
-    /**
-     * Synchronize mobile button state with desktop
-     */
-    function syncMobileToolbarState() {
-        const syncBtn = (mobileId, desktopId) => {
-            const mobileBtn = document.getElementById(mobileId);
-            const desktopBtn = document.getElementById(desktopId);
-
-            if (mobileBtn && desktopBtn) {
-                if (desktopBtn.classList.contains('disabled') || desktopBtn.disabled) {
-                    mobileBtn.classList.add('disabled');
-                    mobileBtn.disabled = true;
-                } else {
-                    mobileBtn.classList.remove('disabled');
-                    mobileBtn.disabled = false;
-                }
-            }
-        };
-
-        // Synchronize buttons
-        syncBtn('mobile-toolbar-download', 'toolbar-download');
-
-        // Watch desktop button state changes to keep mobile buttons in sync in real time
-        const observeDesktopBtn = (desktopId, syncFn) => {
-            const desktopBtn = document.getElementById(desktopId);
-            if (desktopBtn) {
-                new MutationObserver(syncFn).observe(desktopBtn, { attributes: true, attributeFilter: ['class', 'disabled'] });
-            }
-        };
-        observeDesktopBtn('toolbar-download', () => syncBtn('mobile-toolbar-download', 'toolbar-download'));
-    }
-
-    /**
-     * Synchronize mobile menu button state.
-     * Uses MutationObserver (reactive) instead of a polling loop.
-     */
-    function syncMobileMenuState() {
-        const buttons = [
-            'download', 'copy', 'cut', 'paste', 'rename', 'delete'
-        ];
-
-        const syncOne = (action) => {
-            const mobileBtn = document.getElementById(`mobile-${action}`);
-            const desktopBtn = document.getElementById(`toolbar-${action}`);
-
-            if (!mobileBtn || !desktopBtn) return;
-
-            const isDisabled = desktopBtn.classList.contains('disabled') || desktopBtn.disabled;
-            if (isDisabled) {
-                mobileBtn.classList.add('disabled');
-                mobileBtn.disabled = true;
-                mobileBtn.setAttribute('aria-disabled', 'true');
-            } else {
-                mobileBtn.classList.remove('disabled');
-                mobileBtn.disabled = false;
-                mobileBtn.removeAttribute('aria-disabled');
-            }
-        };
-
-        buttons.forEach(action => {
-            // Initial sync
-            syncOne(action);
-
-            // Observe desktop button for attribute changes (reactive, no polling)
-            const desktopBtn = document.getElementById(`toolbar-${action}`);
-            if (desktopBtn) {
-                new MutationObserver(() => syncOne(action))
-                    .observe(desktopBtn, { attributes: true, attributeFilter: ['class', 'disabled'] });
-            }
-        });
-    }
-
-    /**
-     * Debounce utility
-     */
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-
-    // Export for global use
-    window.EsupMobileSupport = {
-        isMobile,
-        isTouchDevice,
-        updateMobileBreadcrumbs,
-        syncMobileToolbarState,
-        applyResponsiveLayout,
-        convertTableToCards,
-        restoreTableLayout
-    };
-
-    console.log('ESUP Mobile Support loaded');
 })();

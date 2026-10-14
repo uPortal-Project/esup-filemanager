@@ -373,7 +373,7 @@ async function checkKeyboard(file, directory, fixture) {
         const mobileFixture = fixture.replace(/<dialog id="imageModal"[\s\S]*?<\/dialog>/, viewer('details_image.html'))
             .replace(/<dialog id="slideshowModal"[\s\S]*?<\/dialog>/, viewer('details_files.html'))
             .replace(/data-src="http:\/\/127\.0\.0\.1:\d+\/(one|two|three)"/g, `data-src="${imageSource}"`);
-        const styles = ['esup-stock.css', 'esup-responsive.css', 'details-modern.css']
+        const styles = ['esup-responsive.css', 'details-modern.css']
             .map(name => readFileSync(join(webapp, 'css', name), 'utf8')).join('\n');
         // Bootstrap utilities used by the shell; no external stylesheet in this fixture.
         const utilities = `
@@ -462,6 +462,80 @@ async function checkKeyboard(file, directory, fixture) {
         await check(`!mobileDetails.open && !slideshowModal.open && savedDetails.parentNode === savedParent && document.activeElement.id === 'treeSplitter'`, 'desktop transition closes nested viewers and restores panel');
         await viewport(1440, 900);
         await check(`getComputedStyle(document.getElementById('leftPanel')).display === 'flex'`, 'desktop details remain visible');
+        // Use the listing template's real nodes, filling server-side values locally.
+        const listing = readFileSync(join(templates, 'fileTree.html'), 'utf8');
+        const application = readFileSync(join(webapp, 'js/esup-stock-modern.js'), 'utf8');
+        const methods = ['initEventListeners', 'bindBrowserAreaEvents', 'getSelectedFilePaths',
+            'handleFileClick', 'selectFile', 'getFileTypeFromPath', 'updateToolbarButtons',
+            'updatePasteButtonState', 'updateDriveContextButtons'].map(name => application.match(
+                new RegExp(`    ${name}\\([^]*?\\n    }`))[0]).join(',');
+        await evaluate(`document.getElementById('browserMain').innerHTML = ${JSON.stringify(listing)};
+            const app = { ${methods}, config: { useDoubleClick: false }, isInDrive: true, clipboard: { files: ['copied'] },
+                bindToolbarEvents() {}, bindKeyboardEvents() {},
+                handleFileSelection() { window.selectionCalls++; window.selectedPaths = this.getSelectedFilePaths(); },
+                sortFiles(field) { window.sortedBy = field; },
+                handleFolderClick(link) { this.navigateToPath(link.getAttribute('rel')); },
+                navigateToPath(path) { window.navigatedTo = path; }
+            };
+            window.selectionCalls = 0;
+            app.initEventListeners();
+            const listing = document.querySelector('#browserMain table');
+            window.savedListing = listing; window.listingApp = app;
+            window.savedCheckbox = listing.querySelector('.file').closest('tr').querySelector('.browsercheck');
+            savedCheckbox.value = 'file-path';
+            window.savedFileLink = listing.querySelector('.file');
+            savedFileLink.querySelector('span').textContent = 'VeryLongFileName'.repeat(20) + '.txt';
+            savedFileLink.setAttribute('rel', 'file-path');
+            listing.querySelector('.fileTreeRef').setAttribute('rel', 'folder-path');
+            listing.querySelector('.fileTreeRef').closest('tr').querySelector('.browsercheck').value = 'folder-path';
+            listing.querySelectorAll('thead a').forEach((link, index) => {
+                link.textContent = ['Filename', 'Size', 'Modified'][index]; link.setAttribute('rel', ['titleAsc', 'sizeAsc', 'lastModifiedAsc'][index]);
+            });
+            listing.querySelectorAll('tbody tr').forEach(row => {
+                row.cells[3].textContent = '14/10/2026 12:30';
+            });
+            const crumbs = document.querySelector('.breadcrumbs');
+            crumbs.innerHTML = Array.from({length: 6}, (_, index) =>
+                '<div class="d-inline"><a href="#">Level ' + index + '</a></div>').join('');`);
+        for (const [width, height] of [[360, 640], [640, 360], [768, 600], [992, 700], [1440, 900], [360, 640]]) {
+            const selectedBeforeResize = await evaluate(`savedCheckbox.checked`);
+            await viewport(width, height);
+            await check(`savedCheckbox.checked === ${selectedBeforeResize}`, 'resize preserves selection');
+            await check(`savedListing === document.querySelector('#browserMain table') &&
+                savedCheckbox === document.querySelector('.file').closest('tr').querySelector('.browsercheck') &&
+                document.querySelectorAll('.browsercheck').length === 2`, 'resize preserves the original listing controls');
+            await check(`getComputedStyle(savedFileLink.closest('tr')).display === ${JSON.stringify(width < 768 ? 'grid' : 'table-row')}`, 'cards are a CSS layout of the original rows');
+            await check(`Array.from(document.querySelectorAll('.breadcrumbs .d-inline')).filter(item => item.getBoundingClientRect().width > 0).length === ${width < 768 ? 3 : 6}`, 'breadcrumbs restore all ancestors on desktop');
+            await check(`document.querySelector('#browserMain table').scrollWidth <= document.getElementById('browserArea').clientWidth`, 'long filename does not overflow the listing');
+            await evaluate(`savedCheckbox.focus()`);
+            await key(' ', 'Space');
+            await check(`window.selectedPaths.length === (savedCheckbox.checked ? 1 : 0) &&
+                window.selectionCalls > 0`, 'native checkbox updates the single selection');
+            await evaluate(`savedFileLink.focus()`);
+            await key('Enter', 'Enter');
+            await check(`savedCheckbox.checked && window.selectedPaths.join() === 'file-path' &&
+                savedFileLink === document.activeElement`, 'native file link activates selection and retains focus');
+            await evaluate(`document.querySelector('.fileTreeRef').focus()`);
+            await key('Enter', 'Enter');
+            await check(`window.navigatedTo === 'folder-path'`, 'native folder link navigates by keyboard');
+            await evaluate(`document.querySelectorAll('thead a')[1].focus()`);
+            await key('Enter', 'Enter');
+            await check(`window.sortedBy === 'sizeAsc'`, 'sorting remains available on mobile');
+            const { nodes } = await send('Accessibility.getFullAXTree', {}, sessionId);
+            assert.ok(nodes.some(node => node.role?.value === 'table'), 'responsive listing retains table semantics');
+        }
+        await evaluate(`listingApp.isInDrive = false; listingApp.updateDriveContextButtons(false)`);
+        await check(`['toolbar-download', 'mobile-download', 'mobile-toolbar-download', 'mobile-paste'].every(id => document.getElementById(id).disabled)`, 'desktop and mobile share disabled drive permissions');
+        await evaluate(`listingApp.isInDrive = true; listingApp.updateDriveContextButtons(true)`);
+        await check(`['toolbar-download', 'mobile-download', 'mobile-toolbar-download', 'mobile-paste'].every(id => !document.getElementById(id).disabled)`, 'desktop and mobile share active file permissions');
+        await evaluate(`document.querySelector('.fileTreeRef').closest('tr').querySelector('.browsercheck').checked = true;
+            listingApp.updateToolbarButtons(true)`);
+        await check(`['toolbar-download', 'mobile-download', 'mobile-toolbar-download'].every(id => document.getElementById(id).disabled)`, 'mixed selection disables direct download in every view');
+        await viewport(360, 640);
+        await evaluate(`document.getElementById('browserMain').innerHTML = ${JSON.stringify(listing)};`);
+        await check(`getComputedStyle(document.querySelector('#browserMain tbody tr')).display === 'grid' &&
+            !document.querySelector('.mobile-file-list')`, 'AJAX replacement immediately uses cards without copies');
+
     } finally {
         clearTimeout(timeout);
         browser.kill();

@@ -1,6 +1,5 @@
 <!-- src/main/resources/templates/fileTree.html -->
 <nav xmlns:th="http://www.thymeleaf.org" class="breadcrumbs" th:attr="aria-label=#{aria.breadcrumb}">
-    <div class="writeable" th:text="${resource.writeable}"></div>
     <div class="d-inline" th:each="parent, itemStat : ${parentsEncPathes}">
         <th:block th:if="${itemStat.last}">
             <img th:src="${resource.icon}" alt="" aria-hidden="true" />
@@ -15,28 +14,26 @@
     </div>
 </nav>
 
-<div id="thumbnail_mode" hidden th:text="false"></div>
-
 <div id="jqueryFileTree">
     <form th:object="${form}" method="post" id="filesForm">
-        <table>
+        <table role="table">
             <caption class="visually-hidden" th:text="#{aria.files.table}">File listing</caption>
-            <thead>
-            <tr>
-                <th th:attr="aria-sort=${sortField == 'titleAsc' ? 'ascending' : (sortField == 'titleDesc' ? 'descending' : 'none')}">
+            <thead role="rowgroup">
+            <tr role="row">
+                <th role="columnheader" th:attr="aria-sort=${sortField == 'titleAsc' ? 'ascending' : (sortField == 'titleDesc' ? 'descending' : 'none')}">
                     <a class="sortTable"
                        th:rel="${sortField == 'titleAsc' ? 'titleDesc' : 'titleAsc'}"
                        href="#"
                        th:text="#{browserArea.header.filename}"></a>
                 </th>
-                <th th:attr="aria-sort=${sortField == 'sizeAsc' ? 'ascending' : (sortField == 'sizeDesc' ? 'descending' : 'none')}">
+                <th role="columnheader" th:attr="aria-sort=${sortField == 'sizeAsc' ? 'ascending' : (sortField == 'sizeDesc' ? 'descending' : 'none')}">
                     <a class="sortTable"
                        th:rel="${sortField == 'sizeAsc' ? 'sizeDesc' : 'sizeAsc'}"
                        href="#"
                        th:text="#{browserArea.header.size}"></a>
                 </th>
-                <th th:text="#{browserArea.header.type}"></th>
-                <th th:attr="aria-sort=${sortField == 'lastModifiedAsc' ? 'ascending' : (sortField == 'lastModifiedDesc' ? 'descending' : 'none')}">
+                <th role="columnheader" th:text="#{browserArea.header.type}"></th>
+                <th role="columnheader" th:attr="aria-sort=${sortField == 'lastModifiedAsc' ? 'ascending' : (sortField == 'lastModifiedDesc' ? 'descending' : 'none')}">
                     <a class="sortTable"
                        th:rel="${sortField == 'lastModifiedAsc' ? 'lastModifiedDesc' : 'lastModifiedAsc'}"
                        href="#"
@@ -44,105 +41,80 @@
                 </th>
             </tr>
             </thead>
-            <tbody id="jqueryFileTreeBody">
-            <tr th:each="file : ${files}"
+            <tbody id="jqueryFileTreeBody" role="rowgroup">
+            <tr role="row" th:each="file : ${files}"
                 th:if="${file.type == 'folder'}"
                 class="selectable"
                 th:classappend="|${file.readable ? 'esup-stock-read' : ''} ${file.writeable ? 'esup-stock-write' : ''} ${file.hidden ? 'esup-stock-hidden' : ''}|">
-                <td class="checkbox">
-                    <div class="readable" th:text="${file.readable}"></div>
-                    <div class="writeable" th:text="${file.writeable}"></div>
-                    <div>
+                <td role="cell" class="checkbox">
+                    <div class="file-entry">
                         <input type="checkbox" class="browsercheck" th:value="${file.encPath}" name="dirs"
                                th:attr="aria-label=${file.title}"/>
                         <a class="fileTreeRef" href="#" th:title="${file.title}" th:rel="${file.encPath}" th:parent="${file.encParentPath}">
                             <img th:src="${file.icon}" alt="" aria-hidden="true" />
                             <span th:text="${file.title}"></span>
                         </a>
-                        <span class="esupHide renameSpan">
-                    <input class="renameInput" type="text" th:value="${file.title}"
-                           th:attr="aria-label=#{dialog.rename.title}" />
-                    <button type="button" class="renameSubmit" th:text="#{toolbar.rename}"></button>
-                  </span>
                     </div>
                 </td>
-                <td>-</td>
-                <td th:text="#{browserarea.directory}"></td>
-                <td th:text="${#dates.format(file.lastModifiedTime, datePattern)}"></td>
+                <td role="cell">-</td>
+                <td role="cell" th:text="#{browserarea.directory}"></td>
+                <td role="cell" th:text="${#dates.format(file.lastModifiedTime, datePattern)}"></td>
             </tr>
-            <tr th:each="file : ${files}"
+            <tr role="row" th:each="file : ${files}"
                 th:if="${file.type == 'link'}"
                 class="selectable"
                 th:classappend="|${file.readable ? 'esup-stock-read' : ''} ${file.writeable ? 'esup-stock-write' : ''} ${file.hidden ? 'esup-stock-hidden' : ''}|">
-                <td class="checkbox">
-                    <div class="readable" th:text="${file.readable}"></div>
-                    <div class="writeable" th:text="${file.writeable}"></div>
-                    <div>
+                <td role="cell" class="checkbox">
+                    <div class="file-entry">
                         <a class="fileTreeRef" href="#" th:title="${file.title}" th:rel="${file.encPath}">
                             <img th:src="${file.icon}" alt="" aria-hidden="true" />
                             <span th:text="${file.title}"></span>
                         </a>
                     </div>
                 </td>
-                <td>-</td>
-                <td th:text="#{browserarea.link}"></td>
-                <td th:text="${#dates.format(file.lastModifiedTime, datePattern)}"></td>
+                <td role="cell">-</td>
+                <td role="cell" th:text="#{browserarea.link}"></td>
+                <td role="cell" th:text="${#dates.format(file.lastModifiedTime, datePattern)}"></td>
             </tr>
-            <tr th:each="file : ${files}" th:if="${file.type == 'drive'}">
-                <td>
-                    <div>
+            <tr role="row" th:each="file : ${files}" th:if="${file.type == 'drive'}">
+                <td role="cell">
+                    <div class="file-entry">
                         <img th:src="${file.icon}" alt="" aria-hidden="true" />
                         <a class="fileCatRef" href="#" th:title="${file.title}" th:rel="${file.encPath}" th:text="${file.title}"></a>
                     </div>
                 </td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td role="cell"></td>
+                <td role="cell"></td>
+                <td role="cell"></td>
             </tr>
-            <tr th:each="file : ${files}" th:if="${file.type == 'category'}">
-                <td>
-                    <div>
+            <tr role="row" th:each="file : ${files}" th:if="${file.type == 'category'}">
+                <td role="cell">
+                    <div class="file-entry">
                         <img th:src="${file.icon}" alt="" aria-hidden="true" />
                         <a class="fileCatRef" href="#" th:title="${file.title}" th:rel="${file.encPath}" th:text="${file.title}"></a>
                     </div>
                 </td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td role="cell"></td>
+                <td role="cell"></td>
+                <td role="cell"></td>
             </tr>
-            <tr th:each="file : ${files}" th:if="${file.type != 'folder' and file.type != 'link' and file.type != 'drive' and file.type != 'category'}" class="selectable">
-                <td class="checkbox">
-                    <div>
-                        <div class="readable" th:text="${file.readable}"></div>
-                        <div class="writeable" th:text="${file.writeable}"></div>
+            <tr role="row" th:each="file : ${files}" th:if="${file.type != 'folder' and file.type != 'link' and file.type != 'drive' and file.type != 'category'}" class="selectable">
+                <td role="cell" class="checkbox">
+                    <div class="file-entry">
                         <input type="checkbox" class="browsercheck" th:value="${file.encPath}" name="dirs"
                                th:attr="aria-label=${file.title}"/>
                         <a class="file" href="#" th:title="${file.title}" th:rel="${file.encPath}">
                             <img th:src="${file.icon}" alt="" aria-hidden="true" />
                             <span th:text="${file.title}"></span>
                         </a>
-                        <span class="esupHide renameSpan">
-                    <input class="renameInput" type="text" th:value="${file.title}"
-                           th:attr="aria-label=#{dialog.rename.title}" />
-                    <button type="button" class="renameSubmit" th:text="#{toolbar.rename}"></button>
-                  </span>
                     </div>
                 </td>
-                <td>
+                <td role="cell">
                     <span th:text="${file.formattedSize.size}"></span>
                     <span th:text="#{|details.${file.formattedSize.unit}|}"></span>
                 </td>
-                <td th:text="#{browserarea.file}"></td>
-                <td th:text="${#dates.format(file.lastModifiedTime, datePattern)}"></td>
-            </tr>
-            <tr>
-                <td class="browserlist esupHide" id="newDir">
-                    <input type="hidden" id="folderOrFileChoice" value="folder" />
-                    <input class="folder" id="newFileOrFolderInput" type="text"
-                           th:attr="aria-label=#{toolbar.create.title}"
-                           th:placeholder="#{dialog.newFolder.placeholder}" />
-                    <button type="button" id="newFileOrFolderSubmit">OK</button>
-                </td>
+                <td role="cell" th:text="#{browserarea.file}"></td>
+                <td role="cell" th:text="${#dates.format(file.lastModifiedTime, datePattern)}"></td>
             </tr>
             </tbody>
         </table>

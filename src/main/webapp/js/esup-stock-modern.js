@@ -337,12 +337,6 @@ class EsupFileManager {
                 this.handleFileSelection();
             }
         });
-
-        browserArea.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && e.target.matches('.renameInput, #newFileOrFolderInput')) {
-                e.preventDefault();
-            }
-        });
     }
 
     bindKeyboardEvents() {
