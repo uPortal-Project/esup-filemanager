@@ -18,6 +18,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         initMobileAdaptations();
         initMobileToolbar();
+        initMobileDetails();
         initMobileMenu();
         initTouchGestures();
         initResponsiveBehaviors();
@@ -57,16 +58,6 @@
         if (window.visualViewport) {
             window.visualViewport.addEventListener('resize', setVH);
         }
-
-        // Prevent double-tap zoom on iOS
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', function(event) {
-            const now = Date.now();
-            if (now - lastTouchEnd <= 300) {
-                event.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, false);
     }
 
     /**
@@ -112,6 +103,40 @@
 
         // Synchronize button disabled state
         syncMobileToolbarState();
+    }
+
+    function initMobileDetails() {
+        const button = document.getElementById('mobile-details');
+        const dialog = document.getElementById('mobileDetails');
+        const details = document.getElementById('detailArea');
+        if (!button || !dialog || !details) return;
+
+        const desktopParent = details.parentNode;
+        const mobile = window.matchMedia('(max-width: 991.98px)');
+        button.addEventListener('click', () => {
+            if (!mobile.matches || dialog.open) return;
+            // Move the existing panel: AJAX and media keep the same root and state.
+            dialog.appendChild(details);
+            dialog.showModal();
+        });
+        const close = () => {
+            window.detailsManager?.suspend(false);
+            desktopParent.appendChild(details);
+            dialog.close();
+            if (!document.querySelector('dialog[open], .modal.show')) {
+                document.body.classList.remove('modal-open');
+            }
+            (mobile.matches ? button : document.getElementById('treeSplitter'))?.focus();
+        };
+        document.getElementById('mobile-details-close').addEventListener('click', close);
+        dialog.addEventListener('cancel', event => {
+            if (event.target !== dialog) return;
+            event.preventDefault();
+            close();
+        });
+        mobile.addEventListener('change', () => {
+            if (!mobile.matches && dialog.open) close();
+        });
     }
 
     /**
@@ -166,10 +191,12 @@
         let touchEndX = 0;
 
         document.addEventListener('touchstart', function(e) {
+            if (e.target.closest('dialog')) return;
             touchStartX = e.changedTouches[0].screenX;
         }, false);
 
         document.addEventListener('touchend', function(e) {
+            if (e.target.closest('dialog')) return;
             touchEndX = e.changedTouches[0].screenX;
             handleSwipe();
         }, false);

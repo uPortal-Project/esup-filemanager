@@ -79,11 +79,11 @@
         <button type="button" class="slideshow-prev" th:attr="aria-label=#{details.playlist.prev}">‹</button>
         <div class="slideshow-image-container">
             <img id="slideshowImage" alt="">
-            <div class="slideshow-counter">
-                <span id="slideCounter" aria-live="polite" aria-atomic="true"></span>
-            </div>
         </div>
         <button type="button" class="slideshow-next" th:attr="aria-label=#{details.playlist.next}">›</button>
+        <div class="slideshow-counter">
+            <span id="slideCounter" aria-live="polite" aria-atomic="true"></span>
+        </div>
         <div class="slideshow-controls">
             <button type="button" id="slideshowAutoplay" class="btn-autoplay" aria-pressed="false"
                     th:attr="data-play=#{details.slideshow.play},data-pause=#{details.slideshow.pause}"

@@ -143,12 +143,12 @@ test('details lifecycle and keyboard accessibility in Chromium', async () => {
             deleteFiles: action, handleRename: action, handleEnterKey: action
         });`;
     const html = `<!doctype html><style>${readFileSync(join(webapp, 'css/details-modern.css'), 'utf8')}</style>
-        <button id="treeSplitter">Navigation</button><button id="toolbar-zip">ZIP</button><div id="detailArea">${fixture}</div><pre id="result">PENDING</pre>
+        <div id="treeSplitter" tabindex="0" role="separator">Navigation</div><button id="toolbar-zip">ZIP</button><div id="detailArea">${fixture}</div><pre id="result">PENDING</pre>
         <script>${setup}${shortcuts}</script><script>${readFileSync(join(webapp, 'js/details-manager.js'), 'utf8')}</script>
         <script>document.addEventListener('DOMContentLoaded', () => {
             try { (${checks})(${JSON.stringify(fixture)}); }
             catch (error) { document.getElementById('result').textContent = error.stack; }
-        });</script>`;
+        }, { once: true });</script>`;
     try {
         const file = join(directory, 'test.html');
         writeFileSync(file, html);
@@ -190,7 +190,7 @@ async function checkKeyboard(file, directory, fixture) {
     const timeout = setTimeout(() => {
         for (const request of pending.values()) request.reject(new Error('Keyboard test timed out'));
         browser.kill();
-    }, 20000);
+    }, 40000);
     try {
         const { targetId } = await send('Target.createTarget', { url: 'about:blank' });
         const { sessionId } = await send('Target.attachToTarget', { targetId, flatten: true });
@@ -268,6 +268,102 @@ async function checkKeyboard(file, directory, fixture) {
         await check(`window.globalActions === 1`, 'file shortcuts remain active outside details');
         await evaluate(`window.detailsManager.openModal(document.querySelector('#slideshowModal')); window.detailsManager.destroy()`);
         await check(`!document.querySelector('#slideshowModal').open && document.activeElement.id === 'treeSplitter'`, 'replacement restores navigation focus');
+        // Exercise the real mobile shell and viewer markup, with all local CSS layers.
+        const templates = resolve(__dirname, '../../main/resources/templates');
+        const viewer = name => readFileSync(join(templates, name), 'utf8').match(/<dialog[\s\S]*?<\/dialog>/)[0];
+        const imageSource = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900"><rect width="1200" height="900" fill="blue"/></svg>');
+        const mobileFixture = fixture.replace(/<dialog id="imageModal"[\s\S]*?<\/dialog>/, viewer('details_image.html'))
+            .replace(/<dialog id="slideshowModal"[\s\S]*?<\/dialog>/, viewer('details_files.html'))
+            .replace(/data-src="\/(one|two|three)"/g, `data-src="${imageSource}"`);
+        const styles = ['esup-stock.css', 'esup-responsive.css', 'details-modern.css']
+            .map(name => readFileSync(join(webapp, 'css', name), 'utf8')).join('\n');
+        // Bootstrap utilities used by the shell; no external stylesheet in this fixture.
+        const utilities = `
+            body { margin: 0; }
+            .offcanvas:not(.show) { display: none; }
+            .fixed-bottom { position: fixed; bottom: 0; left: 0; right: 0; }
+            .btn-group { display: flex; }
+            .fixed-bottom .btn { flex: 1; }
+            .d-none { display: none !important; }
+            @media (min-width: 992px) {
+                .d-lg-none { display: none !important; }
+                .d-lg-flex { display: flex !important; }
+            }`;
+        await evaluate(`window.detailsManager.destroy();
+            document.body.innerHTML = ${JSON.stringify(readFileSync(join(templates, 'body-responsive.html'), 'utf8'))};
+            const style = document.createElement('style');
+            style.textContent = ${JSON.stringify(styles + utilities)};
+            document.head.appendChild(style);
+            document.getElementById('detailArea').innerHTML = ${JSON.stringify(mobileFixture)};
+            document.getElementById('browserMain').innerHTML = '<input id="selection" type="checkbox" checked><div style="height:2000px">Files</div>';
+            window.savedDetails = document.getElementById('detailArea');
+            window.savedParent = savedDetails.parentNode;
+            window.detailsManager.mount(savedDetails);
+            ${readFileSync(join(webapp, 'js/esup-mobile-support.js'), 'utf8')}
+            document.dispatchEvent(new Event('DOMContentLoaded'));`);
+        const viewport = async (width, height) => {
+            await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false }, sessionId);
+            await evaluate(`new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))`);
+        };
+        const clickControl = async selector => {
+            const { x, y } = await evaluate(`(() => {
+                const control = document.querySelector(${JSON.stringify(selector)});
+                control.scrollIntoView({ block: 'center' });
+                const rect = control.getBoundingClientRect();
+                return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+            })()`);
+            await send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', clickCount: 1 }, sessionId);
+            await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'left', clickCount: 1 }, sessionId);
+        };
+        const visible = selector => `(() => {
+            const rect = document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect();
+            return rect.width > 0 && rect.height > 0 && rect.left >= 0 && rect.top >= 0 &&
+                rect.right <= innerWidth && rect.bottom <= innerHeight;
+        })()`;
+        for (const [width, height] of [[360, 640], [768, 600], [640, 240], [360, 220]]) {
+            await viewport(width, height);
+            await evaluate(`document.getElementById('browserArea').scrollTop = 120;
+                document.getElementById('mobile-details').focus();`);
+            await key('Enter', 'Enter');
+            await check(`mobileDetails.open && savedDetails.parentNode === mobileDetails && document.querySelectorAll('#detailArea').length === 1`, 'mobile reuses the single details root');
+            await check(`document.activeElement.id === 'mobile-details-close'`, 'mobile focuses return button');
+            await check(visible('#mobile-details-close'), 'return control fits viewport');
+            await evaluate(`document.getElementById('selection').focus()`);
+            await check(`document.activeElement.closest('#mobileDetails') !== null`, 'mobile background is inert');
+            await clickControl('.image-preview-container');
+            await evaluate(`new Promise(resolve => {
+                const image = document.getElementById('modalImage');
+                image.onload = resolve; image.src = ${JSON.stringify(imageSource)};
+                if (image.complete) resolve();
+            })`);
+            await check(visible('#modalImage'), 'large image fits viewport');
+            await check(visible('.image-modal-close'), 'image close fits viewport');
+            await key('Escape', 'Escape');
+            await check(`mobileDetails.open && !imageModal.open && document.activeElement.matches('.image-preview-container')`, 'nested Escape returns to details');
+            await clickControl('#detail-view-images');
+            await check(visible('.slideshow-close'), 'slideshow close fits viewport');
+            await check(visible('.slideshow-prev'), 'previous image fits viewport');
+            await check(visible('#slideshowAutoplay'), 'autoplay fits viewport');
+            await key('ArrowRight', 'ArrowRight');
+            await check(`window.detailsManager.imageIndex === 1`, 'mobile slideshow advances once');
+            await key('Escape', 'Escape');
+            await evaluate(`document.querySelector('[data-index="1"]').click()`);
+            await check(`window.detailsManager.trackIndex === 1`, 'mobile playlist remains usable');
+            await key('Escape', 'Escape');
+            await check(`!mobileDetails.open && savedDetails.parentNode === savedParent && document.activeElement.id === 'mobile-details'`, 'return restores panel and focus');
+            await check(`document.getElementById('selection').checked && document.getElementById('browserArea').scrollTop === 120`, 'return preserves selection and list scroll');
+            await check(`!document.body.classList.contains('modal-open')`, 'return releases viewer scroll lock');
+        }
+        await clickControl('#mobile-details');
+        await clickControl('#mobile-details-close');
+        await check(`!mobileDetails.open && window.detailsManager.trackIndex === 1 && document.getElementById('playlistAudio').pauses > 0`, 'return button suspends playback and keeps current track');
+        await clickControl('#mobile-details');
+        await evaluate(`window.detailsManager.destroy(); savedDetails.innerHTML = ${JSON.stringify(mobileFixture)};
+            window.detailsManager.mount(savedDetails); document.getElementById('detail-view-images').click();`);
+        await viewport(992, 700);
+        await check(`!mobileDetails.open && !slideshowModal.open && savedDetails.parentNode === savedParent && document.activeElement.id === 'treeSplitter'`, 'desktop transition closes nested viewers and restores panel');
+        await viewport(1440, 900);
+        await check(`getComputedStyle(document.getElementById('leftPanel')).display === 'flex'`, 'desktop details remain visible');
     } finally {
         clearTimeout(timeout);
         browser.kill();

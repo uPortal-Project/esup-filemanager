@@ -269,6 +269,14 @@
         </main>
     </div>
 
+    <dialog id="mobileDetails" aria-labelledby="mobileDetailsLabel">
+        <div class="panel-header">
+            <h2 id="mobileDetailsLabel" class="h6 mb-0" th:text="#{details.header}">Détails</h2>
+            <button type="button" id="mobile-details-close" class="btn btn-outline-secondary" autofocus
+                    th:text="#{details.back}">Retour à la liste</button>
+        </div>
+    </dialog>
+
     <!-- Mobile Bottom Toolbar (Quick actions) -->
     <div class="d-lg-none bg-light border-top fixed-bottom">
         <div class="btn-group w-100" role="group" th:attr="aria-label=#{aria.bottom.toolbar}">
@@ -289,6 +297,11 @@
                     aria-disabled="true">
                 <i class="bi bi-download fs-5" aria-hidden="true"></i>
                 <div class="small" th:text="#{toolbar.download}">Télécharger</div>
+            </button>
+            <button type="button" class="btn btn-light border-0 py-3" id="mobile-details"
+                    aria-haspopup="dialog" aria-controls="mobileDetails">
+                <i class="bi bi-info-circle fs-5" aria-hidden="true"></i>
+                <div class="small" th:text="#{details.header}">Détails</div>
             </button>
             <button type="button" class="btn btn-light border-0 py-3"
                     data-bs-toggle="offcanvas" data-bs-target="#mobileMenu"

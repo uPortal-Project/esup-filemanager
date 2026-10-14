@@ -355,8 +355,8 @@ class EsupFileManager {
         });
 
         document.addEventListener('keydown', (e) => {
-            // Details and dialogs own their keyboard interactions.
-            if (e.defaultPrevented || e.target.closest('#detailArea, dialog, .modal, input, textarea')) {
+            // Controls, details and dialogs own their keyboard interactions.
+            if (e.defaultPrevented || e.target.closest('#detailArea, dialog, .modal, input, textarea, select, button, a, [contenteditable]')) {
                 return;
             }
 
