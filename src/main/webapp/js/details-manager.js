@@ -44,10 +44,15 @@
                 src: el.dataset.src,
                 mime: el.dataset.mime
             }));
-            this.autoplayLabel = this.find('#slideshowAutoplay')?.textContent;
 
             this.listen(root, 'click', event => this.handleClick(event));
-            this.listen(document, 'keydown', event => this.handleKeydown(event));
+            this.listen(root, 'keydown', event => this.handleKeydown(event));
+            root.querySelectorAll('dialog').forEach(modal => {
+                this.listen(modal, 'cancel', event => {
+                    event.preventDefault();
+                    this.closeModal(modal);
+                });
+            });
             this.listen(this.find('#playlistAudio'), 'ended', () => this.changeTrack(1));
 
             const img = this.find('.details-image');
@@ -76,7 +81,7 @@
         destroy() {
             // Detach handlers before load() emits media events or the DOM is replaced.
             this.events?.abort();
-            this.suspend();
+            this.suspend(false);
             this.root?.querySelectorAll('audio, video').forEach(player => {
                 player.removeAttribute('src');
                 player.querySelectorAll('source').forEach(source => source.removeAttribute('src'));
@@ -88,29 +93,33 @@
             this.tracks = [];
             this.imageIndex = 0;
             this.trackIndex = 0;
-            this.autoplayLabel = null;
         },
 
-        suspend() {
-            this.closeModal(this.find('#imageModal'));
-            this.closeModal(this.find('#slideshowModal'));
+        suspend(restoreFocus = true) {
+            this.closeModal(this.find('#imageModal'), restoreFocus);
+            this.closeModal(this.find('#slideshowModal'), restoreFocus);
             this.root?.querySelectorAll('audio, video').forEach(player => player.pause());
         },
 
-        openModal(modal) {
-            if (!modal) return;
-            modal.hidden = false;
+        openModal(modal, trigger) {
+            if (!modal || modal.open) return;
+            this.returnFocus = trigger;
+            modal.showModal();
             document.body.classList.add('modal-open');
         },
 
-        closeModal(modal) {
-            if (modal) {
-                modal.hidden = true;
+        closeModal(modal, restoreFocus = true) {
+            if (modal?.open) {
+                modal.close();
                 modal.querySelector('img')?.removeAttribute('src');
+                const target = restoreFocus && this.returnFocus?.isConnected
+                    ? this.returnFocus : document.getElementById('treeSplitter');
+                target?.focus();
+                this.returnFocus = null;
             }
             if (modal?.id === 'slideshowModal' || !modal) this.stopAutoplay();
             // Bootstrap dialogs may also own the body scroll lock.
-            if (!document.querySelector('.image-modal:not([hidden]), .slideshow-modal:not([hidden]), .modal.show')) {
+            if (!document.querySelector('dialog[open], .modal.show')) {
                 document.body.classList.remove('modal-open');
             }
         },
@@ -121,7 +130,8 @@
             const safeUrl = sanitizeImageUrl(img?.dataset.fullsize);
             if (!modalImg || !safeUrl) return;
             modalImg.src = safeUrl;
-            this.openModal(this.find('#imageModal'));
+            modalImg.alt = img.alt;
+            this.openModal(this.find('#imageModal'), control);
         },
 
         showImage(index) {
@@ -141,28 +151,28 @@
         },
 
         toggleAutoplay() {
-            if (this.autoplayInterval !== null) {
-                this.stopAutoplay();
-                return;
-            }
-            this.autoplayInterval = setInterval(() => this.changeImage(1), 3000);
-            const button = this.find('#slideshowAutoplay');
-            if (button) {
-                button.textContent = '⏸ Pause';
-                button.classList.add('playing');
-                button.setAttribute('aria-pressed', 'true');
+            if (this.autoplayInterval !== null) this.stopAutoplay();
+            else {
+                this.autoplayInterval = setInterval(() => this.changeImage(1), 3000);
+                this.renderAutoplay();
             }
         },
 
         stopAutoplay() {
             clearInterval(this.autoplayInterval);
             this.autoplayInterval = null;
+            this.renderAutoplay();
+        },
+
+        renderAutoplay() {
+            const playing = this.autoplayInterval !== null;
             const button = this.find('#slideshowAutoplay');
             if (button) {
-                button.textContent = this.autoplayLabel;
-                button.classList.remove('playing');
-                button.setAttribute('aria-pressed', 'false');
+                button.textContent = playing ? button.dataset.pause : button.dataset.play;
+                button.classList.toggle('playing', playing);
+                button.setAttribute('aria-pressed', String(playing));
             }
+            this.find('#slideCounter')?.setAttribute('aria-live', playing ? 'off' : 'polite');
         },
 
         loadTrack(index, autoplay) {
@@ -178,8 +188,8 @@
             const counter = this.find('#playlistCounter');
             if (counter) counter.textContent = `${index + 1} / ${this.tracks.length}`;
             this.root.querySelectorAll('#playlistTracks .playlist-track').forEach((item, i) => {
-                item.classList.toggle('active', i === index);
-                item.setAttribute('aria-selected', String(i === index));
+                if (i === index) item.setAttribute('aria-current', 'true');
+                else item.removeAttribute('aria-current');
             });
         },
 
@@ -188,7 +198,7 @@
         },
 
         handleClick(event) {
-            const control = event.target.closest('button, .btn-download, .image-preview-container, .playlist-track, .image-modal, .slideshow-modal');
+            const control = event.target.closest('button, .btn-download, dialog');
             if (!control || !this.root.contains(control)) return;
 
             if (control.matches('.btn-download')) {
@@ -205,7 +215,7 @@
                 this.closeModal(control);
             } else if (control.id === 'detail-view-images' && this.images.length) {
                 this.showImage(0);
-                this.openModal(this.find('#slideshowModal'));
+                this.openModal(this.find('#slideshowModal'), control);
             } else if (control.matches('.slideshow-prev, .slideshow-next')) {
                 this.changeImage(control.matches('.slideshow-prev') ? -1 : 1);
             } else if (control.id === 'slideshowAutoplay') {
@@ -222,17 +232,11 @@
 
         handleKeydown(event) {
             const slideshow = this.find('#slideshowModal');
-            const image = this.find('#imageModal');
-            if (event.key === 'Escape') {
-                if (slideshow && !slideshow.hidden) this.closeModal(slideshow);
-                if (image && !image.hidden) this.closeModal(image);
-            } else if (slideshow && !slideshow.hidden) {
-                if (event.key === 'ArrowLeft') this.changeImage(-1);
-                if (event.key === 'ArrowRight') this.changeImage(1);
-                if (event.key === ' ' && !event.target.closest('button, input, select, textarea, audio, video, [contenteditable]')) {
-                    event.preventDefault();
-                    this.toggleAutoplay();
-                }
+            if (!slideshow?.open || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
+            if (event.target.closest('input, select, textarea, audio, video, [contenteditable]')) return;
+            if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+                event.preventDefault();
+                this.changeImage(event.key === 'ArrowLeft' ? -1 : 1);
             }
         }
     };

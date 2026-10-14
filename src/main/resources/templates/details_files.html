@@ -53,14 +53,12 @@
                         th:attr="aria-label=#{details.playlist.next}">Suivant ›</button>
             </div>
 
-            <ul class="playlist-tracks" id="playlistTracks" role="listbox" th:attr="aria-label=#{details.playlist.title}">
-                <li th:each="track, stat : ${audio_tracks}"
-                    class="playlist-track"
-                    th:classappend="${stat.first} ? ' active' : ''"
-                    th:attr="data-index=${stat.index}, aria-selected=${stat.first ? 'true' : 'false'}"
-                    tabindex="0"
-                    role="option"
-                    th:text="${track.title}">Piste</li>
+            <ul class="playlist-tracks" id="playlistTracks" th:attr="aria-label=#{details.playlist.title}">
+                <li th:each="track, stat : ${audio_tracks}">
+                    <button type="button" class="playlist-track"
+                            th:attr="data-index=${stat.index},aria-current=${stat.first ? 'true' : null}"
+                            th:text="${track.title}">Piste</button>
+                </li>
             </ul>
         </div>
 
@@ -74,11 +72,10 @@
 </div>
 
 <!-- Modal du diaporama -->
-<div id="slideshowModal" class="slideshow-modal" hidden
-     role="dialog" aria-modal="true"
+<dialog id="slideshowModal" class="slideshow-modal"
      th:attr="aria-label=#{aria.slideshow.title}">
     <div class="slideshow-content">
-        <button type="button" class="slideshow-close" th:attr="aria-label=#{aria.slideshow.close}">&times;</button>
+        <button type="button" class="slideshow-close" autofocus th:attr="aria-label=#{aria.slideshow.close}">&times;</button>
         <button type="button" class="slideshow-prev" th:attr="aria-label=#{details.playlist.prev}">‹</button>
         <div class="slideshow-image-container">
             <img id="slideshowImage" alt="">
@@ -88,7 +85,9 @@
         </div>
         <button type="button" class="slideshow-next" th:attr="aria-label=#{details.playlist.next}">›</button>
         <div class="slideshow-controls">
-            <button id="slideshowAutoplay" class="btn-autoplay" aria-pressed="false">▶ Lecture auto</button>
+            <button type="button" id="slideshowAutoplay" class="btn-autoplay" aria-pressed="false"
+                    th:attr="data-play=#{details.slideshow.play},data-pause=#{details.slideshow.pause}"
+                    th:text="#{details.slideshow.play}">▶ Lecture auto</button>
         </div>
     </div>
-</div>
+</dialog>

@@ -2,13 +2,14 @@
 <div class="details-card">
     <h3 class="details-header" th:text="#{details.header}">Détails</h3>
 
-    <div class="image-preview-container">
+    <button type="button" class="image-preview-container"
+            th:attr="aria-label=#{details.viewimage} + ' ' + ${file.title}">
         <img th:src="@{/fetchImage(dir=${file.encPath})}"
              class="details-image"
              th:alt="${file.title}"
              th:attr="data-fullsize=@{/fetchImage(dir=${file.encPath})}" />
-        <div class="image-zoom-icon" aria-hidden="true">🔍</div>
-    </div>
+        <span class="image-zoom-icon" aria-hidden="true">🔍</span>
+    </button>
 
     <div class="details-spacer"></div>
 
@@ -47,13 +48,12 @@
 </div>
 
 <!-- Modal for full-size display -->
-<div id="imageModal" class="image-modal" hidden
-     role="dialog" aria-modal="true"
+<dialog id="imageModal" class="image-modal"
      th:attr="aria-label=#{aria.image.modal.title}">
     <div class="image-modal-content">
-        <button type="button" class="image-modal-close" th:attr="aria-label=#{aria.image.modal.close}">&times;</button>
-        <img id="modalImage" src="" th:attr="alt=#{aria.image.modal.title}">
+        <button type="button" class="image-modal-close" autofocus th:attr="aria-label=#{aria.image.modal.close}">&times;</button>
+        <img id="modalImage" th:alt="${file.title}">
     </div>
-</div>
+</dialog>
 
 <div class="details-spacer"></div>
