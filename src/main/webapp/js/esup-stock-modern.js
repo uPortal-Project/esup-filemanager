@@ -832,12 +832,9 @@ class EsupFileManager {
 
             const detailArea = document.getElementById('detailArea');
             if (detailArea) {
+                window.detailsManager?.destroy();
                 detailArea.innerHTML = html;
-
-                // Reinitialize details manager (images, slideshow, etc.)
-                if (window.reinitDetailsManager) {
-                    window.reinitDetailsManager();
-                }
+                window.detailsManager?.mount(detailArea);
 
                 console.log('Details loaded into detailArea');
             }
@@ -1571,12 +1568,9 @@ class EsupFileManager {
 
             const detailArea = document.getElementById('detailArea');
             if (detailArea) {
+                window.detailsManager?.destroy();
                 detailArea.innerHTML = html;
-
-                // Reinitialize details manager
-                if (window.reinitDetailsManager) {
-                    window.reinitDetailsManager();
-                }
+                window.detailsManager?.mount(detailArea);
 
                 console.log('Multiple details loaded into detailArea');
             }

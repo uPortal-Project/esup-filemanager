@@ -145,7 +145,7 @@ body.modal-open {
     overflow: hidden;
 }
 
-.image-modal {
+.image-modal:not([hidden]) {
     position: fixed;
     z-index: 9999;
     left: 0;
@@ -197,7 +197,7 @@ body.modal-open {
 }
 
 /* ==================== Slideshow ==================== */
-.slideshow-modal {
+.slideshow-modal:not([hidden]) {
     position: fixed;
     z-index: 9999;
     left: 0;

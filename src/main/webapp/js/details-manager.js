@@ -1,584 +1,252 @@
-/**
- * Details Manager - Vanilla JavaScript
- * Modern details block management without libraries
- */
-
+/** Details panel: mount once, destroy before replacing its contents. */
 (function() {
     'use strict';
 
-    // ==================== Image Viewer ====================
-
-    /**
-     * Validates that a URL is safe to use as an image source.
-     * Uses the URL API for robust protocol validation — prevents javascript: injection.
-     * CodeQL-compliant: only http/https protocols are allowed.
-     * @param {string} url
-     * @returns {string|null} The sanitized absolute URL or null if unsafe
-     */
     function sanitizeImageUrl(url) {
         if (!url || typeof url !== 'string') return null;
         try {
             const parsed = new URL(url.trim(), window.location.href);
-            if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
-                return parsed.href;
-            }
-            return null;
+            return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : null;
         } catch (e) {
             return null;
         }
     }
 
-    /**
-     * Handler for displaying images in full size
-     */
-    window.viewImageFullsize = function(button) {
-        const card = button.closest('.details-card');
-        const img = card.querySelector('.details-image');
-
-        if (!img) return;
-
-        const modal = document.getElementById('imageModal');
-        const modalImg = document.getElementById('modalImage');
-
-        if (modal && modalImg) {
-            modal.hidden = false;
-            const safeUrl = sanitizeImageUrl(img.getAttribute('data-fullsize'));
-            if (safeUrl) modalImg.src = safeUrl;
-            document.body.classList.add('modal-open');
-        }
-    };
-
-    /**
-     * Initializes image viewer on preview click
-     */
-    function initImagePreviewClick() {
-        const imageContainer = document.querySelector('.image-preview-container');
-        if (imageContainer) {
-            imageContainer.addEventListener('click', function() {
-                const img = this.querySelector('.details-image');
-                if (img) {
-                    const modal = document.getElementById('imageModal');
-                    const modalImg = document.getElementById('modalImage');
-
-                    if (modal && modalImg) {
-                        modal.hidden = false;
-                        const safeUrl = sanitizeImageUrl(img.getAttribute('data-fullsize'));
-                        if (safeUrl) modalImg.src = safeUrl;
-                        document.body.classList.add('modal-open');
-                    }
-                }
-            });
-        }
-
-        const fullSizeButton = document.querySelector('.btn-view-fullsize');
-        if (fullSizeButton) {
-            fullSizeButton.addEventListener('click', function() {
-                window.viewImageFullsize(this);
-            });
-        }
-    }
-
-    /**
-     * Image modal close handler
-     */
-    function initImageModalClose() {
-        const modal = document.getElementById('imageModal');
-        if (!modal) return;
-
-        const closeBtn = modal.querySelector('.image-modal-close');
-
-        if (closeBtn) {
-            closeBtn.addEventListener('click', function() {
-                modal.hidden = true;
-                document.body.classList.remove('modal-open');
-            });
-        }
-
-        // Close on click outside image
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                modal.hidden = true;
-                document.body.classList.remove('modal-open');
-            }
-        });
-
-        // Close with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && !modal.hidden) {
-                modal.hidden = true;
-                document.body.classList.remove('modal-open');
-            }
-        });
-    }
-
-    /**
-     * Detects and displays image dimensions
-     */
-    function initImageDimensionDetection() {
-        const img = document.querySelector('.details-image');
-        const widthSpan = document.getElementById('image_width');
-        const heightSpan = document.getElementById('image_height');
-
-        if (img && widthSpan && heightSpan) {
-            img.addEventListener('load', function() {
-                widthSpan.textContent = this.naturalWidth;
-                heightSpan.textContent = this.naturalHeight;
-            });
-
-            // If image is already loaded
-            if (img.complete) {
-                widthSpan.textContent = img.naturalWidth;
-                heightSpan.textContent = img.naturalHeight;
-            }
-        }
-    }
-
-    function initDownloadLinks() {
-        document.querySelectorAll('.btn-download').forEach(link => {
-            const newLink = link.cloneNode(true);
-            link.parentNode.replaceChild(newLink, link);
-
-            newLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                const href = this.getAttribute('href');
-                if (!href) return;
-
-                if (window.esupFileManager?.triggerDownload) {
-                    window.esupFileManager.triggerDownload(href);
-                    return;
-                }
-
-                const iframe = document.createElement('iframe');
-                iframe.hidden = true;
-                iframe.setAttribute('aria-hidden', 'true');
-                iframe.tabIndex = -1;
-                iframe.src = href;
-                document.body.appendChild(iframe);
-                setTimeout(() => iframe.remove(), 60000);
-            });
-        });
-    }
-
-    // ==================== Slideshow Manager ====================
-
-    const SlideshowManager = {
+    const DetailsManager = {
+        root: null,
+        events: null,
         images: [],
-        currentIndex: 0,
+        tracks: [],
+        imageIndex: 0,
+        trackIndex: 0,
         autoplayInterval: null,
-        autoplayDelay: 3000,
 
-        /**
-         * Initializes slideshow
-         */
-        init: function() {
-            const viewImagesBtn = document.getElementById('detail-view-images');
-            if (!viewImagesBtn) {
-                console.log('Slideshow: button not found');
-                return;
-            }
-
-            console.log('Slideshow: initializing...');
-
-            // Load image data
-            this.loadImages();
-
-            console.log(`Slideshow: ${this.images.length} image(s) loaded`);
-
-            // Remove old listeners
-            const newBtn = viewImagesBtn.cloneNode(true);
-            viewImagesBtn.parentNode.replaceChild(newBtn, viewImagesBtn);
-
-            // Event to open slideshow
-            newBtn.addEventListener('click', () => {
-                console.log('Slideshow: opening...');
-                this.open();
-            });
-
-            // Modal events
-            this.initModalEvents();
+        find(selector) {
+            return this.root?.querySelector(selector);
         },
 
-        /**
-         * Loads images from data
-         */
-        loadImages: function() {
-            const slideshowData = document.getElementById('slideshowData');
-            if (!slideshowData) return;
+        listen(target, type, handler) {
+            target?.addEventListener(type, handler, { signal: this.events.signal });
+        },
 
-            const imageElements = slideshowData.querySelectorAll('.slideshow-image-data');
-            this.images = Array.from(imageElements).map(el => ({
-                src: el.getAttribute('data-src'),
-                title: el.getAttribute('data-title')
+        mount(root) {
+            if (root === this.root) return;
+            this.destroy();
+            if (!root) return;
+
+            this.root = root;
+            this.events = new AbortController();
+            this.images = Array.from(root.querySelectorAll('.slideshow-image-data'), el => ({
+                src: el.dataset.src,
+                title: el.dataset.title
             }));
+            this.tracks = Array.from(root.querySelectorAll('.playlist-track-data'), el => ({
+                src: el.dataset.src,
+                mime: el.dataset.mime
+            }));
+            this.autoplayLabel = this.find('#slideshowAutoplay')?.textContent;
+
+            this.listen(root, 'click', event => this.handleClick(event));
+            this.listen(document, 'keydown', event => this.handleKeydown(event));
+            this.listen(this.find('#playlistAudio'), 'ended', () => this.changeTrack(1));
+
+            const img = this.find('.details-image');
+            const updateDimensions = () => {
+                const width = this.find('#image_width');
+                const height = this.find('#image_height');
+                if (width) width.textContent = img.naturalWidth;
+                if (height) height.textContent = img.naturalHeight;
+            };
+            this.listen(img, 'load', updateDimensions);
+            if (img?.complete) updateDimensions();
+
+            root.querySelectorAll('audio, video').forEach(player => {
+                this.listen(player, 'error', () => {
+                    const container = player.closest('.media-player-container');
+                    if (!container || container.querySelector('.media-error')) return;
+                    const message = document.createElement('div');
+                    message.className = 'media-error';
+                    message.textContent = 'Media file playback error';
+                    container.appendChild(message);
+                });
+            });
+            this.loadTrack(0, false);
         },
 
-        /**
-         * Opens slideshow
-         */
-        open: function() {
-            if (this.images.length === 0) return;
+        destroy() {
+            // Detach handlers before load() emits media events or the DOM is replaced.
+            this.events?.abort();
+            this.suspend();
+            this.root?.querySelectorAll('audio, video').forEach(player => {
+                player.removeAttribute('src');
+                player.querySelectorAll('source').forEach(source => source.removeAttribute('src'));
+                player.load();
+            });
+            this.root = null;
+            this.events = null;
+            this.images = [];
+            this.tracks = [];
+            this.imageIndex = 0;
+            this.trackIndex = 0;
+            this.autoplayLabel = null;
+        },
 
-            const modal = document.getElementById('slideshowModal');
+        suspend() {
+            this.closeModal(this.find('#imageModal'));
+            this.closeModal(this.find('#slideshowModal'));
+            this.root?.querySelectorAll('audio, video').forEach(player => player.pause());
+        },
+
+        openModal(modal) {
             if (!modal) return;
-
-            this.currentIndex = 0;
             modal.hidden = false;
             document.body.classList.add('modal-open');
-            this.showImage(0);
         },
 
-        /**
-         * Closes slideshow
-         */
-        close: function() {
-            const modal = document.getElementById('slideshowModal');
+        closeModal(modal) {
             if (modal) {
                 modal.hidden = true;
+                modal.querySelector('img')?.removeAttribute('src');
+            }
+            if (modal?.id === 'slideshowModal' || !modal) this.stopAutoplay();
+            // Bootstrap dialogs may also own the body scroll lock.
+            if (!document.querySelector('.image-modal:not([hidden]), .slideshow-modal:not([hidden]), .modal.show')) {
                 document.body.classList.remove('modal-open');
-                this.stopAutoplay();
             }
         },
 
-        /**
-         * Displays image at given index
-         */
-        showImage: function(index) {
-            if (index < 0 || index >= this.images.length) return;
+        openImage(control) {
+            const img = control.closest('.details-card')?.querySelector('.details-image');
+            const modalImg = this.find('#modalImage');
+            const safeUrl = sanitizeImageUrl(img?.dataset.fullsize);
+            if (!modalImg || !safeUrl) return;
+            modalImg.src = safeUrl;
+            this.openModal(this.find('#imageModal'));
+        },
 
-            this.currentIndex = index;
-            const img = document.getElementById('slideshowImage');
-            const counter = document.getElementById('slideCounter');
-
+        showImage(index) {
+            if (!Number.isInteger(index) || index < 0 || index >= this.images.length) return;
+            this.imageIndex = index;
+            const img = this.find('#slideshowImage');
             if (img) {
                 img.src = this.images[index].src;
                 img.alt = this.images[index].title;
             }
-
-            if (counter) {
-                counter.textContent = `${index + 1} / ${this.images.length}`;
-            }
+            const counter = this.find('#slideCounter');
+            if (counter) counter.textContent = `${index + 1} / ${this.images.length}`;
         },
 
-        /**
-         * Previous image
-         */
-        prev: function() {
-            const newIndex = this.currentIndex - 1;
-            this.showImage(newIndex < 0 ? this.images.length - 1 : newIndex);
+        changeImage(delta) {
+            this.showImage((this.imageIndex + delta + this.images.length) % this.images.length);
         },
 
-        /**
-         * Next image
-         */
-        next: function() {
-            const newIndex = this.currentIndex + 1;
-            this.showImage(newIndex >= this.images.length ? 0 : newIndex);
-        },
-
-        /**
-         * Toggle autoplay
-         */
-        toggleAutoplay: function() {
-            if (this.autoplayInterval) {
+        toggleAutoplay() {
+            if (this.autoplayInterval !== null) {
                 this.stopAutoplay();
-            } else {
-                this.startAutoplay();
+                return;
+            }
+            this.autoplayInterval = setInterval(() => this.changeImage(1), 3000);
+            const button = this.find('#slideshowAutoplay');
+            if (button) {
+                button.textContent = '⏸ Pause';
+                button.classList.add('playing');
+                button.setAttribute('aria-pressed', 'true');
             }
         },
 
-        /**
-         * Starts automatic playback
-         */
-        startAutoplay: function() {
-            const btn = document.getElementById('slideshowAutoplay');
-            if (btn) {
-                btn.textContent = '⏸ Pause';
-                btn.classList.add('playing');
-            }
-
-            this.autoplayInterval = setInterval(() => {
-                this.next();
-            }, this.autoplayDelay);
-        },
-
-        /**
-         * Stops automatic playback
-         */
-        stopAutoplay: function() {
-            const btn = document.getElementById('slideshowAutoplay');
-            if (btn) {
-                btn.textContent = '▶ Auto play';
-                btn.classList.remove('playing');
-            }
-
-            if (this.autoplayInterval) {
-                clearInterval(this.autoplayInterval);
-                this.autoplayInterval = null;
+        stopAutoplay() {
+            clearInterval(this.autoplayInterval);
+            this.autoplayInterval = null;
+            const button = this.find('#slideshowAutoplay');
+            if (button) {
+                button.textContent = this.autoplayLabel;
+                button.classList.remove('playing');
+                button.setAttribute('aria-pressed', 'false');
             }
         },
 
-        /**
-         * Initializes modal events
-         */
-        initModalEvents: function() {
-            const modal = document.getElementById('slideshowModal');
-            if (!modal) return;
-
-            // Close button
-            const closeBtn = modal.querySelector('.slideshow-close');
-            if (closeBtn) {
-                closeBtn.addEventListener('click', () => this.close());
-            }
-
-            // Navigation buttons
-            const prevBtn = modal.querySelector('.slideshow-prev');
-            const nextBtn = modal.querySelector('.slideshow-next');
-
-            if (prevBtn) {
-                prevBtn.addEventListener('click', () => this.prev());
-            }
-
-            if (nextBtn) {
-                nextBtn.addEventListener('click', () => this.next());
-            }
-
-            // Autoplay button
-            const autoplayBtn = document.getElementById('slideshowAutoplay');
-            if (autoplayBtn) {
-                autoplayBtn.addEventListener('click', () => this.toggleAutoplay());
-            }
-
-            // Close on click outside
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    this.close();
-                }
-            });
-
-            // Keyboard navigation
-            document.addEventListener('keydown', (e) => {
-                if (modal.hidden) return;
-
-                switch(e.key) {
-                    case 'Escape':
-                        this.close();
-                        break;
-                    case 'ArrowLeft':
-                        this.prev();
-                        break;
-                    case 'ArrowRight':
-                        this.next();
-                        break;
-                    case ' ':
-                        e.preventDefault();
-                        this.toggleAutoplay();
-                        break;
-                }
-            });
-        }
-    };
-
-    // ==================== Audio Playlist Manager ====================
-
-    const AudioPlaylistManager = {
-        tracks: [],
-        currentIndex: 0,
-
-        /**
-         * Initializes the audio playlist
-         */
-        init: function() {
-            const audioEl = document.getElementById('playlistAudio');
-            if (!audioEl) return;
-
-            // Load track data
-            this.loadTracks();
-            if (this.tracks.length === 0) return;
-
-            console.log(`Playlist: ${this.tracks.length} track(s) loaded`);
-
-            // Load first track
-            this.loadTrack(0, false);
-
-            // Bind track list click
-            const trackList = document.getElementById('playlistTracks');
-            if (trackList) {
-                const newList = trackList.cloneNode(true);
-                trackList.parentNode.replaceChild(newList, trackList);
-                newList.addEventListener('click', (e) => {
-                    const li = e.target.closest('.playlist-track');
-                    if (li) {
-                        const index = parseInt(li.getAttribute('data-index'), 10);
-                        this.loadTrack(index, true);
-                    }
-                });
-            }
-
-            // Bind prev / next buttons
-            const prevBtn = document.getElementById('playlistPrev');
-            const nextBtn = document.getElementById('playlistNext');
-
-            if (prevBtn) {
-                const newPrev = prevBtn.cloneNode(true);
-                prevBtn.parentNode.replaceChild(newPrev, prevBtn);
-                newPrev.addEventListener('click', () => this.prev());
-            }
-            if (nextBtn) {
-                const newNext = nextBtn.cloneNode(true);
-                nextBtn.parentNode.replaceChild(newNext, nextBtn);
-                newNext.addEventListener('click', () => this.next());
-            }
-
-            // Auto-advance to next track when current ends
-            audioEl.addEventListener('ended', () => this.next());
-        },
-
-        /**
-         * Loads track metadata from hidden DOM elements
-         */
-        loadTracks: function() {
-            const playlistData = document.getElementById('playlistData');
-            if (!playlistData) return;
-
-            const items = playlistData.querySelectorAll('.playlist-track-data');
-            this.tracks = Array.from(items).map(el => ({
-                src:   el.getAttribute('data-src'),
-                title: el.getAttribute('data-title'),
-                mime:  el.getAttribute('data-mime')
-            }));
-        },
-
-        /**
-         * Loads and optionally plays the track at the given index
-         * @param {number} index
-         * @param {boolean} autoplay
-         */
-        loadTrack: function(index, autoplay) {
-            if (index < 0 || index >= this.tracks.length) return;
-            this.currentIndex = index;
-
+        loadTrack(index, autoplay) {
+            const audio = this.find('#playlistAudio');
+            if (!audio || !Number.isInteger(index) || index < 0 || index >= this.tracks.length) return;
+            this.trackIndex = index;
             const track = this.tracks[index];
-            const audioEl = document.getElementById('playlistAudio');
-            if (audioEl) {
-                audioEl.src = track.src;
-                if (track.mime) audioEl.type = track.mime;
-                audioEl.load();
-                if (autoplay) audioEl.play().catch(() => {});
-            }
+            audio.src = track.src;
+            if (track.mime) audio.type = track.mime;
+            audio.load();
+            if (autoplay) audio.play().catch(() => {});
 
-            // Update counter
-            const counter = document.getElementById('playlistCounter');
-            if (counter) {
-                counter.textContent = `${index + 1} / ${this.tracks.length}`;
-            }
-
-            // Highlight active track in list
-            const items = document.querySelectorAll('#playlistTracks .playlist-track');
-            items.forEach((li, i) => {
-                if (i === index) {
-                    li.classList.add('active');
-                } else {
-                    li.classList.remove('active');
-                }
+            const counter = this.find('#playlistCounter');
+            if (counter) counter.textContent = `${index + 1} / ${this.tracks.length}`;
+            this.root.querySelectorAll('#playlistTracks .playlist-track').forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+                item.setAttribute('aria-selected', String(i === index));
             });
         },
 
-        /**
-         * Previous track
-         */
-        prev: function() {
-            const newIndex = this.currentIndex - 1;
-            this.loadTrack(newIndex < 0 ? this.tracks.length - 1 : newIndex, true);
+        changeTrack(delta) {
+            this.loadTrack((this.trackIndex + delta + this.tracks.length) % this.tracks.length, true);
         },
 
-        /**
-         * Next track
-         */
-        next: function() {
-            const newIndex = this.currentIndex + 1;
-            this.loadTrack(newIndex >= this.tracks.length ? 0 : newIndex, true);
+        handleClick(event) {
+            const control = event.target.closest('button, .btn-download, .image-preview-container, .playlist-track, .image-modal, .slideshow-modal');
+            if (!control || !this.root.contains(control)) return;
+
+            if (control.matches('.btn-download')) {
+                const href = control.getAttribute('href');
+                if (href && window.esupFileManager?.triggerDownload) {
+                    event.preventDefault();
+                    window.esupFileManager.triggerDownload(href);
+                }
+            } else if (control.matches('.btn-view-fullsize, .image-preview-container')) {
+                this.openImage(control);
+            } else if (control.matches('.image-modal-close, .slideshow-close')) {
+                this.closeModal(control.closest('.image-modal, .slideshow-modal'));
+            } else if (control.matches('.image-modal, .slideshow-modal') && event.target === control) {
+                this.closeModal(control);
+            } else if (control.id === 'detail-view-images' && this.images.length) {
+                this.showImage(0);
+                this.openModal(this.find('#slideshowModal'));
+            } else if (control.matches('.slideshow-prev, .slideshow-next')) {
+                this.changeImage(control.matches('.slideshow-prev') ? -1 : 1);
+            } else if (control.id === 'slideshowAutoplay') {
+                this.toggleAutoplay();
+            } else if (control.matches('.playlist-track')) {
+                this.loadTrack(Number(control.dataset.index), true);
+            } else if (control.id === 'playlistPrev' || control.id === 'playlistNext') {
+                this.changeTrack(control.id === 'playlistPrev' ? -1 : 1);
+            } else if (control.id === 'detail-zip-download') {
+                const button = document.getElementById('toolbar-zip');
+                if (button && !button.disabled) button.click();
+            }
+        },
+
+        handleKeydown(event) {
+            const slideshow = this.find('#slideshowModal');
+            const image = this.find('#imageModal');
+            if (event.key === 'Escape') {
+                if (slideshow && !slideshow.hidden) this.closeModal(slideshow);
+                if (image && !image.hidden) this.closeModal(image);
+            } else if (slideshow && !slideshow.hidden) {
+                if (event.key === 'ArrowLeft') this.changeImage(-1);
+                if (event.key === 'ArrowRight') this.changeImage(1);
+                if (event.key === ' ' && !event.target.closest('button, input, select, textarea, audio, video, [contenteditable]')) {
+                    event.preventDefault();
+                    this.toggleAutoplay();
+                }
+            }
         }
     };
 
-    // ==================== Zip Download Manager ====================
-
-    /**
-     * ZIP download management
-     */
-    function initZipDownload() {
-        const zipBtn = document.getElementById('detail-zip-download');
-        if (!zipBtn) return;
-
-        // Remove old listeners
-        const newBtn = zipBtn.cloneNode(true);
-        zipBtn.parentNode.replaceChild(newBtn, zipBtn);
-
-        newBtn.addEventListener('click', function() {
-            console.log('ZIP download requested from details');
-
-            // Trigger ZIP download via main toolbar button
-            const toolbarZipBtn = document.getElementById('toolbar-zip');
-            if (toolbarZipBtn && !toolbarZipBtn.disabled) {
-                toolbarZipBtn.click();
-            } else {
-                console.warn('Toolbar ZIP button not available');
-            }
-        });
-    }
-
-    // ==================== Media Player Enhancements ====================
-
-    /**
-     * Enhances audio/video players with additional features
-     */
-    function enhanceMediaPlayers() {
-        const audioPlayers = document.querySelectorAll('.audio-player');
-        const videoPlayers = document.querySelectorAll('.video-player');
-
-        // Error handling for players
-        [...audioPlayers, ...videoPlayers].forEach(player => {
-            player.addEventListener('error', function(e) {
-                console.error('Media playback error:', e);
-                const container = this.closest('.media-player-container');
-                if (container) {
-                    const errorMsg = document.createElement('div');
-                    errorMsg.className = 'media-error';
-                    errorMsg.textContent = 'Media file playback error';
-                    container.appendChild(errorMsg);
-                }
-            });
-
-            // Log when media is ready
-            player.addEventListener('loadedmetadata', function() {
-                console.log('Media loaded:', this.duration, 'seconds');
-            });
-        });
-    }
-
-    // ==================== Initialization ====================
-
-    /**
-     * Initialization on DOM load
-     */
-    function init() {
-        initImagePreviewClick();
-        initImageModalClose();
-        initImageDimensionDetection();
-        initDownloadLinks();
-        SlideshowManager.init();
-        AudioPlaylistManager.init();
-        initZipDownload();
-        enhanceMediaPlayers();
-    }
-
-    // Initialize when DOM is ready
+    window.detailsManager = DetailsManager;
+    const mount = () => DetailsManager.mount(document.getElementById('detailArea'));
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', mount, { once: true });
     } else {
-        init();
+        mount();
     }
-
-    // Reinitialization after AJAX loading of detailsArea
-    window.reinitDetailsManager = init;
-
+    window.addEventListener('pagehide', event => {
+        if (event.persisted) DetailsManager.suspend();
+        else DetailsManager.destroy();
+    });
+    window.addEventListener('pageshow', mount);
 })();
