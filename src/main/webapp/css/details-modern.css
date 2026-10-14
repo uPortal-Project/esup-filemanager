@@ -49,8 +49,8 @@
     word-break: break-word;
 }
 
-.details-spacer {
-    height: 10px;
+.details-card > :not(.details-header) {
+    margin-block: 10px;
 }
 
 /* ==================== Media Players ==================== */
@@ -60,10 +60,29 @@
     border-bottom: 1px solid #e0e0e0;
 }
 
-.media-error {
-    color: #f44336;
+.details-media-status {
     padding: 10px;
     text-align: center;
+    color: #333;
+    background: #FFFFEE;
+    overflow-wrap: anywhere;
+}
+
+.details-media-status[hidden],
+.details-media-status button[hidden] {
+    display: none;
+}
+
+.details-media-status .btn-action {
+    margin: 8px;
+}
+
+.media-error {
+    color: #a82018;
+}
+
+img[data-state]:not([data-state="ready"]) {
+    visibility: hidden;
 }
 
 .audio-player,

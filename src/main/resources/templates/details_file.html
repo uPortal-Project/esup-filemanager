@@ -2,8 +2,6 @@
 <div class="details-card">
     <h3 class="details-header" th:text="#{details.header}">Détails</h3>
 
-    <div class="details-spacer"></div>
-
     <dl class="details-info">
         <dt class="details-label" th:text="#{details.title}">Nom</dt>
         <dd class="details-value">
@@ -25,13 +23,9 @@
         </th:block>
     </dl>
 
-    <div class="details-spacer"></div>
-
     <div class="details-actions">
         <a class="btn-download" th:href="@{/downloadFile(dir=${file.encPath})}"
            th:text="#{details.download}"
            th:attr="aria-label=#{details.download} + ' ' + ${file.title}">Télécharger</a>
     </div>
 </div>
-
-

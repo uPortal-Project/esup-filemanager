@@ -11,8 +11,6 @@
         <span class="image-zoom-icon" aria-hidden="true">🔍</span>
     </button>
 
-    <div class="details-spacer"></div>
-
     <dl class="details-info">
         <dt class="details-label" th:text="#{details.title}">Nom</dt>
         <dd class="details-value">
@@ -20,9 +18,7 @@
         </dd>
 
         <dt class="details-label" th:text="#{details.imagesize}">Dimensions</dt>
-        <dd class="details-value">
-            <span id="image_width"></span>px × <span id="image_height"></span>px
-        </dd>
+        <dd id="image_dimensions" class="details-value">—</dd>
 
         <dt class="details-label" th:text="#{details.size}">Taille</dt>
         <dd class="details-value">
@@ -36,8 +32,6 @@
         <dt class="details-label" th:text="#{details.lastModifiedTime}">Modifié le</dt>
         <dd class="details-value" th:text="${#dates.format(file.lastModifiedTime, datePattern)}"></dd>
     </dl>
-
-    <div class="details-spacer"></div>
 
     <div class="details-actions">
         <a class="btn-download" th:href="@{/downloadFile(dir=${file.encPath})}"
@@ -55,5 +49,3 @@
         <img id="modalImage" th:alt="${file.title}">
     </div>
 </dialog>
-
-<div class="details-spacer"></div>

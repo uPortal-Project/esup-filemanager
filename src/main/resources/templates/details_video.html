@@ -5,11 +5,9 @@
     <div class="media-player-container">
         <video controls class="video-player" th:attr="aria-label=${file.title}">
             <source th:src="@{/fetchVideo(dir=${file.encPath})}" th:type="${file.mimeType}">
-            Votre navigateur ne supporte pas la lecture de vidéos HTML5.
+            <span th:text="#{details.video.unsupported}">Votre navigateur ne supporte pas la lecture de vidéos HTML5.</span>
         </video>
     </div>
-
-    <div class="details-spacer"></div>
 
     <dl class="details-info">
         <dt class="details-label" th:text="#{details.title}">Nom</dt>
@@ -30,12 +28,9 @@
         <dd class="details-value" th:text="${#dates.format(file.lastModifiedTime, datePattern)}"></dd>
     </dl>
 
-    <div class="details-spacer"></div>
-
     <div class="details-actions">
         <a class="btn-download" th:href="@{/downloadFile(dir=${file.encPath})}"
            th:text="#{details.download}"
            th:attr="aria-label=#{details.download} + ' ' + ${file.title}">Télécharger</a>
     </div>
 </div>
-

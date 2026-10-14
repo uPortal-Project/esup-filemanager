@@ -2,21 +2,16 @@
 <div class="details-card">
     <h3 class="details-header" th:text="#{details.header}">Détails</h3>
 
-    <div class="details-spacer"></div>
-
     <dl class="details-info">
         <dt class="details-label" th:text="#{details.numselected}">Fichiers sélectionnés</dt>
         <dd class="details-value" th:text="${numselected}"></dd>
     </dl>
-
-    <div class="details-spacer"></div>
 
     <div class="details-actions">
         <button id="detail-zip-download" class="btn-action" th:text="#{toolbar.zip}">Zip</button>
     </div>
 
     <div th:if="${image_paths != null and #lists.size(image_paths) > 0}">
-        <div class="details-spacer"></div>
         <button id="detail-view-images" class="btn-action" th:text="#{details.images.title}">Voir les images</button>
 
         <!-- Slideshow data -->
@@ -29,7 +24,6 @@
 
     <!-- Playlist audio -->
     <div th:if="${audio_tracks != null and #lists.size(audio_tracks) > 0}">
-        <div class="details-spacer"></div>
 
         <div class="audio-playlist-container">
             <div class="playlist-header">
@@ -66,7 +60,7 @@
         <div id="playlistData" hidden>
             <div th:each="track : ${audio_tracks}"
                  class="playlist-track-data"
-                 th:attr="data-src=@{/downloadFile(dir=${track.path})},data-title=${track.title},data-mime=${track.mimeType}"></div>
+                 th:attr="data-src=@{/downloadFile(dir=${track.path})},data-title=${track.title}"></div>
         </div>
     </div>
 </div>

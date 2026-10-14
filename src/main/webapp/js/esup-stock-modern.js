@@ -1333,7 +1333,11 @@ class EsupFileManager {
         iframe.src = url;
         document.body.appendChild(iframe);
 
-        setTimeout(() => iframe.remove(), 60000);
+        // Attachment responses do not reliably fire load: keep slow ZIP/S3 requests
+        // alive until navigation, and let the browser report transfer progress.
+        window.addEventListener('pagehide', () => iframe.remove(), { once: true });
+        UIComponents.showInfo(window.i18n?.detailsDownloadRequested ||
+            'Download requested. Check your browser’s downloads; preparation may take some time.');
     }
 
     // Utilities

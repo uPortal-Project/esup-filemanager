@@ -23,17 +23,29 @@ function setup() {
     const browser = element();
     const requests = [];
     const errors = [];
+    const downloads = [];
+    const notices = [];
+    const timers = [];
+    const navigation = [];
     const lifecycle = [];
     const context = {
         URLSearchParams, FormData, AbortController,
+        setTimeout: callback => timers.push(callback),
+        UIComponents: { showInfo: message => notices.push(message) },
         console: { log() {}, error: (...args) => errors.push(args) },
         document: {
             getElementById: id => ({ detailArea: root, browserMain: browser })[id],
             querySelector: () => ({ content: 'csrf-token' }),
-            createElement: element
+            createElement: () => {
+                const node = element();
+                node.remove = () => downloads.splice(downloads.indexOf(node), 1);
+                return node;
+            },
+            body: { appendChild: node => downloads.push(node) }
         },
         window: {
-            i18n: { detailsLoading: 'Chargement', detailsLoadingError: 'Erreur', detailsRetry: 'Réessayer' },
+            addEventListener: (event, handler) => navigation.push(handler),
+            i18n: { detailsLoading: 'Chargement', detailsLoadingError: 'Erreur', detailsRetry: 'Réessayer', detailsDownloadRequested: 'Téléchargement demandé' },
             detailsManager: {
                 destroy: () => lifecycle.push(['destroy', root.innerHTML]),
                 mount: node => lifecycle.push(['mount', node.innerHTML])
@@ -50,7 +62,7 @@ function setup() {
         .replace(/^import .*;\n/gm, '').split('// Initialize application on DOM load')[0];
     const manager = runInNewContext(`${ajax}\n${app}\nObject.create(EsupFileManager.prototype)`, context);
     manager.config = { detailsAreaURL: '/details', htmlFileTreeURL: '/directory' };
-    return { manager, root, browser, requests, errors, lifecycle };
+    return { manager, root, browser, requests, errors, lifecycle, downloads, notices, timers, navigation };
 }
 
 test('only the latest selection renders, even when fetch ignores cancellation', async () => {
@@ -158,4 +170,21 @@ test('navigation clears pending details immediately and late directory responses
     requests[5].resolve('category listing');
     await category;
     assert.equal(root.innerHTML, 'empty');
+});
+
+
+test('slow downloads remain alive until navigation and only report a request', () => {
+    const { manager, downloads, notices, timers, navigation } = setup();
+    manager.triggerDownload('/downloadZip?dirs=large-folder');
+    manager.triggerDownload('/downloadFile?dir=s3-file');
+    assert.deepEqual(downloads.map(frame => frame.src), [
+        '/downloadZip?dirs=large-folder', '/downloadFile?dir=s3-file'
+    ]);
+    assert.ok(downloads.every(frame => frame.hidden && frame.tabIndex === -1));
+    assert.deepEqual(notices, ['Téléchargement demandé', 'Téléchargement demandé']);
+    // Advancing every scheduled timeout cannot interrupt response preparation.
+    timers.forEach(callback => callback());
+    assert.equal(downloads.length, 2);
+    navigation.forEach(handler => handler());
+    assert.equal(downloads.length, 0);
 });

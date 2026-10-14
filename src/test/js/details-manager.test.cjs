@@ -1,6 +1,7 @@
 // Run with: node --test src/test/js/details-manager.test.cjs
 // Requires Chromium (CHROME_BIN can override the executable).
 const { test } = require('node:test');
+const { createServer } = require('node:http');
 const assert = require('node:assert/strict');
 const { spawn } = require('node:child_process');
 const { readFileSync, writeFileSync, mkdtempSync, rmSync } = require('node:fs');
@@ -11,9 +12,15 @@ const webapp = resolve(__dirname, '../../main/webapp');
 
 test('details lifecycle and keyboard accessibility in Chromium', async () => {
     const directory = mkdtempSync(join(tmpdir(), 'details-lifecycle-'));
+    const server = createServer((request, response) => {
+        response.writeHead(200, { 'Content-Type': 'image/svg+xml' });
+        response.end('<svg xmlns="http://www.w3.org/2000/svg" width="12" height="9"/>');
+    });
+    await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+    const origin = `http://127.0.0.1:${server.address().port}`;
     const fixture = `
         <div class="details-card">
-            <button class="image-preview-container" aria-label="View One"><img class="details-image" alt="One" data-fullsize="https://example.test/image"></button>
+            <button class="image-preview-container" aria-label="View One"><img class="details-image" alt="One" data-fullsize="${origin}/image"></button>
             <button class="btn-view-fullsize">Image</button>
             <a class="btn-download" href="/download">Download</a>
             <button id="detail-zip-download">ZIP</button>
@@ -21,9 +28,9 @@ test('details lifecycle and keyboard accessibility in Chromium', async () => {
         </div>
         <dialog id="imageModal" class="image-modal" aria-label="Image"><button class="image-modal-close" autofocus>Close</button><img id="modalImage"></dialog>
         <div id="slideshowData">
-            <div class="slideshow-image-data" data-src="/one" data-title="One"></div>
-            <div class="slideshow-image-data" data-src="/two" data-title="Two"></div>
-            <div class="slideshow-image-data" data-src="/three" data-title="Three"></div>
+            <div class="slideshow-image-data" data-src="${origin}/one" data-title="One"></div>
+            <div class="slideshow-image-data" data-src="${origin}/two" data-title="Two"></div>
+            <div class="slideshow-image-data" data-src="${origin}/three" data-title="Three"></div>
         </div>
         <dialog id="slideshowModal" class="slideshow-modal" aria-label="Slideshow">
             <button class="slideshow-close" autofocus>Close</button>
@@ -39,9 +46,9 @@ test('details lifecycle and keyboard accessibility in Chromium', async () => {
             <li><button class="playlist-track" data-index="2">Three</button></li>
         </ul>
         <div id="playlistData">
-            <div class="playlist-track-data" data-src="/audio-one"></div>
-            <div class="playlist-track-data" data-src="/audio-two"></div>
-            <div class="playlist-track-data" data-src="/audio-three"></div>
+            <div class="playlist-track-data" data-src="${origin}/audio-one"></div>
+            <div class="playlist-track-data" data-src="${origin}/audio-two"></div>
+            <div class="playlist-track-data" data-src="${origin}/audio-three"></div>
         </div>
         <div class="media-player-container"><video><source src="/video"></video></div>`;
     const checks = function(fixture) {
@@ -62,6 +69,7 @@ test('details lifecycle and keyboard accessibility in Chromium', async () => {
             const button = root.querySelector('#detail-view-images');
             const audio = root.querySelector('#playlistAudio');
             const initialLoads = audio.loads;
+            const initialPauses = audio.pauses;
             manager.mount(root);
             check(button === root.querySelector('#detail-view-images'), 'mount replaced button');
             check(audio.loads === initialLoads, 'same-root mount restarted media');
@@ -95,7 +103,7 @@ test('details lifecycle and keyboard accessibility in Chromium', async () => {
             manager.destroy();
             check(window.intervals.size === 0, 'interval survived destroy');
             check(!document.body.classList.contains('modal-open'), 'scroll locked after destroy');
-            check(audio.pauses === 1 && video.pauses === 1, 'media not paused');
+            check(audio.pauses === initialPauses + 2 && video.pauses === 1, 'media not paused');
             check(!audio.hasAttribute('src') && !video.querySelector('source').hasAttribute('src'), 'media sources retained');
             check(!root.querySelector('#slideshowImage').hasAttribute('src'), 'slideshow source retained');
             check(manager.images.length === 0 && manager.tracks.length === 0, 'collections retained');
@@ -142,7 +150,7 @@ test('details lifecycle and keyboard accessibility in Chromium', async () => {
             copyFiles: action, cutFiles: action, pasteFiles: action,
             deleteFiles: action, handleRename: action, handleEnterKey: action
         });`;
-    const html = `<!doctype html><style>${readFileSync(join(webapp, 'css/details-modern.css'), 'utf8')}</style>
+    const html = `<!doctype html><base href="${origin}/"><style>${readFileSync(join(webapp, 'css/details-modern.css'), 'utf8')}</style>
         <div id="treeSplitter" tabindex="0" role="separator">Navigation</div><button id="toolbar-zip">ZIP</button><div id="detailArea">${fixture}</div><pre id="result">PENDING</pre>
         <script>${setup}${shortcuts}</script><script>${readFileSync(join(webapp, 'js/details-manager.js'), 'utf8')}</script>
         <script>document.addEventListener('DOMContentLoaded', () => {
@@ -154,6 +162,8 @@ test('details lifecycle and keyboard accessibility in Chromium', async () => {
         writeFileSync(file, html);
         await checkKeyboard(file, directory, fixture);
     } finally {
+        server.closeAllConnections();
+        await new Promise(resolve => server.close(resolve));
         rmSync(directory, { recursive: true, force: true });
     }
 });
@@ -216,6 +226,95 @@ async function checkKeyboard(file, directory, fixture) {
             document.getElementById('detailArea').innerHTML = ${JSON.stringify(fixture)};
             window.detailsManager.mount(document.getElementById('detailArea'));
             document.querySelector('.image-preview-container').focus();`);
+        // Real DOM states, with controlled media events and play() rejections.
+        const templates = resolve(__dirname, '../../main/resources/templates');
+        for (const locale of ['_fr', '']) {
+            const properties = readFileSync(join(templates, `../messages${locale}.properties`), 'utf8');
+            const translations = Object.fromEntries(['mediaLoading', 'imageError', 'mediaError', 'mediaPlayBlocked', 'retry'].map(key => {
+                const value = properties.match(new RegExp(`^details\\.${key}\\s*=\\s*(.*)$`, 'm'))[1];
+                return ['i18nDetails' + key[0].toUpperCase() + key.slice(1), value];
+            }));
+            await evaluate(`{ const config = document.getElementById('esup-app-config') || document.body.appendChild(document.createElement('div'));
+                config.id = 'esup-app-config';
+                Object.assign(config.dataset, ${JSON.stringify(translations)});
+                ${readFileSync(join(webapp, 'js/esup-app-config.js'), 'utf8')}
+                window.detailsManager.destroy();
+                window.detailsManager.mount(document.getElementById('detailArea')); }`);
+            await evaluate(`(async () => {
+                const manager = window.detailsManager;
+                const root = manager.root;
+                const check = (condition, message) => { if (!condition) throw new Error(message); };
+                const preview = root.querySelector('.details-image');
+                const dimensions = document.createElement('dd');
+                dimensions.id = 'image_dimensions'; root.append(dimensions);
+                manager.setImage(preview, 'javascript:invalid');
+                const imageState = manager.mediaStates.get(preview);
+                check(!preview.hasAttribute('src') && preview.dataset.state === 'error', 'invalid image retains old source');
+                check(imageState.message.textContent === window.i18n.detailsImageError && dimensions.textContent === '—', 'image error or dimensions not translated');
+                preview.dispatchEvent(new Event('error'));
+                preview.dispatchEvent(new Event('error'));
+                check(root.querySelectorAll('.details-media-status').length === 5, 'duplicated media messages');
+                check(imageState.retry.textContent === window.i18n.detailsRetry, 'retry not translated');
+                manager.setImage(preview, ${JSON.stringify(fixture.match(/data-fullsize="([^"]+)"/)[1])});
+                check(preview.getAttribute('aria-busy') === 'true', 'image not busy while loading');
+                await new Promise(resolve => { if (preview.dataset.state === 'ready') resolve(); else preview.addEventListener('load', resolve, { once: true }); });
+                check(imageState.status.hidden && dimensions.textContent === '12 px × 9 px', 'successful image did not clear error or dimensions');
+                const audio = root.querySelector('#playlistAudio');
+                const audioState = manager.mediaStates.get(audio);
+                const originalPlay = audio.play;
+                audio.dispatchEvent(new Event('error'));
+                audio.dispatchEvent(new Event('error'));
+                check(audioState.message.textContent === window.i18n.detailsMediaError, 'media error not translated');
+                audio.dispatchEvent(new Event('canplay'));
+                check(audioState.status.hidden, 'recovery did not clear error');
+                audio.play = () => Promise.reject(new DOMException('Blocked', 'NotAllowedError'));
+                manager.loadTrack(1, true);
+                await Promise.resolve();
+                check(audioState.message.textContent === window.i18n.detailsMediaPlayBlocked, 'blocked play hidden');
+                audio.dispatchEvent(new Event('canplay'));
+                check(!audioState.status.hidden, 'canplay cleared manual playback advice');
+                audio.play = originalPlay;
+                audioState.retry.click();
+                audio.dispatchEvent(new Event('playing'));
+                check(audioState.status.hidden, 'retry did not recover playback');
+                audio.play = () => Promise.reject(new DOMException('Interrupted', 'AbortError'));
+                manager.loadTrack(0, true);
+                await Promise.resolve();
+                check(audio.dataset.state !== 'error', 'expected interruption reported');
+                let rejectPlay;
+                audio.play = () => new Promise((resolve, reject) => { rejectPlay = reject; });
+                manager.loadTrack(1, true);
+                manager.loadTrack(2, false);
+                rejectPlay(new DOMException('Old failure', 'NotSupportedError'));
+                await Promise.resolve();
+                check(audio.dataset.state !== 'error', 'old play rejection overwrote current track');
+                manager.loadTrack(NaN, true);
+                check(manager.trackIndex === 2, 'invalid track index changed selection');
+                const trackSource = manager.tracks[0].src;
+                manager.tracks[0].src = '';
+                manager.loadTrack(0, false);
+                check(!audio.hasAttribute('src') && audio.dataset.state === 'error', 'missing track retained old audio');
+                manager.tracks[0].src = trackSource;
+                audio.play = originalPlay;
+                manager.loadTrack(0, false);
+                manager.openImage(root.querySelector('.image-preview-container'));
+                const fullsize = preview.dataset.fullsize;
+                preview.dataset.fullsize = 'javascript:invalid';
+                manager.openImage(root.querySelector('.image-preview-container'));
+                check(!root.querySelector('#modalImage').hasAttribute('src') && root.querySelector('#modalImage').dataset.state === 'error', 'invalid fullsize image retained old content');
+                preview.dataset.fullsize = fullsize;
+                manager.closeModal(root.querySelector('#imageModal'));
+                manager.showImage(0);
+                manager.toggleAutoplay();
+                root.querySelector('#slideshowImage').dispatchEvent(new Event('error'));
+                check(window.intervals.size === 0, 'slideshow continued after image error');
+                dimensions.remove();
+                manager.destroy();
+                manager.mount(root);
+                check(root.querySelectorAll('.details-media-status').length === 5, 'remount duplicated status');
+                root.querySelector('.image-preview-container').focus();
+            })()`);
+        }
         const key = async (key, code, modifiers = 0) => {
             const windowsVirtualKeyCode = { Enter: 13, Space: 32, Tab: 9, Escape: 27, ArrowRight: 39, Delete: 46 }[code];
             await send('Input.dispatchKeyEvent', { type: 'keyDown', key, code, modifiers, windowsVirtualKeyCode, text: code === 'Enter' ? '\r' : code === 'Space' ? ' ' : '' }, sessionId);
@@ -269,12 +368,11 @@ async function checkKeyboard(file, directory, fixture) {
         await evaluate(`window.detailsManager.openModal(document.querySelector('#slideshowModal')); window.detailsManager.destroy()`);
         await check(`!document.querySelector('#slideshowModal').open && document.activeElement.id === 'treeSplitter'`, 'replacement restores navigation focus');
         // Exercise the real mobile shell and viewer markup, with all local CSS layers.
-        const templates = resolve(__dirname, '../../main/resources/templates');
         const viewer = name => readFileSync(join(templates, name), 'utf8').match(/<dialog[\s\S]*?<\/dialog>/)[0];
         const imageSource = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900"><rect width="1200" height="900" fill="blue"/></svg>');
         const mobileFixture = fixture.replace(/<dialog id="imageModal"[\s\S]*?<\/dialog>/, viewer('details_image.html'))
             .replace(/<dialog id="slideshowModal"[\s\S]*?<\/dialog>/, viewer('details_files.html'))
-            .replace(/data-src="\/(one|two|three)"/g, `data-src="${imageSource}"`);
+            .replace(/data-src="http:\/\/127\.0\.0\.1:\d+\/(one|two|three)"/g, `data-src="${imageSource}"`);
         const styles = ['esup-stock.css', 'esup-responsive.css', 'details-modern.css']
             .map(name => readFileSync(join(webapp, 'css', name), 'utf8')).join('\n');
         // Bootstrap utilities used by the shell; no external stylesheet in this fixture.
