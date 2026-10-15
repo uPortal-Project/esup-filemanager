@@ -332,8 +332,7 @@ public class AjaxController {
         log.debug("Requesting fetchSound");
         dir = pathEncodingUtils.decodeDir(dir);
         DownloadFile file = this.serverAccess.getFile(dir);
-        final String contentType = "audio/mpeg3";
-        response.setContentType(contentType);
+        response.setContentType(file.getContentType());
         if(file.getSize() > 0) {
             response.setContentLength((int)file.getSize());
         }
@@ -441,8 +440,8 @@ public class AjaxController {
         }
 
         // Reject dangerous special characters for shell and filesystems
-        // Allowed: letters, digits, hyphens, underscores, dots, parentheses, spaces, @, +, =, ~, #, ,, !, accents, single quotes
-        basename = basename.replaceAll("[^a-zA-Z0-9._@+\\-=~#,! ()'áàäâéèëêíìïîóòöôúùüûçÁÀÄÂÉÈËÊÍÌÏÎÓÒÖÔÚÙÜÛÇ]", "_");
+        // Preserve Unicode letters/marks and URL-significant filename characters; separators and controls are handled above.
+        basename = basename.replaceAll("[^\\p{L}\\p{M}\\p{N}._@+\\-=~#%&,! ()']", "_");
 
         // Reject empty names after normalization
         if (basename.trim().isEmpty()) {
@@ -633,7 +632,7 @@ public class AjaxController {
     /**
      * Get a presigned download URL for direct S3 access
      */
-    @GetMapping(value="/getPresignedDownloadUrl")
+    @RequestMapping(value="/getPresignedDownloadUrl", method={RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> getPresignedDownloadUrl(@RequestParam String dir) {
         log.debug("Requesting presigned download URL for: {}", dir);
@@ -673,7 +672,7 @@ public class AjaxController {
      * Get a presigned upload URL for direct S3 access.
      * If uploadOption is not OVERRIDE, checks file existence first.
      */
-    @GetMapping(value="/getPresignedUploadUrl")
+    @RequestMapping(value="/getPresignedUploadUrl", method={RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> getPresignedUploadUrl(@RequestParam String dir,
                                                        @RequestParam String filename,
@@ -742,7 +741,7 @@ public class AjaxController {
     /**
      * Check if presigned URLs are supported for a given path
      */
-    @GetMapping(value="/supportsPresignedUrls")
+    @RequestMapping(value="/supportsPresignedUrls", method={RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> supportsPresignedUrls(@RequestParam String dir) {
         log.debug("Checking if presigned URLs are supported for: {}", dir);

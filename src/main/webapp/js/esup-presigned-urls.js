@@ -423,6 +423,10 @@
             if (xhr.status >= 200 && xhr.status < 300) {
                 try {
                     const response = JSON.parse(xhr.responseText);
+                    if (response.success === false && !response.fileExists) {
+                        options.onError?.(new Error(response.msg || 'Upload failed'));
+                        return;
+                    }
                     logger.info('Classic upload successful');
                     if (options.onSuccess) {
                         options.onSuccess({

@@ -112,7 +112,7 @@ public class S3AccessImpl extends FsAccess implements DisposableBean {
     }
 
     @Override
-    protected void open() {
+    protected synchronized void open() {
         super.open();
         try {
             if (!isOpened()) {
@@ -152,7 +152,7 @@ public class S3AccessImpl extends FsAccess implements DisposableBean {
         }
     }
     @Override
-    public void close() {
+    public synchronized void close() {
         if (s3Presigner != null) {
             s3Presigner.close();
             s3Presigner = null;

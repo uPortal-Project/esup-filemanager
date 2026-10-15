@@ -20,6 +20,7 @@ class EsupFileManager {
         this.isInDrive = false;
         this.pendingConflicts = []; // files awaiting overwrite confirmation
         this.hasRestoredPath = false;
+        this.pendingDirectoryLoads = 0;
 
         const appConfig = window.esupFileManagerConfig || {};
 
@@ -740,6 +741,9 @@ class EsupFileManager {
     }
 
     async loadDirectoryContent(path, syncTree = true, restoreScroll = false) {
+        const listing = document.getElementById('browserMain');
+        this.pendingDirectoryLoads++;
+        listing?.setAttribute('aria-busy', 'true');
         console.log('Loading directory content for path:', path);
 
         try {
@@ -815,6 +819,10 @@ class EsupFileManager {
         } catch (error) {
             console.error('Failed to load directory content:', error);
             UIComponents.showError(window.i18n?.directoryLoadingError || 'Error loading directory.');
+        } finally {
+            // Tree synchronization can start a second listing request before the first completes.
+            this.pendingDirectoryLoads--;
+            listing?.setAttribute('aria-busy', String(this.pendingDirectoryLoads > 0));
         }
     }
 

@@ -20,6 +20,7 @@ package org.esupportail.filemanager.services;
 import org.apache.commons.vfs2.FileType;
 import org.esupportail.filemanager.beans.*;
 import org.esupportail.filemanager.crudlog.CrudLogLevel;
+import org.esupportail.filemanager.exceptions.EsupStockException;
 import org.esupportail.filemanager.crudlog.CrudLoggable;
 import org.esupportail.filemanager.utils.PathEncodingUtils;
 import org.springframework.beans.factory.DisposableBean;
@@ -29,9 +30,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
+import java.io.EOFException;
+import java.io.FilterInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.Normalizer;
@@ -87,7 +91,7 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
             return this.servers.get(driveName);
         } else {
             log.error("pb : restrictedServers does not contain this required drive ?? : '{}'", driveName);
-            return null;
+            throw new AccessDeniedException("Access to the requested drive is denied");
         }
     }
 
@@ -181,51 +185,162 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 
     @CrudLoggable(CrudLogLevel.INFO)
     public String createFile(String parentDir, String title, String type) {
+        if (!isSafeName(title)) {
+            return null;
+        }
         String drive = getDrive(parentDir);
         if(drive == null) {
             log.error("Can't create file/folder because we can't retrieve associated drive on this dir '{}'", parentDir);
             return null;
         }
-        return this.getFsAccess(drive).createFile(getLocalDir(parentDir), title, type);
+        String parent = getLocalDir(parentDir);
+        if (containsName(drive, parent, title)) {
+            return null;
+        }
+        return this.getFsAccess(drive).createFile(parent, title, type);
     }
 
     @CrudLoggable(CrudLogLevel.INFO)
     public boolean renameFile(String dir, String title) {
+        if (!isSafeName(title)) {
+            return false;
+        }
         String drive = getDrive(dir);
         if(drive == null) {
             log.error("Can't rename file/folder because we can't retrieve associated drive on this dir '{}'", dir);
             return false;
         }
+        String local = getLocalDir(dir).replaceAll("/+$", "");
+        String parent = local.contains("/") ? local.substring(0, local.lastIndexOf('/')) : "";
+        if (containsName(drive, parent, title)) {
+            return false;
+        }
         return this.getFsAccess(drive).renameFile(getLocalDir(dir), title);
     }
 
+    private boolean containsName(String drive, String parent, String title) {
+        // Listings also expose implicit S3 directories that have no marker object.
+        return this.getFsAccess(drive).getChildren(parent).stream().anyMatch(child ->
+                "samba".equals(drive) ? child.getTitle().equalsIgnoreCase(title) : child.getTitle().equals(title));
+    }
+
+    private InputStream checkedDownload(DownloadFile file) {
+        long expectedSize = file.getSize();
+        return new FilterInputStream(file.getInputStream()) {
+            private long received;
+
+            private void validate(int count) throws IOException {
+                if (count < 0 && expectedSize >= 0 && received != expectedSize) {
+                    throw new EOFException("Source ended after " + received + " of " + expectedSize + " bytes");
+                }
+                if (count > 0) {
+                    received += count;
+                    if (expectedSize >= 0 && received > expectedSize) {
+                        throw new IOException("Source size changed during transfer");
+                    }
+                }
+            }
+
+            @Override
+            public int read() throws IOException {
+                int value = in.read();
+                validate(value < 0 ? -1 : 1);
+                return value;
+            }
+
+            @Override
+            public int read(byte[] bytes, int offset, int length) throws IOException {
+                int count = in.read(bytes, offset, length);
+                validate(count);
+                return count;
+            }
+        };
+    }
+
     private boolean interMoveCopyFile(String newDir, String refDir, boolean copy) {
-        JsTreeFile ref = this.get(refDir, false, false);
-        boolean allIsOk = true;
-        if("file".equals(ref.getType())) {
-            DownloadFile file = this.getFile(refDir);
-            allIsOk = this.putFile(newDir, file.getBaseName(), file.getInputStream(), UploadActionType.ERROR);
-        } else {
-            String localDirParent = this.createFile(newDir, ref.getTitle(), ref.getType());
-            if(localDirParent == null) {
-                log.info("Can't move/copy '{}' into '{}' because target '{}' could not be created", refDir, newDir, ref.getTitle());
+        try {
+            JsTreeFile ref = this.get(refDir, false, false);
+            if (ref == null || !("file".equals(ref.getType()) || "folder".equals(ref.getType()))) {
                 return false;
             }
-            String dirParent = JsTreeFile.ROOT_DRIVE.concat(getDriveCategory(newDir)).concat(JsTreeFile.DRIVE_PATH_SEPARATOR).concat(getDrive(newDir)).concat(JsTreeFile.DRIVE_PATH_SEPARATOR).concat(localDirParent);
-            for(JsTreeFile child: this.getChildren(refDir)) {
-                allIsOk = allIsOk && this.interMoveCopyFile(dirParent, child.getPath(), copy);
+            boolean allIsOk = true;
+            if ("file".equals(ref.getType())) {
+                DownloadFile file = this.getFile(refDir);
+                if (file == null) {
+                    return false;
+                }
+                try (InputStream input = checkedDownload(file)) {
+                    allIsOk = this.putFile(newDir, file.getBaseName(), input, UploadActionType.ERROR);
+                }
+            } else {
+                String localDirParent = this.createFile(newDir, ref.getTitle(), ref.getType());
+                if (localDirParent == null) {
+                    log.info("Cannot transfer '{}' into '{}': destination directory already exists or is inaccessible", refDir, newDir);
+                    return false;
+                }
+                String dirParent = JsTreeFile.ROOT_DRIVE.concat(getDriveCategory(newDir)).concat(JsTreeFile.DRIVE_PATH_SEPARATOR)
+                        .concat(getDrive(newDir)).concat(JsTreeFile.DRIVE_PATH_SEPARATOR).concat(localDirParent);
+                for (JsTreeFile child : this.getChildren(refDir)) {
+                    allIsOk = allIsOk && this.interMoveCopyFile(dirParent, child.getPath(), copy);
+                }
             }
+            if (allIsOk && !copy) {
+                allIsOk = this.remove(refDir);
+            }
+            return allIsOk;
+        } catch (EsupStockException | IOException exception) {
+            // A failed write must never proceed to source deletion or escape the business error response.
+            log.warn("Cannot transfer '{}' into '{}': {}", refDir, newDir, exception.getMessage());
+            return false;
         }
-        if(allIsOk && !copy) {
-            allIsOk = this.remove(refDir);
-        }
-        return allIsOk;
     }
 
     @CrudLoggable(CrudLogLevel.INFO)
     public boolean moveCopyFilesIntoDirectory(String dir, List<String> filesToCopy, boolean copy) {
+        if (filesToCopy == null || filesToCopy.isEmpty()) {
+            return false;
+        }
         String driveName = getDrive(dir);
-        if(driveName.equals(getDrive(filesToCopy.get(0))) &&
+        if (driveName == null) {
+            return false;
+        }
+        String destination = getLocalDir(dir).replaceAll("/+$", "");
+        for (String source : filesToCopy) {
+            if (driveName.equals(getDrive(source))) {
+                String localSource = getLocalDir(source).replaceAll("/+$", "");
+                String parent = localSource.contains("/") ? localSource.substring(0, localSource.lastIndexOf('/')) : "";
+                // Reject no-op moves and recursive copies before any connector can mutate data.
+                if (destination.equals(parent) || destination.equals(localSource) || destination.startsWith(localSource + "/")) {
+                    return false;
+                }
+            }
+        }
+        try {
+            JsTreeFile target = get(dir, false, false);
+            if (target == null || !("folder".equals(target.getType()) || "drive".equals(target.getType()))) {
+                return false;
+            }
+            Set<String> existingNames = new HashSet<>();
+            for (JsTreeFile child : getChildren(dir)) {
+                existingNames.add("samba".equals(driveName) ? child.getTitle().toLowerCase(Locale.ROOT) : child.getTitle());
+            }
+            for (String source : filesToCopy) {
+                JsTreeFile resource = get(source, false, false);
+                if (resource == null || !("file".equals(resource.getType()) || "folder".equals(resource.getType()))) {
+                    return false;
+                }
+                String name = "samba".equals(driveName) ? resource.getTitle().toLowerCase(Locale.ROOT) : resource.getTitle();
+                // Native connectors must honor the same no-overwrite contract as inter-drive transfers.
+                if (existingNames.contains(name)) {
+                    return false;
+                }
+                existingNames.add(name);
+            }
+        } catch (EsupStockException exception) {
+            log.warn("Cannot validate transfer destination '{}': {}", dir, exception.getMessage());
+            return false;
+        }
+        if(filesToCopy.stream().allMatch(source -> driveName.equals(getDrive(source))) &&
                 ( (copy && this.getFsAccess(driveName).supportIntraCopyPast()) || (!copy && this.getFsAccess(driveName).supportIntraCutPast())) ) {
             return this.getFsAccess(driveName).moveCopyFilesIntoDirectory(getLocalDir(dir), getLocalDirs(filesToCopy), copy);
         } else {
@@ -245,6 +360,9 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
 
     @CrudLoggable(CrudLogLevel.INFO)
     public boolean  putFile(String dir, String filename, InputStream inputStream, UploadActionType uploadOption) {
+        if (!isSafeName(filename)) {
+            return false;
+        }
         return this.getFsAccess(getDrive(dir)).putFile(getLocalDir(dir), filename, inputStream, uploadOption);
     }
 
@@ -353,13 +471,30 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
         return drive;
     }
 
+    private boolean isSafeName(String name) {
+        return name != null && !name.isBlank() && !".".equals(name) && !"..".equals(name)
+                && name.indexOf('/') < 0 && name.indexOf('\\') < 0
+                && name.chars().noneMatch(Character::isISOControl);
+    }
+
     private String getLocalDir(String dir) {
-        dir = dir.substring(JsTreeFile.ROOT_DRIVE.length());
-        String[] driveAndDir = dir.split(JsTreeFile.DRIVE_PATH_SEPARATOR, 3);
-        if(driveAndDir.length > 2)
-            return driveAndDir[2];
-        else
-            return "";
+        if (dir == null || !dir.startsWith(JsTreeFile.ROOT_DRIVE)) {
+            throw new AccessDeniedException("Invalid drive path");
+        }
+        String[] driveAndDir = dir.substring(JsTreeFile.ROOT_DRIVE.length()).split(JsTreeFile.DRIVE_PATH_SEPARATOR, 3);
+        String local = driveAndDir.length > 2 ? driveAndDir[2] : "";
+        // Reject traversal before a protocol client can decode URI components or resolve an absolute path.
+        String checked = local.replaceAll("(?i)%2e", ".").replaceAll("(?i)%2f", "/")
+                .replaceAll("(?i)%5c", "/").replace('\\', '/');
+        for (String segment : checked.split("/")) {
+            if ("..".equals(segment) || ".".equals(segment)) {
+                throw new AccessDeniedException("Relative path traversal is forbidden");
+            }
+        }
+        if (checked.startsWith("/")) {
+            throw new AccessDeniedException("Absolute storage paths are forbidden");
+        }
+        return local;
     }
 
     private List<String> getLocalDirs(List<String> dirs) {
@@ -407,9 +542,10 @@ public class ServersAccessService implements DisposableBean, IServersAccessServi
             // MBD: this is a problem for large files, because IOUtils.toByteArray() copy all the file in memory
             //out.write(IOUtils.toByteArray(dFile.getInputStream()));
             int count;
-            final InputStream dFileInputStream = dFile.getInputStream();
-            while((count = dFileInputStream.read(zippingBuffer, 0, ZIP_BUFFER_SIZE)) != -1) {
-                out.write(zippingBuffer, 0, count);
+            try (InputStream dFileInputStream = dFile.getInputStream()) {
+                while ((count = dFileInputStream.read(zippingBuffer, 0, ZIP_BUFFER_SIZE)) != -1) {
+                    out.write(zippingBuffer, 0, count);
+                }
             }
 
             out.closeEntry();

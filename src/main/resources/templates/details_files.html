@@ -60,7 +60,7 @@
         <div id="playlistData" hidden>
             <div th:each="track : ${audio_tracks}"
                  class="playlist-track-data"
-                 th:attr="data-src=@{/downloadFile(dir=${track.path})},data-title=${track.title}"></div>
+                 th:attr="data-src=@{/fetchSound(dir=${track.path})},data-title=${track.title}"></div>
         </div>
     </div>
 </div>

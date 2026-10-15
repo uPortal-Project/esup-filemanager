@@ -308,6 +308,10 @@ export class FileUploadManager {
                         if (response.fileExists) {
                             // File already exists – do not call onUploadError, let caller handle
                             resolve({ fileExists: true, response });
+                        } else if (response.success === false) {
+                            const error = new Error(response.msg || 'Upload failed');
+                            this.options.onUploadError(file, error);
+                            reject(error);
                         } else {
                             this.options.onUploadComplete(file, response);
                             resolve(response);

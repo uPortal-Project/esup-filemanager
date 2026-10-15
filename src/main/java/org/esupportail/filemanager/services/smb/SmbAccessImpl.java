@@ -238,7 +238,7 @@ public class SmbAccessImpl extends FsAccess implements DisposableBean {
     // -----------------------------------------------------------------------
 
     @Override
-    protected void open() {
+    protected synchronized void open() {
         super.open();
         if (!isOpened()) {
             try {
@@ -312,7 +312,7 @@ public class SmbAccessImpl extends FsAccess implements DisposableBean {
     }
 
     @Override
-    public void close() {
+    public synchronized void close() {
         if (diskShare != null) {
             notifyConnectionClosed();
             try { diskShare.close(); } catch (Exception e) { log.warn("Error closing disk share", e); }
@@ -551,7 +551,7 @@ public class SmbAccessImpl extends FsAccess implements DisposableBean {
                     : "";
             String newSmbPath = parentSmbPath.isEmpty() ? title : parentSmbPath + "\\" + title;
 
-            EnumSet<AccessMask> accessMask = EnumSet.of(AccessMask.GENERIC_ALL);
+            EnumSet<AccessMask> accessMask = EnumSet.of(AccessMask.DELETE);
             EnumSet<SMB2ShareAccess> shareAccess = EnumSet.of(
                     SMB2ShareAccess.FILE_SHARE_DELETE,
                     SMB2ShareAccess.FILE_SHARE_READ,
@@ -594,7 +594,7 @@ public class SmbAccessImpl extends FsAccess implements DisposableBean {
                     copySmbEntry(srcSmbPath, destSmbPath);
                 } else {
                     // Move = rename to destination
-                    EnumSet<AccessMask> accessMask = EnumSet.of(AccessMask.GENERIC_ALL);
+                    EnumSet<AccessMask> accessMask = EnumSet.of(AccessMask.DELETE);
                     EnumSet<SMB2ShareAccess> shareAccess = EnumSet.of(
                             SMB2ShareAccess.FILE_SHARE_DELETE,
                             SMB2ShareAccess.FILE_SHARE_READ,
@@ -639,19 +639,13 @@ public class SmbAccessImpl extends FsAccess implements DisposableBean {
             EnumSet<AccessMask> writeAccess = EnumSet.of(AccessMask.GENERIC_WRITE);
             EnumSet<SMB2ShareAccess> shareAccess = EnumSet.of(SMB2ShareAccess.FILE_SHARE_READ);
 
-            com.hierynomus.smbj.share.File src = diskShare.openFile(
-                    srcPath, readAccess, null, shareAccess,
-                    SMB2CreateDisposition.FILE_OPEN, null);
-            com.hierynomus.smbj.share.File dest = diskShare.openFile(
-                    destPath, writeAccess,
-                    EnumSet.of(FileAttributes.FILE_ATTRIBUTE_NORMAL),
-                    shareAccess,
-                    SMB2CreateDisposition.FILE_CREATE, null);
-            try {
+            // Close the source even when opening an existing destination fails.
+            try (com.hierynomus.smbj.share.File src = diskShare.openFile(
+                    srcPath, readAccess, null, shareAccess, SMB2CreateDisposition.FILE_OPEN, null);
+                 com.hierynomus.smbj.share.File dest = diskShare.openFile(
+                    destPath, writeAccess, EnumSet.of(FileAttributes.FILE_ATTRIBUTE_NORMAL),
+                    shareAccess, SMB2CreateDisposition.FILE_CREATE, null)) {
                 FileCopyUtils.copy(src.getInputStream(), dest.getOutputStream());
-            } finally {
-                try { dest.close(); } catch (Exception ignored) { }
-                try { src.close(); } catch (Exception ignored) { }
             }
         }
     }
@@ -724,7 +718,7 @@ public class SmbAccessImpl extends FsAccess implements DisposableBean {
                         String oldDestPath = dirSmbPath.isEmpty() ? oldName : dirSmbPath + "\\" + oldName;
                         try (com.hierynomus.smbj.share.File oldFile = diskShare.openFile(
                                 destSmbPath,
-                                EnumSet.of(AccessMask.GENERIC_ALL),
+                                EnumSet.of(AccessMask.DELETE),
                                 null,
                                 EnumSet.of(SMB2ShareAccess.FILE_SHARE_DELETE,
                                         SMB2ShareAccess.FILE_SHARE_READ,

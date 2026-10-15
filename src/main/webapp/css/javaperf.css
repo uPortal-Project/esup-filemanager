@@ -96,3 +96,8 @@ body {
 .javaperf-progress-pct-90 { width: 90%; }
 .javaperf-progress-pct-95 { width: 95%; }
 .javaperf-progress-pct-100 { width: 100%; }
+
+/* Keep absolute screen-reader labels inside the table's horizontal scroll container. */
+.table-responsive {
+    position: relative;
+}

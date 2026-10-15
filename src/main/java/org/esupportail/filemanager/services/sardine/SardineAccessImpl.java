@@ -66,7 +66,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
     }
 
     @Override
-    protected void open() {
+    protected synchronized void open() {
         super.open();
         try {
             if (!isOpened()) {
@@ -104,7 +104,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
     }
 
     @Override
-    public void close() {
+    public synchronized void close() {
         if (this.root != null) {
             notifyConnectionClosed();
             this.root = null;
@@ -241,6 +241,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
     }
 
     // Original created folders, and empty files, I only do folders
+    // Form encoding uses plus for spaces; WebDAV URI path segments require percent-encoded spaces.
     @Override
     public String createFile(String parentPath, String title, String type) {
         try {
@@ -248,11 +249,11 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
             if ("folder".equals(type)) {
                 if (!parentPath.endsWith("/"))
                     parentPath = parentPath + "/";
-                root.createDirectory(this.uri + parentPath + URLEncoder.encode(title, StandardCharsets.UTF_8));
+                root.createDirectory(this.uri + parentPath + URLEncoder.encode(title, StandardCharsets.UTF_8).replace("+", "%20"));
             } else {
                 log.warn("Can't create files");
             }
-            return this.uri + parentPath + title;
+            return parentPath + URLEncoder.encode(title, StandardCharsets.UTF_8).replace("+", "%20");
         } catch (SardineException se) {
             log.error("Error creating '{}', error: {}", title, se.getResponsePhrase(), se);
         } catch (IOException ioe) {
@@ -265,17 +266,14 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
     public boolean renameFile(String path, String title) {
         try {
             this.open();
-            String oldname = this.uri + path;
-
             List<DavResource> resources = root.list(this.uri + path);
             DavResource resource = resources.get(0);
-
-            int index = path.lastIndexOf("/") + 1;
-            String newname = this.uri + path.substring(0, index) + URLEncoder.encode(title, StandardCharsets.UTF_8);
-            if (resource.isDirectory()) {
-                oldname = oldname.substring(0, oldname.length() - 1);
-                newname = oldname.replaceAll("/[^/]*$", "/" + title);
-            }
+            String normalized = path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
+            int index = normalized.lastIndexOf('/') + 1;
+            String oldname = this.uri + path;
+            String newname = this.uri + normalized.substring(0, index)
+                    + URLEncoder.encode(title, StandardCharsets.UTF_8).replace("+", "%20")
+                    + (resource.isDirectory() ? "/" : "");
 
             root.move(oldname, newname);
 
@@ -301,21 +299,21 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
                 List<DavResource> resources = root.list(this.uri + file);
 
                 if (root.exists(this.uri + dir
-                        + URLEncoder.encode(resources.get(0).getName(), StandardCharsets.UTF_8))) {
-                    log.info("Won't overwrite file '{}{}{}'", this.uri, dir, URLEncoder.encode(resources.get(0).getName(), StandardCharsets.UTF_8));
+                        + URLEncoder.encode(resources.get(0).getName(), StandardCharsets.UTF_8).replace("+", "%20"))) {
+                    log.info("Won't overwrite file '{}{}{}'", this.uri, dir, URLEncoder.encode(resources.get(0).getName(), StandardCharsets.UTF_8).replace("+", "%20"));
                     return false;
                 }
             }
 
             for (String file : filesToCopy) {
                 List<DavResource> resources = root.list(this.uri + file);
-                log.debug("start={}{} end={}{}{}", this.uri, file, this.uri, dir, URLEncoder.encode(resources.get(0).getName(), StandardCharsets.UTF_8));
+                log.debug("start={}{} end={}{}{}", this.uri, file, this.uri, dir, URLEncoder.encode(resources.get(0).getName(), StandardCharsets.UTF_8).replace("+", "%20"));
                 if (copy)
                     root.copy(this.uri + file, this.uri + dir
-                            + URLEncoder.encode(resources.get(0).getName(), StandardCharsets.UTF_8));
+                            + URLEncoder.encode(resources.get(0).getName(), StandardCharsets.UTF_8).replace("+", "%20"));
                 else
                     root.move(this.uri + file, this.uri + dir
-                            + URLEncoder.encode(resources.get(0).getName(), StandardCharsets.UTF_8));
+                            + URLEncoder.encode(resources.get(0).getName(), StandardCharsets.UTF_8).replace("+", "%20"));
             }
             return true;
 
@@ -355,7 +353,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
             this.open();
             if (!dir.endsWith("/"))
                 dir = dir + "/";
-            String file = this.uri + dir + URLEncoder.encode(filename, StandardCharsets.UTF_8);
+            String file = this.uri + dir + URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
             return root.exists(file);
         } catch (Exception e) {
             log.warn("Could not check WebDAV file existence for {}/{}: {}", dir, filename, e.getMessage());
@@ -370,7 +368,7 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
             if (!dir.endsWith("/"))
                 dir = dir + "/";
 
-            String file = this.uri + dir + URLEncoder.encode(filename, StandardCharsets.UTF_8);
+            String file = this.uri + dir + URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
             if (root.exists(file)) {
                 switch (uploadOption) {
                     case ERROR:
@@ -379,10 +377,10 @@ public class SardineAccessImpl extends FsAccess implements DisposableBean {
                         root.delete(file);
                         break;
                     case RENAME_NEW:
-                        file = this.uri + dir + URLEncoder.encode(this.getUniqueFilename(filename, "-new-"), StandardCharsets.UTF_8);
+                        file = this.uri + dir + URLEncoder.encode(this.getUniqueFilename(filename, "-new-"), StandardCharsets.UTF_8).replace("+", "%20");
                         break;
                     case RENAME_OLD:
-                        root.move(file, this.uri + dir + URLEncoder.encode(this.getUniqueFilename(filename, "-old-"), StandardCharsets.UTF_8));
+                        root.move(file, this.uri + dir + URLEncoder.encode(this.getUniqueFilename(filename, "-old-"), StandardCharsets.UTF_8).replace("+", "%20"));
                         break;
                 }
             }

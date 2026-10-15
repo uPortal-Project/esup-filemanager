@@ -58,7 +58,7 @@
         <div class="col-6 col-md-3">
             <div class="card text-bg-secondary h-100">
                 <div class="card-body text-center">
-                    <div class="fs-2 fw-bold" th:text="${maxMemoryInMB} + ' MB'">– MB</div>
+                    <div data-testid="memory-max" class="fs-2 fw-bold" th:text="${maxMemoryInMB} + ' ' + #{details.mb}">– MB</div>
                     <div class="small" th:text="#{javaperf.memory.max}">Max</div>
                 </div>
             </div>
@@ -66,7 +66,7 @@
         <div class="col-6 col-md-3">
             <div class="card text-bg-primary h-100">
                 <div class="card-body text-center">
-                    <div class="fs-2 fw-bold" th:text="${totalMemoryInMB} + ' MB'">– MB</div>
+                    <div data-testid="memory-total" class="fs-2 fw-bold" th:text="${totalMemoryInMB} + ' ' + #{details.mb}">– MB</div>
                     <div class="small" th:text="#{javaperf.memory.allocated}">Allocated</div>
                 </div>
             </div>
@@ -74,7 +74,7 @@
         <div class="col-6 col-md-3">
             <div class="card text-bg-success h-100">
                 <div class="card-body text-center">
-                    <div class="fs-2 fw-bold" th:text="${freeMemoryInMB} + ' MB'">– MB</div>
+                    <div data-testid="memory-free" class="fs-2 fw-bold" th:text="${freeMemoryInMB} + ' ' + #{details.mb}">– MB</div>
                     <div class="small" th:text="#{javaperf.memory.free}">Free</div>
                 </div>
             </div>
@@ -82,7 +82,7 @@
         <div class="col-6 col-md-3">
             <div class="card text-bg-warning h-100">
                 <div class="card-body text-center">
-                    <div class="fs-2 fw-bold" th:text="${usedMemoryInMB} + ' MB'">– MB</div>
+                    <div data-testid="memory-used" class="fs-2 fw-bold" th:text="${usedMemoryInMB} + ' ' + #{details.mb}">– MB</div>
                     <div class="small" th:text="#{javaperf.memory.used}">Used</div>
                 </div>
             </div>
@@ -92,7 +92,7 @@
         <div class="col-12">
             <div class="d-flex justify-content-between small text-muted mb-1">
                 <span th:text="#{javaperf.memory.usage}">Memory usage</span>
-                <span th:text="${usedMemoryInMB} + ' / ' + ${maxMemoryInMB} + ' MB'"></span>
+                <span th:text="${usedMemoryInMB} + ' / ' + ${maxMemoryInMB} + ' ' + #{details.mb}"></span>
             </div>
             <div class="progress javaperf-memory-progress">
                 <div class="progress-bar bg-warning"
@@ -117,7 +117,7 @@
         </h2>
 
         <!-- No connections recorded -->
-        <div th:if="${#lists.isEmpty(storageStats)}"
+        <div data-testid="storage-empty" th:if="${#lists.isEmpty(storageStats)}"
              class="alert alert-info d-flex align-items-center gap-2">
             <i class="bi bi-info-circle-fill fs-5" aria-hidden="true"></i>
             <span th:text="#{javaperf.storage.empty}">No connections recorded since the server started.</span>
@@ -125,7 +125,7 @@
 
         <!-- Gauge cards per drive -->
         <div th:unless="${#lists.isEmpty(storageStats)}" class="row g-3">
-            <div th:each="stat : ${storageStats}" class="col-6 col-md-4 col-lg-3 col-xl-2">
+            <div data-testid="storage-card" th:attr="data-active=${stat.openConnections},data-peak=${stat.maxConnections}" th:each="stat : ${storageStats}" class="col-6 col-md-4 col-lg-3 col-xl-2">
                 <div class="card shadow-sm h-100 text-center py-3 px-2">
 
                     <!-- Circular SVG gauge (counter/speedometer type) -->
@@ -214,7 +214,7 @@
 
         <!-- Thread table -->
         <div class="table-responsive">
-            <table class="table table-sm table-bordered table-hover thread-table align-middle"
+            <table data-testid="thread-table" class="table table-sm table-bordered table-hover thread-table align-middle"
                    th:attr="aria-label=#{javaperf.threads.title}">
                 <thead class="table-dark sticky-top">
                     <tr>

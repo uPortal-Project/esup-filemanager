@@ -25,8 +25,10 @@ import jakarta.annotation.Resource;
 import org.apache.commons.vfs2.*;
 import org.apache.commons.vfs2.auth.StaticUserAuthenticator;
 import org.apache.commons.vfs2.impl.DefaultFileSystemConfigBuilder;
+import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.apache.commons.vfs2.provider.ftp.FtpFileSystemConfigBuilder;
 import org.apache.commons.vfs2.provider.local.LocalFile;
+import org.apache.commons.vfs2.provider.UriParser;
 import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
 import org.esupportail.filemanager.beans.DownloadFile;
 import org.esupportail.filemanager.beans.JsTreeFile;
@@ -103,7 +105,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
     }
 
     @Override
-    protected void open() {
+    protected synchronized void open() {
         super.open();
         try {
             if(!isOpened()) {
@@ -139,7 +141,13 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
                     DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(fsOptions, userAuthenticator);
                 }
 
-                fsManager = VFS.getManager();
+                // Concurrent initial requests must not resolve and refresh the same SFTP root.
+                // Own the manager so closing one HTTP session cannot close another session's files.
+                if (fsManager == null) {
+                    StandardFileSystemManager manager = new StandardFileSystemManager();
+                    manager.init();
+                    fsManager = manager;
+                }
                 root = fsManager.resolveFile(uri, fsOptions);
                 notifyConnectionOpened();
             }
@@ -149,13 +157,17 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
     }
 
     @Override
-    public void close() {
+    public synchronized void close() {
         FileSystem fs = null;
         if(this.root != null) {
             notifyConnectionClosed();
             fs = this.root.getFileSystem();
             this.fsManager.closeFileSystem(fs);
             this.root = null;
+        }
+        if (this.fsManager instanceof StandardFileSystemManager manager) {
+            manager.close();
+            this.fsManager = null;
         }
     }
 
@@ -189,8 +201,9 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
         }
     }
 
+    // VFS refresh and SFTP stat acquire internal locks in opposite orders; serialize access per connector.
     @Override
-    public JsTreeFile get(String path, boolean folderDetails, boolean fileDetails) {
+    public synchronized JsTreeFile get(String path, boolean folderDetails, boolean fileDetails) {
         try {
             FileObject resource = cd(path);
             return resourceAsJsTreeFile(resource, "", folderDetails, fileDetails, false);
@@ -200,7 +213,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
     }
 
     @Override
-    public List<JsTreeFile> getChildren(String path) {
+    public synchronized List<JsTreeFile> getChildren(String path) {
         try {
             List<JsTreeFile> files = new ArrayList<JsTreeFile>();
             FileObject resource = cd(path);
@@ -259,7 +272,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
         String type = "drive";
         if(!"".equals(lid)) {
             type = resource.getType().getName();
-            title = resource.getName().getBaseName();
+            title = UriParser.decode(resource.getName().getBaseName());
         }
         JsTreeFile file = new JsTreeFile(title, lid, parent,  type);
 
@@ -313,12 +326,12 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
     }
 
     @Override
-    public boolean remove(String path) {
+    public synchronized boolean remove(String path) {
         boolean success = false;
         FileObject file;
         try {
             file = cd(path);
-            success = file.delete();
+            success = file.delete(Selectors.SELECT_ALL) > 0 && !file.exists();
         } catch (FileSystemException e) {
             log.info("can't delete file because of FileSystemException:", e);
         }
@@ -327,10 +340,10 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
     }
 
     @Override
-    public String createFile(String parentPath, String title, String type) {
+    public synchronized String createFile(String parentPath, String title, String type) {
         try {
             FileObject parent = cd(parentPath);
-            FileObject child = parent.resolveFile(title);
+            FileObject child = parent.resolveFile(UriParser.encode(title, new char[] {'#', '?'}));
             if (!child.exists()) {
                 if (FileType.FOLDER.getName().equals(type)) {
                     child.createFolder();
@@ -339,7 +352,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
                     child.createFile();
                     log.info("file '{}' created", title);
                 }
-                return child.getName().getPath();
+                return root.getName().getRelativeName(child.getName());
             } else {
                 log.info("file '{}' already exists !", title);
             }
@@ -350,10 +363,10 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
     }
 
     @Override
-    public boolean renameFile(String path, String title) {
+    public synchronized boolean renameFile(String path, String title) {
         try {
             FileObject file = cd(path);
-            FileObject newFile = file.getParent().resolveFile(title);
+            FileObject newFile = file.getParent().resolveFile(UriParser.encode(title, new char[] {'#', '?'}));
             if (!newFile.exists()) {
                 file.moveTo(newFile);
                 return true;
@@ -367,7 +380,7 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
     }
 
     @Override
-    public boolean moveCopyFilesIntoDirectory(String dir,
+    public synchronized boolean moveCopyFilesIntoDirectory(String dir,
                                               List<String> filesToCopy, boolean copy) {
         try {
             FileObject folder = cd(dir);
@@ -390,12 +403,12 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
     }
 
     @Override
-    public DownloadFile getFile(String dir) {
+    public synchronized DownloadFile getFile(String dir) {
         try {
             FileObject file = cd(dir);
             FileContent fc = file.getContent();
             long size = fc.getSize();
-            String baseName = fc.getFile().getName().getBaseName();
+            String baseName = UriParser.decode(fc.getFile().getName().getBaseName());
             // fc.getContentInfo().getContentType() use URLConnection.getFileNameMap,
             // we prefer here to use our getMimeType : for Excel files and co
             // String contentType = fc.getContentInfo().getContentType();
@@ -409,10 +422,10 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
     }
 
     @Override
-    public boolean existsFile(String dir, String filename) {
+    public synchronized boolean existsFile(String dir, String filename) {
         try {
             FileObject folder = cd(dir);
-            FileObject newFile = folder.resolveFile(filename);
+            FileObject newFile = folder.resolveFile(UriParser.encode(filename, new char[] {'#', '?'}));
             return newFile.exists();
         } catch (Exception e) {
             log.warn("Could not check VFS file existence for {}/{}: {}", dir, filename, e.getMessage());
@@ -420,14 +433,14 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
         }
     }
 
-    public boolean putFile(String dir, String filename, InputStream inputStream, UploadActionType uploadOption) {
+    public synchronized boolean putFile(String dir, String filename, InputStream inputStream, UploadActionType uploadOption) {
 
         boolean success = false;
         FileObject newFile = null;
 
         try {
             FileObject folder = cd(dir);
-            newFile = folder.resolveFile(filename);
+            newFile = folder.resolveFile(UriParser.encode(filename, new char[] {'#', '?'}));
             if (newFile.exists()) {
                 switch (uploadOption) {
                     case ERROR :
@@ -436,10 +449,10 @@ public class VfsAccessImpl extends FsAccess implements DisposableBean {
                         newFile.delete();
                         break;
                     case RENAME_NEW :
-                        newFile = folder.resolveFile(this.getUniqueFilename(filename, "-new-"));
+                        newFile = folder.resolveFile(UriParser.encode(this.getUniqueFilename(filename, "-new-"), new char[] {'#', '?'}));
                         break;
                     case RENAME_OLD :
-                        newFile.moveTo(folder.resolveFile(this.getUniqueFilename(filename, "-old-")));
+                        newFile.moveTo(folder.resolveFile(UriParser.encode(this.getUniqueFilename(filename, "-old-"), new char[] {'#', '?'})));
                         break;
                 }
             }

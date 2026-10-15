@@ -4,7 +4,7 @@
 
     <div class="media-player-container">
         <audio controls class="audio-player" th:attr="aria-label=${file.title}">
-            <source th:src="@{/downloadFile(dir=${file.encPath})}" th:type="${file.mimeType}">
+            <source th:src="@{/fetchSound(dir=${file.encPath})}" th:type="${file.mimeType}">
             <span th:text="#{details.playlist.unsupported}">Votre navigateur ne supporte pas la lecture audio HTML5.</span>
         </audio>
     </div>
