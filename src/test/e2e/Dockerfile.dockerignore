@@ -1,0 +1,6 @@
+node_modules
+results
+test-results
+playwright-report
+.venv
+__pycache__

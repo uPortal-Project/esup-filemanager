@@ -1,0 +1,116 @@
+# Standalone test stack: no published ports, data removed by scripts/run.sh.
+services:
+  openldap:
+    image: osixia/openldap@sha256:18742e9c449c9c1afe129d3f2f3ee15fb34cc43e5f940a20f3399728f41d7c28
+    environment:
+      LDAP_DOMAIN: example.org
+    command: --copy-service
+    volumes:
+      - ./docker/ldap-config:/container/service/slapd/assets/config/bootstrap/ldif/custom
+    healthcheck:
+      test: [CMD-SHELL, "ldapsearch -x -H ldap://localhost -D 'cn=admin,dc=example,dc=org' -w admin -b 'dc=example,dc=org' -s base dn >/dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 40
+
+  cas:
+    image: ghcr.io/esupportail/apereo-cas-ldap@sha256:cf06bec1f78a82c046a68ad6ccf89d65f3de8249445e7a2bcfc795b5660861bb
+    volumes:
+      - ./docker/cas-config:/etc/cas
+      - ./docker/cas-config/tmp-cas:/tmp/cas
+    depends_on:
+      openldap:
+        condition: service_healthy
+
+  s3:
+    image: cgr.dev/chainguard/minio@sha256:2136d593beacf4461187035eca949fe49abd589d5079735025c711ca58fee0c8
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_API_CORS_ALLOW_ORIGIN: http://app-e2e:8080
+    command: server /data --console-address ":9001"
+    volumes:
+      - s3-data:/data
+    healthcheck:
+      test: [CMD, mc, ready, local]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  s3-init:
+    image: cgr.dev/chainguard/minio-client@sha256:799f7e86017c3ee8d00f6372e1ee28dd73453f271d5b306a47af8e8a408a777a
+    depends_on:
+      s3:
+        condition: service_healthy
+    entrypoint:
+      - /bin/sh
+      - -c
+      - mc alias set local http://s3:9000 minioadmin minioadmin && mc mb --ignore-existing local/esup-files
+
+  webdav:
+    image: apachewebdav/apachewebdav@sha256:0d4aea1eefbc374cf21fd677e09a90df7dca0f5b5d72e5ba534f201f7c03bcea
+    environment:
+      AUTH_TYPE: Basic
+      USERNAME: webdav
+      PASSWORD: webdav
+    tmpfs:
+      - /var/lib/dav/data:mode=0777
+      - /var/lib/dav:mode=0777
+
+  samba:
+    image: crazymax/samba@sha256:b37f7af97c773eddb593537f64da6389e5ee6695bcecf44f3ba1a8a6bcf34125
+    cap_add:
+      - CAP_NET_ADMIN
+    tmpfs:
+      - /samba/share:mode=0777
+    volumes:
+      - ./docker/samba-config/samba-config.yml:/data/config.yml:ro
+
+  sftp:
+    image: hectorm/dropbear@sha256:b7115a7779b0989f40e0b5d4e3cc2153b73f2af25c4eaff174b39534f0225044
+    environment:
+      DROPBEAR_USERS: sftpuser:plain:sftppass:1001:1001
+    tmpfs:
+      - /home/sftpuser:mode=0755,uid=1001
+
+  app-e2e:
+    build:
+      context: ../..
+      dockerfile: src/etc/docker/e2e/Dockerfile.app
+    environment:
+      S3_PRESIGNED_URLS_ENABLED: ${S3_PRESIGNED_URLS_ENABLED:-true}
+    volumes:
+      - local-data:/data/e2e-local
+    depends_on:
+      s3-init:
+        condition: service_completed_successfully
+      cas:
+        condition: service_started
+      webdav:
+        condition: service_started
+      samba:
+        condition: service_started
+      sftp:
+        condition: service_started
+
+  playwright:
+    build: ../test/e2e
+    init: true
+    shm_size: 1gb
+    environment:
+      E2E_OUTPUT: /results
+      E2E_RUN: ${E2E_RUN:?Set E2E_RUN using scripts/run.sh}
+      E2E_CAMPAIGN: ${E2E_CAMPAIGN:-smoke}
+      E2E_VIDEO: ${E2E_VIDEO:-retain-on-failure}
+      S3_MODE: ${S3_MODE:-direct}
+      CI: ${CI:-}
+      STARTUP_TIMEOUT: ${STARTUP_TIMEOUT:-300}
+    volumes:
+      - local-data:/data/e2e-local
+      - ${E2E_RESULTS:?Set E2E_RESULTS using scripts/run.sh}:/results
+    depends_on:
+      - app-e2e
+
+volumes:
+  local-data:
+  s3-data:

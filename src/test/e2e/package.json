@@ -1,0 +1,16 @@
+{
+  "name": "esup-filemanager-e2e",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "test": "playwright test",
+    "check": "tsc --noEmit",
+    "list": "playwright test --list"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1",
+    "@types/node": "22.18.10",
+    "fflate": "0.8.3",
+    "typescript": "5.9.3"
+  }
+}

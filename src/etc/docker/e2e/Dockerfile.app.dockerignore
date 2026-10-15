@@ -1,0 +1,10 @@
+**
+!pom.xml
+!src
+!src/main
+!src/main/**
+!src/etc
+!src/etc/header.txt
+!src/etc/docker
+!src/etc/docker/e2e
+!src/etc/docker/e2e/**
