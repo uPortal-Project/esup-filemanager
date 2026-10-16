@@ -140,6 +140,20 @@ failure and retained for seven days. Full campaign video assembly is disabled.
 E2E builds currently use Docker's local cache only, without a persistent remote
 cache. See [the E2E guide](src/test/e2e/README.md) for local commands and diagnostics.
 
+## E2E test campaign video
+
+The video below records an automated end-to-end (E2E) test campaign of the
+application running with its Docker services. It shows browser interactions
+covering authentication, navigation, file operations and transfers across storage
+backends. Title cards identify each test, its result and its attempt number.
+
+Click the preview to open the video (MP4, approximately 13 MB, 16 minutes).
+See [the E2E guide](src/test/e2e/README.md) to run the tests and record a campaign.
+
+[![Watch the application's E2E test campaign](src/etc/esup-filemanager-docker-campaign-video.jpg)](src/etc/esup-filemanager-docker-campaign-video.mp4)
+
+[Watch or download the E2E test campaign video](src/etc/esup-filemanager-docker-campaign-video.mp4).
+
 ## Screenshot
 
 ![Esup File Manager Screenshot](https://raw.githubusercontent.com/uPortal-Project/esup-filemanager/master/src/etc/esup-filemanager-screenshot-1.png)
@@ -147,3 +161,8 @@ cache. See [the E2E guide](src/test/e2e/README.md) for local commands and diagno
 ![Esup File Manager Screenshot - Mobile](https://raw.githubusercontent.com/uPortal-Project/esup-filemanager/master/src/etc/esup-filemanager-screenshot-2.png)
 
 ![Esup File Manager Screenshot - JavaPerf](https://raw.githubusercontent.com/uPortal-Project/esup-filemanager/master/src/etc/esup-filemanager-screenshot-3.png)
+
+## AI-assisted development
+
+Since the migration to a standalone servlet application in version 6,
+esup-filemanager development has been assisted by AI large language models (LLMs).
