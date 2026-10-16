@@ -1,0 +1,70 @@
+name: E2E
+
+on:
+  workflow_dispatch:
+    inputs:
+      campaign:
+        description: Test campaign
+        type: choice
+        options: [smoke, full]
+        default: smoke
+      s3_mode:
+        description: S3 transfer mode
+        type: choice
+        options: [direct, classic]
+        default: direct
+  schedule:
+    # Monday at 04:23 UTC, away from the hourly peak.
+    - cron: '23 4 * * 1'
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: e2e-${{ github.ref }}-${{ inputs.campaign || 'full' }}-${{ inputs.s3_mode || 'direct' }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    name: Check whether E2E is needed
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      run: ${{ steps.changes.outputs.run }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/github-script@v8
+        id: changes
+        with:
+          script: |
+            const check = require('./.github/scripts/e2e-changes.cjs');
+            await check({ github, context, core });
+
+  e2e:
+    name: E2E ${{ inputs.campaign || 'full' }} (${{ inputs.s3_mode || 'direct' }})
+    needs: changes
+    if: needs.changes.outputs.run == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CI: 'true'
+      E2E_CAMPAIGN: ${{ inputs.campaign || 'full' }}
+      S3_MODE: ${{ inputs.s3_mode || 'direct' }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Run E2E campaign
+        run: bash src/test/e2e/scripts/run.sh "$E2E_CAMPAIGN" "--s3-mode=$S3_MODE"
+      - name: Upload reports and failure diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-${{ env.E2E_CAMPAIGN }}-${{ env.S3_MODE }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: src/test/e2e/results/
+          retention-days: 7
+          if-no-files-found: warn

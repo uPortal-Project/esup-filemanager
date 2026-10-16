@@ -4,6 +4,8 @@
 !src/**
 !LICENCE
 !README.md
+!.github/
+!.github/**
 !NOTICE
 !pom.xml
 COMMITTERS.md

@@ -109,6 +109,37 @@ No need to run 'mvn spring-boot:run' in this case and no need to hava java, just
 
 Go to http://localhost:8080/ and login with joe/pass or jack/pass to access esup-filemanager.
 
+## Continuous integration
+
+GitHub Actions uses two workflows:
+
+* **CI** runs on pull requests and pushes to `master`: Java 21 Maven build,
+  local JavaScript tests (including a Chrome check), and E2E TypeScript checks.
+  It does not start the Docker test stack. Maven and npm dependencies are cached;
+  superseded runs on the same PR or branch are cancelled.
+* **E2E** runs manually from **Actions → E2E → Run workflow**. Choose the branch,
+  `smoke` (19 tests) or `full` (83 tests), and the S3 mode (`direct` or `classic`).
+  Manual runs always execute, even when the commit was already tested.
+* Every Monday at **04:23 UTC**, E2E runs `full` in direct S3 mode on the default
+  branch, unless relevant files are unchanged since its last successful
+  full/direct campaign (manual or scheduled). Documentation-only changes are
+  ignored. Skipped runs do not reset that baseline; without a usable baseline
+  among the latest 100 successful workflow runs, the suite runs.
+
+Run smoke before merging changes to authentication, permissions, transfers,
+storage integrations or major UI interactions. Before publishing a release, run
+the full campaign on the exact commit to publish and require a successful result.
+These are maintainer procedures; the workflows do not enforce release publication.
+
+In GitHub branch protection/rulesets, configure **Build and checks** as a required
+check. E2E is optional for normal PRs. This repository configuration does not set
+GitHub branch protection automatically.
+
+E2E reports, failure recordings and service logs are uploaded even after test
+failure and retained for seven days. Full campaign video assembly is disabled.
+E2E builds currently use Docker's local cache only, without a persistent remote
+cache. See [the E2E guide](src/test/e2e/README.md) for local commands and diagnostics.
+
 ## Screenshot
 
 ![Esup File Manager Screenshot](https://raw.githubusercontent.com/uPortal-Project/esup-filemanager/master/src/etc/esup-filemanager-screenshot-1.png)
@@ -116,4 +147,3 @@ Go to http://localhost:8080/ and login with joe/pass or jack/pass to access esup
 ![Esup File Manager Screenshot - Mobile](https://raw.githubusercontent.com/uPortal-Project/esup-filemanager/master/src/etc/esup-filemanager-screenshot-2.png)
 
 ![Esup File Manager Screenshot - JavaPerf](https://raw.githubusercontent.com/uPortal-Project/esup-filemanager/master/src/etc/esup-filemanager-screenshot-3.png)
-

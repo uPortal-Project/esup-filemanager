@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Build and checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: src/test/e2e/package-lock.json
+      - name: Build and verify Java
+        run: mvn -B -ntp verify
+      - name: Run JavaScript tests
+        # The runner includes Chrome; avoid installing another browser.
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: node --test src/test/js/*.test.cjs
+      - name: Install test dependencies
+        run: npm --prefix src/test/e2e ci
+      - name: Check E2E TypeScript
+        run: npm --prefix src/test/e2e run check
