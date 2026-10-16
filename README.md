@@ -150,9 +150,9 @@ backends. Title cards identify each test, its result and its attempt number.
 Click the preview to open the video (MP4, approximately 13 MB, 16 minutes).
 See [the E2E guide](src/test/e2e/README.md) to run the tests and record a campaign.
 
-[![Watch the application's E2E test campaign](src/etc/esup-filemanager-docker-campaign-video.jpg)](src/etc/esup-filemanager-docker-campaign-video.mp4)
+[![Watch the application's E2E test campaign](src/etc/esup-filemanager-docker-campaign-video.jpg)](https://raw.githubusercontent.com/uPortal-Project/esup-filemanager/master/src/etc/esup-filemanager-docker-campaign-video.mp4)
 
-[Watch or download the E2E test campaign video](src/etc/esup-filemanager-docker-campaign-video.mp4).
+[Watch or download the E2E test campaign video](https://raw.githubusercontent.com/uPortal-Project/esup-filemanager/master/src/etc/esup-filemanager-docker-campaign-video.mp4).
 
 ## Screenshot
 
