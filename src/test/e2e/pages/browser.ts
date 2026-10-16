@@ -130,9 +130,10 @@ export class FileBrowser {
         for (const file of files)
             await expect(this.listing.getByRole('checkbox', { name: file.name, exact: true })).toBeVisible({ timeout: 60000 });
     }
-    async download(name: string, bytes?: Buffer, zip = false) {
+    async download(name: string, bytes?: Buffer, zip = false, trigger?: () => Promise<unknown>) {
         const pending = this.page.waitForEvent('download');
-        await this.action(zip ? 'zip' : 'download');
+        if (trigger) await trigger();
+        else await this.action('download');
         const download = await pending;
         expect(await download.failure()).toBeNull();
         expect(download.suggestedFilename()).toBe(zip ? 'export.zip' : name);

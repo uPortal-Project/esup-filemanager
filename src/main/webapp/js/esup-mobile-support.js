@@ -92,12 +92,16 @@
 
         const desktopParent = details.parentNode;
         const mobile = window.matchMedia('(max-width: 991.98px)');
-        button.addEventListener('click', () => {
+        let opener = button;
+        const open = source => {
             if (!mobile.matches || dialog.open) return;
+            opener = source;
             // Move the existing panel: AJAX and media keep the same root and state.
             dialog.appendChild(details);
             dialog.showModal();
-        });
+        };
+        button.addEventListener('click', () => open(button));
+        dialog.addEventListener('esup:open-details', event => open(event.detail.opener));
         const close = () => {
             window.detailsManager?.suspend(false);
             desktopParent.appendChild(details);
@@ -105,7 +109,7 @@
             if (!document.querySelector('dialog[open], .modal.show')) {
                 document.body.classList.remove('modal-open');
             }
-            (mobile.matches ? button : document.getElementById('treeSplitter'))?.focus();
+            (mobile.matches ? (opener?.isConnected ? opener : button) : document.getElementById('treeSplitter'))?.focus();
         };
         document.getElementById('mobile-details-close').addEventListener('click', close);
         dialog.addEventListener('cancel', event => {

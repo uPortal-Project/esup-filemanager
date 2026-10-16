@@ -60,7 +60,7 @@ test('details lifecycle and keyboard accessibility in Chromium', async () => {
         let downloads = 0;
         let zips = 0;
         window.esupFileManager = { triggerDownload: () => downloads++ };
-        document.getElementById('toolbar-zip').addEventListener('click', () => zips++);
+        document.getElementById('toolbar-download').addEventListener('click', () => zips++);
         let detachedAudio;
         let detachedButton;
 
@@ -151,7 +151,7 @@ test('details lifecycle and keyboard accessibility in Chromium', async () => {
             deleteFiles: action, handleRename: action, handleEnterKey: action
         });`;
     const html = `<!doctype html><base href="${origin}/"><style>${readFileSync(join(webapp, 'css/details-modern.css'), 'utf8')}</style>
-        <div id="treeSplitter" tabindex="0" role="separator">Navigation</div><button id="toolbar-zip">ZIP</button><div id="detailArea">${fixture}</div><pre id="result">PENDING</pre>
+        <div id="treeSplitter" tabindex="0" role="separator">Navigation</div><button id="toolbar-download">ZIP</button><div id="detailArea">${fixture}</div><pre id="result">PENDING</pre>
         <script>${setup}${shortcuts}</script><script>${readFileSync(join(webapp, 'js/details-manager.js'), 'utf8')}</script>
         <script>document.addEventListener('DOMContentLoaded', () => {
             try { (${checks})(${JSON.stringify(fixture)}); }
@@ -324,7 +324,7 @@ async function checkKeyboard(file, directory, fixture) {
         await key('Enter', 'Enter');
         await check(`document.querySelector('#imageModal').open && document.activeElement.matches('.image-modal-close')`, 'preview Enter opens and focuses close');
         await check(`document.querySelector('#modalImage').alt === 'One'`, 'image alt identifies file');
-        await evaluate(`document.getElementById('toolbar-zip').focus()`);
+        await evaluate(`document.getElementById('toolbar-download').focus()`);
         await check(`document.activeElement.closest('#imageModal') !== null`, 'background focus blocked');
         await key('Tab', 'Tab');
         await key('Tab', 'Tab', 8);
@@ -466,13 +466,14 @@ async function checkKeyboard(file, directory, fixture) {
         const listing = readFileSync(join(templates, 'fileTree.html'), 'utf8');
         const application = readFileSync(join(webapp, 'js/esup-stock-modern.js'), 'utf8');
         const methods = ['initEventListeners', 'bindBrowserAreaEvents', 'getSelectedFilePaths',
-            'handleFileClick', 'selectFile', 'getFileTypeFromPath', 'updateToolbarButtons',
+            'handleFileClick', 'getFileTypeFromPath', 'updateToolbarButtons',
             'updatePasteButtonState', 'updateDriveContextButtons'].map(name => application.match(
                 new RegExp(`    ${name}\\([^]*?\\n    }`))[0]).join(',');
         await evaluate(`document.getElementById('browserMain').innerHTML = ${JSON.stringify(listing)};
-            const app = { ${methods}, config: { useDoubleClick: false }, isInDrive: true, clipboard: { files: ['copied'] },
+            const app = { ${methods}, config: {}, isInDrive: true, clipboard: { files: ['copied'] },
                 bindToolbarEvents() {}, bindKeyboardEvents() {},
                 handleFileSelection() { window.selectionCalls++; window.selectedPaths = this.getSelectedFilePaths(); },
+                downloadFile(path) { window.downloadedPath = path; },
                 sortFiles(field) { window.sortedBy = field; },
                 handleFolderClick(link) { this.navigateToPath(link.getAttribute('rel')); },
                 navigateToPath(path) { window.navigatedTo = path; }
@@ -486,6 +487,7 @@ async function checkKeyboard(file, directory, fixture) {
             window.savedFileLink = listing.querySelector('.file');
             savedFileLink.querySelector('span').textContent = 'VeryLongFileName'.repeat(20) + '.txt';
             savedFileLink.setAttribute('rel', 'file-path');
+            savedFileLink.href = '#';
             listing.querySelector('.fileTreeRef').setAttribute('rel', 'folder-path');
             listing.querySelector('.fileTreeRef').closest('tr').querySelector('.browsercheck').value = 'folder-path';
             listing.querySelectorAll('thead a').forEach((link, index) => {
@@ -511,10 +513,12 @@ async function checkKeyboard(file, directory, fixture) {
             await key(' ', 'Space');
             await check(`window.selectedPaths.length === (savedCheckbox.checked ? 1 : 0) &&
                 window.selectionCalls > 0`, 'native checkbox updates the single selection');
+            const selectionBeforeDownload = await evaluate(`savedCheckbox.checked`);
             await evaluate(`savedFileLink.focus()`);
             await key('Enter', 'Enter');
-            await check(`savedCheckbox.checked && window.selectedPaths.join() === 'file-path' &&
-                savedFileLink === document.activeElement`, 'native file link activates selection and retains focus');
+            await check(`window.downloadedPath === 'file-path' && savedCheckbox.checked === ${selectionBeforeDownload} &&
+                savedFileLink === document.activeElement`, 'native file link downloads without changing selection');
+            await evaluate(`savedCheckbox.checked = true`);
             await evaluate(`document.querySelector('.fileTreeRef').focus()`);
             await key('Enter', 'Enter');
             await check(`window.navigatedTo === 'folder-path'`, 'native folder link navigates by keyboard');
@@ -530,7 +534,7 @@ async function checkKeyboard(file, directory, fixture) {
         await check(`['toolbar-download', 'mobile-download', 'mobile-toolbar-download', 'mobile-paste'].every(id => !document.getElementById(id).disabled)`, 'desktop and mobile share active file permissions');
         await evaluate(`document.querySelector('.fileTreeRef').closest('tr').querySelector('.browsercheck').checked = true;
             listingApp.updateToolbarButtons(true)`);
-        await check(`['toolbar-download', 'mobile-download', 'mobile-toolbar-download'].every(id => document.getElementById(id).disabled)`, 'mixed selection disables direct download in every view');
+        await check(`['toolbar-download', 'mobile-download', 'mobile-toolbar-download'].every(id => !document.getElementById(id).disabled && /zip/.test(document.getElementById(id).getAttribute('aria-label')))`, 'mixed selection offers ZIP download in every view');
         await viewport(360, 640);
         await evaluate(`document.getElementById('browserMain').innerHTML = ${JSON.stringify(listing)};`);
         await check(`getComputedStyle(document.querySelector('#browserMain tbody tr')).display === 'grid' &&

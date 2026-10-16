@@ -298,7 +298,7 @@
             } else if (control.id === 'playlistPrev' || control.id === 'playlistNext') {
                 this.changeTrack(control.id === 'playlistPrev' ? -1 : 1);
             } else if (control.id === 'detail-zip-download') {
-                const button = document.getElementById('toolbar-zip');
+                const button = document.getElementById('toolbar-download');
                 if (button && !button.disabled) button.click();
             }
         },

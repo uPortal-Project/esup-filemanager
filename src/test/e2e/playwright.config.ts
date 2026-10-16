@@ -32,5 +32,9 @@ export default defineConfig({
     actionTimeout: 15_000,
     navigationTimeout: 60_000,
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'mobile-chromium', testMatch: 'file-access.spec.ts', use: { ...devices['Pixel 7'] } },
+    { name: 'mobile-webkit', testMatch: 'file-access.spec.ts', use: { ...devices['iPhone 13'] } },
+  ],
 });

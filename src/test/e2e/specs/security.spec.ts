@@ -29,8 +29,13 @@ test('HTML in a filename is rendered as text without script execution', async ({
     files.page.on('dialog', async (event) => { dialog = true; await event.dismiss(); });
     await files.open('tmp', workspace.root + '/html');
     await files.select([name]);
-    await expect(files.listing.getByRole('link', { name, exact: true })).toBeVisible();
+    await expect(files.listing.getByRole('link', { name: 'Télécharger ' + name, exact: true })).toBeVisible();
     await expect(files.listing.locator('img[src="x"]')).toHaveCount(0);
+    // Chromium sanitizes characters that cannot be used in filenames on every OS.
+    await files.download(name.replace(/[<>]/g, '_'), text, false,
+        () => files.listing.getByRole('link', { name: 'Télécharger ' + name, exact: true }).click());
+    await expect(files.page.locator('#download-status')).toContainText(name);
+    await expect(files.page.locator('#download-status img')).toHaveCount(0);
     expect(dialog).toBeFalsy();
 });
 test('mutations reject missing and invalid CSRF without changing storage', async ({ files, workspace }) => {

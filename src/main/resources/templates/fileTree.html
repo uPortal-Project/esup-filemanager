@@ -48,8 +48,8 @@
                 th:classappend="|${file.readable ? 'esup-stock-read' : ''} ${file.writeable ? 'esup-stock-write' : ''} ${file.hidden ? 'esup-stock-hidden' : ''}|">
                 <td role="cell" class="checkbox">
                     <div class="file-entry">
-                        <input type="checkbox" class="browsercheck" th:value="${file.encPath}" name="dirs"
-                               th:attr="aria-label=${file.title}"/>
+                        <label class="file-select"><input type="checkbox" class="browsercheck" th:value="${file.encPath}" name="dirs"
+                               th:attr="aria-label=${file.title}"/></label>
                         <a class="fileTreeRef" href="#" th:title="${file.title}" th:rel="${file.encPath}" th:parent="${file.encParentPath}">
                             <img th:src="${file.icon}" alt="" aria-hidden="true" />
                             <span th:text="${file.title}"></span>
@@ -101,12 +101,19 @@
             <tr role="row" th:each="file : ${files}" th:if="${file.type != 'folder' and file.type != 'link' and file.type != 'drive' and file.type != 'category'}" class="selectable">
                 <td role="cell" class="checkbox">
                     <div class="file-entry">
-                        <input type="checkbox" class="browsercheck" th:value="${file.encPath}" name="dirs"
-                               th:attr="aria-label=${file.title}"/>
-                        <a class="file" href="#" th:title="${file.title}" th:rel="${file.encPath}">
+                        <label class="file-select"><input type="checkbox" class="browsercheck" th:value="${file.encPath}" name="dirs"
+                               th:attr="aria-label=${file.title}"/></label>
+                        <a class="file" th:href="@{/downloadFile(dir=${file.encPath})}" th:rel="${file.encPath}"
+                           th:title="#{toolbar.download} + ' ' + ${file.title}"
+                           th:attr="aria-label=#{toolbar.download} + ' ' + ${file.title}">
                             <img th:src="${file.icon}" alt="" aria-hidden="true" />
                             <span th:text="${file.title}"></span>
+                            <i class="bi bi-download file-download-icon" aria-hidden="true"></i>
                         </a>
+                        <button type="button" class="btn btn-outline-secondary file-preview"
+                                th:attr="data-path=${file.encPath},aria-label=#{browser.preview} + ' : ' + ${file.title}">
+                            <span th:text="#{browser.preview}">Aperçu</span>
+                        </button>
                     </div>
                 </td>
                 <td role="cell">

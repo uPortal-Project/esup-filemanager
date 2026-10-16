@@ -21,6 +21,7 @@ function setup() {
     const root = element();
     root.innerHTML = 'previous selection';
     const browser = element();
+    const downloadStatus = element();
     const requests = [];
     const errors = [];
     const downloads = [];
@@ -29,12 +30,14 @@ function setup() {
     const navigation = [];
     const lifecycle = [];
     const context = {
-        URLSearchParams, FormData, AbortController,
+        URL, URLSearchParams, FormData, AbortController,
+        requestAnimationFrame: callback => callback(),
         setTimeout: callback => timers.push(callback),
         UIComponents: { showInfo: message => notices.push(message) },
         console: { log() {}, error: (...args) => errors.push(args) },
         document: {
-            getElementById: id => ({ detailArea: root, browserMain: browser })[id],
+            getElementById: id => ({ detailArea: root, browserMain: browser, 'download-status': downloadStatus })[id],
+            querySelectorAll: () => [],
             querySelector: () => ({ content: 'csrf-token' }),
             createElement: () => {
                 const node = element();
@@ -44,6 +47,7 @@ function setup() {
             body: { appendChild: node => downloads.push(node) }
         },
         window: {
+            location: { href: 'https://files.example.test/' },
             addEventListener: (event, handler) => navigation.push(handler),
             i18n: { detailsLoading: 'Chargement', detailsLoadingError: 'Erreur', detailsRetry: 'Réessayer', detailsDownloadRequested: 'Téléchargement demandé' },
             detailsManager: {
@@ -62,7 +66,7 @@ function setup() {
         .replace(/^import .*;\n/gm, '').split('// Initialize application on DOM load')[0];
     const manager = runInNewContext(`${ajax}\n${app}\nObject.create(EsupFileManager.prototype)`, context);
     manager.config = { detailsAreaURL: '/details', htmlFileTreeURL: '/directory' };
-    return { manager, root, browser, requests, errors, lifecycle, downloads, notices, timers, navigation };
+    return { manager, root, browser, requests, errors, lifecycle, downloads, downloadStatus, notices, timers, navigation };
 }
 
 test('only the latest selection renders, even when fetch ignores cancellation', async () => {
@@ -174,14 +178,15 @@ test('navigation clears pending details immediately and late directory responses
 
 
 test('slow downloads remain alive until navigation and only report a request', () => {
-    const { manager, downloads, notices, timers, navigation } = setup();
+    const { manager, downloads, downloadStatus, timers, navigation } = setup();
     manager.triggerDownload('/downloadZip?dirs=large-folder');
+    assert.match(downloadStatus.textContent, /Download requested: export.zip/);
     manager.triggerDownload('/downloadFile?dir=s3-file');
     assert.deepEqual(downloads.map(frame => frame.src), [
         '/downloadZip?dirs=large-folder', '/downloadFile?dir=s3-file'
     ]);
     assert.ok(downloads.every(frame => frame.hidden && frame.tabIndex === -1));
-    assert.deepEqual(notices, ['Téléchargement demandé', 'Téléchargement demandé']);
+    assert.equal(downloadStatus.textContent, 'Téléchargement demandé');
     // Advancing every scheduled timeout cannot interrupt response preparation.
     timers.forEach(callback => callback());
     assert.equal(downloads.length, 2);

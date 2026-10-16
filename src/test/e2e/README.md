@@ -1,17 +1,18 @@
 # esup-filemanager end-to-end tests
 
-These tests use Chromium to operate the application and check the files actually
-written to storage. Docker and Docker Compose v2 are the only host requirements.
+These tests use Chromium on desktop and touch-enabled Chromium/Android and
+WebKit/iPhone profiles for file access. They check the files actually written to
+storage. Docker and Docker Compose v2 are the only host requirements.
 
 ## Running the tests
 
 From the repository root:
 
 ```bash
-# Essential workflows: 19 tests.
+# Essential workflows: 28 tests.
 bash src/test/e2e/scripts/run.sh smoke
 
-# Complete suite: 83 tests, including smoke.
+# Complete suite: 98 tests, including smoke.
 bash src/test/e2e/scripts/run.sh full
 ```
 
@@ -79,6 +80,7 @@ Source files are preserved.
 | --- | ---: | --- |
 | `auth.spec.ts` | 4 | Application permissions, anonymous access, logout and mount authentication form |
 | `file-operations.spec.ts` | 7 | Creation, Unicode rename, cancellation, recursive deletion and collisions |
+| `file-access.spec.ts` | 5 × 3 profiles | Filename downloads for all formats, explicit preview, keyboard/focus, folder and mixed ZIP, deselection, responsive layouts and four languages |
 | `navigation.spec.ts` | 2 | Navigation, selection, sorting and language switching on local storage |
 | `upload-download.spec.ts` | 13 | Upload/download contents on all five mounts; ZIP, overwrite, cancellation, size limit, drag and drop, and denied writes |
 | `transfers.spec.ts` | 26 | Copy and move, checking source and destination contents |
@@ -120,7 +122,11 @@ Data volumes are isolated per run.
 CAS/LDAP and the S3, SMB, WebDAV and SFTP servers are real dependencies. Startup
 checks confirm their availability, and CAS login provides an application session.
 The scenarios cover application workflows, error handling and data preservation.
-A narrow viewport check verifies the JavaPerf layout in Chromium.
+File access scenarios run on desktop Chromium, a Pixel 7 profile in Chromium and
+an iPhone 13 profile in WebKit. Layout checks cover widths from 320 to 1440 pixels
+and all four interface languages. These are browser emulations; physical iOS and
+Android devices remain useful for checking browser download prompts and file locations.
+A narrow viewport check also verifies the JavaPerf layout in Chromium.
 
 ## Local checks
 

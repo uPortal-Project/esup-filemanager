@@ -41,7 +41,7 @@
                 </button>
                 <div class="dropdown-divider" role="separator"></div>
                 <button class="list-group-item list-group-item-action disabled" id="mobile-download" aria-disabled="true">
-                    <i class="bi bi-download" aria-hidden="true"></i> <span th:text="#{toolbar.download.title}">Télécharger</span>
+                    <i class="bi bi-download" aria-hidden="true"></i> <span data-download-label th:text="#{toolbar.download}">Télécharger</span>
                 </button>
                 <button class="list-group-item list-group-item-action disabled" id="mobile-copy" aria-disabled="true">
                     <i class="bi bi-files" aria-hidden="true"></i> <span th:text="#{toolbar.copy.title}">Copier</span>
@@ -130,14 +130,7 @@
                     th:attr="aria-label=#{toolbar.download.title}"
                     aria-disabled="true">
                 <i class="bi bi-download" aria-hidden="true"></i>
-                <span class="d-none d-xl-inline" th:text="#{toolbar.download}">Télécharger</span>
-            </button>
-            <button type="button" class="btn btn-outline-info disabled" id="toolbar-zip"
-                    th:title="#{toolbar.zip.title}"
-                    th:attr="aria-label=#{toolbar.zip.title}"
-                    aria-disabled="true">
-                <i class="bi bi-file-zip" aria-hidden="true"></i>
-                <span class="d-none d-xl-inline" th:text="#{toolbar.zip}">ZIP</span>
+                <span data-download-label th:text="#{toolbar.download}">Télécharger</span>
             </button>
         </div>
 
@@ -244,7 +237,7 @@
                 </div>
 
                 <!-- Details Area -->
-                <div id="detailArea" class="panel-footer"></div>
+                <div id="detailArea" class="panel-footer" tabindex="-1" role="region" th:attr="aria-label=#{details.header}"></div>
             </div>
 
             <!-- Splitter / Resize Handle -->
@@ -262,6 +255,13 @@
 
         <!-- Right Panel - Browser Area -->
         <main id="rightPanel" class="right-panel" th:attr="aria-label=#{aria.panel.main}">
+            <div class="selection-summary">
+                <span id="selection-count" role="status" aria-live="polite" aria-atomic="true"
+                      th:text="#{selection.empty}">Aucun élément sélectionné</span>
+                <button type="button" id="selection-clear" class="btn btn-outline-secondary" hidden
+                        th:text="#{selection.clear}">Tout désélectionner</button>
+            </div>
+            <div id="download-status" class="download-status" role="status" aria-live="polite" aria-atomic="true"></div>
             <!-- Browser Main Content -->
             <div id="browserArea" class="browser-content">
                 <div id="browserMain"></div>
@@ -275,18 +275,19 @@
             <button type="button" id="mobile-details-close" class="btn btn-outline-secondary" autofocus
                     th:text="#{details.back}">Retour à la liste</button>
         </div>
+        <div id="mobile-download-status" class="download-status" role="status" aria-live="polite" aria-atomic="true"></div>
     </dialog>
 
     <!-- Mobile Bottom Toolbar (Quick actions) -->
     <div class="d-lg-none bg-light border-top fixed-bottom">
         <div class="btn-group w-100" role="group" th:attr="aria-label=#{aria.bottom.toolbar}">
-            <button type="button" class="btn btn-light border-0 py-3 disabled" id="mobile-toolbar-upload"
+            <button type="button" class="btn btn-light border-0 py-3 disabled mobile-create-action" id="mobile-toolbar-upload"
                     th:attr="aria-label=#{toolbar.upload.title}"
                     aria-disabled="true">
                 <i class="bi bi-cloud-upload fs-5" aria-hidden="true"></i>
                 <div class="small" th:text="#{toolbar.upload}">Upload</div>
             </button>
-            <button type="button" class="btn btn-light border-0 py-3 disabled" id="mobile-toolbar-new"
+            <button type="button" class="btn btn-light border-0 py-3 disabled mobile-create-action" id="mobile-toolbar-new"
                     th:attr="aria-label=#{toolbar.create.title}"
                     aria-disabled="true">
                 <i class="bi bi-folder-plus fs-5" aria-hidden="true"></i>
@@ -296,7 +297,7 @@
                     th:attr="aria-label=#{toolbar.download.title}"
                     aria-disabled="true">
                 <i class="bi bi-download fs-5" aria-hidden="true"></i>
-                <div class="small" th:text="#{toolbar.download}">Télécharger</div>
+                <div class="small" data-download-label th:text="#{toolbar.download}">Télécharger</div>
             </button>
             <button type="button" class="btn btn-light border-0 py-3" id="mobile-details"
                     aria-haspopup="dialog" aria-controls="mobileDetails">

@@ -20,8 +20,7 @@
         renameFileURL: data.renameFileUrl || './renameFile',
         downloadFileURL: data.downloadFileUrl || './downloadFile',
         downloadZipURL: data.downloadZipUrl || './downloadZip',
-        removeFilesURL: data.removeFilesUrl || './removeFiles',
-        useDoubleClick: data.useDoubleClick === 'true'
+        removeFilesURL: data.removeFilesUrl || './removeFiles'
     };
 
     const i18nMap = {
@@ -60,6 +59,10 @@
         newFolder: 'i18nNewFolder',
         paste: 'i18nPaste',
         download: 'i18nDownload',
+        downloadZip: 'i18nDownloadZip',
+        downloadNamed: 'i18nDownloadNamed',
+        selectionCount: 'i18nSelectionCount',
+        selectionEmpty: 'i18nSelectionEmpty',
         copy: 'i18nCopy',
         cut: 'i18nCut',
         rename: 'i18nRename',

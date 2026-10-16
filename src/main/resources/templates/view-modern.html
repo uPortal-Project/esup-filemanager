@@ -38,8 +38,7 @@
          data-download-file-url="./downloadFile"
          data-download-zip-url="./downloadZip"
          data-remove-files-url="./removeFiles"
-         th:attr="data-use-double-click=${useDoubleClick},
-                  data-default-path=${defaultPath},
+         th:attr="data-default-path=${defaultPath},
                   data-i18n-upload-file-success=#{info.uploadFileSuccess},
                   data-i18n-upload-file-failed=#{info.uploadFileFailed},
                   data-i18n-upload-files-success=#{info.uploadFilesSuccess},
@@ -75,6 +74,10 @@
                   data-i18n-new-folder=#{toolbar.create},
                   data-i18n-paste=#{toolbar.paste},
                   data-i18n-download=#{toolbar.download},
+                  data-i18n-download-zip=#{toolbar.download.zip},
+                  data-i18n-download-named=#{download.named},
+                  data-i18n-selection-count=#{selection.count},
+                  data-i18n-selection-empty=#{selection.empty},
                   data-i18n-copy=#{toolbar.copy},
                   data-i18n-cut=#{toolbar.cut},
                   data-i18n-rename=#{toolbar.rename},

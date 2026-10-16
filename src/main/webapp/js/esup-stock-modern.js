@@ -38,8 +38,7 @@ class EsupFileManager {
             renameFileURL: appConfig.renameFileURL || './renameFile',
             downloadFileURL: appConfig.downloadFileURL || './downloadFile',
             downloadZipURL: appConfig.downloadZipURL || './downloadZip',
-            removeFilesURL: appConfig.removeFilesURL || './removeFiles',
-            useDoubleClick: appConfig.useDoubleClick === true
+            removeFilesURL: appConfig.removeFilesURL || './removeFiles'
         };
 
         // Restore path from URL or localStorage
@@ -249,10 +248,14 @@ class EsupFileManager {
 
             // File links
             if (e.target.closest('.file')) {
+                if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
                 e.preventDefault();
                 const link = e.target.closest('.file');
                 this.handleFileClick(link, e);
             }
+
+            const preview = e.target.closest('.file-preview');
+            if (preview) this.showFilePreview(preview);
         });
     }
 
@@ -311,11 +314,11 @@ class EsupFileManager {
             downloadBtn.addEventListener('click', () => this.downloadSelectedFiles());
         }
 
-        // Zip
-        const zipBtn = document.getElementById('toolbar-zip');
-        if (zipBtn) {
-            zipBtn.addEventListener('click', () => this.downloadSelectedAsZip());
-        }
+        document.getElementById('selection-clear')?.addEventListener('click', () => {
+            document.querySelectorAll('.browsercheck:checked').forEach(checkbox => { checkbox.checked = false; });
+            this.handleFileSelection();
+            document.querySelector('.browsercheck')?.focus();
+        });
     }
 
     bindBrowserAreaEvents() {
@@ -388,7 +391,7 @@ class EsupFileManager {
                 this.handleRename();
             }
 
-            // Enter: open folders; keep files selected in the details panel
+            // Enter: open the selected folder or download the selected file.
             if (e.key === 'Enter') {
                 e.preventDefault();
                 this.handleEnterKey();
@@ -465,12 +468,9 @@ class EsupFileManager {
             browserArea.addEventListener('contextmenu', (e) => {
                 if (e.target.closest('.selectable')) {
                     e.preventDefault();
-                    // Business rule: disable Download item when a folder is part of the selection
-                    const hasFolderSel = this.getSelectedFilePaths()
-                        .some(path => this.getFileTypeFromPath(path) === 'folder');
                     const dlItem = browserMenu.querySelector('.context-menu-item');
                     if (dlItem) {
-                        if (hasFolderSel) {
+                        if (!this.isInDrive || !this.getSelectedFilePaths().length) {
                             dlItem.style.opacity = '0.5';
                             dlItem.style.cursor = 'not-allowed';
                             dlItem.setAttribute('aria-disabled', 'true');
@@ -683,47 +683,21 @@ class EsupFileManager {
     }
 
     handleFolderClick(link, event) {
-        const path = link.getAttribute('rel');
-
-        if (this.config.useDoubleClick) {
-            // Handle double-click
-            const clicks = (link.dataset.clicks || 0) + 1;
-            link.dataset.clicks = clicks;
-
-            if (clicks === 1) {
-                link.dataset.clickTimeout = setTimeout(() => {
-                    link.dataset.clicks = 0;
-                    this.selectFolder(link);
-                }, 300);
-            } else {
-                clearTimeout(link.dataset.clickTimeout);
-                link.dataset.clicks = 0;
-                this.navigateToPath(path);
-            }
-        } else {
-            this.navigateToPath(path);
-        }
+        this.navigateToPath(link.getAttribute('rel'));
     }
 
     handleFileClick(link, event) {
-        const path = link.getAttribute('rel');
+        this.downloadFile(link.getAttribute('rel'));
+    }
 
-        if (this.config.useDoubleClick) {
-            const clicks = (link.dataset.clicks || 0) + 1;
-            link.dataset.clicks = clicks;
-
-            if (clicks === 1) {
-                link.dataset.clickTimeout = setTimeout(() => {
-                    link.dataset.clicks = 0;
-                    this.selectFile(link);
-                }, 300);
-            } else {
-                clearTimeout(link.dataset.clickTimeout);
-                link.dataset.clicks = 0;
-                this.selectFile(link, false);
-            }
+    async showFilePreview(button) {
+        const loading = this.loadDetailsArea([button.getAttribute('data-path')]);
+        if (window.matchMedia('(max-width: 991.98px)').matches) {
+            document.getElementById('mobileDetails')?.dispatchEvent(
+                new CustomEvent('esup:open-details', { detail: { opener: button } }));
         } else {
-            this.selectFile(link, false);
+            await loading;
+            document.getElementById('detailArea')?.focus();
         }
     }
 
@@ -1297,19 +1271,12 @@ class EsupFileManager {
             return;
         }
 
-        // Business rule: direct download is not available when a folder is part of the selection.
         const hasFolderSel = selectedPaths.some(path => this.getFileTypeFromPath(path) === 'folder');
-        if (hasFolderSel) {
-            console.warn('Download blocked: selection contains a folder.');
-            return;
-        }
-
-        if (selectedPaths.length === 1) {
+        if (selectedPaths.length === 1 && !hasFolderSel) {
             this.downloadFile(selectedPaths[0]);
         } else {
             // Download as ZIP
-            this.triggerDownload(this.config.downloadZipURL + '?dirs=' +
-                selectedPaths.map(p => encodeURIComponent(p)).join(','));
+            this.downloadSelectedAsZip();
         }
     }
 
@@ -1338,8 +1305,21 @@ class EsupFileManager {
         // Attachment responses do not reliably fire load: keep slow ZIP/S3 requests
         // alive until navigation, and let the browser report transfer progress.
         window.addEventListener('pagehide', () => iframe.remove(), { once: true });
-        UIComponents.showInfo(window.i18n?.detailsDownloadRequested ||
-            'Download requested. Check your browser’s downloads; preparation may take some time.');
+        const target = new URL(url, window.location.href);
+        const path = target.searchParams.get('dir');
+        const checkbox = Array.from(document.querySelectorAll('.browsercheck')).find(cb => cb.value === path);
+        const name = checkbox?.closest('tr')?.querySelector('.file span')?.textContent ||
+            (target.searchParams.has('dirs') ? 'export.zip' : '');
+        const message = name
+            ? (window.i18n?.downloadNamed || 'Download requested: {0}. Check your browser’s downloads.').replace('{0}', () => name)
+            : (window.i18n?.detailsDownloadRequested || 'Download requested. Check your browser’s downloads.');
+        // Keep filenames as text, in a persistent live region. Repeated requests are announced too.
+        const status = document.getElementById(document.getElementById('mobileDetails')?.open
+            ? 'mobile-download-status' : 'download-status');
+        if (status) {
+            status.replaceChildren();
+            requestAnimationFrame(() => { status.textContent = message; });
+        }
     }
 
     // Utilities
@@ -1575,19 +1555,37 @@ class EsupFileManager {
         };
 
         // Desktop toolbar
-        ['copy', 'cut', 'delete', 'rename', 'zip'].forEach(id => {
+        ['copy', 'cut', 'delete', 'rename'].forEach(id => {
             setBtn(document.getElementById(`toolbar-${id}`), canEnable);
         });
-        // Business rule: direct download is disabled when a folder is part of the selection.
-        setBtn(document.getElementById('toolbar-download'), canEnable && !hasFolderSelection);
+        setBtn(document.getElementById('toolbar-download'), canEnable);
 
         // Mobile offcanvas + bottom toolbar
         ['copy', 'cut', 'delete', 'rename'].forEach(id => {
             setBtn(document.getElementById(`mobile-${id}`), canEnable);
             setBtn(document.getElementById(`mobile-toolbar-${id}`), canEnable);
         });
-        setBtn(document.getElementById('mobile-download'), canEnable && !hasFolderSelection);
-        setBtn(document.getElementById('mobile-toolbar-download'), canEnable && !hasFolderSelection);
+        setBtn(document.getElementById('mobile-download'), canEnable);
+        setBtn(document.getElementById('mobile-toolbar-download'), canEnable);
+        const count = selectedPaths.length;
+        const label = count > 1 || hasFolderSelection
+            ? (window.i18n?.downloadZip || 'Download (.zip)')
+            : (window.i18n?.download || 'Download');
+        ['toolbar-download', 'mobile-download', 'mobile-toolbar-download'].forEach(id => {
+            const button = document.getElementById(id);
+            if (!button) return;
+            button.setAttribute('aria-label', label);
+            button.title = label;
+            const text = button.querySelector('[data-download-label]');
+            if (text) text.textContent = label;
+        });
+        const summary = document.getElementById('selection-count');
+        if (summary) summary.textContent = count
+            ? (window.i18n?.selectionCount || '{0} item(s) selected').replace('{0}', count)
+            : (window.i18n?.selectionEmpty || 'No items selected');
+        const clear = document.getElementById('selection-clear');
+        if (clear) clear.hidden = count === 0;
+        document.querySelector('.esupstock')?.classList.toggle('has-selection', count > 0);
     }
 
     /**
@@ -1620,7 +1618,7 @@ class EsupFileManager {
      * Enables or disables ALL action buttons depending on whether the user is
      * inside a drive (not at root/category level).
      *  - false → force-disable everything (upload, new-folder, copy, cut, paste,
-     *             rename, delete, download, zip + mobile equivalents)
+     *             rename, delete, download + mobile equivalents)
      *  - true  → enable upload/new-folder; restore selection & clipboard states
      * @param {boolean} enabled
      */
@@ -1659,30 +1657,6 @@ class EsupFileManager {
         console.log('Drive context buttons:', enabled ? 'enabled' : 'disabled');
     }
 
-    selectFolder(link) {
-        // Visually select folder
-        const tr = link.closest('tr');
-        if (tr) {
-            const checkbox = tr.querySelector('.browsercheck');
-            if (checkbox) {
-                checkbox.checked = !checkbox.checked;
-                this.handleFileSelection();
-            }
-        }
-    }
-
-    selectFile(link, toggle = true) {
-        // Visually select file
-        const tr = link.closest('tr');
-        if (tr) {
-            const checkbox = tr.querySelector('.browsercheck');
-            if (checkbox) {
-                checkbox.checked = toggle ? !checkbox.checked : true;
-                this.handleFileSelection();
-            }
-        }
-    }
-
     handleEnterKey() {
         const selectedPaths = this.getSelectedFilePaths();
         if (selectedPaths.length === 1) {
@@ -1695,7 +1669,7 @@ class EsupFileManager {
             if (isFolder) {
                 this.navigateToPath(path);
             } else {
-                this.handleFileSelection();
+                this.downloadFile(path);
             }
         }
     }
