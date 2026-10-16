@@ -281,30 +281,30 @@
     <!-- Mobile Bottom Toolbar (Quick actions) -->
     <div class="d-lg-none bg-light border-top fixed-bottom">
         <div class="btn-group w-100" role="group" th:attr="aria-label=#{aria.bottom.toolbar}">
-            <button type="button" class="btn btn-light border-0 py-3 disabled mobile-create-action" id="mobile-toolbar-upload"
+            <button type="button" class="btn btn-light border-0 disabled mobile-create-action" id="mobile-toolbar-upload"
                     th:attr="aria-label=#{toolbar.upload.title}"
                     aria-disabled="true">
                 <i class="bi bi-cloud-upload fs-5" aria-hidden="true"></i>
                 <div class="small" th:text="#{toolbar.upload}">Upload</div>
             </button>
-            <button type="button" class="btn btn-light border-0 py-3 disabled mobile-create-action" id="mobile-toolbar-new"
+            <button type="button" class="btn btn-light border-0 disabled mobile-create-action" id="mobile-toolbar-new"
                     th:attr="aria-label=#{toolbar.create.title}"
                     aria-disabled="true">
                 <i class="bi bi-folder-plus fs-5" aria-hidden="true"></i>
                 <div class="small" th:text="#{toolbar.create}">Nouveau dossier</div>
             </button>
-            <button type="button" class="btn btn-light border-0 py-3 disabled" id="mobile-toolbar-download"
+            <button type="button" class="btn btn-light border-0 disabled" id="mobile-toolbar-download"
                     th:attr="aria-label=#{toolbar.download.title}"
                     aria-disabled="true">
                 <i class="bi bi-download fs-5" aria-hidden="true"></i>
                 <div class="small" data-download-label th:text="#{toolbar.download}">Télécharger</div>
             </button>
-            <button type="button" class="btn btn-light border-0 py-3" id="mobile-details"
+            <button type="button" class="btn btn-light border-0" id="mobile-details"
                     aria-haspopup="dialog" aria-controls="mobileDetails">
                 <i class="bi bi-info-circle fs-5" aria-hidden="true"></i>
                 <div class="small" th:text="#{details.header}">Détails</div>
             </button>
-            <button type="button" class="btn btn-light border-0 py-3"
+            <button type="button" class="btn btn-light border-0"
                     data-bs-toggle="offcanvas" data-bs-target="#mobileMenu"
                     aria-controls="mobileMenu" th:attr="aria-label=#{treearea.header}">
                 <i class="bi bi-list fs-5" aria-hidden="true"></i>

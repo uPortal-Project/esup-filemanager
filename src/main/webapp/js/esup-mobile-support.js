@@ -46,6 +46,18 @@
      * Mobile toolbar (bottom)
      */
     function initMobileToolbar() {
+        // Reserve the actual height, including wrapped labels and the safe area.
+        const toolbar = document.querySelector('.fixed-bottom');
+        if (toolbar) {
+            const observer = new ResizeObserver(() => {
+                const height = toolbar.getBoundingClientRect().height;
+                if (height > 0) {
+                    document.documentElement.style.setProperty('--mobile-toolbar-offset', `${height}px`);
+                }
+            });
+            observer.observe(toolbar, { box: 'border-box' });
+        }
+
         // Mobile upload
         const uploadBtn = document.getElementById('mobile-toolbar-upload');
         if (uploadBtn) {

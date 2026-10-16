@@ -448,7 +448,7 @@ body {
     }
 
     .browser-content {
-        padding-bottom: calc(var(--mobile-toolbar-height) + env(safe-area-inset-bottom, 0px) + 1rem);
+        padding-bottom: calc(var(--mobile-toolbar-offset, var(--mobile-toolbar-height)) + 1rem);
     }
 
     /* Hidden desktop toolbar */
@@ -460,7 +460,7 @@ body {
 @media (max-width: 767.98px) {
     /* Mobile - Reduced padding */
     .browser-content {
-        padding: 0.75rem 0.75rem calc(var(--mobile-toolbar-height) + env(safe-area-inset-bottom, 0px) + 1rem);
+        padding: 0.75rem 0.75rem calc(var(--mobile-toolbar-offset, var(--mobile-toolbar-height)) + 1rem);
     }
 }
 
@@ -654,11 +654,6 @@ body {
     .has-selection .fixed-bottom .mobile-create-action {
         display: none;
     }
-
-    #mobile-toolbar-download .small {
-        white-space: normal;
-        line-height: 1.2;
-    }
 }
 
 /* ===============================================
@@ -790,7 +785,9 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: var(--mobile-toolbar-height);
+    min-height: var(--mobile-toolbar-height);
+    padding: 0.5rem 0.25rem;
+    flex: 1 1 0;
     min-width: 0;
     /* Bootstrap gives grouped buttons different corner radii. */
     border-radius: 0 !important;
@@ -804,6 +801,7 @@ body {
     display: block;
     width: 24px;
     height: 24px;
+    flex-shrink: 0;
     margin-bottom: 0.25rem;
     font-size: 24px;
     line-height: 24px;
@@ -814,11 +812,10 @@ body {
 
 .fixed-bottom .small {
     font-size: 0.7rem;
-    line-height: 1;
+    line-height: 1.25;
     max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 /* ===============================================

@@ -92,7 +92,7 @@ test('keyboard separates checkbox selection and filename download', async ({ fil
 test('file controls fit phone, landscape, tablet and desktop widths', async ({ files, workspace }) => {
     const name = 'NomTrèsLongSansEspaces'.repeat(6) + '.txt';
     test.setTimeout(180_000);
-    await workspace.prepare('tmp', 'responsive-access', { [name]: text });
+    await workspace.prepare('tmp', 'responsive-access', { [name]: text, 'folder/': null });
     await files.open('tmp', workspace.root + '/responsive-access');
     for (const [width, height] of [[320, 640], [360, 640], [640, 360], [768, 600], [992, 700], [1440, 900]]) {
         await files.page.setViewportSize({ width, height });
@@ -109,6 +109,36 @@ test('file controls fit phone, landscape, tablet and desktop widths', async ({ f
                 expect(box.x + box.width).toBeLessThanOrEqual(width);
             }
             expect(await files.page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
+            if (width < 992) {
+                const assertToolbarFits = async () => {
+                    const buttons = files.page.locator('.fixed-bottom .btn:visible');
+                    for (const button of await buttons.all()) {
+                        const box = (await button.boundingBox())!;
+                        expect(box.y + box.height).toBeLessThanOrEqual(height);
+                        expect(box.width).toBeGreaterThanOrEqual(44);
+                        expect(await button.evaluate(element => {
+                            const bounds = element.getBoundingClientRect();
+                            return [...element.children].every(child => {
+                                const rect = child.getBoundingClientRect();
+                                return rect.top >= bounds.top && rect.bottom <= bounds.bottom
+                                    && rect.left >= bounds.left && rect.right <= bounds.right
+                                    && child.scrollHeight <= child.clientHeight + 1
+                                    && child.scrollWidth <= child.clientWidth + 1;
+                            });
+                        })).toBeTruthy();
+                    }
+                    await expect.poll(() => files.page.locator('.browser-content').evaluate(element => {
+                        const toolbar = document.querySelector('.fixed-bottom')!;
+                        return parseFloat(getComputedStyle(element).paddingBottom) >= toolbar.getBoundingClientRect().height;
+                    })).toBeTruthy();
+                };
+                await assertToolbarFits();
+                const folder = files.listing.getByRole('checkbox', { name: 'folder', exact: true });
+                await folder.check();
+                await expect(files.page.locator('#mobile-toolbar-download')).toHaveAccessibleName(/\.zip/);
+                await assertToolbarFits();
+                await folder.uncheck();
+            }
         }
         // A long filename in the persistent feedback must leave the list usable.
         await files.download(name, text, false, () => files.listing.locator('.file').click());
