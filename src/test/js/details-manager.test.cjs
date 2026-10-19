@@ -164,7 +164,8 @@ test('details lifecycle and keyboard accessibility in Chromium', async () => {
     } finally {
         server.closeAllConnections();
         await new Promise(resolve => server.close(resolve));
-        rmSync(directory, { recursive: true, force: true });
+        // Chromium helpers can briefly keep writing after the browser exits.
+        rmSync(directory, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
     }
 });
 
@@ -175,6 +176,8 @@ async function checkKeyboard(file, directory, fixture) {
         '--headless', '--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage',
         `--user-data-dir=${join(directory, 'keyboard-profile')}`, '--remote-debugging-pipe'
     ], { stdio: ['ignore', 'ignore', 'ignore', 'pipe', 'pipe'] });
+    // Register before shutdown so an exit during a timeout cannot be missed.
+    const browserExited = new Promise(resolve => browser.once('exit', resolve));
     let id = 0;
     let buffer = '';
     const pending = new Map();
@@ -541,8 +544,15 @@ async function checkKeyboard(file, directory, fixture) {
             !document.querySelector('.mobile-file-list')`, 'AJAX replacement immediately uses cards without copies');
 
     } finally {
-        clearTimeout(timeout);
-        browser.kill();
-        await new Promise(resolve => browser.once('exit', resolve));
+        try {
+            if (browser.exitCode === null && browser.signalCode === null) {
+                // Let Chromium shut down its helpers and flush its profile.
+                // Keep the timeout active as a fallback if shutdown stalls.
+                send('Browser.close').catch(() => {});
+            }
+            await browserExited;
+        } finally {
+            clearTimeout(timeout);
+        }
     }
 }
